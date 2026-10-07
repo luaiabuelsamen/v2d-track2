@@ -13,3 +13,5 @@ No paid compute, no registration, no submission, no posting. No large downloads.
 
 ## Paid compute used
 None. Downloads: kit (0.7 MB), FAQ, HF metadata, Track 2 tier 1/2 trajectory parquets (60 MB, scratchpad only, not committed).
+
+- 2026-10-07: Luai emailed v2d_challenge@nvidia.com about GPU credits and the scoring/multi-motion questions. Awaiting reply; paid compute stays off.
