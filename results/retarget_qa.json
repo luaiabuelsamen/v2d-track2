@@ -1,0 +1,1689 @@
+{
+  "clips": {
+    "tier1_e00": {
+      "antipenetration_frames": "0/778",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 339,
+          "fraction": 0.4357,
+          "frames": 778
+        },
+        "right": {
+          "active": 447,
+          "fraction": 0.5746,
+          "frames": 778
+        }
+      },
+      "contact_fraction_either": 0.5746,
+      "foot_offset_max_m": 0.0296,
+      "foot_offset_min_m": -0.0076,
+      "ground_correction_applied_m": 0.0031,
+      "ground_correction_min_m": -0.0026,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 9.22,
+      "plane_translation_z_m": 0.9035,
+      "sequence_id": "2026-06-04_14-16-23_tall_bar_stool_tip_up_04",
+      "sole_z_max_m": 0.0916,
+      "sole_z_min_m": 0.002
+    },
+    "tier1_e01": {
+      "antipenetration_frames": "0/747",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 362,
+          "fraction": 0.4846,
+          "frames": 747
+        },
+        "right": {
+          "active": 29,
+          "fraction": 0.0388,
+          "frames": 747
+        }
+      },
+      "contact_fraction_either": 0.4846,
+      "foot_offset_max_m": 0.0052,
+      "foot_offset_min_m": -0.0347,
+      "ground_correction_applied_m": 0.0047,
+      "ground_correction_min_m": -0.0042,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 6.064,
+      "plane_translation_z_m": 0.9455,
+      "sequence_id": "2026-05-18_17-06-21_vacuum_left_lean_02",
+      "sole_z_max_m": 0.1385,
+      "sole_z_min_m": 0.0027
+    },
+    "tier1_e02": {
+      "antipenetration_frames": "0/980",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 432,
+          "fraction": 0.4408,
+          "frames": 980
+        },
+        "right": {
+          "active": 170,
+          "fraction": 0.1735,
+          "frames": 980
+        }
+      },
+      "contact_fraction_either": 0.4408,
+      "foot_offset_max_m": -0.0027,
+      "foot_offset_min_m": -0.0492,
+      "ground_correction_applied_m": 0.0,
+      "ground_correction_min_m": 0.7798,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 5.138,
+      "plane_translation_z_m": 0.9519,
+      "sequence_id": "2026-06-02_10-04-42_blue_easter_basket_place_10",
+      "sole_z_max_m": 0.1316,
+      "sole_z_min_m": 0.004
+    },
+    "tier1_e03": {
+      "antipenetration_frames": "0/781",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 0,
+          "fraction": 0.0,
+          "frames": 781
+        },
+        "right": {
+          "active": 551,
+          "fraction": 0.7055,
+          "frames": 781
+        }
+      },
+      "contact_fraction_either": 0.7055,
+      "foot_offset_max_m": 0.0187,
+      "foot_offset_min_m": -0.0017,
+      "ground_correction_applied_m": 0.0,
+      "ground_correction_min_m": 0.7806,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 11.766,
+      "plane_translation_z_m": 0.8985,
+      "sequence_id": "2026-04-27_11-50-10_contigo_coffee_mug_handle_table_05",
+      "sole_z_max_m": 0.1212,
+      "sole_z_min_m": 0.0024
+    },
+    "tier1_e04": {
+      "antipenetration_frames": "0/803",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 463,
+          "fraction": 0.5766,
+          "frames": 803
+        },
+        "right": {
+          "active": 555,
+          "fraction": 0.6912,
+          "frames": 803
+        }
+      },
+      "contact_fraction_either": 0.6912,
+      "foot_offset_max_m": 0.034,
+      "foot_offset_min_m": -0.0117,
+      "ground_correction_applied_m": 0.0079,
+      "ground_correction_min_m": -0.0074,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 1.804,
+      "plane_translation_z_m": 0.8865,
+      "sequence_id": "2026-04-24_11-40-52_baseball_bat_rotate_05",
+      "sole_z_max_m": 0.1232,
+      "sole_z_min_m": 0.0018
+    },
+    "tier1_e05": {
+      "antipenetration_frames": "0/1003",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 601,
+          "fraction": 0.5992,
+          "frames": 1003
+        },
+        "right": {
+          "active": 672,
+          "fraction": 0.67,
+          "frames": 1003
+        }
+      },
+      "contact_fraction_either": 0.67,
+      "foot_offset_max_m": -0.0135,
+      "foot_offset_min_m": -0.069,
+      "ground_correction_applied_m": 0.0061,
+      "ground_correction_min_m": -0.0056,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 7.192,
+      "plane_translation_z_m": 0.9738,
+      "sequence_id": "2026-03-18_19-36-56_g1_box_rotate_01",
+      "sole_z_max_m": 0.1116,
+      "sole_z_min_m": 0.0035
+    },
+    "tier1_e06": {
+      "antipenetration_frames": "0/546",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 329,
+          "fraction": 0.6026,
+          "frames": 546
+        },
+        "right": {
+          "active": 342,
+          "fraction": 0.6264,
+          "frames": 546
+        }
+      },
+      "contact_fraction_either": 0.6264,
+      "foot_offset_max_m": 0.0108,
+      "foot_offset_min_m": -0.0188,
+      "ground_correction_applied_m": 0.0,
+      "ground_correction_min_m": 0.7822,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 8.086,
+      "plane_translation_z_m": 0.9122,
+      "sequence_id": "2026-06-01_11-26-44_monitor_rotate_05",
+      "sole_z_max_m": 0.1478,
+      "sole_z_min_m": 0.0029
+    },
+    "tier1_e07": {
+      "antipenetration_frames": "0/896",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 0,
+          "fraction": 0.0,
+          "frames": 896
+        },
+        "right": {
+          "active": 697,
+          "fraction": 0.7779,
+          "frames": 896
+        }
+      },
+      "contact_fraction_either": 0.7779,
+      "foot_offset_max_m": 0.0137,
+      "foot_offset_min_m": -0.0089,
+      "ground_correction_applied_m": 0.0,
+      "ground_correction_min_m": 0.7862,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 7.056,
+      "plane_translation_z_m": 0.9121,
+      "sequence_id": "2026-05-29_15-20-43_iron_round_table_02",
+      "sole_z_max_m": 0.0802,
+      "sole_z_min_m": 0.0027
+    },
+    "tier1_e08": {
+      "antipenetration_frames": "0/708",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 250,
+          "fraction": 0.3531,
+          "frames": 708
+        },
+        "right": {
+          "active": 246,
+          "fraction": 0.3475,
+          "frames": 708
+        }
+      },
+      "contact_fraction_either": 0.3531,
+      "foot_offset_max_m": 0.033,
+      "foot_offset_min_m": 0.0046,
+      "ground_correction_applied_m": 0.0021,
+      "ground_correction_min_m": -0.0016,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 1.563,
+      "plane_translation_z_m": 0.8977,
+      "sequence_id": "2026-06-05_15-08-08_skinny_wood_chair_push_10",
+      "sole_z_max_m": 0.0964,
+      "sole_z_min_m": 0.0016
+    },
+    "tier1_e09": {
+      "antipenetration_frames": "0/870",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 585,
+          "fraction": 0.6724,
+          "frames": 870
+        },
+        "right": {
+          "active": 597,
+          "fraction": 0.6862,
+          "frames": 870
+        }
+      },
+      "contact_fraction_either": 0.6862,
+      "foot_offset_max_m": 0.0253,
+      "foot_offset_min_m": -0.0049,
+      "ground_correction_applied_m": 0.0,
+      "ground_correction_min_m": 0.4694,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 9.439,
+      "plane_translation_z_m": 0.912,
+      "sequence_id": "2026-06-04_16-45-04_big_red_bowl_under_skinny_wood_chair_03",
+      "sole_z_max_m": 0.0907,
+      "sole_z_min_m": 0.0022
+    },
+    "tier1_e10": {
+      "antipenetration_frames": "0/794",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 426,
+          "fraction": 0.5365,
+          "frames": 794
+        },
+        "right": {
+          "active": 481,
+          "fraction": 0.6058,
+          "frames": 794
+        }
+      },
+      "contact_fraction_either": 0.6058,
+      "foot_offset_max_m": -0.0065,
+      "foot_offset_min_m": -0.0502,
+      "ground_correction_applied_m": 0.01,
+      "ground_correction_min_m": -0.0233,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 0.559,
+      "plane_translation_z_m": 0.9694,
+      "sequence_id": "2026-05-01_11-36-40_white_desk_lower_to_ground_10",
+      "sole_z_max_m": 0.1247,
+      "sole_z_min_m": 0.004
+    },
+    "tier1_e11": {
+      "antipenetration_frames": "0/901",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 770,
+          "fraction": 0.8546,
+          "frames": 901
+        },
+        "right": {
+          "active": 766,
+          "fraction": 0.8502,
+          "frames": 901
+        }
+      },
+      "contact_fraction_either": 0.8546,
+      "foot_offset_max_m": -0.0202,
+      "foot_offset_min_m": -0.0912,
+      "ground_correction_applied_m": 0.0,
+      "ground_correction_min_m": 0.8847,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 2.871,
+      "plane_translation_z_m": 0.9418,
+      "sequence_id": "2026-04-24_13-56-58_light_blue_book_pick_place_09",
+      "sole_z_max_m": 0.1545,
+      "sole_z_min_m": 0.0026
+    },
+    "tier1_e12": {
+      "antipenetration_frames": "0/700",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 440,
+          "fraction": 0.6286,
+          "frames": 700
+        },
+        "right": {
+          "active": 382,
+          "fraction": 0.5457,
+          "frames": 700
+        }
+      },
+      "contact_fraction_either": 0.6286,
+      "foot_offset_max_m": 0.0077,
+      "foot_offset_min_m": -0.0498,
+      "ground_correction_applied_m": 0.0087,
+      "ground_correction_min_m": -0.0082,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 10.045,
+      "plane_translation_z_m": 0.9105,
+      "sequence_id": "2026-04-25_17-20-04_black_platform_turn_05",
+      "sole_z_max_m": 0.147,
+      "sole_z_min_m": 0.002
+    },
+    "tier1_e13": {
+      "antipenetration_frames": "0/922",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 352,
+          "fraction": 0.3818,
+          "frames": 922
+        },
+        "right": {
+          "active": 336,
+          "fraction": 0.3644,
+          "frames": 922
+        }
+      },
+      "contact_fraction_either": 0.3818,
+      "foot_offset_max_m": 0.0132,
+      "foot_offset_min_m": -0.0246,
+      "ground_correction_applied_m": 0.0,
+      "ground_correction_min_m": 0.8831,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 0.317,
+      "plane_translation_z_m": 0.9062,
+      "sequence_id": "2026-06-09_10-19-09_snack_box_desk_through_06",
+      "sole_z_max_m": 0.1475,
+      "sole_z_min_m": 0.002
+    },
+    "tier1_e14": {
+      "antipenetration_frames": "0/993",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 770,
+          "fraction": 0.7754,
+          "frames": 993
+        },
+        "right": {
+          "active": 739,
+          "fraction": 0.7442,
+          "frames": 993
+        }
+      },
+      "contact_fraction_either": 0.7754,
+      "foot_offset_max_m": 0.0248,
+      "foot_offset_min_m": -0.0254,
+      "ground_correction_applied_m": 0.0011,
+      "ground_correction_min_m": -0.0006,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 1.94,
+      "plane_translation_z_m": 0.9096,
+      "sequence_id": "2026-05-28_14-44-09_round_table_flip_08",
+      "sole_z_max_m": 0.0881,
+      "sole_z_min_m": 0.0024
+    },
+    "tier1_e15": {
+      "antipenetration_frames": "0/715",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 0,
+          "fraction": 0.0,
+          "frames": 715
+        },
+        "right": {
+          "active": 475,
+          "fraction": 0.6643,
+          "frames": 715
+        }
+      },
+      "contact_fraction_either": 0.6643,
+      "foot_offset_max_m": -0.0188,
+      "foot_offset_min_m": -0.0525,
+      "ground_correction_applied_m": 0.0,
+      "ground_correction_min_m": 0.0075,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 4.425,
+      "plane_translation_z_m": 0.9758,
+      "sequence_id": "2026-05-06_11-06-15_wet_floor_sign_pick_place_ground_08",
+      "sole_z_max_m": 0.1372,
+      "sole_z_min_m": 0.0049
+    },
+    "tier1_e16": {
+      "antipenetration_frames": "0/477",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 198,
+          "fraction": 0.4151,
+          "frames": 477
+        },
+        "right": {
+          "active": 0,
+          "fraction": 0.0,
+          "frames": 477
+        }
+      },
+      "contact_fraction_either": 0.4151,
+      "foot_offset_max_m": 0.0078,
+      "foot_offset_min_m": -0.0303,
+      "ground_correction_applied_m": 0.0,
+      "ground_correction_min_m": 0.8779,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 2.948,
+      "plane_translation_z_m": 0.9056,
+      "sequence_id": "2026-03-12_15-06-36_spray_bottle_left_desk_ground_02",
+      "sole_z_max_m": 0.1136,
+      "sole_z_min_m": 0.0025
+    },
+    "tier1_e17": {
+      "antipenetration_frames": "0/440",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 216,
+          "fraction": 0.4909,
+          "frames": 440
+        },
+        "right": {
+          "active": 219,
+          "fraction": 0.4977,
+          "frames": 440
+        }
+      },
+      "contact_fraction_either": 0.4977,
+      "foot_offset_max_m": 0.0072,
+      "foot_offset_min_m": -0.0286,
+      "ground_correction_applied_m": 0.01,
+      "ground_correction_min_m": -0.0241,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 5.804,
+      "plane_translation_z_m": 0.9332,
+      "sequence_id": "2026-05-01_17-04-55_traffic_cone_ground_table_02",
+      "sole_z_max_m": 0.1359,
+      "sole_z_min_m": 0.0036
+    },
+    "tier1_e18": {
+      "antipenetration_frames": "0/858",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 338,
+          "fraction": 0.3939,
+          "frames": 858
+        },
+        "right": {
+          "active": 381,
+          "fraction": 0.4441,
+          "frames": 858
+        }
+      },
+      "contact_fraction_either": 0.4441,
+      "foot_offset_max_m": -0.0191,
+      "foot_offset_min_m": -0.0521,
+      "ground_correction_applied_m": 0.0048,
+      "ground_correction_min_m": -0.0043,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 8.103,
+      "plane_translation_z_m": 0.9721,
+      "sequence_id": "2026-05-06_10-00-19_blue_trash_can_drag_sideways_08",
+      "sole_z_max_m": 0.1336,
+      "sole_z_min_m": 0.0047
+    },
+    "tier1_e19": {
+      "antipenetration_frames": "0/886",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 399,
+          "fraction": 0.4503,
+          "frames": 886
+        },
+        "right": {
+          "active": 317,
+          "fraction": 0.3578,
+          "frames": 886
+        }
+      },
+      "contact_fraction_either": 0.4503,
+      "foot_offset_max_m": -0.0496,
+      "foot_offset_min_m": -0.0814,
+      "ground_correction_applied_m": 0.0,
+      "ground_correction_min_m": 0.0002,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 2.809,
+      "plane_translation_z_m": 0.977,
+      "sequence_id": "2026-05-19_10-19-48_cane_swing_05",
+      "sole_z_max_m": 0.1155,
+      "sole_z_min_m": 0.0056
+    },
+    "tier1_e20": {
+      "antipenetration_frames": "0/553",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 0,
+          "fraction": 0.0,
+          "frames": 553
+        },
+        "right": {
+          "active": 335,
+          "fraction": 0.6058,
+          "frames": 553
+        }
+      },
+      "contact_fraction_either": 0.6058,
+      "foot_offset_max_m": 0.0013,
+      "foot_offset_min_m": -0.0384,
+      "ground_correction_applied_m": 0.0,
+      "ground_correction_min_m": 0.7984,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 6.9,
+      "plane_translation_z_m": 0.9544,
+      "sequence_id": "2026-06-08_16-57-34_rice_cooker_clockwise_04",
+      "sole_z_max_m": 0.1189,
+      "sole_z_min_m": 0.0036
+    },
+    "tier1_e21": {
+      "antipenetration_frames": "0/678",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 440,
+          "fraction": 0.649,
+          "frames": 678
+        },
+        "right": {
+          "active": 441,
+          "fraction": 0.6504,
+          "frames": 678
+        }
+      },
+      "contact_fraction_either": 0.6504,
+      "foot_offset_max_m": -0.0145,
+      "foot_offset_min_m": -0.0508,
+      "ground_correction_applied_m": 0.0077,
+      "ground_correction_min_m": -0.0072,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 4.275,
+      "plane_translation_z_m": 0.9615,
+      "sequence_id": "2026-04-29_11-53-57_tall_bar_stool_pull_08",
+      "sole_z_max_m": 0.1221,
+      "sole_z_min_m": 0.0043
+    },
+    "tier1_e22": {
+      "antipenetration_frames": "0/719",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 0,
+          "fraction": 0.0,
+          "frames": 719
+        },
+        "right": {
+          "active": 428,
+          "fraction": 0.5953,
+          "frames": 719
+        }
+      },
+      "contact_fraction_either": 0.5953,
+      "foot_offset_max_m": 0.0204,
+      "foot_offset_min_m": -0.015,
+      "ground_correction_applied_m": 0.0,
+      "ground_correction_min_m": 0.0033,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 5.679,
+      "plane_translation_z_m": 0.9164,
+      "sequence_id": "2026-05-22_16-52-36_step_ladder_drag_03",
+      "sole_z_max_m": 0.1328,
+      "sole_z_min_m": 0.0025
+    },
+    "tier1_e23": {
+      "antipenetration_frames": "0/946",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 794,
+          "fraction": 0.8393,
+          "frames": 946
+        },
+        "right": {
+          "active": 792,
+          "fraction": 0.8372,
+          "frames": 946
+        }
+      },
+      "contact_fraction_either": 0.8393,
+      "foot_offset_max_m": -0.0278,
+      "foot_offset_min_m": -0.0625,
+      "ground_correction_applied_m": 0.0086,
+      "ground_correction_min_m": -0.0081,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 4.656,
+      "plane_translation_z_m": 0.9608,
+      "sequence_id": "2026-06-03_15-08-03_toy_stroller_back_forth_ground_04",
+      "sole_z_max_m": 0.0765,
+      "sole_z_min_m": 0.0045
+    },
+    "tier1_e24": {
+      "antipenetration_frames": "0/748",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 0,
+          "fraction": 0.0,
+          "frames": 748
+        },
+        "right": {
+          "active": 517,
+          "fraction": 0.6912,
+          "frames": 748
+        }
+      },
+      "contact_fraction_either": 0.6912,
+      "foot_offset_max_m": 0.0069,
+      "foot_offset_min_m": -0.0154,
+      "ground_correction_applied_m": 0.0,
+      "ground_correction_min_m": 0.001,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 9.207,
+      "plane_translation_z_m": 0.6071,
+      "sequence_id": "2026-05-29_15-43-20_watering_can_pour_right_02",
+      "sole_z_max_m": 0.1671,
+      "sole_z_min_m": 0.0016
+    },
+    "tier1_e25": {
+      "antipenetration_frames": "0/859",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 375,
+          "fraction": 0.4366,
+          "frames": 859
+        },
+        "right": {
+          "active": 444,
+          "fraction": 0.5169,
+          "frames": 859
+        }
+      },
+      "contact_fraction_either": 0.5169,
+      "foot_offset_max_m": -0.0574,
+      "foot_offset_min_m": -0.089,
+      "ground_correction_applied_m": 0.0,
+      "ground_correction_min_m": 0.7839,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 1.932,
+      "plane_translation_z_m": 1.0005,
+      "sequence_id": "2026-03-20_11-59-57_cyan_water_bottle_rotate_01",
+      "sole_z_max_m": 0.1032,
+      "sole_z_min_m": 0.0065
+    },
+    "tier1_e26": {
+      "antipenetration_frames": "0/669",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 239,
+          "fraction": 0.3572,
+          "frames": 669
+        },
+        "right": {
+          "active": 264,
+          "fraction": 0.3946,
+          "frames": 669
+        }
+      },
+      "contact_fraction_either": 0.3946,
+      "foot_offset_max_m": 0.0083,
+      "foot_offset_min_m": -0.0265,
+      "ground_correction_applied_m": 0.0012,
+      "ground_correction_min_m": -0.0007,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 7.005,
+      "plane_translation_z_m": 0.9046,
+      "sequence_id": "2026-06-05_16-05-08_skateboard_rotate_ground_10",
+      "sole_z_max_m": 0.0784,
+      "sole_z_min_m": 0.0028
+    },
+    "tier1_e27": {
+      "antipenetration_frames": "0/565",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 289,
+          "fraction": 0.5115,
+          "frames": 565
+        },
+        "right": {
+          "active": 280,
+          "fraction": 0.4956,
+          "frames": 565
+        }
+      },
+      "contact_fraction_either": 0.5115,
+      "foot_offset_max_m": -0.0147,
+      "foot_offset_min_m": -0.0455,
+      "ground_correction_applied_m": 0.0,
+      "ground_correction_min_m": 0.0039,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 1.903,
+      "plane_translation_z_m": 0.9627,
+      "sequence_id": "2026-05-01_11-15-05_woven_basket_ground_desk_10",
+      "sole_z_max_m": 0.1392,
+      "sole_z_min_m": 0.004
+    },
+    "tier1_e28": {
+      "antipenetration_frames": "0/988",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 522,
+          "fraction": 0.5283,
+          "frames": 988
+        },
+        "right": {
+          "active": 691,
+          "fraction": 0.6994,
+          "frames": 988
+        }
+      },
+      "contact_fraction_either": 0.6994,
+      "foot_offset_max_m": -0.0442,
+      "foot_offset_min_m": -0.0739,
+      "ground_correction_applied_m": 0.0,
+      "ground_correction_min_m": 0.0239,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 2.481,
+      "plane_translation_z_m": 0.9903,
+      "sequence_id": "2026-05-19_11-27-07_squeegee_sweep_away_from_you_03_",
+      "sole_z_max_m": 0.0957,
+      "sole_z_min_m": 0.0056
+    },
+    "tier1_e29": {
+      "antipenetration_frames": "0/467",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 0,
+          "fraction": 0.0,
+          "frames": 467
+        },
+        "right": {
+          "active": 0,
+          "fraction": 0.0,
+          "frames": 467
+        }
+      },
+      "contact_fraction_either": 0.0,
+      "foot_offset_max_m": 0.0146,
+      "foot_offset_min_m": -0.0069,
+      "ground_correction_applied_m": 0.0061,
+      "ground_correction_min_m": -0.0056,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 4.768,
+      "plane_translation_z_m": 0.9071,
+      "sequence_id": "2026-06-05_18-27-40_rolling_luggage_left_foot_push_06",
+      "sole_z_max_m": 0.0837,
+      "sole_z_min_m": 0.0024
+    },
+    "tier2_e00": {
+      "antipenetration_frames": "0/778",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 2,
+          "fraction": 0.0026,
+          "frames": 778
+        },
+        "right": {
+          "active": 104,
+          "fraction": 0.1337,
+          "frames": 778
+        }
+      },
+      "contact_fraction_either": 0.1337,
+      "foot_offset_max_m": 0.0288,
+      "foot_offset_min_m": -0.0189,
+      "ground_correction_applied_m": 0.01,
+      "ground_correction_min_m": -0.0099,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 9.058,
+      "plane_translation_z_m": 0.9041,
+      "sequence_id": "2026-06-04_14-16-23_tall_bar_stool_tip_up_04",
+      "sole_z_max_m": 0.1169,
+      "sole_z_min_m": 0.002
+    },
+    "tier2_e01": {
+      "antipenetration_frames": "0/747",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 2,
+          "fraction": 0.0027,
+          "frames": 747
+        },
+        "right": {
+          "active": 0,
+          "fraction": 0.0,
+          "frames": 747
+        }
+      },
+      "contact_fraction_either": 0.0027,
+      "foot_offset_max_m": 0.0199,
+      "foot_offset_min_m": -0.0369,
+      "ground_correction_applied_m": 0.005,
+      "ground_correction_min_m": -0.0045,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 6.166,
+      "plane_translation_z_m": 0.9464,
+      "sequence_id": "2026-05-18_17-06-21_vacuum_left_lean_02",
+      "sole_z_max_m": 0.1406,
+      "sole_z_min_m": 0.0025
+    },
+    "tier2_e02": {
+      "antipenetration_frames": "0/980",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 386,
+          "fraction": 0.3939,
+          "frames": 980
+        },
+        "right": {
+          "active": 99,
+          "fraction": 0.101,
+          "frames": 980
+        }
+      },
+      "contact_fraction_either": 0.3939,
+      "foot_offset_max_m": 0.0016,
+      "foot_offset_min_m": -0.0596,
+      "ground_correction_applied_m": 0.0,
+      "ground_correction_min_m": 0.7798,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 5.095,
+      "plane_translation_z_m": 0.9518,
+      "sequence_id": "2026-06-02_10-04-42_blue_easter_basket_place_10",
+      "sole_z_max_m": 0.1519,
+      "sole_z_min_m": 0.0037
+    },
+    "tier2_e03": {
+      "antipenetration_frames": "0/781",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 0,
+          "fraction": 0.0,
+          "frames": 781
+        },
+        "right": {
+          "active": 513,
+          "fraction": 0.6569,
+          "frames": 781
+        }
+      },
+      "contact_fraction_either": 0.6569,
+      "foot_offset_max_m": 0.0223,
+      "foot_offset_min_m": -0.0055,
+      "ground_correction_applied_m": 0.0,
+      "ground_correction_min_m": 0.7806,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 11.222,
+      "plane_translation_z_m": 0.899,
+      "sequence_id": "2026-04-27_11-50-10_contigo_coffee_mug_handle_table_05",
+      "sole_z_max_m": 0.1193,
+      "sole_z_min_m": 0.0024
+    },
+    "tier2_e04": {
+      "antipenetration_frames": "0/803",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 360,
+          "fraction": 0.4483,
+          "frames": 803
+        },
+        "right": {
+          "active": 277,
+          "fraction": 0.345,
+          "frames": 803
+        }
+      },
+      "contact_fraction_either": 0.4483,
+      "foot_offset_max_m": 0.0391,
+      "foot_offset_min_m": -0.0209,
+      "ground_correction_applied_m": 0.0052,
+      "ground_correction_min_m": -0.0047,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 1.652,
+      "plane_translation_z_m": 0.8866,
+      "sequence_id": "2026-04-24_11-40-52_baseball_bat_rotate_05",
+      "sole_z_max_m": 0.1276,
+      "sole_z_min_m": 0.0017
+    },
+    "tier2_e05": {
+      "antipenetration_frames": "0/1003",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 347,
+          "fraction": 0.346,
+          "frames": 1003
+        },
+        "right": {
+          "active": 396,
+          "fraction": 0.3948,
+          "frames": 1003
+        }
+      },
+      "contact_fraction_either": 0.3948,
+      "foot_offset_max_m": -0.0037,
+      "foot_offset_min_m": -0.0638,
+      "ground_correction_applied_m": 0.0054,
+      "ground_correction_min_m": -0.0049,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 7.16,
+      "plane_translation_z_m": 0.9734,
+      "sequence_id": "2026-03-18_19-36-56_g1_box_rotate_01",
+      "sole_z_max_m": 0.1354,
+      "sole_z_min_m": 0.0033
+    },
+    "tier2_e06": {
+      "antipenetration_frames": "0/546",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 337,
+          "fraction": 0.6172,
+          "frames": 546
+        },
+        "right": {
+          "active": 202,
+          "fraction": 0.37,
+          "frames": 546
+        }
+      },
+      "contact_fraction_either": 0.6172,
+      "foot_offset_max_m": 0.0096,
+      "foot_offset_min_m": -0.022,
+      "ground_correction_applied_m": 0.0,
+      "ground_correction_min_m": 0.7812,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 8.332,
+      "plane_translation_z_m": 0.9123,
+      "sequence_id": "2026-06-01_11-26-44_monitor_rotate_05",
+      "sole_z_max_m": 0.141,
+      "sole_z_min_m": 0.0027
+    },
+    "tier2_e07": {
+      "antipenetration_frames": "0/896",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 0,
+          "fraction": 0.0,
+          "frames": 896
+        },
+        "right": {
+          "active": 695,
+          "fraction": 0.7757,
+          "frames": 896
+        }
+      },
+      "contact_fraction_either": 0.7757,
+      "foot_offset_max_m": 0.0148,
+      "foot_offset_min_m": -0.0236,
+      "ground_correction_applied_m": 0.0,
+      "ground_correction_min_m": 0.7811,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 6.832,
+      "plane_translation_z_m": 0.9119,
+      "sequence_id": "2026-05-29_15-20-43_iron_round_table_02",
+      "sole_z_max_m": 0.0973,
+      "sole_z_min_m": 0.0025
+    },
+    "tier2_e08": {
+      "antipenetration_frames": "0/708",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 92,
+          "fraction": 0.1299,
+          "frames": 708
+        },
+        "right": {
+          "active": 192,
+          "fraction": 0.2712,
+          "frames": 708
+        }
+      },
+      "contact_fraction_either": 0.2712,
+      "foot_offset_max_m": 0.029,
+      "foot_offset_min_m": -0.0075,
+      "ground_correction_applied_m": 0.0066,
+      "ground_correction_min_m": -0.0061,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 1.52,
+      "plane_translation_z_m": 0.897,
+      "sequence_id": "2026-06-05_15-08-08_skinny_wood_chair_push_10",
+      "sole_z_max_m": 0.0947,
+      "sole_z_min_m": 0.0018
+    },
+    "tier2_e09": {
+      "antipenetration_frames": "0/870",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 458,
+          "fraction": 0.5264,
+          "frames": 870
+        },
+        "right": {
+          "active": 334,
+          "fraction": 0.3839,
+          "frames": 870
+        }
+      },
+      "contact_fraction_either": 0.5264,
+      "foot_offset_max_m": 0.0362,
+      "foot_offset_min_m": -0.0067,
+      "ground_correction_applied_m": 0.0,
+      "ground_correction_min_m": 0.4684,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 9.34,
+      "plane_translation_z_m": 0.9117,
+      "sequence_id": "2026-06-04_16-45-04_big_red_bowl_under_skinny_wood_chair_03",
+      "sole_z_max_m": 0.0809,
+      "sole_z_min_m": 0.0018
+    },
+    "tier2_e10": {
+      "antipenetration_frames": "0/794",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 161,
+          "fraction": 0.2028,
+          "frames": 794
+        },
+        "right": {
+          "active": 304,
+          "fraction": 0.3829,
+          "frames": 794
+        }
+      },
+      "contact_fraction_either": 0.3829,
+      "foot_offset_max_m": -0.0072,
+      "foot_offset_min_m": -0.0577,
+      "ground_correction_applied_m": 0.01,
+      "ground_correction_min_m": -0.0215,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 0.578,
+      "plane_translation_z_m": 0.9699,
+      "sequence_id": "2026-05-01_11-36-40_white_desk_lower_to_ground_10",
+      "sole_z_max_m": 0.1638,
+      "sole_z_min_m": 0.0039
+    },
+    "tier2_e11": {
+      "antipenetration_frames": "0/901",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 456,
+          "fraction": 0.5061,
+          "frames": 901
+        },
+        "right": {
+          "active": 740,
+          "fraction": 0.8213,
+          "frames": 901
+        }
+      },
+      "contact_fraction_either": 0.8213,
+      "foot_offset_max_m": -0.0125,
+      "foot_offset_min_m": -0.0928,
+      "ground_correction_applied_m": 0.0,
+      "ground_correction_min_m": 0.882,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 2.854,
+      "plane_translation_z_m": 0.9419,
+      "sequence_id": "2026-04-24_13-56-58_light_blue_book_pick_place_09",
+      "sole_z_max_m": 0.1614,
+      "sole_z_min_m": 0.0022
+    },
+    "tier2_e12": {
+      "antipenetration_frames": "0/700",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 234,
+          "fraction": 0.3343,
+          "frames": 700
+        },
+        "right": {
+          "active": 24,
+          "fraction": 0.0343,
+          "frames": 700
+        }
+      },
+      "contact_fraction_either": 0.3343,
+      "foot_offset_max_m": 0.0072,
+      "foot_offset_min_m": -0.0705,
+      "ground_correction_applied_m": 0.0092,
+      "ground_correction_min_m": -0.0087,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 9.861,
+      "plane_translation_z_m": 0.9103,
+      "sequence_id": "2026-04-25_17-20-04_black_platform_turn_05",
+      "sole_z_max_m": 0.1489,
+      "sole_z_min_m": 0.0026
+    },
+    "tier2_e13": {
+      "antipenetration_frames": "0/922",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 294,
+          "fraction": 0.3189,
+          "frames": 922
+        },
+        "right": {
+          "active": 197,
+          "fraction": 0.2137,
+          "frames": 922
+        }
+      },
+      "contact_fraction_either": 0.3189,
+      "foot_offset_max_m": 0.0194,
+      "foot_offset_min_m": -0.0268,
+      "ground_correction_applied_m": 0.0,
+      "ground_correction_min_m": 0.8827,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 0.148,
+      "plane_translation_z_m": 0.9064,
+      "sequence_id": "2026-06-09_10-19-09_snack_box_desk_through_06",
+      "sole_z_max_m": 0.16,
+      "sole_z_min_m": 0.002
+    },
+    "tier2_e14": {
+      "antipenetration_frames": "0/993",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 109,
+          "fraction": 0.1098,
+          "frames": 993
+        },
+        "right": {
+          "active": 335,
+          "fraction": 0.3374,
+          "frames": 993
+        }
+      },
+      "contact_fraction_either": 0.3374,
+      "foot_offset_max_m": 0.0473,
+      "foot_offset_min_m": -0.0139,
+      "ground_correction_applied_m": 0.0036,
+      "ground_correction_min_m": -0.0031,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 2.222,
+      "plane_translation_z_m": 0.909,
+      "sequence_id": "2026-05-28_14-44-09_round_table_flip_08",
+      "sole_z_max_m": 0.1089,
+      "sole_z_min_m": 0.0014
+    },
+    "tier2_e15": {
+      "antipenetration_frames": "0/715",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 0,
+          "fraction": 0.0,
+          "frames": 715
+        },
+        "right": {
+          "active": 164,
+          "fraction": 0.2294,
+          "frames": 715
+        }
+      },
+      "contact_fraction_either": 0.2294,
+      "foot_offset_max_m": -0.0079,
+      "foot_offset_min_m": -0.0503,
+      "ground_correction_applied_m": 0.0,
+      "ground_correction_min_m": 0.0068,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 4.25,
+      "plane_translation_z_m": 0.9761,
+      "sequence_id": "2026-05-06_11-06-15_wet_floor_sign_pick_place_ground_08",
+      "sole_z_max_m": 0.158,
+      "sole_z_min_m": 0.0044
+    },
+    "tier2_e16": {
+      "antipenetration_frames": "0/477",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 109,
+          "fraction": 0.2285,
+          "frames": 477
+        },
+        "right": {
+          "active": 0,
+          "fraction": 0.0,
+          "frames": 477
+        }
+      },
+      "contact_fraction_either": 0.2285,
+      "foot_offset_max_m": 0.0065,
+      "foot_offset_min_m": -0.04,
+      "ground_correction_applied_m": 0.0,
+      "ground_correction_min_m": 0.8768,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 2.912,
+      "plane_translation_z_m": 0.9055,
+      "sequence_id": "2026-03-12_15-06-36_spray_bottle_left_desk_ground_02",
+      "sole_z_max_m": 0.1275,
+      "sole_z_min_m": 0.0025
+    },
+    "tier2_e17": {
+      "antipenetration_frames": "0/440",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 108,
+          "fraction": 0.2455,
+          "frames": 440
+        },
+        "right": {
+          "active": 176,
+          "fraction": 0.4,
+          "frames": 440
+        }
+      },
+      "contact_fraction_either": 0.4,
+      "foot_offset_max_m": 0.0119,
+      "foot_offset_min_m": -0.0345,
+      "ground_correction_applied_m": 0.01,
+      "ground_correction_min_m": -0.0241,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 6.007,
+      "plane_translation_z_m": 0.9334,
+      "sequence_id": "2026-05-01_17-04-55_traffic_cone_ground_table_02",
+      "sole_z_max_m": 0.1361,
+      "sole_z_min_m": 0.0034
+    },
+    "tier2_e18": {
+      "antipenetration_frames": "0/858",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 0,
+          "fraction": 0.0,
+          "frames": 858
+        },
+        "right": {
+          "active": 121,
+          "fraction": 0.141,
+          "frames": 858
+        }
+      },
+      "contact_fraction_either": 0.141,
+      "foot_offset_max_m": -0.0217,
+      "foot_offset_min_m": -0.0595,
+      "ground_correction_applied_m": 0.0041,
+      "ground_correction_min_m": -0.0036,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 8.164,
+      "plane_translation_z_m": 0.9728,
+      "sequence_id": "2026-05-06_10-00-19_blue_trash_can_drag_sideways_08",
+      "sole_z_max_m": 0.1347,
+      "sole_z_min_m": 0.0049
+    },
+    "tier2_e19": {
+      "antipenetration_frames": "0/886",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 70,
+          "fraction": 0.079,
+          "frames": 886
+        },
+        "right": {
+          "active": 46,
+          "fraction": 0.0519,
+          "frames": 886
+        }
+      },
+      "contact_fraction_either": 0.079,
+      "foot_offset_max_m": -0.0365,
+      "foot_offset_min_m": -0.0928,
+      "ground_correction_applied_m": 0.0,
+      "ground_correction_min_m": 0.0002,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 3.187,
+      "plane_translation_z_m": 0.9775,
+      "sequence_id": "2026-05-19_10-19-48_cane_swing_05",
+      "sole_z_max_m": 0.1367,
+      "sole_z_min_m": 0.0055
+    },
+    "tier2_e20": {
+      "antipenetration_frames": "0/553",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 0,
+          "fraction": 0.0,
+          "frames": 553
+        },
+        "right": {
+          "active": 276,
+          "fraction": 0.4991,
+          "frames": 553
+        }
+      },
+      "contact_fraction_either": 0.4991,
+      "foot_offset_max_m": 0.0219,
+      "foot_offset_min_m": -0.0339,
+      "ground_correction_applied_m": 0.0,
+      "ground_correction_min_m": 0.7986,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 6.909,
+      "plane_translation_z_m": 0.9542,
+      "sequence_id": "2026-06-08_16-57-34_rice_cooker_clockwise_04",
+      "sole_z_max_m": 0.1226,
+      "sole_z_min_m": 0.0028
+    },
+    "tier2_e21": {
+      "antipenetration_frames": "0/678",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 317,
+          "fraction": 0.4676,
+          "frames": 678
+        },
+        "right": {
+          "active": 287,
+          "fraction": 0.4233,
+          "frames": 678
+        }
+      },
+      "contact_fraction_either": 0.4676,
+      "foot_offset_max_m": -0.0086,
+      "foot_offset_min_m": -0.052,
+      "ground_correction_applied_m": 0.0079,
+      "ground_correction_min_m": -0.0074,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 4.101,
+      "plane_translation_z_m": 0.9617,
+      "sequence_id": "2026-04-29_11-53-57_tall_bar_stool_pull_08",
+      "sole_z_max_m": 0.1237,
+      "sole_z_min_m": 0.004
+    },
+    "tier2_e22": {
+      "antipenetration_frames": "0/719",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 0,
+          "fraction": 0.0,
+          "frames": 719
+        },
+        "right": {
+          "active": 129,
+          "fraction": 0.1794,
+          "frames": 719
+        }
+      },
+      "contact_fraction_either": 0.1794,
+      "foot_offset_max_m": 0.0272,
+      "foot_offset_min_m": -0.0177,
+      "ground_correction_applied_m": 0.0015,
+      "ground_correction_min_m": -0.001,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 5.371,
+      "plane_translation_z_m": 0.9159,
+      "sequence_id": "2026-05-22_16-52-36_step_ladder_drag_03",
+      "sole_z_max_m": 0.1601,
+      "sole_z_min_m": 0.0022
+    },
+    "tier2_e23": {
+      "antipenetration_frames": "0/946",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 461,
+          "fraction": 0.4873,
+          "frames": 946
+        },
+        "right": {
+          "active": 494,
+          "fraction": 0.5222,
+          "frames": 946
+        }
+      },
+      "contact_fraction_either": 0.5222,
+      "foot_offset_max_m": -0.0278,
+      "foot_offset_min_m": -0.0815,
+      "ground_correction_applied_m": 0.0093,
+      "ground_correction_min_m": -0.0088,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 4.413,
+      "plane_translation_z_m": 0.9607,
+      "sequence_id": "2026-06-03_15-08-03_toy_stroller_back_forth_ground_04",
+      "sole_z_max_m": 0.0696,
+      "sole_z_min_m": 0.0045
+    },
+    "tier2_e24": {
+      "antipenetration_frames": "0/748",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 0,
+          "fraction": 0.0,
+          "frames": 748
+        },
+        "right": {
+          "active": 461,
+          "fraction": 0.6163,
+          "frames": 748
+        }
+      },
+      "contact_fraction_either": 0.6163,
+      "foot_offset_max_m": 0.021,
+      "foot_offset_min_m": -0.0544,
+      "ground_correction_applied_m": 0.0,
+      "ground_correction_min_m": 0.0007,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 9.323,
+      "plane_translation_z_m": 0.6067,
+      "sequence_id": "2026-05-29_15-43-20_watering_can_pour_right_02",
+      "sole_z_max_m": 0.141,
+      "sole_z_min_m": 0.0016
+    },
+    "tier2_e25": {
+      "antipenetration_frames": "0/859",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 297,
+          "fraction": 0.3458,
+          "frames": 859
+        },
+        "right": {
+          "active": 438,
+          "fraction": 0.5099,
+          "frames": 859
+        }
+      },
+      "contact_fraction_either": 0.5099,
+      "foot_offset_max_m": -0.0575,
+      "foot_offset_min_m": -0.0914,
+      "ground_correction_applied_m": 0.0,
+      "ground_correction_min_m": 0.7832,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 1.766,
+      "plane_translation_z_m": 1.0008,
+      "sequence_id": "2026-03-20_11-59-57_cyan_water_bottle_rotate_01",
+      "sole_z_max_m": 0.1066,
+      "sole_z_min_m": 0.0063
+    },
+    "tier2_e26": {
+      "antipenetration_frames": "0/669",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 188,
+          "fraction": 0.281,
+          "frames": 669
+        },
+        "right": {
+          "active": 184,
+          "fraction": 0.275,
+          "frames": 669
+        }
+      },
+      "contact_fraction_either": 0.281,
+      "foot_offset_max_m": 0.005,
+      "foot_offset_min_m": -0.0379,
+      "ground_correction_applied_m": 0.0,
+      "ground_correction_min_m": 0.0001,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 7.182,
+      "plane_translation_z_m": 0.9041,
+      "sequence_id": "2026-06-05_16-05-08_skateboard_rotate_ground_10",
+      "sole_z_max_m": 0.082,
+      "sole_z_min_m": 0.0029
+    },
+    "tier2_e27": {
+      "antipenetration_frames": "0/565",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 133,
+          "fraction": 0.2354,
+          "frames": 565
+        },
+        "right": {
+          "active": 262,
+          "fraction": 0.4637,
+          "frames": 565
+        }
+      },
+      "contact_fraction_either": 0.4637,
+      "foot_offset_max_m": -0.0191,
+      "foot_offset_min_m": -0.0654,
+      "ground_correction_applied_m": 0.0,
+      "ground_correction_min_m": 0.0028,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 1.975,
+      "plane_translation_z_m": 0.963,
+      "sequence_id": "2026-05-01_11-15-05_woven_basket_ground_desk_10",
+      "sole_z_max_m": 0.164,
+      "sole_z_min_m": 0.0041
+    },
+    "tier2_e28": {
+      "antipenetration_frames": "0/988",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 29,
+          "fraction": 0.0294,
+          "frames": 988
+        },
+        "right": {
+          "active": 12,
+          "fraction": 0.0121,
+          "frames": 988
+        }
+      },
+      "contact_fraction_either": 0.0294,
+      "foot_offset_max_m": -0.0436,
+      "foot_offset_min_m": -0.0932,
+      "ground_correction_applied_m": 0.0,
+      "ground_correction_min_m": 0.0315,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 2.443,
+      "plane_translation_z_m": 0.9902,
+      "sequence_id": "2026-05-19_11-27-07_squeegee_sweep_away_from_you_03_",
+      "sole_z_max_m": 0.0905,
+      "sole_z_min_m": 0.0057
+    },
+    "tier2_e29": {
+      "antipenetration_frames": "0/467",
+      "antipenetration_lift_max_m": 0.0,
+      "contact": {
+        "left": {
+          "active": 19,
+          "fraction": 0.0407,
+          "frames": 467
+        },
+        "right": {
+          "active": 7,
+          "fraction": 0.015,
+          "frames": 467
+        }
+      },
+      "contact_fraction_either": 0.0407,
+      "foot_offset_max_m": 0.0212,
+      "foot_offset_min_m": -0.0154,
+      "ground_correction_applied_m": 0.0059,
+      "ground_correction_min_m": -0.0054,
+      "grounding_plane": "reconstructed",
+      "plane_tilt_deg": 4.708,
+      "plane_translation_z_m": 0.9064,
+      "sequence_id": "2026-06-05_18-27-40_rolling_luggage_left_foot_push_06",
+      "sole_z_max_m": 0.1059,
+      "sole_z_min_m": 0.0022
+    }
+  },
+  "summary": {
+    "clips": 60,
+    "clips_below_contact_floor": [
+      "tier1_e29",
+      "tier2_e01"
+    ],
+    "contact_fraction_either_mean": 0.4723,
+    "contact_fraction_either_min": 0.0,
+    "ground_correction_applied_max_m": 0.01,
+    "grounding_plane_sources": {
+      "reconstructed": 60
+    },
+    "plane_tilt_deg_max": 11.766,
+    "sole_z_max_m_worst": 0.1671,
+    "sole_z_min_m_worst": 0.0014,
+    "tier2_noise_contact_cost": {
+      "contact_mean_delta": -0.2043,
+      "contact_mean_tier1": 0.5744,
+      "contact_mean_tier2": 0.3701,
+      "delta_per_episode": {
+        "e00": -0.4409,
+        "e01": -0.4819,
+        "e02": -0.0469,
+        "e03": -0.0486,
+        "e04": -0.2429,
+        "e05": -0.2752,
+        "e06": -0.0092,
+        "e07": -0.0022,
+        "e08": -0.0819,
+        "e09": -0.1598,
+        "e10": -0.2229,
+        "e11": -0.0333,
+        "e12": -0.2943,
+        "e13": -0.0629,
+        "e14": -0.438,
+        "e15": -0.4349,
+        "e16": -0.1866,
+        "e17": -0.0977,
+        "e18": -0.3031,
+        "e19": -0.3713,
+        "e20": -0.1067,
+        "e21": -0.1828,
+        "e22": -0.4159,
+        "e23": -0.3171,
+        "e24": -0.0749,
+        "e25": -0.007,
+        "e26": -0.1136,
+        "e27": -0.0478,
+        "e28": -0.67,
+        "e29": 0.0407
+      },
+      "episodes_degraded": 26,
+      "episodes_lost_over_half_of_contact": [
+        "e00",
+        "e01",
+        "e14",
+        "e15",
+        "e18",
+        "e19",
+        "e22",
+        "e28"
+      ],
+      "paired_episodes": 30
+    }
+  }
+}

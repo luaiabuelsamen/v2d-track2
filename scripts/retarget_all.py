@@ -1,0 +1,210 @@
+"""Retarget every released Track 2 episode to G1 on CPU, validating each clip.
+
+Per episode: build the sequence folder `soma_to_g1.py` wants, retarget it, validate the result
+against the released object trajectory, then delete the (regenerable) input folder, because the
+GLB-to-OBJ conversion it holds is ~22 MB and the Jetson has a 20 GB disk floor.
+
+Resumable: an episode whose output parquet already exists and validates is skipped.
+
+Usage:
+  python scripts/retarget_all.py --dataset-root DATA --repo REPO --soma-root SOMA \
+      --seq-root SEQ --out-root OUT --tiers tier1 tier2 --workers 2
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import shutil
+import subprocess
+import sys
+import time
+from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+PYTHON = str(HERE.parent / ".venv311" / "bin" / "python")
+TIER_DIRS = {"tier1": "tier_1_multiview_caption", "tier2": "tier_2_synthetic_noise"}
+DISK_FLOOR_GB = 20.0
+MEM_FLOOR_MB = 2500.0
+
+
+def free_disk_gb(path: Path) -> float:
+    stat = os.statvfs(path)
+    return stat.f_bavail * stat.f_frsize / 1e9
+
+
+def available_mem_mb() -> float:
+    for line in Path("/proc/meminfo").read_text().splitlines():
+        if line.startswith("MemAvailable:"):
+            return float(line.split()[1]) / 1024.0
+    return float("inf")
+
+
+def check_floors(path: Path) -> str | None:
+    disk = free_disk_gb(path)
+    if disk < DISK_FLOOR_GB:
+        return f"disk {disk:.1f} GB is under the {DISK_FLOOR_GB} GB floor"
+    memory = available_mem_mb()
+    if memory < MEM_FLOOR_MB:
+        return f"MemAvailable {memory:.0f} MB is under the {MEM_FLOOR_MB:.0f} MB floor"
+    return None
+
+
+def run(command: list[str], log: Path, env: dict | None = None) -> int:
+    with log.open("ab") as handle:
+        handle.write(b"\n$ " + " ".join(command).encode() + b"\n")
+        handle.flush()
+        return subprocess.call(command, stdout=handle, stderr=subprocess.STDOUT, env=env)
+
+
+def episode_metadata(dataset_root: Path, tier: str) -> list[dict]:
+    path = dataset_root / "track_2" / TIER_DIRS[tier] / "meta" / "episodes_metadata.jsonl"
+    rows = [json.loads(l) for l in path.read_text().splitlines() if l.strip()]
+    return sorted(rows, key=lambda r: r["episode_index"])
+
+
+def process(args, tier: str, row: dict, abort: dict) -> dict:
+    episode = int(row["episode_index"])
+    sequence_id = row["sequence_id"]
+    tag = f"{tier}/e{episode:02d}"
+    seq_root = args.seq_root / tier
+    out_root = args.out_root / tier
+    sequence_dir = seq_root / f"sequence_id={sequence_id}"
+    out_parquet = out_root / "whole_body" / "soma" / f"sequence_id={sequence_id}" / "robot_name=g1" / "data.parquet"
+    log = args.log_dir / f"{tier}_e{episode:02d}.log"
+    log.parent.mkdir(parents=True, exist_ok=True)
+    record = {"tier": tier, "episode": episode, "sequence_id": sequence_id, "object": row["object"]}
+
+    if abort.get("reason"):
+        return {**record, "status": "aborted", "detail": abort["reason"]}
+    reason = check_floors(args.out_root)
+    if reason:
+        abort["reason"] = reason
+        return {**record, "status": "aborted", "detail": reason}
+
+    validation_out = args.validation_dir / f"{tier}_e{episode:02d}.json"
+    if out_parquet.is_file() and validation_out.is_file():
+        try:
+            previous = json.loads(validation_out.read_text())
+            if previous.get("pass"):
+                return {**record, "status": "skipped", **_summary(previous)}
+        except json.JSONDecodeError:
+            pass
+
+    started = time.time()
+    # 1. Build the sequence folder.
+    code = run(
+        [PYTHON, "-I", str(HERE / "make_soma_sequences.py"),
+         "--dataset-root", str(args.dataset_root), "--tier", tier,
+         "--out", str(seq_root), "--soma-neutral", str(args.soma_root / "SOMA_neutral.npz"),
+         "--episodes", str(episode)],
+        log,
+    )
+    if code != 0:
+        return {**record, "status": "convert_failed", "log": str(log)}
+
+    # 2. Retarget. Keep the thread count low: several of these run at once.
+    env = dict(os.environ, OMP_NUM_THREADS=str(args.threads), MKL_NUM_THREADS=str(args.threads))
+    env.pop("PYTHONPATH", None)  # a PyTorch source tree on the global path shadows the venv
+    code = run(
+        [PYTHON, "-I", str(args.repo / "robotic_grounding" / "scripts" / "retarget" / "soma_to_g1.py"),
+         str(sequence_dir), "--save",
+         "--soma-data-root", str(args.soma_root),
+         "--motion-root", str(out_root),
+         "--fps", "30"],
+        log, env,
+    )
+    if code != 0:
+        return {**record, "status": "retarget_failed", "log": str(log)}
+
+    # 3. Validate against the released trajectory.
+    code = run(
+        [PYTHON, "-I", str(HERE / "validate_retarget.py"),
+         "--motion-parquet", str(out_parquet),
+         "--dataset-root", str(args.dataset_root),
+         "--episode", str(episode), "--tier", tier,
+         "-o", str(validation_out)],
+        log,
+    )
+    elapsed = round(time.time() - started, 1)
+    if not validation_out.is_file():
+        return {**record, "status": "validate_failed", "seconds": elapsed, "log": str(log)}
+    validation = json.loads(validation_out.read_text())
+
+    # 4. Drop the regenerable input folder; its mesh conversion is the bulk of the disk cost.
+    if validation.get("pass") and not args.keep_sequences:
+        shutil.rmtree(sequence_dir, ignore_errors=True)
+
+    status = "ok" if (code == 0 and validation.get("pass")) else "validation_failed"
+    print(f"[{tag}] {status} in {elapsed}s  residual={validation.get('rigid_fit_residual_mm')}mm "
+          f"orient={validation.get('orientation_residual_max_deg')}deg", flush=True)
+    return {**record, "status": status, "seconds": elapsed, **_summary(validation)}
+
+
+def _summary(validation: dict) -> dict:
+    return {
+        "frames": validation.get("frames_compared"),
+        "rigid_fit_residual_mm": validation.get("rigid_fit_residual_mm"),
+        "orientation_residual_max_deg": validation.get("orientation_residual_max_deg"),
+        "relative_rotation_max_diff_deg": validation.get("relative_rotation_max_diff_deg"),
+        "pass": validation.get("pass"),
+    }
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--dataset-root", type=Path, required=True)
+    parser.add_argument("--repo", type=Path, required=True, help="sparse checkout holding robotic_grounding/")
+    parser.add_argument("--soma-root", type=Path, required=True, help="staged body_models/soma")
+    parser.add_argument("--seq-root", type=Path, required=True)
+    parser.add_argument("--out-root", type=Path, required=True)
+    parser.add_argument("--log-dir", type=Path, required=True)
+    parser.add_argument("--validation-dir", type=Path, required=True)
+    parser.add_argument("--tiers", nargs="+", default=["tier1"], choices=sorted(TIER_DIRS))
+    parser.add_argument("--episodes", type=int, nargs="*", default=None)
+    parser.add_argument("--workers", type=int, default=2)
+    parser.add_argument("--threads", type=int, default=2, help="OMP threads per worker")
+    parser.add_argument("--keep-sequences", action="store_true")
+    parser.add_argument("-o", "--out", type=Path)
+    args = parser.parse_args()
+    for directory in (args.log_dir, args.validation_dir, args.out_root, args.seq_root):
+        directory.mkdir(parents=True, exist_ok=True)
+
+    reason = check_floors(args.out_root)
+    if reason:
+        raise SystemExit(f"refusing to start: {reason}")
+
+    abort: dict = {}
+    results = []
+    for tier in args.tiers:
+        rows = [r for r in episode_metadata(args.dataset_root, tier)
+                if args.episodes is None or int(r["episode_index"]) in args.episodes]
+        print(f"\n=== {tier}: {len(rows)} episodes, {args.workers} workers ===", flush=True)
+        with ThreadPoolExecutor(max_workers=args.workers) as pool:
+            results += list(pool.map(lambda row: process(args, tier, row, abort), rows))
+
+    counts: dict[str, int] = {}
+    for item in results:
+        counts[item["status"]] = counts.get(item["status"], 0) + 1
+    passed = [r for r in results if r["status"] in ("ok", "skipped")]
+    summary = {
+        "counts": counts,
+        "episodes_total": len(results),
+        "episodes_passed": len(passed),
+        "worst_rigid_fit_residual_mm": max((r.get("rigid_fit_residual_mm") or 0) for r in passed) if passed else None,
+        "worst_orientation_residual_deg": max((r.get("orientation_residual_max_deg") or 0) for r in passed) if passed else None,
+        "abort_reason": abort.get("reason"),
+        "free_disk_gb_after": round(free_disk_gb(Path.cwd()), 1),
+    }
+    print("\n" + json.dumps(summary, indent=2))
+    if args.out:
+        args.out.parent.mkdir(parents=True, exist_ok=True)
+        args.out.write_text(json.dumps({"summary": summary, "episodes": results}, indent=2, sort_keys=True) + "\n")
+        print(f"wrote {args.out}")
+    sys.exit(0 if summary["episodes_passed"] == summary["episodes_total"] else 1)
+
+
+if __name__ == "__main__":
+    main()
