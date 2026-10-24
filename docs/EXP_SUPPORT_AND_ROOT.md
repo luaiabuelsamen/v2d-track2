@@ -251,3 +251,47 @@ from 25.65° to 5.85° mean orientation error, **771 of 781 frames better and no
 ΔAUC +0.1459. **e20 `rice_cooker`** — the clip that failed T4 — is simply near-neutral: −0.65°
 overall with 211 frames worse and 279 better, a correction that neither helps nor hurts rather
 than one that failed.
+
+## The root cleaner fails at its own task
+
+Before any contact arm ran, the obvious direct question: does the foot-planting cleaner actually
+remove Tier 2's root perturbation? It is cheap to ask — compare the cleaned root against the
+Tier 1 root, parquets and npz only, no body model — and the answer is no
+(`results/root_perturbation_removed.json`; analysis against the clean reference, which the
+cleaner never sees).
+
+| | before | after | change | clips improved |
+|---|---|---|---|---|
+| root rotation error | 5.174° | **5.584°** | **−7.9 %** | **3 / 30** |
+| root translation error | 1.087 cm | **2.102 cm** | **−93.3 %** | **0 / 30** |
+
+It makes the thing it was built to fix **worse**, and the translation nearly twice as bad on
+every single clip. The cleaner runs on all 30 (mean correction 1.30°, mean body shift 1.67 cm,
+34 % of frames in stance), so this is not a coverage failure. It is the estimator being wrong.
+
+**Why, and it is the interesting part.** The constraint "a planted foot does not move" is a
+statement about *relative* motion, and its reference pose is the **median of the noisy foot
+positions over the segment**. That median is itself displaced by the mean perturbation across
+that segment, so pinning the foot to it removes within-segment wobble while preserving — and
+redistributing into the root — the segment-mean error. Worse, where the detector calls stance on
+frames the foot genuinely moves through, pinning injects an error that was not there. The
+translation damage exceeding the rotation damage fits exactly: the Kabsch fit absorbs genuine
+foot travel into the root translation.
+
+The object cleaner does not have this problem, and the contrast is the lesson. **Its reference is
+external to the noisy data** — the floor's normal and a support surface's height are geometric
+facts about the room, independent of the trajectory being cleaned. The root cleaner has no
+external reference at all, only an internal consistency condition, and an internal condition
+cannot recover an absolute placement error. The one external reference the body *has* is the
+ground plane, and it is expressed in a frame with no published transform to the body's own — the
+gap that drove this design in the first place.
+
+So: **a cleaner needs an external reference, not merely a self-consistency condition.** That is
+the transferable result, and it says a root cleaner is a worse-posed problem than it looked, not
+that this implementation needs tuning.
+
+**The pre-registered contact arm was run anyway.** R2 asks for the paired contact difference
+between `table_root` and `table`, and declining to run a committed test because I expect it to
+fail is precisely the bias pre-registration exists to prevent. It is also not a foregone
+conclusion: contact depends on hand-to-object geometry, and a body further from the clean
+reference overall could still happen to place the hands better.

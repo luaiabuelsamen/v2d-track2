@@ -1,0 +1,707 @@
+{
+  "per_episode": {
+    "0": {
+      "body_shift_cm_max": 12.6378,
+      "body_shift_cm_mean": 1.4466,
+      "corrected_frames": 384,
+      "correction_deg_max": 10.732,
+      "correction_deg_mean": 0.866,
+      "frames": 778,
+      "object": "tall_bar_stool",
+      "rejected_frames": 0,
+      "stance_frames": [
+        256,
+        258
+      ],
+      "stance_segments": [
+        26,
+        28
+      ],
+      "stance_speed_limit_m_per_s": [
+        0.04162,
+        0.04531
+      ],
+      "status": "cleaned"
+    },
+    "1": {
+      "body_shift_cm_max": 8.9724,
+      "body_shift_cm_mean": 1.195,
+      "corrected_frames": 346,
+      "correction_deg_max": 5.807,
+      "correction_deg_mean": 0.966,
+      "frames": 747,
+      "object": "vacuum",
+      "rejected_frames": 0,
+      "stance_frames": [
+        251,
+        240
+      ],
+      "stance_segments": [
+        24,
+        24
+      ],
+      "stance_speed_limit_m_per_s": [
+        0.04557,
+        0.04005
+      ],
+      "status": "cleaned"
+    },
+    "2": {
+      "body_shift_cm_max": 14.146,
+      "body_shift_cm_mean": 1.1471,
+      "corrected_frames": 441,
+      "correction_deg_max": 5.505,
+      "correction_deg_mean": 0.806,
+      "frames": 980,
+      "object": "blue_easter_basket",
+      "rejected_frames": 0,
+      "stance_frames": [
+        328,
+        347
+      ],
+      "stance_segments": [
+        28,
+        27
+      ],
+      "stance_speed_limit_m_per_s": [
+        0.03848,
+        0.03788
+      ],
+      "status": "cleaned"
+    },
+    "3": {
+      "body_shift_cm_max": 2.1866,
+      "body_shift_cm_mean": 0.3206,
+      "corrected_frames": 264,
+      "correction_deg_max": 1.522,
+      "correction_deg_mean": 0.396,
+      "frames": 781,
+      "object": "contigo_coffee_mug",
+      "rejected_frames": 0,
+      "stance_frames": [
+        213,
+        215
+      ],
+      "stance_segments": [
+        22,
+        26
+      ],
+      "stance_speed_limit_m_per_s": [
+        0.03296,
+        0.03454
+      ],
+      "status": "cleaned"
+    },
+    "4": {
+      "body_shift_cm_max": 24.5976,
+      "body_shift_cm_mean": 2.1289,
+      "corrected_frames": 419,
+      "correction_deg_max": 14.782,
+      "correction_deg_mean": 1.625,
+      "frames": 803,
+      "object": "baseball_bat",
+      "rejected_frames": 2,
+      "stance_frames": [
+        277,
+        297
+      ],
+      "stance_segments": [
+        21,
+        24
+      ],
+      "stance_speed_limit_m_per_s": [
+        0.0427,
+        0.03985
+      ],
+      "status": "cleaned"
+    },
+    "5": {
+      "body_shift_cm_max": 17.4112,
+      "body_shift_cm_mean": 1.9839,
+      "corrected_frames": 485,
+      "correction_deg_max": 14.032,
+      "correction_deg_mean": 1.197,
+      "frames": 1003,
+      "object": "big_black_box",
+      "rejected_frames": 0,
+      "stance_frames": [
+        362,
+        359
+      ],
+      "stance_segments": [
+        30,
+        30
+      ],
+      "stance_speed_limit_m_per_s": [
+        0.05231,
+        0.05157
+      ],
+      "status": "cleaned"
+    },
+    "6": {
+      "body_shift_cm_max": 17.3626,
+      "body_shift_cm_mean": 1.4694,
+      "corrected_frames": 295,
+      "correction_deg_max": 6.324,
+      "correction_deg_mean": 1.114,
+      "frames": 546,
+      "object": "monitor",
+      "rejected_frames": 0,
+      "stance_frames": [
+        194,
+        199
+      ],
+      "stance_segments": [
+        18,
+        16
+      ],
+      "stance_speed_limit_m_per_s": [
+        0.05364,
+        0.06232
+      ],
+      "status": "cleaned"
+    },
+    "7": {
+      "body_shift_cm_max": 5.864,
+      "body_shift_cm_mean": 0.4114,
+      "corrected_frames": 346,
+      "correction_deg_max": 2.145,
+      "correction_deg_mean": 0.384,
+      "frames": 896,
+      "object": "iron",
+      "rejected_frames": 0,
+      "stance_frames": [
+        256,
+        274
+      ],
+      "stance_segments": [
+        28,
+        27
+      ],
+      "stance_speed_limit_m_per_s": [
+        0.02226,
+        0.02466
+      ],
+      "status": "cleaned"
+    },
+    "8": {
+      "body_shift_cm_max": 28.0399,
+      "body_shift_cm_mean": 1.2825,
+      "corrected_frames": 335,
+      "correction_deg_max": 9.928,
+      "correction_deg_mean": 1.017,
+      "frames": 708,
+      "object": "skinny_wood_chair",
+      "rejected_frames": 0,
+      "stance_frames": [
+        230,
+        222
+      ],
+      "stance_segments": [
+        18,
+        21
+      ],
+      "stance_speed_limit_m_per_s": [
+        0.0432,
+        0.04574
+      ],
+      "status": "cleaned"
+    },
+    "9": {
+      "body_shift_cm_max": 12.4061,
+      "body_shift_cm_mean": 1.4309,
+      "corrected_frames": 428,
+      "correction_deg_max": 7.936,
+      "correction_deg_mean": 1.301,
+      "frames": 870,
+      "object": "big_red_bowl",
+      "rejected_frames": 0,
+      "stance_frames": [
+        320,
+        300
+      ],
+      "stance_segments": [
+        15,
+        24
+      ],
+      "stance_speed_limit_m_per_s": [
+        0.03691,
+        0.03394
+      ],
+      "status": "cleaned"
+    },
+    "10": {
+      "body_shift_cm_max": 13.9696,
+      "body_shift_cm_mean": 1.4126,
+      "corrected_frames": 388,
+      "correction_deg_max": 10.212,
+      "correction_deg_mean": 1.292,
+      "frames": 794,
+      "object": "white_desk",
+      "rejected_frames": 0,
+      "stance_frames": [
+        272,
+        279
+      ],
+      "stance_segments": [
+        23,
+        26
+      ],
+      "stance_speed_limit_m_per_s": [
+        0.0502,
+        0.04486
+      ],
+      "status": "cleaned"
+    },
+    "11": {
+      "body_shift_cm_max": 13.8791,
+      "body_shift_cm_mean": 1.2639,
+      "corrected_frames": 394,
+      "correction_deg_max": 6.952,
+      "correction_deg_mean": 0.985,
+      "frames": 901,
+      "object": "light_blue_book",
+      "rejected_frames": 0,
+      "stance_frames": [
+        302,
+        294
+      ],
+      "stance_segments": [
+        26,
+        25
+      ],
+      "stance_speed_limit_m_per_s": [
+        0.02798,
+        0.02731
+      ],
+      "status": "cleaned"
+    },
+    "12": {
+      "body_shift_cm_max": 13.6874,
+      "body_shift_cm_mean": 1.1394,
+      "corrected_frames": 311,
+      "correction_deg_max": 8.815,
+      "correction_deg_mean": 1.155,
+      "frames": 700,
+      "object": "black_platform",
+      "rejected_frames": 0,
+      "stance_frames": [
+        214,
+        242
+      ],
+      "stance_segments": [
+        19,
+        23
+      ],
+      "stance_speed_limit_m_per_s": [
+        0.04116,
+        0.0408
+      ],
+      "status": "cleaned"
+    },
+    "13": {
+      "body_shift_cm_max": 14.2335,
+      "body_shift_cm_mean": 0.9791,
+      "corrected_frames": 432,
+      "correction_deg_max": 5.06,
+      "correction_deg_mean": 0.719,
+      "frames": 922,
+      "object": "snack_box",
+      "rejected_frames": 0,
+      "stance_frames": [
+        315,
+        332
+      ],
+      "stance_segments": [
+        27,
+        30
+      ],
+      "stance_speed_limit_m_per_s": [
+        0.0393,
+        0.03852
+      ],
+      "status": "cleaned"
+    },
+    "14": {
+      "body_shift_cm_max": 11.093,
+      "body_shift_cm_mean": 1.3835,
+      "corrected_frames": 454,
+      "correction_deg_max": 5.724,
+      "correction_deg_mean": 0.756,
+      "frames": 993,
+      "object": "round_table",
+      "rejected_frames": 0,
+      "stance_frames": [
+        336,
+        321
+      ],
+      "stance_segments": [
+        28,
+        30
+      ],
+      "stance_speed_limit_m_per_s": [
+        0.03739,
+        0.04069
+      ],
+      "status": "cleaned"
+    },
+    "15": {
+      "body_shift_cm_max": 31.0748,
+      "body_shift_cm_mean": 3.9424,
+      "corrected_frames": 367,
+      "correction_deg_max": 14.425,
+      "correction_deg_mean": 2.855,
+      "frames": 715,
+      "object": "wet_floor_sign",
+      "rejected_frames": 34,
+      "stance_frames": [
+        259,
+        266
+      ],
+      "stance_segments": [
+        15,
+        14
+      ],
+      "stance_speed_limit_m_per_s": [
+        0.07441,
+        0.05739
+      ],
+      "status": "cleaned"
+    },
+    "16": {
+      "body_shift_cm_max": 19.4562,
+      "body_shift_cm_mean": 3.1047,
+      "corrected_frames": 268,
+      "correction_deg_max": 10.295,
+      "correction_deg_mean": 2.796,
+      "frames": 477,
+      "object": "spray_bottle",
+      "rejected_frames": 0,
+      "stance_frames": [
+        172,
+        169
+      ],
+      "stance_segments": [
+        11,
+        14
+      ],
+      "stance_speed_limit_m_per_s": [
+        0.07459,
+        0.07199
+      ],
+      "status": "cleaned"
+    },
+    "17": {
+      "body_shift_cm_max": 31.4171,
+      "body_shift_cm_mean": 3.7422,
+      "corrected_frames": 224,
+      "correction_deg_max": 13.566,
+      "correction_deg_mean": 2.716,
+      "frames": 440,
+      "object": "traffic_cone",
+      "rejected_frames": 0,
+      "stance_frames": [
+        149,
+        163
+      ],
+      "stance_segments": [
+        10,
+        12
+      ],
+      "stance_speed_limit_m_per_s": [
+        0.07708,
+        0.07963
+      ],
+      "status": "cleaned"
+    },
+    "18": {
+      "body_shift_cm_max": 14.3922,
+      "body_shift_cm_mean": 1.4478,
+      "corrected_frames": 434,
+      "correction_deg_max": 6.861,
+      "correction_deg_mean": 1.418,
+      "frames": 858,
+      "object": "blue_trash_can",
+      "rejected_frames": 0,
+      "stance_frames": [
+        294,
+        308
+      ],
+      "stance_segments": [
+        23,
+        26
+      ],
+      "stance_speed_limit_m_per_s": [
+        0.04293,
+        0.04802
+      ],
+      "status": "cleaned"
+    },
+    "19": {
+      "body_shift_cm_max": 29.4332,
+      "body_shift_cm_mean": 2.5366,
+      "corrected_frames": 424,
+      "correction_deg_max": 13.973,
+      "correction_deg_mean": 1.651,
+      "frames": 886,
+      "object": "cane",
+      "rejected_frames": 2,
+      "stance_frames": [
+        334,
+        324
+      ],
+      "stance_segments": [
+        17,
+        16
+      ],
+      "stance_speed_limit_m_per_s": [
+        0.03334,
+        0.03414
+      ],
+      "status": "cleaned"
+    },
+    "20": {
+      "body_shift_cm_max": 10.0111,
+      "body_shift_cm_mean": 0.8219,
+      "corrected_frames": 215,
+      "correction_deg_max": 7.808,
+      "correction_deg_mean": 0.63,
+      "frames": 553,
+      "object": "rice_cooker",
+      "rejected_frames": 0,
+      "stance_frames": [
+        180,
+        177
+      ],
+      "stance_segments": [
+        22,
+        18
+      ],
+      "stance_speed_limit_m_per_s": [
+        0.04896,
+        0.04682
+      ],
+      "status": "cleaned"
+    },
+    "21": {
+      "body_shift_cm_max": 20.967,
+      "body_shift_cm_mean": 2.0669,
+      "corrected_frames": 336,
+      "correction_deg_max": 14.129,
+      "correction_deg_mean": 1.64,
+      "frames": 678,
+      "object": "tall_bar_stool",
+      "rejected_frames": 1,
+      "stance_frames": [
+        243,
+        252
+      ],
+      "stance_segments": [
+        15,
+        14
+      ],
+      "stance_speed_limit_m_per_s": [
+        0.06017,
+        0.05346
+      ],
+      "status": "cleaned"
+    },
+    "22": {
+      "body_shift_cm_max": 30.6798,
+      "body_shift_cm_mean": 3.4659,
+      "corrected_frames": 413,
+      "correction_deg_max": 13.194,
+      "correction_deg_mean": 2.385,
+      "frames": 719,
+      "object": "step_ladder",
+      "rejected_frames": 13,
+      "stance_frames": [
+        273,
+        254
+      ],
+      "stance_segments": [
+        20,
+        14
+      ],
+      "stance_speed_limit_m_per_s": [
+        0.06071,
+        0.06206
+      ],
+      "status": "cleaned"
+    },
+    "23": {
+      "body_shift_cm_max": 22.967,
+      "body_shift_cm_mean": 1.5323,
+      "corrected_frames": 551,
+      "correction_deg_max": 10.563,
+      "correction_deg_mean": 1.438,
+      "frames": 946,
+      "object": "toy_stroller",
+      "rejected_frames": 0,
+      "stance_frames": [
+        345,
+        341
+      ],
+      "stance_segments": [
+        29,
+        32
+      ],
+      "stance_speed_limit_m_per_s": [
+        0.04366,
+        0.04341
+      ],
+      "status": "cleaned"
+    },
+    "24": {
+      "body_shift_cm_max": 3.0896,
+      "body_shift_cm_mean": 0.4028,
+      "corrected_frames": 345,
+      "correction_deg_max": 1.608,
+      "correction_deg_mean": 0.442,
+      "frames": 748,
+      "object": "watering_can",
+      "rejected_frames": 0,
+      "stance_frames": [
+        237,
+        206
+      ],
+      "stance_segments": [
+        26,
+        26
+      ],
+      "stance_speed_limit_m_per_s": [
+        0.03197,
+        0.02788
+      ],
+      "status": "cleaned"
+    },
+    "25": {
+      "body_shift_cm_max": 26.9397,
+      "body_shift_cm_mean": 1.3944,
+      "corrected_frames": 347,
+      "correction_deg_max": 12.281,
+      "correction_deg_mean": 0.925,
+      "frames": 859,
+      "object": "cyan_water_bottle",
+      "rejected_frames": 2,
+      "stance_frames": [
+        278,
+        252
+      ],
+      "stance_segments": [
+        23,
+        24
+      ],
+      "stance_speed_limit_m_per_s": [
+        0.04293,
+        0.04204
+      ],
+      "status": "cleaned"
+    },
+    "26": {
+      "body_shift_cm_max": 10.6232,
+      "body_shift_cm_mean": 0.8599,
+      "corrected_frames": 289,
+      "correction_deg_max": 11.413,
+      "correction_deg_mean": 0.813,
+      "frames": 669,
+      "object": "skateboard",
+      "rejected_frames": 0,
+      "stance_frames": [
+        206,
+        217
+      ],
+      "stance_segments": [
+        23,
+        24
+      ],
+      "stance_speed_limit_m_per_s": [
+        0.03607,
+        0.03973
+      ],
+      "status": "cleaned"
+    },
+    "27": {
+      "body_shift_cm_max": 28.2727,
+      "body_shift_cm_mean": 2.5239,
+      "corrected_frames": 321,
+      "correction_deg_max": 10.034,
+      "correction_deg_mean": 1.746,
+      "frames": 565,
+      "object": "woven_basket",
+      "rejected_frames": 0,
+      "stance_frames": [
+        191,
+        219
+      ],
+      "stance_segments": [
+        15,
+        18
+      ],
+      "stance_speed_limit_m_per_s": [
+        0.05243,
+        0.04807
+      ],
+      "status": "cleaned"
+    },
+    "28": {
+      "body_shift_cm_max": 16.3835,
+      "body_shift_cm_mean": 1.417,
+      "corrected_frames": 433,
+      "correction_deg_max": 6.375,
+      "correction_deg_mean": 0.823,
+      "frames": 988,
+      "object": "squeegee",
+      "rejected_frames": 0,
+      "stance_frames": [
+        317,
+        333
+      ],
+      "stance_segments": [
+        24,
+        27
+      ],
+      "stance_speed_limit_m_per_s": [
+        0.03032,
+        0.03234
+      ],
+      "status": "cleaned"
+    },
+    "29": {
+      "body_shift_cm_max": 13.2733,
+      "body_shift_cm_mean": 1.8926,
+      "corrected_frames": 275,
+      "correction_deg_max": 11.46,
+      "correction_deg_mean": 2.111,
+      "frames": 467,
+      "object": "rolling_luggage",
+      "rejected_frames": 0,
+      "stance_frames": [
+        170,
+        155
+      ],
+      "stance_segments": [
+        11,
+        14
+      ],
+      "stance_speed_limit_m_per_s": [
+        0.08644,
+        0.05013
+      ],
+      "status": "cleaned"
+    }
+  },
+  "summary": {
+    "cleaned": 30,
+    "episodes": 30,
+    "max_root_deg": 15.0,
+    "mean_body_shift_cm": 1.6715,
+    "mean_corrected_fraction": 0.4813,
+    "mean_correction_deg": 1.299,
+    "mean_stance_fraction": 0.3396,
+    "smooth_frames": 9,
+    "stance_quantile": 0.4,
+    "unchanged": 0
+  },
+  "what": "deployable foot-planting cleaner for the Tier 2 human root; no clean reference"
+}

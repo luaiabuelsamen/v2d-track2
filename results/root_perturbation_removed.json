@@ -1,0 +1,314 @@
+{
+  "clips_rot_improved": 3,
+  "clips_transl_improved": 0,
+  "mean_rot_after_deg": 5.5836,
+  "mean_rot_before_deg": 5.1742,
+  "mean_rot_drop": -0.0791,
+  "mean_transl_after_cm": 2.1022,
+  "mean_transl_before_cm": 1.0873,
+  "mean_transl_drop": -0.9334,
+  "note": "analysis against the clean reference; the cleaner never sees it",
+  "per_episode": [
+    {
+      "episode": 0,
+      "object": "tall_bar_stool",
+      "rot_after_deg": 4.8819,
+      "rot_before_deg": 4.4525,
+      "rot_drop": -0.0964,
+      "transl_after_cm": 1.8945,
+      "transl_before_cm": 0.9001,
+      "transl_drop": -1.1047
+    },
+    {
+      "episode": 1,
+      "object": "vacuum",
+      "rot_after_deg": 3.359,
+      "rot_before_deg": 3.1848,
+      "rot_drop": -0.0547,
+      "transl_after_cm": 1.6324,
+      "transl_before_cm": 1.0782,
+      "transl_drop": -0.5141
+    },
+    {
+      "episode": 2,
+      "object": "blue_easter_basket",
+      "rot_after_deg": 5.901,
+      "rot_before_deg": 5.7813,
+      "rot_drop": -0.0207,
+      "transl_after_cm": 1.6416,
+      "transl_before_cm": 1.0495,
+      "transl_drop": -0.5641
+    },
+    {
+      "episode": 3,
+      "object": "contigo_coffee_mug",
+      "rot_after_deg": 3.7964,
+      "rot_before_deg": 3.7603,
+      "rot_drop": -0.0096,
+      "transl_after_cm": 0.9107,
+      "transl_before_cm": 0.9034,
+      "transl_drop": -0.0081
+    },
+    {
+      "episode": 4,
+      "object": "baseball_bat",
+      "rot_after_deg": 6.823,
+      "rot_before_deg": 6.6852,
+      "rot_drop": -0.0206,
+      "transl_after_cm": 2.0614,
+      "transl_before_cm": 0.9117,
+      "transl_drop": -1.261
+    },
+    {
+      "episode": 5,
+      "object": "big_black_box",
+      "rot_after_deg": 6.1044,
+      "rot_before_deg": 5.6117,
+      "rot_drop": -0.0878,
+      "transl_after_cm": 2.51,
+      "transl_before_cm": 1.1031,
+      "transl_drop": -1.2753
+    },
+    {
+      "episode": 6,
+      "object": "monitor",
+      "rot_after_deg": 6.1132,
+      "rot_before_deg": 6.1302,
+      "rot_drop": 0.0028,
+      "transl_after_cm": 1.9016,
+      "transl_before_cm": 0.9567,
+      "transl_drop": -0.9876
+    },
+    {
+      "episode": 7,
+      "object": "iron",
+      "rot_after_deg": 6.3907,
+      "rot_before_deg": 6.4295,
+      "rot_drop": 0.006,
+      "transl_after_cm": 1.4584,
+      "transl_before_cm": 1.3377,
+      "transl_drop": -0.0902
+    },
+    {
+      "episode": 8,
+      "object": "skinny_wood_chair",
+      "rot_after_deg": 4.7611,
+      "rot_before_deg": 4.5533,
+      "rot_drop": -0.0456,
+      "transl_after_cm": 1.9656,
+      "transl_before_cm": 1.2478,
+      "transl_drop": -0.5752
+    },
+    {
+      "episode": 9,
+      "object": "big_red_bowl",
+      "rot_after_deg": 6.7248,
+      "rot_before_deg": 6.8167,
+      "rot_drop": 0.0135,
+      "transl_after_cm": 1.972,
+      "transl_before_cm": 1.225,
+      "transl_drop": -0.6098
+    },
+    {
+      "episode": 10,
+      "object": "white_desk",
+      "rot_after_deg": 6.5837,
+      "rot_before_deg": 6.3478,
+      "rot_drop": -0.0372,
+      "transl_after_cm": 1.628,
+      "transl_before_cm": 0.6374,
+      "transl_drop": -1.554
+    },
+    {
+      "episode": 11,
+      "object": "light_blue_book",
+      "rot_after_deg": 4.1672,
+      "rot_before_deg": 3.8825,
+      "rot_drop": -0.0734,
+      "transl_after_cm": 2.0311,
+      "transl_before_cm": 1.1874,
+      "transl_drop": -0.7105
+    },
+    {
+      "episode": 12,
+      "object": "black_platform",
+      "rot_after_deg": 3.9596,
+      "rot_before_deg": 3.6391,
+      "rot_drop": -0.0881,
+      "transl_after_cm": 1.5634,
+      "transl_before_cm": 1.0267,
+      "transl_drop": -0.5227
+    },
+    {
+      "episode": 13,
+      "object": "snack_box",
+      "rot_after_deg": 4.2383,
+      "rot_before_deg": 4.1026,
+      "rot_drop": -0.0331,
+      "transl_after_cm": 1.7353,
+      "transl_before_cm": 1.4459,
+      "transl_drop": -0.2001
+    },
+    {
+      "episode": 14,
+      "object": "round_table",
+      "rot_after_deg": 6.6951,
+      "rot_before_deg": 6.4251,
+      "rot_drop": -0.042,
+      "transl_after_cm": 1.823,
+      "transl_before_cm": 1.1602,
+      "transl_drop": -0.5712
+    },
+    {
+      "episode": 15,
+      "object": "wet_floor_sign",
+      "rot_after_deg": 7.2771,
+      "rot_before_deg": 5.4019,
+      "rot_drop": -0.3471,
+      "transl_after_cm": 4.0354,
+      "transl_before_cm": 1.2744,
+      "transl_drop": -2.1666
+    },
+    {
+      "episode": 16,
+      "object": "spray_bottle",
+      "rot_after_deg": 6.1867,
+      "rot_before_deg": 4.9915,
+      "rot_drop": -0.2395,
+      "transl_after_cm": 3.2015,
+      "transl_before_cm": 0.9463,
+      "transl_drop": -2.3833
+    },
+    {
+      "episode": 17,
+      "object": "traffic_cone",
+      "rot_after_deg": 7.0497,
+      "rot_before_deg": 5.4735,
+      "rot_drop": -0.288,
+      "transl_after_cm": 3.3941,
+      "transl_before_cm": 1.0379,
+      "transl_drop": -2.2701
+    },
+    {
+      "episode": 18,
+      "object": "blue_trash_can",
+      "rot_after_deg": 3.3717,
+      "rot_before_deg": 2.9239,
+      "rot_drop": -0.1532,
+      "transl_after_cm": 1.7274,
+      "transl_before_cm": 0.9319,
+      "transl_drop": -0.8536
+    },
+    {
+      "episode": 19,
+      "object": "cane",
+      "rot_after_deg": 7.929,
+      "rot_before_deg": 7.2139,
+      "rot_drop": -0.0991,
+      "transl_after_cm": 2.5739,
+      "transl_before_cm": 0.7836,
+      "transl_drop": -2.2849
+    },
+    {
+      "episode": 20,
+      "object": "rice_cooker",
+      "rot_after_deg": 4.7269,
+      "rot_before_deg": 4.4297,
+      "rot_drop": -0.0671,
+      "transl_after_cm": 1.5735,
+      "transl_before_cm": 1.2908,
+      "transl_drop": -0.219
+    },
+    {
+      "episode": 21,
+      "object": "tall_bar_stool",
+      "rot_after_deg": 6.8657,
+      "rot_before_deg": 6.3248,
+      "rot_drop": -0.0855,
+      "transl_after_cm": 2.5585,
+      "transl_before_cm": 1.2326,
+      "transl_drop": -1.0756
+    },
+    {
+      "episode": 22,
+      "object": "step_ladder",
+      "rot_after_deg": 7.0958,
+      "rot_before_deg": 6.3458,
+      "rot_drop": -0.1182,
+      "transl_after_cm": 3.7122,
+      "transl_before_cm": 1.2658,
+      "transl_drop": -1.9326
+    },
+    {
+      "episode": 23,
+      "object": "toy_stroller",
+      "rot_after_deg": 4.6623,
+      "rot_before_deg": 4.3528,
+      "rot_drop": -0.0711,
+      "transl_after_cm": 2.2796,
+      "transl_before_cm": 0.976,
+      "transl_drop": -1.3358
+    },
+    {
+      "episode": 24,
+      "object": "watering_can",
+      "rot_after_deg": 3.3193,
+      "rot_before_deg": 3.299,
+      "rot_drop": -0.0062,
+      "transl_after_cm": 0.7933,
+      "transl_before_cm": 0.7509,
+      "transl_drop": -0.0564
+    },
+    {
+      "episode": 25,
+      "object": "cyan_water_bottle",
+      "rot_after_deg": 5.7465,
+      "rot_before_deg": 5.5239,
+      "rot_drop": -0.0403,
+      "transl_after_cm": 1.7342,
+      "transl_before_cm": 0.9633,
+      "transl_drop": -0.8002
+    },
+    {
+      "episode": 26,
+      "object": "skateboard",
+      "rot_after_deg": 4.7765,
+      "rot_before_deg": 4.4398,
+      "rot_drop": -0.0758,
+      "transl_after_cm": 1.6865,
+      "transl_before_cm": 1.2129,
+      "transl_drop": -0.3904
+    },
+    {
+      "episode": 27,
+      "object": "woven_basket",
+      "rot_after_deg": 6.5195,
+      "rot_before_deg": 5.992,
+      "rot_drop": -0.088,
+      "transl_after_cm": 2.8839,
+      "transl_before_cm": 1.277,
+      "transl_drop": -1.2583
+    },
+    {
+      "episode": 28,
+      "object": "squeegee",
+      "rot_after_deg": 6.36,
+      "rot_before_deg": 6.1329,
+      "rot_drop": -0.037,
+      "transl_after_cm": 1.9783,
+      "transl_before_cm": 1.2383,
+      "transl_drop": -0.5976
+    },
+    {
+      "episode": 29,
+      "object": "rolling_luggage",
+      "rot_after_deg": 5.1231,
+      "rot_before_deg": 4.5777,
+      "rot_drop": -0.1192,
+      "transl_after_cm": 2.2036,
+      "transl_before_cm": 1.2665,
+      "transl_drop": -0.7399
+    }
+  ],
+  "what": "how much of Tier 2's root perturbation the foot-planting cleaner removed"
+}
