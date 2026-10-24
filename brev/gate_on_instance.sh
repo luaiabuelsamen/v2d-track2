@@ -166,6 +166,20 @@ run_in_container() {
   docker exec -i "$cid" bash -lc "$1"
 }
 
+# scene.support must be off for a clip whose released support file declares no primitives.
+# 16 of the 30 support_surface/*.usda files are the empty 125-byte stage -- watering_can is one,
+# which is consistent: it is manipulated in mid-air and has no support surface. With support on,
+# build_scene raises "support surface contains no Cylinder or Cube collision shapes" and the
+# clip dies after ~90 s of scene build. A full 30-clip run would have lost 16 clips to this.
+support_flag_for() {
+  local usda="$1"
+  if [ -f "$usda" ] && grep -qE "def (Cylinder|Cube|Sphere)" "$usda"; then
+    echo "scene.support=true"
+  else
+    echo "scene.support=false"
+  fi
+}
+
 say "Start the container"
 V2D_ASSETS_DIR="$ASSETS" docker/run.sh start latest 0 </dev/null >/dev/null 2>&1 &
 for _ in $(seq 1 20); do

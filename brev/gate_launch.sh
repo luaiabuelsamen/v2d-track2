@@ -275,6 +275,35 @@ if [ "$READY" != 1 ]; then
 fi
 say "SSH is up after ~${WAITED}s"
 
+# Ship the resolved robot meshes from here. `git lfs pull` on the instance hangs with zero
+# progress (0-byte log, 8 KB cache, 0 of 49 meshes after minutes), and without them every mesh
+# is a 130-byte pointer that Newton reads as a zero-face mesh. This host's copies are known good
+# -- they are what retargeted all 60 clips -- so they are the reliable source.
+G1_MESHES="$(find "$REPO_ROOT" /tmp/claude-1000 -maxdepth 12 -type d -path "*assets/meshes/g1" \
+  2>/dev/null | head -1)"
+if [ -n "$G1_MESHES" ] && [ -z "$(grep -rl "git-lfs.github.com/spec" "$G1_MESHES" 2>/dev/null)" ]; then
+  say "Shipping resolved G1 meshes ($(du -sh "$G1_MESHES" | cut -f1))"
+  tar -C "$(dirname "$G1_MESHES")" -czf - g1 \
+    | ssh "${SSH_KEEPALIVE[@]}" "$NAME" 'cat > /tmp/g1_meshes.tgz' </dev/null
+  ssh "${SSH_KEEPALIVE[@]}" "$NAME" 'bash -s' </dev/null <<'REMOTE'
+set -uo pipefail
+SRC=~/v2d/robotic_grounding/source/robotic_grounding/robotic_grounding/assets/meshes
+FC=~/v2d/robotic_grounding/flash_chord/src/flash_chord/assets/meshes
+[ -d "$SRC" ] || { echo "no source mesh tree on the instance yet" >&2; exit 0; }
+tar -C "$SRC" -xzf /tmp/g1_meshes.tgz
+# The g1_dex3 embodiment loads the flash_chord copy, so mirror by file name into it.
+copied=0
+while IFS= read -r f; do
+  base=$(basename "$f")
+  src=$(find "$SRC/g1" -name "$base" -type f | head -1)
+  [ -n "$src" ] && { cp -f "$src" "$f"; copied=$((copied+1)); }
+done < <(find "$FC/g1" -type f \( -name "*.STL" -o -name "*.stl" -o -name "*.obj" \) 2>/dev/null)
+echo "resolved meshes installed: source=$(find "$SRC/g1" -type f | wc -l) flash_chord=$copied"
+REMOTE
+else
+  echo "WARNING: no resolved G1 mesh tree found locally; the instance must resolve LFS itself." >&2
+fi
+
 REMOTE_PARQUET=""
 if [ -n "$G1_PARQUET" ]; then
   say "Uploading the retargeted reference"
