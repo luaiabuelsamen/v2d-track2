@@ -11,6 +11,10 @@ set -uo pipefail
 
 PHASE="${1:-probe}"
 STEPS="${2:-10000896}"
+# phase=full must train on OUR retargeted clip. Pass its path on the instance as $3; the
+# launcher uploads it with --g1-parquet. phase=probe only measures throughput, which does not
+# depend on which clip it is, so it falls back to the example sequence shipped in the repo.
+G1_PARQUET_ARG="${3:-}"
 COMMIT=8c778f905cb35f76f8e6cd6e2ea486da4fb9e0ef   # the evaluator commit pinned by KIT_MANIFEST
 EASY_EP=24    # watering_can, 748 frames
 HARD_EP=5     # big_black_box, 1003 frames
@@ -88,10 +92,20 @@ BUILD_SECONDS=$(( $(date +%s) - BUILD_START ))
 echo "image build took ${BUILD_SECONDS}s"
 
 # The G1 recipe trains against a RETARGETED G1 reference parquet (robot_name=g1/data.parquet),
-# not the released SOMA parquet. soma_to_g1.py produces it. The repo ships one example
-# sequence, which is what the probe uses: the probe measures throughput, and throughput does
-# not depend on which clip it is. phase=full needs our own retarget output for e24/e05.
+# not the released SOMA parquet. soma_to_g1.py produces it.
 EXAMPLE_G1=/v2d/assets/human_motion_data/whole_body/soma/sequence_id=2026-03-06_10-24-18_snack_box_pick_and_place_01/robot_name=g1/data.parquet
+if [ -n "$G1_PARQUET_ARG" ]; then
+  TRAIN_PARQUET="$G1_PARQUET_ARG"
+  echo "training reference: $TRAIN_PARQUET (supplied)"
+elif [ "$PHASE" = full ]; then
+  echo "FATAL: phase=full needs a retargeted G1 parquet for the gate clip."
+  echo "       Produce it with soma_to_g1.py, then re-run with --g1-parquet <path>."
+  echo "       Training the repo's example clip instead would measure the wrong thing."
+  exit 2
+else
+  TRAIN_PARQUET="$EXAMPLE_G1"
+  echo "training reference: $TRAIN_PARQUET (repo example; throughput probe only)"
+fi
 
 run_in_container() {
   docker/run.sh exec latest 0 -- bash -lc "$1"
@@ -117,7 +131,7 @@ TRAIN_START=$(date +%s)
 
 run_in_container "cd /workspace && python scripts/train_flash_sac.py \
   experiment=g1_recon_body_flash_sac \
-  \"task.parquet='${EXAMPLE_G1}'\" \
+  \"task.parquet='${TRAIN_PARQUET}'\" \
   training.total_environment_steps=${STEPS} \
   training.checkpoint.save_interval_environment_steps=${STEPS} \
   reset.seed=42 logging.mode=disabled \

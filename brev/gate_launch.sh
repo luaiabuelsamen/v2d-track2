@@ -19,6 +19,7 @@ PHASE=probe
 MAX_HOURS=10
 GO=0
 TYPE=""
+G1_PARQUET=""           # retargeted G1 reference for the gate clip; required for --phase full
 NAME="v2d-gate-$(date +%m%d-%H%M)"
 MIN_VRAM_GB=46          # FlashCHORD needs >=46,000 MiB free on a 48 GiB card
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -30,12 +31,19 @@ while [ $# -gt 0 ]; do
     --max-hours) MAX_HOURS="$2"; shift 2 ;;
     --type) TYPE="$2"; shift 2 ;;
     --name) NAME="$2"; shift 2 ;;
+    --g1-parquet) G1_PARQUET="$2"; shift 2 ;;
     --go) GO=1; shift ;;
     -h|--help) sed -n '2,20p' "$0"; exit 0 ;;
     *) echo "unknown argument: $1" >&2; exit 2 ;;
   esac
 done
 case "$PHASE" in probe|full) ;; *) echo "--phase must be probe or full" >&2; exit 2 ;; esac
+if [ "$PHASE" = full ] && [ -z "$G1_PARQUET" ]; then
+  echo "--phase full needs --g1-parquet <retargeted G1 parquet for the gate clip>." >&2
+  echo "Produce it with soma_to_g1.py first; the probe phase does not need it." >&2
+  exit 2
+fi
+[ -n "$G1_PARQUET" ] && [ ! -f "$G1_PARQUET" ] && { echo "no such file: $G1_PARQUET" >&2; exit 2; }
 
 say() { printf '\n== %s\n' "$*"; }
 
@@ -104,7 +112,7 @@ cat <<PLAN
 
 == Commands it would run
   brev create "$NAME" --type "$INSTANCE_TYPE"
-  brev refresh && ssh "$NAME" 'bash -s' < brev/gate_on_instance.sh $PHASE $STEPS
+  brev refresh && ssh "$NAME" 'bash -s' < brev/gate_on_instance.sh $PHASE $STEPS [g1-parquet]
   scp "$NAME":~/gate_results/* $OUT_DIR/
   brev delete "$NAME" --yes
 PLAN
@@ -148,8 +156,18 @@ for _ in $(seq 1 60); do
 done
 brev refresh >/dev/null 2>&1 || true
 
+REMOTE_PARQUET=""
+if [ -n "$G1_PARQUET" ]; then
+  say "Uploading the retargeted reference"
+  # It has to land inside the directory the container mounts at /v2d/assets, or the training
+  # step cannot see it.
+  ssh -o StrictHostKeyChecking=accept-new "$NAME" 'mkdir -p ~/v2d_assets'
+  scp "$G1_PARQUET" "$NAME":'~/v2d_assets/gate_reference.parquet'
+  REMOTE_PARQUET=/v2d/assets/gate_reference.parquet
+fi
+
 say "Running the gate on the instance (phase=$PHASE)"
-ssh -o StrictHostKeyChecking=accept-new "$NAME" 'bash -s' -- "$PHASE" "$STEPS" \
+ssh -o StrictHostKeyChecking=accept-new "$NAME" 'bash -s' -- "$PHASE" "$STEPS" "$REMOTE_PARQUET" \
   < "$REPO_ROOT/brev/gate_on_instance.sh" 2>&1 | tee "$OUT_DIR/gate_${PHASE}_console.log"
 
 say "Copying results back"
