@@ -25,19 +25,31 @@ Updated 2026-10-24 15:00 PT.
 
 ## What the Brev attempts bought
 
-Each failure was a real defect on the path to a paid training run, and each cost ~$0.10 to find:
+Nine defects, every one of them on the path to a paid training run, and none of them visible
+without hardware. The first four cost ~$0.10 each in create-build-die cycles; the rest were found
+on a live dev box in seconds.
 
-| attempt | reached | failed on | fix |
+| # | reached | failed on | fix |
 |---|---|---|---|
-| — (dry run) | price table | **picker chose a 16 GB V100 at $2.81/h** for a 48 GB job | header-offset parser, 17 tests, no fallback default |
-| 1 | instance created | `brev ls` says RUNNING while `SHELL` says NOT READY | wait on the shell, prove it with `ssh true` |
-| 2 | **A6000, driver 580.126.09, 48,539 MiB free, image in 229 s** | `docker/run.sh exec` passes `-it`; stdin is never a TTY under `ssh 'bash -s'` | talk to docker directly with `-i` |
-| 3 | **container up, `flash_chord ok [CudaDevice(id=0)]`** | ssh died during the first long silent step and took the run with it | detach under `setsid nohup`, poll for a `DONE` marker |
-| 4 | in flight | — | — |
+| 1 | price table (dry run) | **picker chose a 16 GB V100 at $2.81/h** for a 48 GB job: awk read `TARGET_DISK` as VRAM and `CAPABILITY` as price | header-offset parser, 17 tests, no fallback default |
+| 2 | instance created | `brev ls` says `RUNNING` while `SHELL` says `NOT READY` | wait on the shell, prove it with `ssh true` |
+| 3 | **A6000, driver 580.126.09, 48,539 MiB free, image in 229 s** | `docker/run.sh exec` passes `-it`; stdin is never a TTY under `ssh 'bash -s'` | talk to docker with `-i` |
+| 4 | container up, `flash_chord ok [CudaDevice(id=0)]` | ssh died during the first long silent step, taking the run with it | detach under `setsid nohup`, poll for `DONE` |
+| 5 | Hydra config parse | `total_environment_steps must be divisible by world_count, got 10000896 and 2048` | 2048 × 4883 = **10,000,384** |
+| 6 | reference load | `no support asset could be resolved` — the parquet was uploaded flat | upload the `sequence_id=/robot_name=` tree with `reconstructed_stage/<seq>_support.usda` |
+| 7 | **G1 URDF import** | `cannot call vectorize on size 0 inputs` — **git-lfs absent from the image**, so all 1045 meshes are 130-byte pointers | ship this host's resolved meshes; `git lfs pull` there hangs at zero progress |
+| 8 | object URDF import | `ParseError: not well-formed, line 1 column 0` — the parquet embeds **absolute Jetson paths**, so Newton parsed a path as XML | `v2d rebase-assets` |
+| 9 | scene build (~90 s) | `support surface contains no Cylinder or Cube collision shapes` — **16 of 30 clips ship the empty 125-byte support stage** | choose `scene.support` per clip from the file |
 
-The hardware question B0 exists to answer is **already settled**: the cheapest card clearing
-FlashCHORD's floor really does clear it, with the required driver, and the image builds in under
-six minutes. What is still missing is throughput and hours-per-clip.
+Two of these would each have destroyed a full run on their own. Bug 7 meant **no training could
+ever start**, and it hid behind `|| echo "WARNING: git lfs pull incomplete"` before surfacing ten
+minutes later as an error naming neither LFS nor a mesh. Bug 9 would have crashed **16 of the 30
+clips** on a pass costing $54–72.
+
+The hardware question B0 exists to answer is settled: the cheapest card clearing FlashCHORD's
+floor really does clear it, with the required driver, docker works, the image builds in under six
+minutes, and Warp binds the GPU as `"NVIDIA RTX A6000" (47 GiB, sm_86, mempool enabled)`. What is
+still outstanding is throughput and hours-per-clip, which needs one scene build to complete.
 
 ## The result that changed the science
 
