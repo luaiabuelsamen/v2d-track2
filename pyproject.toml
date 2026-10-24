@@ -1,0 +1,59 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "v2d"
+version = "0.1.0"
+description = "NVIDIA V2D Challenge, Track 2 (robotic grounding): reference cleaning, retargeting, scoring and submission packaging."
+requires-python = ">=3.11,<3.13"
+dependencies = [
+    "numpy",
+    "scipy",
+    "pyarrow",
+    "pandas",
+    "trimesh",
+    "usd-core",
+]
+
+[project.optional-dependencies]
+dev = ["ruff", "pytest"]
+# Observability is opt-in: the pipeline is a no-op without these and must never require them.
+observe = ["wandb", "huggingface-hub"]
+
+[project.scripts]
+v2d = "v2d.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E", "W",      # pycodestyle
+    "F",           # pyflakes
+    "I",           # import sorting
+    "N",           # pep8-naming
+    "UP",          # pyupgrade
+    "B",           # bugbear
+    "C4",          # comprehensions
+    "SIM",         # simplify
+    "RET",         # returns
+    "PTH",         # use pathlib
+    "RUF",
+]
+ignore = [
+    "B008",        # argparse defaults are evaluated once on purpose
+    "RET504",      # a named return value often documents what is being returned
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

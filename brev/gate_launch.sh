@@ -11,12 +11,13 @@
 #
 # Usage:
 #   brev/gate_launch.sh                               # dry run: prices + plan
-#   brev/gate_launch.sh --phase probe --go
+#   brev/gate_launch.sh --phase probe --max-usd 2 --go
 #   brev/gate_launch.sh --phase full --max-hours 10 --go
 set -uo pipefail
 
 PHASE=probe
 MAX_HOURS=10
+MAX_USD=0               # 0 = no cap. With a cap, the watchdog is bounded by it too.
 GO=0
 TYPE=""
 G1_PARQUET=""           # retargeted G1 reference for the gate clip; required for --phase full
@@ -29,6 +30,7 @@ while [ $# -gt 0 ]; do
   case "$1" in
     --phase) PHASE="$2"; shift 2 ;;
     --max-hours) MAX_HOURS="$2"; shift 2 ;;
+    --max-usd) MAX_USD="$2"; shift 2 ;;
     --type) TYPE="$2"; shift 2 ;;
     --name) NAME="$2"; shift 2 ;;
     --g1-parquet) G1_PARQUET="$2"; shift 2 ;;
@@ -115,35 +117,54 @@ if [ -z "$SEARCH_RAW" ]; then
 fi
 printf '%s\n' "$SEARCH_RAW" | head -40
 
-# Keep rows whose VRAM column is >= the floor, then take the cheapest. Brev's table layout has
-# changed before, so this parses defensively: any row with a GB figure and a $ figure.
-PICK="$(printf '%s\n' "$SEARCH_RAW" | awk -v floor="$MIN_VRAM_GB" '
-  {
-    vram=""; price=""; type=$1
-    for (i=1;i<=NF;i++) {
-      t=$i; gsub(/[$,]/,"",t)
-      if (t ~ /^[0-9]+(\.[0-9]+)?$/) {
-        if (t+0 >= 8 && t+0 <= 400 && t ~ /^[0-9]+$/ && vram=="") vram=t+0
-        else if (t+0 < 50 && t ~ /\./ && price=="") price=t+0
-      }
-    }
-    if (vram != "" && price != "" && vram >= floor) printf "%s %s %s\n", price, type, vram
-  }' | sort -n | head -1)"
+# Pick the GPU with `v2d brev-pick`, which parses the table by its header offsets and is
+# covered by tests/test_brev.py. The awk that used to live here guessed which column was which
+# and guessed wrong: it read TARGET_DISK as the VRAM and CAPABILITY as the price, so a 16 GB
+# V100 at $2.81/h sorted ahead of a 48 GB A6000 and the dry run proposed a card that cannot run
+# the job. There is deliberately no fallback default -- guessing is what broke it.
+V2D_BIN="$REPO_ROOT/.venv311/bin/v2d"
+[ -x "$V2D_BIN" ] || V2D_BIN="$(command -v v2d || true)"
+if [ -z "$V2D_BIN" ]; then
+  echo "v2d is not installed; run 'uv pip install -e .' in $REPO_ROOT" >&2
+  exit 2
+fi
 
-if [ -n "$TYPE" ]; then
-  INSTANCE_TYPE="$TYPE"; HOURLY="unknown"; VRAM="unknown"
-  echo "Using --type override: $INSTANCE_TYPE"
-elif [ -n "$PICK" ]; then
-  HOURLY="$(echo "$PICK" | cut -d' ' -f1)"
-  INSTANCE_TYPE="$(echo "$PICK" | cut -d' ' -f2)"
-  VRAM="$(echo "$PICK" | cut -d' ' -f3)"
-else
-  INSTANCE_TYPE="hyperstack_A6000"; HOURLY="0.60"; VRAM="48"
-  echo "Could not parse a candidate; defaulting to $INSTANCE_TYPE at \$$HOURLY/h."
+PICK_ARGS=(brev-pick --min-vram "$MIN_VRAM_GB" --show 5)
+[ -n "$TYPE" ] && PICK_ARGS+=(--type "$TYPE")
+if ! PICK="$("$V2D_BIN" "${PICK_ARGS[@]}")"; then
+  echo "No usable GPU was chosen, so nothing will be created." >&2
+  exit 2
+fi
+HOURLY="$(echo "$PICK" | cut -d' ' -f1)"
+INSTANCE_TYPE="$(echo "$PICK" | cut -d' ' -f2)"
+VRAM="$(echo "$PICK" | cut -d' ' -f3)"
+if [ -z "$INSTANCE_TYPE" ] || [ -z "$HOURLY" ]; then
+  echo "brev-pick returned nothing usable: '$PICK'" >&2
+  exit 2
+fi
+# Belt and braces: the floor is enforced in the picker and again here, because this is the line
+# between a $0.60 card that works and a $7 card that cannot.
+if awk -v v="$VRAM" -v f="$MIN_VRAM_GB" 'BEGIN{exit !(v+0 < f+0)}'; then
+  echo "refusing $INSTANCE_TYPE: ${VRAM} GB per GPU is below the ${MIN_VRAM_GB} GB floor" >&2
+  exit 2
 fi
 
 if [ "$PHASE" = probe ]; then STEPS=10000896; EST_HOURS=0.7; else STEPS=349999104; EST_HOURS=6; fi
-EST_COST="$(awk -v h="$EST_HOURS" -v r="${HOURLY/unknown/0.60}" 'BEGIN{printf "%.2f", h*r}')"
+EST_COST="$(awk -v h="$EST_HOURS" -v r="$HOURLY" 'BEGIN{printf "%.2f", h*r}')"
+# The watchdog is bounded by the money cap as well as by --max-hours, so a hung run cannot spend
+# past the cap even if this script dies and the estimate was wrong.
+WATCHDOG_HOURS="$MAX_HOURS"
+if awk -v c="$MAX_USD" 'BEGIN{exit !(c+0 > 0)}'; then
+  CAP_HOURS="$(awk -v c="$MAX_USD" -v r="$HOURLY" 'BEGIN{printf "%.4f", c/r}')"
+  WATCHDOG_HOURS="$(awk -v a="$MAX_HOURS" -v b="$CAP_HOURS" 'BEGIN{print (a<b)?a:b}')"
+  if awk -v e="$EST_COST" -v c="$MAX_USD" 'BEGIN{exit !(e+0 > c+0)}'; then
+    echo >&2
+    echo "ABORT: the estimate is \$$EST_COST but --max-usd is \$$MAX_USD." >&2
+    echo "Nothing was created. Raise --max-usd, shorten the phase, or pick a cheaper card." >&2
+    exit 3
+  fi
+fi
+WATCHDOG_SECONDS="$(awk -v h="$WATCHDOG_HOURS" 'BEGIN{printf "%d", h*3600}')"
 
 cat <<PLAN
 
@@ -152,8 +173,9 @@ cat <<PLAN
   instance type    $INSTANCE_TYPE   (${VRAM} GB, \$${HOURLY}/h)
   instance name    $NAME
   clips            e24 watering_can (easy) and e05 big_black_box (hard)
-  watchdog         delete after ${MAX_HOURS} h
+  watchdog         delete after ${WATCHDOG_HOURS} h
   rough cost       ~\$${EST_COST} at \$${HOURLY}/h for ~${EST_HOURS} h
+  hard cost cap    ${MAX_USD:+\$}${MAX_USD:-none}
   results to       $OUT_DIR
 
 == Commands it would run
@@ -191,7 +213,7 @@ brev create "$NAME" --type "$INSTANCE_TYPE" || { echo "create failed" >&2; exit 
 CREATED=1
 
 # Independent watchdog: deletes the instance even if this script is killed.
-( sleep "$((MAX_HOURS * 3600))"; brev delete "$NAME" --yes >/dev/null 2>&1 ) &
+( sleep "$WATCHDOG_SECONDS"; brev delete "$NAME" --yes >/dev/null 2>&1 ) &
 WATCHDOG=$!
 trap 'kill $WATCHDOG 2>/dev/null; teardown' EXIT INT TERM
 

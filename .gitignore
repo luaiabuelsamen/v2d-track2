@@ -1,3 +1,8 @@
 __pycache__/
-.venv/
+*.pyc
 .venv311/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+results/gate/
+wandb/
