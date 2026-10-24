@@ -2,11 +2,24 @@
 Goal: A valid Track 2 submission before the freeze (this keeps the $250 Brev credit), then the best Tier 2 rank-sum we can reach in 11 days, and a frozen released measurement whatever the rank.
 Finish line: Tier 1 insurance submission accepted; Tier 2 submitted; results/ frozen; README + short tech report; every number traceable to a committed results file.
 Deadline: leaderboard freeze 2026-11-04 17:00 EST (internal cutoff 12:00 EST that day)
-Milestone: GO. Day 1 of 11 complete, all at $0. Gate G1 passed: **all 60 Tier-1/2 clips are retargeted to G1 on this Jetson's CPU**, every one validating at 0.0 mm rigid-fit residual. The critical path is no longer blocked on anything. The reference cleanup is pre-registered, measured and shipped: **the Tier 2 pipeline now cleans its references and the Brev gate refuses an uncleaned one.**
-Last result: A deployable support-contact cleaner is built, scored and wired into the pipeline. Using only Tier 2 inputs plus the released ground plane it lifts the Tier 2 input ceiling to **AUC 0.4660 (from 0.4247), SP-SR 1.0000 (from 0.9667), MP-SR 1.0000, MPPE 2.3053 cm (from 2.3605)** — no metric regresses, 25 of 30 clips cleaned. That is 18 % of the tilt oracle's AUC gain (the oracle's 0.6541 is unreachable by a submission; it is built from the clean reference). The pre-registered contact experiment behind it came out **PARTIAL**: the tilt oracle recovers **0.646** of the orientation-cleanup ceiling against yaw's 0.123 (3.8x more contact per degree removed, which is the real content), but sign consistency missed its bar by one episode. The deployable cleaner restores only **+0.0141** contact (14 % of ceiling, 15 up / 10 down, p = 0.42), so **the cleanup is adopted for its scored-metric gain and no training-signal benefit is claimed.**
-Blocked: nothing on this machine. Needs Luai: (1) redeem the Brev code (captain only), (2) approve the probe run (~$0.40). The sudo request is withdrawn — Python 3.11 came from uv in user space, so no system package is needed.
-Next: dry-run the submission plumbing on the kit's sample CSV, then the Brev throughput probe and the concurrent-instance quota check (gate G2). Both remaining CPU-only wins are measured and sized: a cleaner with a support hypothesis for non-resting frames (the 14 table episodes ship `support_surface/` primitives the current cleaner ignores) has 4-7x the contact headroom of what is built, and a root-alignment cleaner addresses the 38 % of contact loss that survives a *perfect* object-pose cleaner.
-Updated: 2026-10-24 09:10
+Milestone: GO, and the first paid compute has run. Gate G1 passed long since (all 60 clips retargeted on CPU at 0.0 mm). **Brev is live**: three probe attempts, two real bugs found and fixed, the hardware confirmed, ~$0.22 spent of a $2 cap. The reference cleaner now has a **known-answer gate, and the original cleaner failed it** -- a gated variant that passes is built and scored. Code is one package with one CLI, ruff/format clean, 76 tests. Observability is live to W&B and a private Hugging Face repo.
+Last result: **The support-contact cleaner fails its own known-answer gate, and that changes what we
+claim.** Injecting a 12 deg tilt of our own and asking the cleaner to remove it, it recovers
+**0.2683** (support-surface) and **0.2137** (floor-only) against a pre-registered bar of 0.70,
+and 9 of 30 clips come out worse than the injected tilt. Do-no-harm passes cleanly (1.4-1.7 deg
+on clean input, position drift exactly 0). The diagnosis is sharp: recovery tracks object shape,
+0.72-0.91 for objects with one flat base and **negative** for squeegee, luggage, stroller, chair
+and bat, because the support facet is an argmax over hull facets against "down" and a 12 deg tilt
+makes a different facet win. That also supersedes my earlier guess about the e17 traffic_cone
+regression. Gating per clip on synthetic recovery -- correct the 7 clips that pass, leave 23
+untouched -- gives recovery **0.7498** and **AUC 0.4423161** against a pre-registered bar of
+0.4423 derived from the per-clip decomposition, a four-decimal hit. All four predictions pass, so
+the gated cleaner ships. **The price, flagged for Luai: SP-SR steps back from 1.0000 to 0.9667**,
+and under rank-sum that one episode may cost more than AUC +0.0176 buys; both reference sets are
+built and switching is one flag.
+Blocked: nothing. Brev is logged in and B0 is approved; W&B and Hugging Face are logged in and detected. Needs Luai: (1) decide the gated-vs-ungated reference set, since that is a ranking call not a scientific one, (2) re-save the quality-gates / dev-confirm section of ~/projects/_ops/briefs/v2d_allhands.md -- it is not on disk, the file ends at the Rules bullets and nothing under _ops mentions it, so I followed the Rules section's three-gate requirement instead and did not guess at the rest.
+Next: finish the probe (attempt 3 in flight with the TTY fix) to get throughput and hours-per-clip, then B1's zero-training floor through evaluate -> pack -> score. The cleaner's facet rule is the thing to replace: require a *dominant* facet and abstain otherwise, which should turn today's 7 corrected clips into however many have an identifiable support face. That is a new cleaner and needs its own pre-registration.
+Updated: 2026-10-24 14:45
 
 ## Rules
 No paid compute until Luai redeems the code and approves the specific run. No registration, submission, posting, pushing or email without his approval. Every Brev run deletes its instance on exit. Jetson: MemAvailable above 2.5 GB, 20 GB disk floor, check ~/projects/_ops/GPU_RELEASED before local GPU use.
@@ -33,6 +46,57 @@ None. $250 Brev credit granted 2026-10-24, not yet redeemed. Revoked unless a va
 - **Three ideas measured and killed.** `--seat-vertical` (interpolating a support height across unsupported frames) craters everything: AUC 0.2786, MPPE 18.94 cm — off by default. A "motionless means supported" rest test gave `watering_can` seven bogus segments 13-14 cm in the air while pouring; the floor-level gate fixed it. And the floor gate itself was initially backwards, rejecting exactly the penetrating frames worth correcting (`traffic_cone` at -5 to -7.6 cm; a 20° error on an 86 cm box buries a corner ~15 cm).
 - **Wired in, not just measured.** `retarget_all.py` writes `provenance.json` recording the object source; `brev/gate_launch.sh --phase full` **refuses a raw-reference parquet or a missing provenance file** (verified all three ways), overridable only by an explicit `--allow-raw-reference`. The gate cannot silently train on uncleaned references.
 
+## Day 1, third phase -- Brev goes live, and the cleaner gets gated
+
+### Paid compute: $0.22 of $2, three attempts, two bugs
+- **The GPU picker was broken and would have burned the budget.** The dry run proposed
+  `paperspace_V100` at **$2.81/h for a 16 GB card** on a job needing 48 GB. The picker was awk
+  guessing which column was which: it read `TARGET_DISK` (100) as the VRAM and `CAPABILITY` (8.6)
+  as the hourly price, so a V100 sorted ahead of an A6000 on a number that was not a price,
+  against a floor check on a number that was not VRAM. Replaced with a header-offset parser
+  (`src/v2d/brev.py`, 17 tests). Column *offsets* matter, not tokens: 12 of 343 rows name the GPU
+  "RTX PRO Server 6000", and splitting on whitespace shifts the price on exactly the rows
+  describing the biggest cards. No fallback default any more -- guessing is what broke it.
+- **Attempt 1 died on readiness.** The wait loop was `brev ls | grep "$NAME.*RUNNING"`, and brev
+  reports RUNNING while the SHELL column still says NOT READY, so the payload went into a closed
+  port. ~7 min, ~$0.08. Now waits on the SHELL column and proves it with a real `ssh true`;
+  predicate in `v2d.brev.is_shell_ready` with tests built from the rows observed that day.
+- **Attempt 2 reached the hardware, which is the half that matters.** `NVIDIA RTX A6000, driver
+  580.126.09, 48,539 MiB free` -- clears FlashCHORD's 46,000 MiB floor and its >=580 driver
+  requirement -- docker usable, image built in **229 s**. Then every container call failed with
+  `the input device is not a TTY`, because the repo's `docker/run.sh exec` passes `-it` and stdin
+  is never a terminal under `ssh 'bash -s'`. ~12 min, ~$0.136, logged to W&B.
+- **A hard dollar cap now exists.** `--max-usd` aborts before creating if the estimate exceeds it,
+  and bounds the watchdog by cap/hourly as well as by `--max-hours`, so a hung run cannot overspend
+  even if the launcher dies. Verified: `--max-usd 0.10` aborts at exit 3 having created nothing.
+- Every attempt deleted its instance on exit; `brev ls` confirmed empty between runs.
+
+### Observability, live
+W&B project **v2d-track2** (run `tazofyiy` carries the probe) and the private repo
+**luaia/v2d-track2**, created `private=True` and verified by reading it back. Credentials are
+*discovered*, not created: this machine has W&B in `~/.netrc` and Hugging Face in its cached
+token rather than in environment variables, so an env-only check would have reported "not
+configured" on a ready machine. Nothing logs or copies a token, `open_store` raises on
+`private=False`, and every method is a working no-op without a credential, because GPU minutes
+are the expensive thing and telemetry must never break a run. The container runs
+`WANDB_MODE=disabled`: a rented VM is not a place to put a token, so the host logs from the files
+copied back.
+
+### Code quality
+`scripts/` held 19 standalone tools, each with its own argparse and its own copy of kabsch, the
+moving average, the quaternion reorderings, the parquet readers and the contact parsing -- they
+could not import each other under `python -I`. Now one `v2d` CLI with 18 stages over a shared
+core, **ruff check and format clean**, **76 tests**, and a README with the pipeline, the ceiling
+table and a command per row. Verified against the committed science, not just linted: the cleaner
+reproduces both variants' npz **bit-for-bit** across 30 episodes, the scorer reproduces
+0.4246950476 / 0.4754869389 / 1.0 to the tenth decimal, and the contact module reproduces the
+whole ladder and its sign test. Linting surfaced four genuine defects, including a `pool.map`
+lambda closing over a loop variable.
+
+**One self-inflicted cost:** moving files into the package while a retarget was running killed 11
+of 30 clips, because the batch driver resolved its child stages by path at spawn time. Child
+stages are now spawned as `python -m v2d.retarget.sequences`, and the 11 clips were re-run.
+
 ## Downloads
 Kit (0.7 MB) and FAQ; Track 2 tier 1+2 parquets, meshes, ground planes, support surfaces and metadata (427 MB, scratchpad only, not committed). Videos (686 MB/tier) not downloaded. Project venv at .venv311 and the 60 retargeted motion parquets (scratchpad, ~270 MB) are not committed; `scripts/setup_jetson_env.sh` plus `scripts/retarget_all.py` rebuild both from scratch.
 
@@ -51,5 +115,7 @@ Kit (0.7 MB) and FAQ; Track 2 tier 1+2 parquets, meshes, ground planes, support 
 - 2026-10-06: scoping complete, conditional GO (docs/SCOPING.md).
 - 2026-10-07: Luai emailed v2d_challenge@nvidia.com about credits and the rules questions.
 - 2026-10-24: all 60 Tier-1/2 clips retargeted to G1 on CPU at $0; Tier 2 noise measured to cost 36 % of hand-object contact.
+- 2026-10-24: first paid compute. Brev probe attempts 1-3; GPU picker, instance-readiness and container-TTY bugs found and fixed; A6000 with driver 580 and 48.5 GB confirmed; ~$0.22 spent.
+- 2026-10-24: known-answer gate added; BOTH cleaners failed it (0.21/0.27 vs 0.70), diagnosed to facet selection; a per-clip gated variant passes at 0.7498 recovery and AUC 0.4423.
 - 2026-10-24: reference cleanup pre-registered, run (PARTIAL), and shipped; Tier 2 input ceiling AUC 0.4247 -> 0.4660 with no metric regressing, and the Brev gate now refuses an uncleaned reference.
 - 2026-10-24: NVIDIA granted $250 in Brev credits, V2D use only, revoked without a valid submission by Nov 4. Plan compressed from 4 weeks to 11 days (docs/PLAN_11DAY.md).
