@@ -131,3 +131,38 @@ def test_a_normal_along_x_still_gives_a_perpendicular_axis():
     )
     _, injected = Injection().apply(pose, normal, np.random.default_rng(0))
     assert float(np.dot(injected.as_rotvec(), normal)) == pytest.approx(0.0, abs=1e-12)
+
+
+# ---------------------------------------------------------------- frame invariance
+
+
+def test_planting_is_invariant_under_a_rigid_change_of_frame():
+    """Why "re-run the root cleaner with the flip applied" is a literal no-op.
+
+    The planting correction Kabsch-fits a foot onto a statistic of its own trajectory, so it
+    cannot see a global rigid transform. diag(1,-1,-1) is a proper rotation (det = +1), so
+    applying it changes the fitted correction by a conjugation and the corrected geometry not at
+    all. The substantive fix had to be a different reference, not the same one in a new frame.
+    """
+    from v2d.geometry import kabsch
+
+    rng = np.random.default_rng(0)
+    foot = rng.normal(scale=0.05, size=(60, 3))
+    reference = foot + rng.normal(scale=0.002, size=(60, 3))
+    flip = np.diag([1.0, -1.0, -1.0])
+    assert np.linalg.det(flip) == pytest.approx(1.0)
+
+    rotation, offset = kabsch(foot, reference)
+    flipped_rotation, flipped_offset = kabsch(foot @ flip.T, reference @ flip.T)
+
+    # The corrected point clouds agree once the frame change is undone.
+    corrected = foot @ rotation.T + offset
+    corrected_in_flipped = (foot @ flip.T) @ flipped_rotation.T + flipped_offset
+    assert np.allclose(corrected_in_flipped @ flip.T, corrected, atol=1e-12)
+
+
+def test_the_flip_is_an_involution():
+    """Applying it to the body or to the plane is equivalent, which is why the cheap direction
+    (one plane, not 18k vertices per frame) is the one the cleaner uses."""
+    flip = np.diag([1.0, -1.0, -1.0])
+    assert np.allclose(flip @ flip, np.eye(3))
