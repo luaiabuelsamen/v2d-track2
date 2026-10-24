@@ -115,6 +115,18 @@ the translation, which is exactly the subspace Tier 2 perturbs.
 > No prediction or threshold changes. R1-R4 stand exactly as written, and no contact or score
 > number for any root arm had been computed when this was made.
 
+> **Second amendment, same conditions: R3 as written is not measurable.** R3 asks for the
+> stance-foot **vertical** std. There is no vertical to measure it along. The released ground
+> plane is expressed in the object frame while the SOMA body comes out in its own frame — the
+> feet sit ~270 cm from that plane — and no transform between them ships, which is the same gap
+> that made "stationary" the right constraint in the first place. I wrote R3 before establishing
+> that, and it cannot be evaluated as phrased.
+>
+> It is replaced by **R3′: the stance-foot centroid's 3D scatter within its own stance segment
+> falls ≥ 30 % in ≥ 24/30 clips.** Same bars, same direction, and strictly harder — 3D scatter
+> contains the vertical component and two more. R3 is recorded as unevaluable rather than
+> quietly reinterpreted, and no outcome number existed when this was decided either.
+
 ## Predictions
 
 Numbers to beat, all already committed: raw Tier 2 scores AUC **0.4247** / SP-SR **0.9667** /

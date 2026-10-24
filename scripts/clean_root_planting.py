@@ -56,7 +56,11 @@ Per episode:
    mis-detection, not a perturbation estimate.
 5. **Propagation.** Slerp the rotation and lerp the translation between corrected frames, held
    flat outside the first and last, exactly as the object cleaner propagates tilt.
-6. **Write-back.** A rigid world transform (R_d, t_d) is re-expressed in the two fields Tier 2
+6. **Mechanism check.** Whether the correction actually holds the stance foot still, as the
+   stance-foot centroid's 3D scatter within its own segment before and after. The
+   pre-registration asked for the *vertical* std; there is no gravity axis in this frame to
+   project onto, so 3D scatter stands in and is the harder test.
+7. **Write-back.** A rigid world transform (R_d, t_d) is re-expressed in the two fields Tier 2
    actually perturbs. With `V_world = R_root (V_posed - J0) + J0 + transl`, applying
    `V -> R_d V + t_d` means `R_root' = R_d R_root` and `transl' = R_d (J0 + transl) + t_d - J0`.
    `J0` is the root joint's rest position, read from a zero-pose forward pass. `--self-check`
@@ -199,6 +203,27 @@ def clean_episode(vertices: np.ndarray, left: np.ndarray, right: np.ndarray,
         rotations = Slerp(keys, key_rotations)(index).as_matrix()
         translations = np.stack([np.interp(index, keys, key_translations[:, axis])
                                  for axis in range(3)], axis=1)
+    # The mechanism check: does the correction actually hold the stance foot still? Measured as
+    # the stance-foot centroid's scatter within its own segment, before and after, in 3D.
+    #
+    # The pre-registration asked for the *vertical* std. That is not measurable here: the
+    # released ground plane lives in the object frame while the body comes out in SOMA's own,
+    # with no published transform between them, so there is no gravity axis to project onto.
+    # 3D scatter is the honest substitute and is strictly the harder test, since it contains the
+    # vertical component plus two more.
+    before, after = [], []
+    for side, segments in zip((left, right), planted):
+        for start, stop, _ in segments:
+            raw = vertices[start:stop][:, side].mean(axis=1)
+            fixed = (np.einsum("tij,tj->ti", rotations[start:stop], raw)
+                     + translations[start:stop])
+            before.append(float(np.linalg.norm(raw - raw.mean(axis=0), axis=-1).mean()))
+            after.append(float(np.linalg.norm(fixed - fixed.mean(axis=0), axis=-1).mean()))
+    if before:
+        diagnostics["stance_scatter_cm_before"] = round(float(np.mean(before)) * 100, 4)
+        diagnostics["stance_scatter_cm_after"] = round(float(np.mean(after)) * 100, 4)
+        diagnostics["stance_scatter_drop"] = round(
+            1.0 - float(np.mean(after)) / float(np.mean(before)), 4) if np.mean(before) > 0 else 0.0
     diagnostics["status"] = "cleaned"
     return rotations, translations, diagnostics
 
@@ -336,6 +361,14 @@ def main() -> None:
             [v["correction_deg_mean"] for v in episodes.values()])), 3),
         "mean_body_shift_cm": round(float(np.mean(
             [v["body_shift_cm_mean"] for v in episodes.values()])), 4),
+        "mean_stance_scatter_drop": round(float(np.mean(
+            [v["stance_scatter_drop"] for v in episodes.values()
+             if "stance_scatter_drop" in v])), 4) if any(
+            "stance_scatter_drop" in v for v in episodes.values()) else None,
+        #: R3 as the pre-registration phrased it asked for a *vertical* std, which is not
+        #: measurable in SOMA's frame (no published gravity axis); this is the 3D substitute.
+        "stance_scatter_drop_30pct_clips": sum(
+            1 for v in episodes.values() if v.get("stance_scatter_drop", 0) >= 0.30),
     }
     print("\n" + json.dumps(summary, indent=2))
     if args.out:

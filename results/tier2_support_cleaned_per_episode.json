@@ -1,0 +1,198 @@
+{
+  "auc_note": "AUC vertices rebuilt from released .glb with v2dlb/vertices.py (500 pts, seed 0); the host samples the simulation mesh, so AUC can differ in ~the 4th decimal",
+  "frames": 22989,
+  "frames_outside_scored_grid": 1,
+  "grid": "sample",
+  "invisible_frames_filled": 1,
+  "overall": {
+    "add_auc": 0.4660208018721399,
+    "maniptrans_sr": 1.0,
+    "mppe_cm": 2.3053394966048426,
+    "spider_sr": 1.0
+  },
+  "per_episode": {
+    "0": {
+      "add_auc": 0.26381748071979433,
+      "maniptrans_sr": 1.0,
+      "mppe_cm": 2.3367169768436313,
+      "spider_sr": 1.0
+    },
+    "1": {
+      "add_auc": 0.49322289156626503,
+      "maniptrans_sr": 1.0,
+      "mppe_cm": 1.7304216181791237,
+      "spider_sr": 1.0
+    },
+    "2": {
+      "add_auc": 0.803954081632653,
+      "maniptrans_sr": 1.0,
+      "mppe_cm": 1.771350942112902,
+      "spider_sr": 1.0
+    },
+    "3": {
+      "add_auc": 0.659330985915493,
+      "maniptrans_sr": 1.0,
+      "mppe_cm": 2.8722573197050716,
+      "spider_sr": 1.0
+    },
+    "4": {
+      "add_auc": 0.5823474470734744,
+      "maniptrans_sr": 1.0,
+      "mppe_cm": 1.856359459390849,
+      "spider_sr": 1.0
+    },
+    "5": {
+      "add_auc": 0.24613659022931206,
+      "maniptrans_sr": 1.0,
+      "mppe_cm": 2.4694008533311234,
+      "spider_sr": 1.0
+    },
+    "6": {
+      "add_auc": 0.43635531135531136,
+      "maniptrans_sr": 1.0,
+      "mppe_cm": 2.266258922897245,
+      "spider_sr": 1.0
+    },
+    "7": {
+      "add_auc": 0.7239118303571428,
+      "maniptrans_sr": 1.0,
+      "mppe_cm": 2.535504144337841,
+      "spider_sr": 1.0
+    },
+    "8": {
+      "add_auc": 0.23949505649717512,
+      "maniptrans_sr": 1.0,
+      "mppe_cm": 2.6581449082778414,
+      "spider_sr": 1.0
+    },
+    "9": {
+      "add_auc": 0.599353448275862,
+      "maniptrans_sr": 1.0,
+      "mppe_cm": 2.6730647568894432,
+      "spider_sr": 1.0
+    },
+    "10": {
+      "add_auc": 0.21741183879093198,
+      "maniptrans_sr": 1.0,
+      "mppe_cm": 2.1873026551832826,
+      "spider_sr": 1.0
+    },
+    "11": {
+      "add_auc": 0.7,
+      "maniptrans_sr": 1.0,
+      "mppe_cm": 2.135865709992347,
+      "spider_sr": 1.0
+    },
+    "12": {
+      "add_auc": 0.6407142857142858,
+      "maniptrans_sr": 1.0,
+      "mppe_cm": 1.9115362222742225,
+      "spider_sr": 1.0
+    },
+    "13": {
+      "add_auc": 0.1592326464208243,
+      "maniptrans_sr": 1.0,
+      "mppe_cm": 2.769336372976135,
+      "spider_sr": 1.0
+    },
+    "14": {
+      "add_auc": 0.11801359516616314,
+      "maniptrans_sr": 1.0,
+      "mppe_cm": 2.07504333692309,
+      "spider_sr": 1.0
+    },
+    "15": {
+      "add_auc": 0.44755244755244755,
+      "maniptrans_sr": 1.0,
+      "mppe_cm": 2.4599330585208934,
+      "spider_sr": 1.0
+    },
+    "16": {
+      "add_auc": 0.8542976939203355,
+      "maniptrans_sr": 1.0,
+      "mppe_cm": 1.793441398976862,
+      "spider_sr": 1.0
+    },
+    "17": {
+      "add_auc": 0.6737215909090909,
+      "maniptrans_sr": 1.0,
+      "mppe_cm": 2.006118436722643,
+      "spider_sr": 1.0
+    },
+    "18": {
+      "add_auc": 0.16331585081585082,
+      "maniptrans_sr": 1.0,
+      "mppe_cm": 2.721312166406516,
+      "spider_sr": 1.0
+    },
+    "19": {
+      "add_auc": 0.3407872460496614,
+      "maniptrans_sr": 1.0,
+      "mppe_cm": 2.875699267767029,
+      "spider_sr": 1.0
+    },
+    "20": {
+      "add_auc": 0.6574367088607596,
+      "maniptrans_sr": 1.0,
+      "mppe_cm": 2.47518857568788,
+      "spider_sr": 1.0
+    },
+    "21": {
+      "add_auc": 0.1295169616519174,
+      "maniptrans_sr": 1.0,
+      "mppe_cm": 2.140101399394322,
+      "spider_sr": 1.0
+    },
+    "22": {
+      "add_auc": 0.3047635605006954,
+      "maniptrans_sr": 1.0,
+      "mppe_cm": 2.2590624256429255,
+      "spider_sr": 1.0
+    },
+    "23": {
+      "add_auc": 0.5929571881606766,
+      "maniptrans_sr": 1.0,
+      "mppe_cm": 2.5657880044657104,
+      "spider_sr": 1.0
+    },
+    "24": {
+      "add_auc": 0.9169451871657754,
+      "maniptrans_sr": 1.0,
+      "mppe_cm": 1.48704918487107,
+      "spider_sr": 1.0
+    },
+    "25": {
+      "add_auc": 0.7534924330616997,
+      "maniptrans_sr": 1.0,
+      "mppe_cm": 2.0360965727588844,
+      "spider_sr": 1.0
+    },
+    "26": {
+      "add_auc": 0.3035313901345291,
+      "maniptrans_sr": 1.0,
+      "mppe_cm": 2.904058780011242,
+      "spider_sr": 1.0
+    },
+    "27": {
+      "add_auc": 0.7049778761061947,
+      "maniptrans_sr": 1.0,
+      "mppe_cm": 2.2373267383121007,
+      "spider_sr": 1.0
+    },
+    "28": {
+      "add_auc": 0.11778846153846154,
+      "maniptrans_sr": 1.0,
+      "mppe_cm": 2.0510129719848047,
+      "spider_sr": 1.0
+    },
+    "29": {
+      "add_auc": 0.13624197002141325,
+      "maniptrans_sr": 1.0,
+      "mppe_cm": 2.8994317173082464,
+      "spider_sr": 1.0
+    }
+  },
+  "pred": "npz:/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/npz_clean",
+  "scorer": "submission kit metric_code/track_2 (sha256-checked against KIT_MANIFEST.json)",
+  "tier": "tier2"
+}
