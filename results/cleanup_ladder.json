@@ -1,0 +1,15 @@
+{
+  "what": "Tier 2 input-ceiling scores: what a perfect tracker of each reference would score, by the kit's own metric code",
+  "note": "Oracle rows are built from the clean reference and are NOT achievable by a submitted pipeline; they are upper bounds. Only the deployable rows can be used.",
+  "rows": [
+    {"variant": "tier2_released",            "deployable": true,  "AUC": 0.4247, "SP-SR": 0.9667, "MP-SR": 1.0000, "MPPE_cm": 2.3605},
+    {"variant": "support_contact_cleaner",   "deployable": true,  "AUC": 0.4660, "SP-SR": 1.0000, "MP-SR": 1.0000, "MPPE_cm": 2.3053},
+    {"variant": "support_cleaner_plus_seating","deployable": true,"AUC": 0.2786, "SP-SR": 0.6667, "MP-SR": 0.2667, "MPPE_cm": 18.9428,
+     "verdict": "rejected: vertical seating interpolates a target height across unsupported frames and drags the object metres off"},
+    {"variant": "tilt_oracle",               "deployable": false, "AUC": 0.6541, "SP-SR": 1.0000, "MP-SR": 1.0000, "MPPE_cm": 2.0672},
+    {"variant": "full_orientation_oracle",   "deployable": false, "AUC": 0.8806, "SP-SR": 1.0000, "MP-SR": 1.0000, "MPPE_cm": 1.8698},
+    {"variant": "clean_reference",           "deployable": false, "AUC": 1.0000, "SP-SR": 1.0000, "MP-SR": 1.0000, "MPPE_cm": 0.0000}
+  ],
+  "deployable_gain_vs_tier2": {"AUC": 0.0413, "SP-SR": 0.0333, "MP-SR": 0.0, "MPPE_cm": -0.0552},
+  "fraction_of_tilt_oracle_auc_gain_captured": 0.18
+}
