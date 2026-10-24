@@ -10,9 +10,12 @@
 set -uo pipefail
 
 PHASE="${1:-probe}"
-# Must be divisible by scene.world_count (2048), or TrainingConfig rejects it before touching
-# the GPU. 2048 x 4883 = 10,000,384; the old 10,000,896 was not divisible and cost a dev-box
-# iteration to find.
+# Two constraints TrainingConfig enforces before touching the GPU, both found the hard way:
+#   * divisible by scene.world_count (2048). 2048 x 4883 = 10,000,384; the old 10,000,896 was
+#     not, and cost a dev-box iteration.
+#   * at least 409,600 (= 2048 x 200), the replay-buffer minimum. Anything smaller is refused
+#     with "total_environment_steps N cannot reach replay minimum 409600", so the cheapest
+#     possible training run is one replay fill, not one save interval.
 STEPS="${2:-10000384}"
 # phase=full must train on OUR retargeted clip. Pass its path on the instance as $3; the
 # launcher uploads it with --g1-parquet. phase=probe only measures throughput, which does not
