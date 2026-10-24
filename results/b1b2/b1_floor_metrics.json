@@ -1,0 +1,71 @@
+{
+  "checkpoint": "/workspace/outputs/b1_floor/policy_409600.safetensors",
+  "checkpoint_sha256": "8a09375dceba1ecc978b474aac9e0d4b50d899b5c4a894476d9b92e35555b50a",
+  "environment_steps": 409600,
+  "metrics": {
+    "add_auc": 0.12821952289438504,
+    "add_auc_per_body": [
+      0.12821952289438504
+    ],
+    "add_std_m": 0.08329341889266681,
+    "add_std_per_body_m": [
+      0.08329341889266681
+    ],
+    "chord_sr": 0.0,
+    "gated_causes": [
+      "wrist",
+      "object"
+    ],
+    "maniptrans_sr": 0.0,
+    "mean_add_m": 0.17963828701333878,
+    "mean_per_point_error_cm": 16.0001251260047,
+    "mppe_cm": 16.0001251260047,
+    "object_body_names": [
+      "object"
+    ],
+    "object_orientation_error_deg": 106.2887774141933,
+    "object_orientation_error_per_body_rad": [
+      1.855089123797058
+    ],
+    "object_orientation_error_rad": 1.855089123797058,
+    "object_orientation_error_std_deg": 31.41589676917022,
+    "object_orientation_error_std_rad": 0.5483108360886694,
+    "object_position_error_m": 0.14975328530356047,
+    "object_position_error_per_body_m": [
+      0.14975328530356047
+    ],
+    "object_position_error_std_m": 0.03729213027652793,
+    "position_mean_centered": false,
+    "relative_position_error_cm": 0.0,
+    "spider_position_error_centered_m": 0.09169862082502914,
+    "spider_sr_uncentered": 0.0,
+    "step_count": 748,
+    "termination_cause_fraction": {
+      "object": 1.0,
+      "wrist": 1.0
+    },
+    "world_count": 64
+  },
+  "motion_end_frame": -1,
+  "motion_start_frame": 0,
+  "non_finite_worlds": [],
+  "object_orientation_threshold_rad": 1.5,
+  "object_position_threshold_m": 0.1,
+  "parquet": "/v2d/assets/motion/whole_body/soma/sequence_id=2026-05-29_15-43-20_watering_can_pour_right_02/robot_name=g1/data.parquet",
+  "reference_tracking": {
+    "failure_cause_fraction": {
+      "object": 1.0,
+      "palm": 1.0,
+      "pelvis": 1.0
+    },
+    "reference_end_fraction": 1.0,
+    "success_rate": 0.0
+  },
+  "reset_mode": "explicit",
+  "settling_steps": 0,
+  "sim_control_fps": 50.0,
+  "sim_physics_fps": 200.0,
+  "start_frame": 0,
+  "step_count": 748,
+  "world_count": 64
+}

@@ -1,0 +1,58 @@
+{
+  "arms": {
+    "b1_floor": {
+      "evaluator": {
+        "add_auc": 0.1282,
+        "mppe_cm": 16.0,
+        "object_orientation_error_deg": 106.29,
+        "object_position_error_m": 0.1498
+      },
+      "fraction_of_full_recipe": 0.00117,
+      "host": {
+        "add_auc": 0.1303,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 14.7273,
+        "spider_sr": 0.0
+      },
+      "reference": "Tier 2 retargeted e24",
+      "steps": 409600,
+      "train_seconds": 202
+    },
+    "b2_clean": {
+      "evaluator": {
+        "add_auc": 0.2161,
+        "mppe_cm": 14.233,
+        "object_orientation_error_deg": 73.83,
+        "object_position_error_m": 0.1365
+      },
+      "fraction_of_full_recipe": 0.02857,
+      "host": {
+        "add_auc": 0.2047,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 14.7421,
+        "spider_sr": 0.0
+      },
+      "reference": "clean Tier 1 e24",
+      "steps": 10000384,
+      "train_seconds": 558
+    },
+    "perfect_tracking": {
+      "host": {
+        "add_auc": 1.0,
+        "maniptrans_sr": 1.0,
+        "mppe_cm": 0.0,
+        "spider_sr": 1.0
+      }
+    }
+  },
+  "clip": "e24 watering_can",
+  "confound": "B1 and B2 differ in TWO ways, not one: training budget (409,600 vs 10,000,384 steps, 24x) and the reference they trained on (Tier 2 retargeted vs clean Tier 1). That is the comparison that was asked for, but it cannot attribute the gain to either cause on its own.",
+  "scoring": "host metric_code/track_2 against the clean Tier 1 reference, episode 24 only",
+  "verdict": {
+    "auc_gain": 0.0744,
+    "b2_beats_b1_on_auc": true,
+    "mppe_is_a_wash": true,
+    "note": "SP-SR and MP-SR are 0.0 for both: at 0.12% and 2.9% of the 350M-step recipe the policy never gets inside 10 cm / 0.5 rad, so those two metrics cannot separate arms at this budget and AUC is the only live signal."
+  },
+  "what": "B1 floor and B2 short-training ladder on e24, scored by the host's metric code"
+}
