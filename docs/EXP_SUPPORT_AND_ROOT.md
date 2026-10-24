@@ -389,3 +389,34 @@ situation the object cleaner's gate just caught, and it would not ship.
 
 Yaw is explicitly **not** a target. A floor cannot constrain rotation about its own normal, so a
 residual of roughly the yaw component is the expected floor of this method, not a shortfall.
+
+## R2, finally measured: the root cleaner significantly harms contact
+
+The `table_root` arm completed 30/30 at 0.0 mm rigid-fit residual (`results/arm_table_root.json`),
+so the paired contact comparison R2 asked for is now available
+(`results/contact_table_root.json`).
+
+| arm | contact | paired vs `table` |
+|---|---|---|
+| `tier1` | 0.5744 | — |
+| `support_cleaned` (floor-only) | 0.3841 | +0.0024, 5 up / 6 down / 19 tied, p = 1.000 |
+| `table` | 0.3817 | — |
+| `tier2` released | 0.3701 | — |
+| **`table_root`** | **0.3664** | **−0.0153, 9 up / 21 down / 0 tied, p = 0.0428** |
+
+| | Prediction | Result | |
+|---|---|---|---|
+| R1 | scores cannot move, the object pose is untouched | `object_source` byte-identical between arms | **holds by construction** |
+| R2 | paired contact gain ≥ +0.010 | **−0.0153, p = 0.0428** | **fail** |
+| R3′ | 3D stance scatter falls ≥30 % on ≥24/30 | −0.256 mean, 0/30 clips | **fail** |
+| R4 | 30/30 retargets pass at ≤1.0 mm / ≤1.0° | **30/30 at 0.0 mm / 0.033°** | **pass** |
+
+This is the first contact result in the whole project that is **statistically significant in the
+harmful direction**: 21 of 30 clips lose contact, none tie, p = 0.0428. Every other contact
+finding has been a wash. It lines up exactly with the upstream measurement — the cleaner raises
+root rotation error 5.174° → 5.584° and nearly doubles translation error — so the chain is
+coherent end to end: a worse root means worse hands, and worse hands means less contact.
+
+**Decision, as pre-registered: the root alignment is excluded.** R2 was the gate and it failed in
+the wrong direction. The 38 % of contact loss attributable to the root stays unaddressed, and is
+reported rather than papered over.

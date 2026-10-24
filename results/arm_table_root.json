@@ -224,9 +224,8 @@
       "pass": true,
       "relative_rotation_max_diff_deg": 0.02122,
       "rigid_fit_residual_mm": 0.0,
-      "seconds": 389.6,
       "sequence_id": "2026-05-06_10-00-19_blue_trash_can_drag_sideways_08",
-      "status": "ok",
+      "status": "skipped",
       "tier": "tier2"
     },
     {
@@ -249,9 +248,8 @@
       "pass": true,
       "relative_rotation_max_diff_deg": 0.02799,
       "rigid_fit_residual_mm": 0.0,
-      "seconds": 211.2,
       "sequence_id": "2026-06-08_16-57-34_rice_cooker_clockwise_04",
-      "status": "ok",
+      "status": "skipped",
       "tier": "tier2"
     },
     {
@@ -262,9 +260,8 @@
       "pass": true,
       "relative_rotation_max_diff_deg": 0.01833,
       "rigid_fit_residual_mm": 0.0,
-      "seconds": 253.6,
       "sequence_id": "2026-04-29_11-53-57_tall_bar_stool_pull_08",
-      "status": "ok",
+      "status": "skipped",
       "tier": "tier2"
     },
     {
@@ -275,9 +272,8 @@
       "pass": true,
       "relative_rotation_max_diff_deg": 0.01584,
       "rigid_fit_residual_mm": 0.0,
-      "seconds": 215.3,
       "sequence_id": "2026-05-22_16-52-36_step_ladder_drag_03",
-      "status": "ok",
+      "status": "skipped",
       "tier": "tier2"
     },
     {
@@ -288,9 +284,8 @@
       "pass": true,
       "relative_rotation_max_diff_deg": 0.02718,
       "rigid_fit_residual_mm": 0.0,
-      "seconds": 491.2,
       "sequence_id": "2026-06-03_15-08-03_toy_stroller_back_forth_ground_04",
-      "status": "ok",
+      "status": "skipped",
       "tier": "tier2"
     },
     {
@@ -301,17 +296,21 @@
       "pass": true,
       "relative_rotation_max_diff_deg": 0.02624,
       "rigid_fit_residual_mm": 0.0,
-      "seconds": 250.4,
       "sequence_id": "2026-05-29_15-43-20_watering_can_pour_right_02",
-      "status": "ok",
+      "status": "skipped",
       "tier": "tier2"
     },
     {
       "episode": 25,
-      "log": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/arms/table_root/logs/tier2_e25.log",
+      "frames": 859,
       "object": "cyan_water_bottle",
+      "orientation_residual_max_deg": 0.03179,
+      "pass": true,
+      "relative_rotation_max_diff_deg": 0.0115,
+      "rigid_fit_residual_mm": 0.0,
+      "seconds": 423.4,
       "sequence_id": "2026-03-20_11-59-57_cyan_water_bottle_rotate_01",
-      "status": "retarget_failed",
+      "status": "ok",
       "tier": "tier2"
     },
     {
@@ -322,9 +321,8 @@
       "pass": true,
       "relative_rotation_max_diff_deg": 0.01633,
       "rigid_fit_residual_mm": 0.0,
-      "seconds": 315.0,
       "sequence_id": "2026-06-05_16-05-08_skateboard_rotate_ground_10",
-      "status": "ok",
+      "status": "skipped",
       "tier": "tier2"
     },
     {
@@ -335,17 +333,21 @@
       "pass": true,
       "relative_rotation_max_diff_deg": 0.02168,
       "rigid_fit_residual_mm": 0.0,
-      "seconds": 336.9,
       "sequence_id": "2026-05-01_11-15-05_woven_basket_ground_desk_10",
-      "status": "ok",
+      "status": "skipped",
       "tier": "tier2"
     },
     {
       "episode": 28,
-      "log": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/arms/table_root/logs/tier2_e28.log",
+      "frames": 988,
       "object": "squeegee",
+      "orientation_residual_max_deg": 0.02724,
+      "pass": true,
+      "relative_rotation_max_diff_deg": 0.01377,
+      "rigid_fit_residual_mm": 0.0,
+      "seconds": 474.1,
       "sequence_id": "2026-05-19_11-27-07_squeegee_sweep_away_from_you_03_",
-      "status": "retarget_failed",
+      "status": "ok",
       "tier": "tier2"
     },
     {
@@ -356,22 +358,20 @@
       "pass": true,
       "relative_rotation_max_diff_deg": 0.01441,
       "rigid_fit_residual_mm": 0.0,
-      "seconds": 163.2,
       "sequence_id": "2026-06-05_18-27-40_rolling_luggage_left_foot_push_06",
-      "status": "ok",
+      "status": "skipped",
       "tier": "tier2"
     }
   ],
   "summary": {
     "abort_reason": null,
     "counts": {
-      "ok": 9,
-      "retarget_failed": 2,
-      "skipped": 19
+      "ok": 2,
+      "skipped": 28
     },
-    "episodes_passed": 28,
+    "episodes_passed": 30,
     "episodes_total": 30,
-    "free_disk_gb_after": 28.0,
+    "free_disk_gb_after": 27.6,
     "object_source": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/npz_table",
     "worst_orientation_residual_deg": 0.03299,
     "worst_rigid_fit_residual_mm": 0

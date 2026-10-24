@@ -89,6 +89,8 @@ from pathlib import Path
 import numpy as np
 from scipy.spatial.transform import Rotation, Slerp
 
+from ..geometry import minimal_rotation
+
 TIER1 = "tier_1_multiview_caption"
 
 
@@ -137,6 +139,60 @@ def slow_segments(
     return segments, speed, limit
 
 
+#: The retargeter consumes poses.npy as einsum("ij,tjk->tik", diag(1,-1,-1,1), poses), so the
+#: released world and the SOMA body frame differ by this. It is a proper rotation (180 deg about
+#: x, det = +1) and an involution, so applying it to the body or to the plane is equivalent.
+#: Reading the resulting ~270 cm body-to-plane distance as an unreachable frame rather than as an
+#: unapplied flip is what sent the first root cleaner down a dead end; see
+#: docs/EXP_SUPPORT_AND_ROOT.md.
+CV_TO_SOMA_FLIP = np.diag([1.0, -1.0, -1.0])
+
+
+def sole_plane(
+    points: np.ndarray, normal: np.ndarray, offset: float, band_m: float = 0.02
+) -> np.ndarray:
+    """The unit normal of the sole, from the foot vertices nearest the ground.
+
+    Fitting a plane through the *whole* foot does not give the sole: a foot is a 3D shape with
+    toes, heel, instep and ankle, so the smallest singular direction of the full cloud follows
+    the foot's overall form. Measured, that produced 12 degree corrections and 16 cm body shifts
+    against a true root error of 5.17 degrees and 1.09 cm. Only the vertices within `band_m` of
+    the lowest one are on the sole, and those are what a floor can speak to.
+    """
+    height = points @ normal + offset
+    near_ground = points[height <= height.min() + band_m]
+    if len(near_ground) < 8:  # degenerate contact patch; fall back to the whole foot
+        near_ground = points
+    centred = near_ground - near_ground.mean(axis=0)
+    _, _, vt = np.linalg.svd(centred, full_matrices=False)
+    return vt[-1] / np.linalg.norm(vt[-1])
+
+
+def floor_correction(
+    foot: np.ndarray, normal: np.ndarray, offset: float, max_deg: float
+) -> tuple[np.ndarray, np.ndarray] | None:
+    """The rigid correction putting a stance foot's sole flat on, and touching, the floor.
+
+    A floor pins three of six degrees of freedom: the height, and the two tilt angles. Yaw and
+    horizontal position are left alone, because a plane carries no information about them --
+    which is an honest accounting of what this reference can do, not a shortfall.
+    """
+    sole = sole_plane(foot, normal, offset)
+    # Point the sole normal downward, so the correction levels the foot rather than flipping it.
+    if float(np.dot(sole, normal)) > 0:
+        sole = -sole
+    rotation = minimal_rotation(sole, -normal)
+    if float(np.degrees(rotation.magnitude())) > max_deg:
+        return None
+    pivot = foot.mean(axis=0)
+    matrix = rotation.as_matrix()
+    # Rotate about the foot centroid, then drop the foot until its lowest vertex touches.
+    rotated = (foot - pivot) @ matrix.T + pivot
+    translation = pivot - matrix @ pivot
+    lowest = float((rotated @ normal + offset).min())
+    return matrix, translation - lowest * normal
+
+
 def kabsch(source: np.ndarray, target: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     """The rigid (R, t) minimising |R source + t - target|, with a proper rotation."""
     source_mean, target_mean = source.mean(axis=0), target.mean(axis=0)
@@ -149,9 +205,19 @@ def kabsch(source: np.ndarray, target: np.ndarray) -> tuple[np.ndarray, np.ndarr
 
 
 def clean_episode(
-    vertices: np.ndarray, left: np.ndarray, right: np.ndarray, args
+    vertices: np.ndarray,
+    left: np.ndarray,
+    right: np.ndarray,
+    args,
+    plane: tuple[np.ndarray, float] | None = None,
 ) -> tuple[np.ndarray, np.ndarray, dict]:
-    """Return per-frame (rotation (T,3,3), translation (T,3)) corrections and diagnostics."""
+    """Return per-frame (rotation (T,3,3), translation (T,3)) corrections and diagnostics.
+
+    With `plane` and `--anchor floor`, each stance frame is corrected against the released ground
+    plane: an external reference. Without it the correction is fitted to the stance segment's own
+    median, which is a statistic of the noisy data and was measured to make the root error worse
+    (5.17 -> 5.58 deg).
+    """
     frames = len(vertices)
     # One stance segment list per foot, and the median stance pose each one should hold.
     planted: list[list[tuple[int, int, np.ndarray]]] = []
@@ -171,24 +237,48 @@ def clean_episode(
 
     corrections: dict[int, tuple[np.ndarray, np.ndarray]] = {}
     applied_deg, rejected_deg = [], []
-    for frame in range(frames):
-        source, target = [], []
-        for side, segments in zip((left, right), planted, strict=True):
-            for start, stop, reference in segments:
-                if start <= frame < stop:
-                    source.append(vertices[frame][side])
-                    target.append(reference)
-                    break
-        if not source:
-            continue
-        rotation, translation = kabsch(np.concatenate(source), np.concatenate(target))
-        angle = float(np.degrees(Rotation.from_matrix(rotation).magnitude()))
-        # Tier 2's root error never exceeds 8 deg; far above that is a stance mis-detection.
-        if angle > args.max_root_deg:
-            rejected_deg.append(round(angle, 3))
-            continue
-        corrections[frame] = (rotation, translation)
-        applied_deg.append(angle)
+    if getattr(args, "anchor", "planting") == "floor":
+        if plane is None:
+            raise ValueError("--anchor floor needs the released ground plane")
+        normal, offset = plane
+        for frame in range(frames):
+            # The lowest-footed stance foot at this frame is the one on the ground.
+            feet_here = [
+                side
+                for side, segments in zip((left, right), planted, strict=True)
+                if any(start <= frame < stop for start, stop, _ in segments)
+            ]
+            if not feet_here:
+                continue
+            chosen = min(
+                feet_here, key=lambda side: float((vertices[frame][side] @ normal + offset).min())
+            )
+            found = floor_correction(vertices[frame][chosen], normal, offset, args.max_root_deg)
+            if found is None:
+                rejected_deg.append(0.0)
+                continue
+            rotation, translation = found
+            corrections[frame] = (rotation, translation)
+            applied_deg.append(float(np.degrees(Rotation.from_matrix(rotation).magnitude())))
+    else:
+        for frame in range(frames):
+            source, target = [], []
+            for side, segments in zip((left, right), planted, strict=True):
+                for start, stop, reference in segments:
+                    if start <= frame < stop:
+                        source.append(vertices[frame][side])
+                        target.append(reference)
+                        break
+            if not source:
+                continue
+            rotation, translation = kabsch(np.concatenate(source), np.concatenate(target))
+            angle = float(np.degrees(Rotation.from_matrix(rotation).magnitude()))
+            # Tier 2's root error never exceeds 8 deg; far above that is a stance mis-detection.
+            if angle > args.max_root_deg:
+                rejected_deg.append(round(angle, 3))
+                continue
+            corrections[frame] = (rotation, translation)
+            applied_deg.append(angle)
 
     diagnostics = {
         "frames": frames,
@@ -259,6 +349,14 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("--npz-out", type=Path, required=True)
     parser.add_argument("--fps", type=float, default=30.0)
     parser.add_argument(
+        "--anchor",
+        choices=["planting", "floor"],
+        default="floor",
+        help="what the correction is measured against. 'floor' uses the released ground plane, "
+        "an external reference. 'planting' fits the stance segment's own median, which is a "
+        "statistic of the noisy data and was measured to make the root error worse.",
+    )
+    parser.add_argument(
         "--stance-quantile",
         type=float,
         default=0.4,
@@ -319,7 +417,21 @@ def main(argv: list[str] | None = None) -> None:
         )
         left, right = feet[side_of == 0], feet[side_of == 1]
 
-        rotations, translations, diagnostics = clean_episode(vertices, left, right, args)
+        plane = None
+        if args.anchor == "floor":
+            # The plane ships in the released world frame; flip it into the body's frame. Doing
+            # it to the plane rather than to 18k vertices per frame is the cheap direction.
+            raw = np.asarray(
+                json.loads((root / row["ground_plane"]).read_text())["plane"], dtype=np.float64
+            )
+            normal = CV_TO_SOMA_FLIP @ (raw[:3] / np.linalg.norm(raw[:3]))
+            offset = float(raw[3] / np.linalg.norm(raw[:3]))
+            # Orient it so the body sits on the positive side, from the noisy body alone.
+            if float(np.mean(vertices.reshape(-1, 3) @ normal + offset)) < 0:
+                normal, offset = -normal, -offset
+            plane = (normal, offset)
+        rotations, translations, diagnostics = clean_episode(vertices, left, right, args, plane)
+        diagnostics["anchor"] = args.anchor
 
         with np.load(params_path, allow_pickle=True) as archive:
             poses = np.asarray(archive["poses"], dtype=np.float64)
@@ -401,6 +513,7 @@ def main(argv: list[str] | None = None) -> None:
         "episodes": len(episodes),
         "cleaned": sum(1 for v in episodes.values() if v["status"] == "cleaned"),
         "unchanged": sum(1 for v in episodes.values() if v["status"] != "cleaned"),
+        "anchor": args.anchor,
         "stance_quantile": args.stance_quantile,
         "smooth_frames": args.smooth_frames,
         "max_root_deg": args.max_root_deg,
