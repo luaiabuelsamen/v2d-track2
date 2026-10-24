@@ -10,7 +10,10 @@
 set -uo pipefail
 
 PHASE="${1:-probe}"
-STEPS="${2:-10000896}"
+# Must be divisible by scene.world_count (2048), or TrainingConfig rejects it before touching
+# the GPU. 2048 x 4883 = 10,000,384; the old 10,000,896 was not divisible and cost a dev-box
+# iteration to find.
+STEPS="${2:-10000384}"
 # phase=full must train on OUR retargeted clip. Pass its path on the instance as $3; the
 # launcher uploads it with --g1-parquet. phase=probe only measures throughput, which does not
 # depend on which clip it is, so it falls back to the example sequence shipped in the repo.

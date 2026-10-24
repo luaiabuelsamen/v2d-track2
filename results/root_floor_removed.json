@@ -1,0 +1,221 @@
+{
+  "clips_rot_improved": 2,
+  "clips_transl_improved": 0,
+  "mean_rot_after_deg": 7.2308,
+  "mean_rot_before_deg": 5.1742,
+  "mean_transl_after_cm": 12.2055,
+  "mean_transl_before_cm": 1.0873,
+  "per_episode": [
+    {
+      "episode": 0,
+      "rot_after_deg": 6.3746,
+      "rot_before_deg": 4.4525,
+      "transl_after_cm": 12.4651,
+      "transl_before_cm": 0.9001
+    },
+    {
+      "episode": 1,
+      "rot_after_deg": 7.2676,
+      "rot_before_deg": 3.1848,
+      "transl_after_cm": 13.0548,
+      "transl_before_cm": 1.0782
+    },
+    {
+      "episode": 2,
+      "rot_after_deg": 6.9051,
+      "rot_before_deg": 5.7813,
+      "transl_after_cm": 14.0824,
+      "transl_before_cm": 1.0495
+    },
+    {
+      "episode": 3,
+      "rot_after_deg": 3.8263,
+      "rot_before_deg": 3.7603,
+      "transl_after_cm": 5.9437,
+      "transl_before_cm": 0.9034
+    },
+    {
+      "episode": 4,
+      "rot_after_deg": 7.0504,
+      "rot_before_deg": 6.6852,
+      "transl_after_cm": 9.7529,
+      "transl_before_cm": 0.9117
+    },
+    {
+      "episode": 5,
+      "rot_after_deg": 9.6782,
+      "rot_before_deg": 5.6117,
+      "transl_after_cm": 14.5756,
+      "transl_before_cm": 1.1031
+    },
+    {
+      "episode": 6,
+      "rot_after_deg": 6.9246,
+      "rot_before_deg": 6.1302,
+      "transl_after_cm": 11.8569,
+      "transl_before_cm": 0.9567
+    },
+    {
+      "episode": 7,
+      "rot_after_deg": 7.2027,
+      "rot_before_deg": 6.4295,
+      "transl_after_cm": 17.4067,
+      "transl_before_cm": 1.3377
+    },
+    {
+      "episode": 8,
+      "rot_after_deg": 5.5467,
+      "rot_before_deg": 4.5533,
+      "transl_after_cm": 10.7142,
+      "transl_before_cm": 1.2478
+    },
+    {
+      "episode": 9,
+      "rot_after_deg": 5.8299,
+      "rot_before_deg": 6.8167,
+      "transl_after_cm": 10.0828,
+      "transl_before_cm": 1.225
+    },
+    {
+      "episode": 10,
+      "rot_after_deg": 7.2902,
+      "rot_before_deg": 6.3478,
+      "transl_after_cm": 14.2135,
+      "transl_before_cm": 0.6374
+    },
+    {
+      "episode": 11,
+      "rot_after_deg": 8.5902,
+      "rot_before_deg": 3.8825,
+      "transl_after_cm": 10.3574,
+      "transl_before_cm": 1.1874
+    },
+    {
+      "episode": 12,
+      "rot_after_deg": 6.8885,
+      "rot_before_deg": 3.6391,
+      "transl_after_cm": 9.9266,
+      "transl_before_cm": 1.0267
+    },
+    {
+      "episode": 13,
+      "rot_after_deg": 6.5457,
+      "rot_before_deg": 4.1026,
+      "transl_after_cm": 11.2001,
+      "transl_before_cm": 1.4459
+    },
+    {
+      "episode": 14,
+      "rot_after_deg": 7.579,
+      "rot_before_deg": 6.4251,
+      "transl_after_cm": 9.7106,
+      "transl_before_cm": 1.1602
+    },
+    {
+      "episode": 15,
+      "rot_after_deg": 8.3314,
+      "rot_before_deg": 5.4019,
+      "transl_after_cm": 12.4332,
+      "transl_before_cm": 1.2744
+    },
+    {
+      "episode": 16,
+      "rot_after_deg": 7.1934,
+      "rot_before_deg": 4.9915,
+      "transl_after_cm": 9.2546,
+      "transl_before_cm": 0.9463
+    },
+    {
+      "episode": 17,
+      "rot_after_deg": 7.6237,
+      "rot_before_deg": 5.4735,
+      "transl_after_cm": 10.7729,
+      "transl_before_cm": 1.0379
+    },
+    {
+      "episode": 18,
+      "rot_after_deg": 5.9572,
+      "rot_before_deg": 2.9239,
+      "transl_after_cm": 11.4974,
+      "transl_before_cm": 0.9319
+    },
+    {
+      "episode": 19,
+      "rot_after_deg": 9.1905,
+      "rot_before_deg": 7.2139,
+      "transl_after_cm": 15.6279,
+      "transl_before_cm": 0.7836
+    },
+    {
+      "episode": 20,
+      "rot_after_deg": 7.7833,
+      "rot_before_deg": 4.4297,
+      "transl_after_cm": 12.9527,
+      "transl_before_cm": 1.2908
+    },
+    {
+      "episode": 21,
+      "rot_after_deg": 7.0401,
+      "rot_before_deg": 6.3248,
+      "transl_after_cm": 13.1123,
+      "transl_before_cm": 1.2326
+    },
+    {
+      "episode": 22,
+      "rot_after_deg": 8.8742,
+      "rot_before_deg": 6.3458,
+      "transl_after_cm": 13.8847,
+      "transl_before_cm": 1.2658
+    },
+    {
+      "episode": 23,
+      "rot_after_deg": 8.5005,
+      "rot_before_deg": 4.3528,
+      "transl_after_cm": 13.7417,
+      "transl_before_cm": 0.976
+    },
+    {
+      "episode": 24,
+      "rot_after_deg": 5.0151,
+      "rot_before_deg": 3.299,
+      "transl_after_cm": 5.5741,
+      "transl_before_cm": 0.7509
+    },
+    {
+      "episode": 25,
+      "rot_after_deg": 9.3025,
+      "rot_before_deg": 5.5239,
+      "transl_after_cm": 17.7276,
+      "transl_before_cm": 0.9633
+    },
+    {
+      "episode": 26,
+      "rot_after_deg": 8.087,
+      "rot_before_deg": 4.4398,
+      "transl_after_cm": 12.2555,
+      "transl_before_cm": 1.2129
+    },
+    {
+      "episode": 27,
+      "rot_after_deg": 5.0877,
+      "rot_before_deg": 5.992,
+      "transl_after_cm": 13.0447,
+      "transl_before_cm": 1.277
+    },
+    {
+      "episode": 28,
+      "rot_after_deg": 8.755,
+      "rot_before_deg": 6.1329,
+      "transl_after_cm": 17.6629,
+      "transl_before_cm": 1.2383
+    },
+    {
+      "episode": 29,
+      "rot_after_deg": 6.6839,
+      "rot_before_deg": 4.5777,
+      "transl_after_cm": 11.2807,
+      "transl_before_cm": 1.2665
+    }
+  ],
+  "what": "did the floor-anchored root cleaner reduce the actual root error"
+}

@@ -162,7 +162,7 @@ B1_DESCRIPTION="none"
 case "$PHASE" in
   # build: provisioning plus one Docker image build, measured at 229-336 s over four attempts.
   build) STEPS=0;         EST_HOURS=0.4 ;;
-  probe) STEPS=10000896;  EST_HOURS=0.7 ;;
+  probe) STEPS=10000384;  EST_HOURS=0.7 ;;
   full)  STEPS=349999104; EST_HOURS=6   ;;
 esac
 EST_COST="$(awk -v h="$EST_HOURS" -v r="$HOURLY" 'BEGIN{printf "%.2f", h*r}')"

@@ -420,3 +420,51 @@ coherent end to end: a worse root means worse hands, and worse hands means less 
 **Decision, as pre-registered: the root alignment is excluded.** R2 was the gate and it failed in
 the wrong direction. The 38 % of contact loss attributable to the root stays unaddressed, and is
 reported rather than papered over.
+
+## Results: the floor-anchored root cleaner fails worse, and the reason is measurable
+
+| | root rotation error | root translation error | clips improved |
+|---|---|---|---|
+| raw Tier 2 | 5.174° | 1.087 cm | — |
+| foot-planting (internal reference) | 5.584° | 2.102 cm | 3/30 rot, 0/30 transl |
+| **floor-anchored (external reference)** | **7.231°** | **12.206 cm** | **2/30 rot, 0/30 transl** |
+
+| | Prediction | Result | |
+|---|---|---|---|
+| F1 | root rotation ≤ 4.50° | **7.231°** | **fail** |
+| F2 | root translation ≤ 1.00 cm | **12.206 cm** | **fail** |
+| F3 | rotation improves on ≥20/30 | **2/30** | **fail** |
+| F4 | do-no-harm ≤ 2.0° on clean input | not reached; F1–F3 settle it | — |
+
+Giving the cleaner the external reference it was missing made it **worse**, not better. That is
+not a contradiction of the earlier lesson, it is a sharper version of it: **an external reference
+only helps if it actually constrains the quantity you are correcting.**
+
+The measurement that explains it was taken before the run, on **clean** Tier 1:
+
+| | e00 | e07 | e24 |
+|---|---|---|---|
+| stance sole vs floor-plane angle (median) | **6.67°** | **9.00°** | **14.14°** |
+| lowest foot vertex above the plane (median) | −0.74 cm | +0.28 cm | +0.24 cm |
+
+So the floor pins the foot's **height** to sub-centimetre and does **not** pin its **tilt**: in
+clean data the sole already sits 7–14° off parallel. Tier 2's root rotation error is **5.17°**,
+which is *smaller than the clean residual*. Forcing the sole flat therefore corrects the body's
+own reconstructed foot geometry rather than the injected noise, and the translation damage
+follows mechanically — the cleaner drops the body until the mis-rotated sole touches, so a bad
+rotation becomes a 12 cm vertical error.
+
+A reconstructed foot is not a flat plate on a fitted plane. The first implementation made this
+worse still by fitting a plane through *all* foot vertices rather than the contact patch, which
+produced 12° corrections and 16 cm shifts; restricting to vertices within 2 cm of the lowest
+improved it to 8° and 11.5 cm, and neither is close to usable.
+
+**Decision, as pre-registered: the root is left alone.** Both attempts are kept in the tree with
+their measurements, because the pair is the useful artefact — one failed for want of an external
+reference, the other failed with one, and the difference is whether the reference constrains the
+right degrees of freedom. The 38 % of contact loss attributable to the root stays unaddressed and
+is reported as such.
+
+The one thing the floor *does* pin is height, to sub-centimetre. Tier 2's translation error is
+only 1.09 cm to begin with, so a height-only variant has about a centimetre to win and would need
+its own pre-registration. It is noted, not attempted.
