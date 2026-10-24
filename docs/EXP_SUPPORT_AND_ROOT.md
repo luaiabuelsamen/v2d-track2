@@ -151,3 +151,71 @@ retargeted motion) are different files.
   is the unit; a paired mean gain is the only contact claim these arms can support.
 - Episode 29 manipulates its object with a foot and has ~0 hand contact in every arm by
   construction. It stays in the mean and carries no conclusion.
+
+---
+
+# Results
+
+## The support-surface extension, scored
+
+`scripts/clean_support_contact.py --support-primitives`, scored with the kit's own metric code
+(`results/tier2_support_table.json`). The floor-only path was first confirmed **bit-identical**
+to the committed baseline — all 30 npz files compare equal and the per-episode record matches —
+so this is strictly an addition.
+
+| reference | AUC | SP-SR | MP-SR | MPPE cm |
+|---|---|---|---|---|
+| Tier 2 released | 0.4247 | 0.9667 | 1.0000 | 2.3605 |
+| floor-only cleaner | 0.4660 | 1.0000 | 1.0000 | 2.3053 |
+| **support-surface cleaner** | **0.4755** | **1.0000** | **1.0000** | **2.2777** |
+| tilt oracle (unreachable) | 0.6541 | 1.0000 | 1.0000 | 2.0672 |
+| clean reference | 1.0000 | 1.0000 | 1.0000 | 0.0000 |
+
+| | Prediction | Result | |
+|---|---|---|---|
+| T1 | AUC ≥ 0.4860 | **0.4755** (+0.0095 over floor-only) | **fail** |
+| T2 | no metric regresses | SP-SR 1.0000, MP-SR 1.0000, MPPE **2.2777** | **pass** |
+| T3 | 30/30 cleaned | **30/30**, 0 unchanged | **pass** |
+| T4 | each of e03/e06/e07/e20/e25 gains ≥ 0.01 AUC | +0.1459, +0.0245, +0.0571, **+0.0021**, +0.0328 | **fail (4/5)** |
+| T5 | e24 and e28 gain no corrected segments | 254→254 and 76→76 frames, floor only | **pass** |
+
+**T1 failed on magnitude and the decision rule still selects this variant.** Those are separate
+questions and were written as separate things in advance. 41 % more accepted rest segments bought
+23 % of the gain the floor segments did, so my point prediction of 0.50 was wrong and the
+mechanism is not linear in segment count. But the rule — highest AUC subject to no metric worse
+than raw Tier 2, simpler wins inside 0.005 — picks the support-surface variant on 0.4755 vs
+0.4660, a 0.0095 gap. **It becomes the Tier 2 reference set.**
+
+## Where the gain and the loss actually are
+
+Per episode: **11 improve, 18 are untouched, 1 regresses.** Mean ΔAUC is **+0.0525** on the five
+newly unlocked clips and **+0.0009** on the other 25, so essentially the whole effect lives in
+the episodes that previously received no correction at all. That also explains T1: 18 clips could
+not move, because they have no primitive or no non-floor rest.
+
+**e17 `traffic_cone` regresses −0.0815**, the largest per-clip move in either direction. I
+guessed the cause was the propagation interpolating between a floor-derived and a table-derived
+correction, and that guess is **wrong**. Splitting the clip in thirds against the clean reference
+(analysis only — the cleaner never sees it) puts the damage squarely in the table phase, and it
+grows monotonically into it:
+
+| | first third | middle | last third |
+|---|---|---|---|
+| floor-only orientation error | 22.50° | 19.20° | 19.41° |
+| support-surface | 22.57° | 23.03° | **28.57°** |
+| delta | +0.07° | +3.83° | **+9.16°** |
+
+The first third is untouched, so the interpolation is not the problem — the table corrections
+themselves are. The likely mechanism is the penetration allowance doing exactly what it was
+designed to do, in a case where it should not: the cone's "rest" segments sit 2.3 cm *below* the
+77.1 cm table top, which the 10 cm window accepts as tilt-driven penetration, but a cone held
+briefly in the air beside the table while being set down looks identical by that test. This is
+the `watering_can` failure re-admitted through the window that tables required. It is **not**
+being tuned away here: a gate change chosen by looking at e17's score is a gate fitted to e17.
+It is the obvious subject of the next pre-registration.
+
+For contrast, where the extension works it works decisively. **e03 `contigo_coffee_mug`** goes
+from 25.65° to 5.85° mean orientation error, **771 of 781 frames better and none worse**,
+ΔAUC +0.1459. **e20 `rice_cooker`** — the clip that failed T4 — is simply near-neutral: −0.65°
+overall with 211 frames worse and 279 better, a correction that neither helps nor hurts rather
+than one that failed.
