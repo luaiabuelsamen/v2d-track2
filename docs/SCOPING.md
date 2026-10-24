@@ -184,6 +184,16 @@ On these assumptions, the **cost per clip-policy is about $1.6–3.2 on an L40S 
 
 \*AUC here uses ADD over the 6 MPPE keypoints rather than mesh vertices. It is a proxy, not the leaderboard number.
 
+> **Correction, 2026-10-24.** The 0.82 proxy is wrong and it reversed a conclusion. The real
+> metric transforms 500 sampled mesh vertices, and with the released meshes the Tier 2 input
+> ceiling is **AUC 0.425** (`results/tier2_input_ceiling_kitscorer.json`, scored with the kit's
+> own metric code). A 21° rotation error barely moves keypoints 5 cm from the origin but moves a
+> step ladder's far vertices by metres. The corrected reading: the Tier 2 input beats every team
+> on SP-SR, MP-SR and MPPE, and **loses to the top four on AUC**. The orientation error splits
+> into 15.8° of support-recoverable tilt and 11.4° of unrecoverable yaw, and fixing only the tilt
+> would lift the ceiling to AUC 0.654 (`results/tilt_yaw_split.json`,
+> `results/tier2_tilt_fixed.json`). See `docs/PLAN_11DAY.md`.
+
 **The corruption itself:**
 - Position error is a **slow offset**: 2.0 cm RMS, of which 1.98 cm sits below about 1 Hz and only **0.24 cm is jitter**.
 - Rotation error is a random walk **clipped at exactly 30°**. The 95th percentile is 30.0° in 27 of 30 episodes, and the mean is 21°. That lies just under MP-SR's 30° bar and SP-SR's 28.6° bar.
