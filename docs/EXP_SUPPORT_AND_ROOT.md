@@ -95,6 +95,26 @@ the translation, which is exactly the subspace Tier 2 perturbs.
 
 **Arm `table_root` — both.** This is the candidate reference set.
 
+> **Amendment, made on calibration data before any outcome was measured.** The root cleaner's
+> stance detector was specified above with an absolute speed threshold, as the object cleaner
+> uses. Calibration on paired clips (`results/probe_root_stance.json`) shows that cannot work:
+> the median slower-foot speed is 0.0053 m/s in Tier 1 and **0.0330 in Tier 2, a 6.2x noise
+> floor**. At 0.02 m/s Tier 1 calls 85 % of frames planted and Tier 2 only 22 %; at 0.05 m/s
+> Tier 2 reaches 77 % but Tier 1 is at 97 %; by 0.10 m/s both exceed 99 % and the test says
+> nothing. No fixed speed recovers Tier 1's stance set from Tier 2's data. The detector now uses
+> **each clip's own 0.4 quantile of that foot's speed**, which asks only which frames are
+> quietest — an ordering the perturbation barely disturbs — and needs no absolute scale. 0.4 is
+> conservative by more than a factor of two against Tier 1's 85 %.
+>
+> A cheaper fix was tried first and **rejected by the same measurement**. Since the perturbation
+> is rigid it ought to move both feet alike, so the left-right speed *difference* should reject
+> it as common mode. The measured correlation is **-0.098, +0.019, +0.035** — nothing is shared,
+> because a rotation about the root pushes two feet on opposite sides of it in opposite
+> directions.
+>
+> No prediction or threshold changes. R1-R4 stand exactly as written, and no contact or score
+> number for any root arm had been computed when this was made.
+
 ## Predictions
 
 Numbers to beat, all already committed: raw Tier 2 scores AUC **0.4247** / SP-SR **0.9667** /

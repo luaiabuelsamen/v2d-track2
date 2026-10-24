@@ -26,8 +26,27 @@ Per episode:
    assigned to the nearer of the two toe-end joints at frame 0, splitting it by side.
 2. **Stance detection**, per foot, on a `--smooth-frames` moving average of the foot centroid,
    with the same reasoning as the object cleaner: differentiating a noisy position at 30 fps
-   turns jitter into metres per second. Contiguous runs of at least `--min-stance-frames` below
-   `--stance-speed` count.
+   turns jitter into metres per second. The threshold is **each clip's own
+   `--stance-quantile` of that foot's speed**, not an absolute speed, because an absolute one
+   provably cannot work here. Measured on paired clips (`results/probe_root_stance.json`): the
+   median slower-foot speed is **0.0053 m/s in Tier 1 and 0.0330 in Tier 2, a 6.2x noise
+   floor**. At 0.02 m/s Tier 1 calls 85 % of frames planted and Tier 2 only 22 %; at 0.05 m/s
+   Tier 2 reaches 77 % but Tier 1 is at 97 %; by 0.10 m/s both exceed 99 % and the test is
+   vacuous. No fixed speed recovers Tier 1's stance set from Tier 2's data. A per-clip quantile
+   sidesteps the noise floor entirely by asking only which frames are *quietest*, which the
+   perturbation does not reorder much.
+
+   The default quantile is 0.4: Tier 1 says stance is the majority state in these clips (85 % of
+   frames at 0.02 m/s, since the subject mostly stands and manipulates), so taking the quietest
+   40 % per foot is conservative by more than a factor of two. Contiguous runs of at least
+   `--min-stance-frames` count.
+
+   A cheaper idea was tried first and **rejected by measurement**: since the perturbation is a
+   rigid transform of the whole body, it ought to move both feet alike, so the *difference*
+   between the two feet's speeds should reject it as common mode. The left-right speed
+   correlation is **-0.098, +0.019 and +0.035** across the probed clips, i.e. nothing is shared.
+   A rotation about the root displaces two feet on opposite sides of it in opposite directions,
+   so there is no common mode to reject.
 3. **Per-frame rigid correction.** For each frame, take whichever feet are in a stance segment,
    and Kabsch-fit their current vertices onto that segment's median vertex positions. The result
    is the rigid transform that puts the planted foot back where it stayed. Both feet are used
@@ -58,6 +77,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import gc
 import json
 import sys
 from pathlib import Path
@@ -84,11 +104,16 @@ def smooth(position: np.ndarray, window: int) -> np.ndarray:
                      for axis in range(position.shape[1])], axis=1)
 
 
-def slow_segments(position: np.ndarray, fps: float, speed_limit: float, min_frames: int,
-                  window: int) -> list[tuple[int, int]]:
-    """Contiguous [start, stop) runs where `position` moves slower than `speed_limit`."""
+def slow_segments(position: np.ndarray, fps: float, quantile: float, min_frames: int,
+                  window: int) -> tuple[list[tuple[int, int]], np.ndarray, float]:
+    """Contiguous [start, stop) runs among this foot's own quietest `quantile` of frames.
+
+    Returns the segments, the per-frame speed, and the speed the quantile resolved to, so the
+    threshold a clip actually used is recorded rather than assumed.
+    """
     speed = np.linalg.norm(np.gradient(smooth(position, window), axis=0), axis=-1) * fps
-    slow = speed < speed_limit
+    limit = float(np.quantile(speed, quantile))
+    slow = speed <= limit
     segments, start = [], None
     for index, value in enumerate(slow):
         if value and start is None:
@@ -99,7 +124,7 @@ def slow_segments(position: np.ndarray, fps: float, speed_limit: float, min_fram
             start = None
     if start is not None and len(slow) - start >= min_frames:
         segments.append((start, len(slow)))
-    return segments
+    return segments, speed, limit
 
 
 def kabsch(source: np.ndarray, target: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
@@ -119,10 +144,12 @@ def clean_episode(vertices: np.ndarray, left: np.ndarray, right: np.ndarray,
     frames = len(vertices)
     # One stance segment list per foot, and the median stance pose each one should hold.
     planted: list[list[tuple[int, int, np.ndarray]]] = []
+    limits = []
     for side in (left, right):
         centroid = vertices[:, side].mean(axis=1)
-        segments = slow_segments(centroid, args.fps, args.stance_speed,
-                                 args.min_stance_frames, args.smooth_frames)
+        segments, _, limit = slow_segments(centroid, args.fps, args.stance_quantile,
+                                           args.min_stance_frames, args.smooth_frames)
+        limits.append(round(limit, 5))
         planted.append([(start, stop, np.median(vertices[start:stop][:, side], axis=0))
                         for start, stop in segments])
 
@@ -151,6 +178,7 @@ def clean_episode(vertices: np.ndarray, left: np.ndarray, right: np.ndarray,
         "frames": frames,
         "stance_segments": [len(s) for s in planted],
         "stance_frames": [sum(stop - start for start, stop, _ in s) for s in planted],
+        "stance_speed_limit_m_per_s": limits,
         "corrected_frames": len(corrections),
         "rejected_frames": len(rejected_deg),
         "correction_deg_mean": round(float(np.mean(applied_deg)), 3) if applied_deg else 0.0,
@@ -184,8 +212,9 @@ def main() -> None:
     parser.add_argument("--dataset-root", type=Path, required=True)
     parser.add_argument("--npz-out", type=Path, required=True)
     parser.add_argument("--fps", type=float, default=30.0)
-    parser.add_argument("--stance-speed", type=float, default=0.02,
-                        help="m/s below which a foot counts as planted")
+    parser.add_argument("--stance-quantile", type=float, default=0.4,
+                        help="a foot is planted in its own quietest fraction of frames; an "
+                             "absolute speed cannot work, see the module docstring")
     parser.add_argument("--min-stance-frames", type=int, default=5)
     parser.add_argument("--smooth-frames", type=int, default=9)
     parser.add_argument("--max-root-deg", type=float, default=15.0,
@@ -282,6 +311,10 @@ def main() -> None:
         diagnostics["body_shift_cm_max"] = round(float(np.linalg.norm(shift, axis=-1).max() * 100), 4)
         diagnostics["object"] = row["object"]
         episodes[episode] = diagnostics
+        # 18k vertices x ~900 frames per clip, and torch does not hand the memory back between
+        # forward passes: without this the loop is killed around the fourth episode on this box.
+        del motion, vertices, joints, rotations, translations, shift
+        gc.collect()
         print(f"e{episode:02d} {row['object'][:22]:22s} {diagnostics['status']:30s} "
               f"stance={diagnostics['stance_frames']}/{diagnostics['frames']} "
               f"corrected={diagnostics['corrected_frames']:4d} "
@@ -292,7 +325,7 @@ def main() -> None:
         "episodes": len(episodes),
         "cleaned": sum(1 for v in episodes.values() if v["status"] == "cleaned"),
         "unchanged": sum(1 for v in episodes.values() if v["status"] != "cleaned"),
-        "stance_speed_m_per_s": args.stance_speed,
+        "stance_quantile": args.stance_quantile,
         "smooth_frames": args.smooth_frames,
         "max_root_deg": args.max_root_deg,
         "mean_stance_fraction": round(float(np.mean(

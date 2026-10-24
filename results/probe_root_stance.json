@@ -1,0 +1,65 @@
+{
+  "common_mode_rejected": "left-right foot speed correlation is ~0, so the rigid root perturbation leaves no shared speed signal to subtract",
+  "fraction_called_planted": {
+    "0.02": {
+      "tier1": 0.8503,
+      "tier2": 0.2195
+    },
+    "0.05": {
+      "tier1": 0.9666,
+      "tier2": 0.7674
+    },
+    "0.1": {
+      "tier1": 0.996,
+      "tier2": 0.9908
+    },
+    "0.15": {
+      "tier1": 1.0,
+      "tier2": 0.9993
+    },
+    "0.2": {
+      "tier1": 1.0,
+      "tier2": 1.0
+    }
+  },
+  "per_clip": {
+    "e00_tier2": {
+      "frames": 778,
+      "left_right_speed_correlation": -0.0975,
+      "slower_foot_speed_m_per_s": {
+        "5": 0.01454,
+        "10": 0.01892,
+        "25": 0.02639,
+        "50": 0.04067,
+        "75": 0.05571
+      }
+    },
+    "e24_tier1": {
+      "frames": 748,
+      "left_right_speed_correlation": 0.035,
+      "slower_foot_speed_m_per_s": {
+        "5": 0.0017,
+        "10": 0.00225,
+        "25": 0.00335,
+        "50": 0.00531,
+        "75": 0.01161
+      }
+    },
+    "e24_tier2": {
+      "frames": 748,
+      "left_right_speed_correlation": 0.0194,
+      "slower_foot_speed_m_per_s": {
+        "5": 0.0082,
+        "10": 0.0114,
+        "25": 0.01762,
+        "50": 0.02717,
+        "75": 0.03839
+      }
+    }
+  },
+  "tier1_median_m_per_s": 0.00531,
+  "tier2_median_m_per_s": 0.03295,
+  "tier2_noise_inflation": 6.204,
+  "what": "foot-speed calibration for the root cleaner's stance detector",
+  "why": "an absolute stance-speed threshold cannot work; this is the evidence"
+}
