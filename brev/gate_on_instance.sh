@@ -61,9 +61,39 @@ if [ ! -d "$WORK/.git" ]; then
   git -C "$WORK" sparse-checkout set robotic_grounding
   git -C "$WORK" checkout "$COMMIT"
 fi
+# git-lfs is NOT installed on these images, and every robot mesh in this repo is an LFS
+# pointer. Without it, Newton loads a 130-byte text file as a mesh and training dies with
+# "cannot call `vectorize` on size 0 inputs" from deep inside the URDF importer -- which is
+# what killed every attempt before this one. The old code treated a failed pull as a warning,
+# so the real error surfaced ten minutes later as something unrelated.
+if ! command -v git-lfs >/dev/null 2>&1; then
+  say "Installing git-lfs (absent from this image)"
+  sudo -n apt-get install -y git-lfs >/tmp/lfs_install.log 2>&1 || {
+    echo "FATAL: could not install git-lfs; every robot mesh would be a pointer file." >&2
+    tail -5 /tmp/lfs_install.log >&2
+    exit 1
+  }
+fi
 git -C "$WORK" lfs install >/dev/null 2>&1 || true
-git -C "$WORK" lfs pull --include="robotic_grounding/**" || echo "WARNING: git lfs pull incomplete"
+git -C "$WORK" lfs pull --include="robotic_grounding/**" || {
+  echo "FATAL: git lfs pull failed. Robot meshes would be pointer files." >&2
+  exit 1
+}
 git -C "$WORK" rev-parse HEAD
+
+# Verify rather than hope: a pointer file left under the embodiment's own asset tree is a
+# guaranteed crash later, so find it now while it costs seconds instead of GPU minutes.
+say "Checking that no robot mesh is still an LFS pointer"
+POINTERS="$(grep -rl "git-lfs.github.com/spec" \
+  "$WORK/robotic_grounding/flash_chord/src/flash_chord/assets/meshes/g1" \
+  "$WORK/robotic_grounding/source/robotic_grounding/robotic_grounding/assets/meshes/g1" \
+  2>/dev/null | wc -l)"
+echo "unresolved pointer files under the g1 asset trees: $POINTERS"
+if [ "${POINTERS:-1}" -ne 0 ]; then
+  echo "FATAL: $POINTERS G1 mesh file(s) are still LFS pointers. Newton would read them as" >&2
+  echo "       zero-face meshes and fail inside the URDF importer." >&2
+  exit 1
+fi
 
 say "Fetch the two gate clips and their assets"
 ASSETS="$HOME/v2d_assets"
