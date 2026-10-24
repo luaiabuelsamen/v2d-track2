@@ -1,0 +1,13 @@
+{
+  "phase": "probe",
+  "train_return_code": 1,
+  "gpu": "NVIDIA RTX A6000",
+  "driver": "580.126.09",
+  "free_mib_at_start": "48539",
+  "image_build_seconds": 229,
+  "steps_run": 10000896,
+  "train_seconds": 0,
+  "env_steps_per_second": 0,
+  "peak_gpu_mib": 1,
+  "projected_hours_per_clip_350M": null
+}
