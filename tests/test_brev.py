@@ -79,7 +79,9 @@ def test_multi_gpu_totals_do_not_satisfy_a_single_device_floor(offers):
     multi = [
         offer
         for offer in offers
-        if offer.count > 1 and offer.total_vram_gb >= MIN_VRAM_GB and offer.vram_per_gpu_gb < MIN_VRAM_GB
+        if offer.count > 1
+        and offer.total_vram_gb >= MIN_VRAM_GB
+        and offer.vram_per_gpu_gb < MIN_VRAM_GB
     ]
     assert multi, "the table should contain at least one such trap"
     for offer in multi:

@@ -86,6 +86,29 @@ def _brev_pick(args: argparse.Namespace) -> int:
     return 0
 
 
+def _gate_report(args: argparse.Namespace) -> int:
+    """Log a finished Brev gate run to W&B and push its artefacts to the private HF repo."""
+    from .observe.gate_report import report
+
+    record = report(
+        Path(args.directory),
+        phase=args.phase,
+        instance_type=args.instance_type,
+        usd_per_hour=args.usd_per_hour,
+        wall_hours=args.wall_hours,
+        motion_root=Path(args.motion_root) if args.motion_root else None,
+        hf_repo=None if args.no_upload else args.hf_repo,
+        project=args.project,
+    )
+    print(json.dumps(record, indent=2, sort_keys=True))
+    if args.out:
+        out = Path(args.out)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(json.dumps(record, indent=2, sort_keys=True) + "\n")
+        print(f"wrote {out}", file=sys.stderr)
+    return 0
+
+
 def _observe_status(args: argparse.Namespace) -> int:
     """Report which observability credentials this machine has, without revealing any."""
     from .observe import hf_available, wandb_available, which_credentials
@@ -126,6 +149,23 @@ def build_parser() -> argparse.ArgumentParser:
         help="also print the N cheapest eligible types to stderr",
     )
     pick.set_defaults(func=_brev_pick)
+
+    gate = sub.add_parser(
+        "gate-report",
+        help="log a finished Brev gate run to W&B and the private HF repo",
+        description=_gate_report.__doc__,
+    )
+    gate.add_argument("directory", help="the results/gate directory copied back from the instance")
+    gate.add_argument("--phase", default="probe", choices=["probe", "full"])
+    gate.add_argument("--instance-type")
+    gate.add_argument("--usd-per-hour", type=float)
+    gate.add_argument("--wall-hours", type=float)
+    gate.add_argument("--motion-root", help="where to look up the reference provenance")
+    gate.add_argument("--project", default="v2d-track2")
+    gate.add_argument("--hf-repo", default="v2d-track2")
+    gate.add_argument("--no-upload", action="store_true", help="skip the Hugging Face upload")
+    gate.add_argument("-o", "--out", help="also write the record here")
+    gate.set_defaults(func=_gate_report)
 
     status = sub.add_parser(
         "observe-status", help="report which W&B / Hugging Face credentials are available"
