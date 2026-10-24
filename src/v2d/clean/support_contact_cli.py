@@ -12,7 +12,7 @@ from pathlib import Path
 
 from ..config import FPS
 from ..supports import ABOVE_TOLERANCE_CM, BELOW_TOLERANCE_CM
-from .support_contact import Options, run, save
+from .support_contact import Options, gate_passing, run, save
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -67,6 +67,17 @@ def main(argv: list[str] | None = None) -> None:
         action="store_true",
         help="also shift along the support normal; measured and rejected",
     )
+    parser.add_argument(
+        "--gate-results",
+        type=Path,
+        help="a `v2d gate-cleaner` record; only clips clearing --gate-min are corrected",
+    )
+    parser.add_argument(
+        "--gate-min",
+        type=float,
+        default=0.50,
+        help="minimum synthetic recovery for a clip to be corrected",
+    )
     parser.add_argument("--episodes", type=int, nargs="*", default=None)
     parser.add_argument("-o", "--out", type=Path)
     args = parser.parse_args(argv)
@@ -83,7 +94,13 @@ def main(argv: list[str] | None = None) -> None:
         any_support_height=args.any_support_height,
         seat_vertical=args.seat_vertical,
     )
-    record = run(args.dataset_root, args.npz_out, options, only=args.episodes)
+    gated_to = gate_passing(args.gate_results, args.gate_min) if args.gate_results else None
+    if gated_to is not None:
+        print(
+            f"synthetic gate at {args.gate_min}: correcting {len(gated_to)} clips "
+            f"{sorted(gated_to)}, passing the rest through"
+        )
+    record = run(args.dataset_root, args.npz_out, options, only=args.episodes, gated_to=gated_to)
     print(json.dumps(record["summary"], indent=2, sort_keys=True))
     if args.out:
         save(record, args.out)

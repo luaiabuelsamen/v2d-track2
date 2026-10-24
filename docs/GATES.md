@@ -133,3 +133,50 @@ setting it.
 **Decision.** Ship the gated cleaner if H1 and H2 hold, even if its AUC is below 0.4755, because
 a smaller gain that the mechanism explains is worth more than a larger one it does not. If H2
 fails, ship no cleaner and report the raw Tier 2 ceiling.
+
+---
+
+# Results: the gated cleaner passes, at a price worth naming
+
+| | gate recovery | AUC ↑ | SP-SR ↑ | MP-SR ↑ | MPPE cm ↓ | clips corrected |
+|---|---|---|---|---|---|---|
+| Tier 2 as released | — | 0.4247 | 0.9667 | 1.0000 | 2.3605 | 0 |
+| **gated support-surface** | **0.7498** | **0.4423** | **0.9667** | **1.0000** | **2.3077** | **7** |
+| ungated support-surface | 0.2683 | 0.4755 | 1.0000 | 1.0000 | 2.2777 | 30 |
+
+| | Prediction | Result | |
+|---|---|---|---|
+| H1 | mean recovery over corrected clips ≥ 0.70 | **0.7498** | **pass** |
+| H2 | no metric worse than raw Tier 2 | 0.4423 / 0.9667 / 1.0000 / 2.3077 | **pass** |
+| H3 | AUC between 0.44 and 0.4755 | **0.4423** | **pass** |
+| H4 | AUC ≥ 0.4247 + 7 × 0.0755/30 = **0.4423** | **0.4423161** | **pass** |
+
+**H4 landing on the fourth decimal is the useful part.** The bar came from decomposing the
+ungated gain per clip — seven gate-passing clips at +0.0755 each, spread over thirty — and the
+measurement reproduces it. That is strong evidence the decomposition is right: the gated
+cleaner's entire gain is the sum of the gains on the clips where the mechanism demonstrably
+works, and the remaining 23 clips contribute nothing when left alone.
+
+So the pre-registered decision applies: **H1 and H2 both hold, so the gated cleaner ships.**
+
+## The price, stated plainly
+
+The gated cleaner is worse than the ungated one on three of the four scored metrics, and one of
+those is a step rather than a slide: **SP-SR falls from 1.0000 to 0.9667**, back to exactly raw
+Tier 2's value, because one episode drops out of the ≤10 cm / ≤0.5 rad success set. Under
+rank-sum scoring SP-SR counts as much as AUC, so that single episode may cost a rank position
+that AUC +0.0176 does not buy back.
+
+That is a competition-ranking judgement, not a scientific one, and the pre-registration settled
+it in favour of the mechanism: a smaller gain that is explained beats a larger one that is not.
+**It is flagged here because it is exactly the sort of call a human should be able to overrule.**
+Both reference sets exist and are scored; switching is a one-flag change
+(`--gate-results` on or off).
+
+## What is left on the table
+
+The ungated cleaner's extra +0.0332 AUC is real and unexplained. The diagnosis says where to
+look: replace the facet argmax with a rule that requires a *dominant* facet and abstains
+otherwise, which would turn today's 7 corrected clips into however many have a genuinely
+identifiable support face. That is a new cleaner and needs its own pre-registration; it is not a
+tuning pass on this one.

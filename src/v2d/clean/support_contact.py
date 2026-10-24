@@ -255,14 +255,35 @@ def write_npz(path: Path, episode: int, cleaned: np.ndarray) -> None:
     )
 
 
+def gate_passing(gate_results: Path, minimum: float) -> set[int]:
+    """Episodes whose synthetic recovery clears `minimum`, from a `v2d gate-cleaner` record.
+
+    This is the only selection rule in the pipeline that decides *where* to apply a correction,
+    and it reads a synthetic measurement: a tilt we injected and tried to take back out. No
+    Tier 2 score and no clean reference enters it.
+    """
+    record = json.loads(gate_results.read_text())
+    return {
+        int(row["episode"])
+        for row in record["per_episode"]
+        if row.get("recovered_fraction") is not None and row["recovered_fraction"] >= minimum
+    }
+
+
 def run(
     dataset_root: Path,
     npz_out: Path,
     options: Options,
     only: list[int] | None = None,
     verbose: bool = True,
+    gated_to: set[int] | None = None,
 ) -> dict[str, Any]:
-    """Clean every episode's object trajectory and write the npz the pipeline consumes."""
+    """Clean every episode's object trajectory and write the npz the pipeline consumes.
+
+    `gated_to`, when given, is the set of episodes the correction may touch; every other episode
+    is written through unchanged. Passing a clip through is a deliberate outcome, not a failure:
+    a correction whose mechanism cannot be demonstrated on that clip should not be applied to it.
+    """
     npz_out.mkdir(parents=True, exist_ok=True)
     hulls: dict[str, tuple[np.ndarray, np.ndarray]] = {}
     records: dict[int, dict[str, Any]] = {}
@@ -283,9 +304,14 @@ def run(
             if options.support_primitives
             else None
         )
-        cleaned, record = clean_episode(
-            noisy, vertices, hull_normals, normal, offset, candidates, options
-        )
+        if gated_to is not None and episode.index not in gated_to:
+            cleaned = noisy.copy()
+            record = EpisodeRecord(frames=len(noisy), rest_segments=0, rest_frames=0)
+            record.status = "below the synthetic recovery gate; passed through unchanged"
+        else:
+            cleaned, record = clean_episode(
+                noisy, vertices, hull_normals, normal, offset, candidates, options
+            )
         record.object = episode.object_name
         record.support_candidates_cm = [round(value * 100.0, 2) for value in candidates]
         records[episode.index] = record.as_dict()
@@ -301,10 +327,15 @@ def run(
             )
 
     cleaned_count = sum(1 for value in records.values() if value["status"] == "cleaned")
+    gated_out = sum(
+        1 for value in records.values() if value["status"].startswith("below the synthetic")
+    )
     summary = {
         "episodes": len(records),
         "cleaned": cleaned_count,
         "unchanged": len(records) - cleaned_count,
+        "gated_out": gated_out,
+        "gated_to": sorted(gated_to) if gated_to is not None else None,
         **options.as_summary(),
         "mean_rest_fraction": round(
             float(np.mean([v["rest_frames"] / v["frames"] for v in records.values()])), 4

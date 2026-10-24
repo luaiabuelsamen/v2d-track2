@@ -1,0 +1,124 @@
+{
+  "checks": {
+    "G1_mean_recovery": {
+      "bar": ">= 0.70",
+      "pass": true,
+      "value": 0.7498
+    },
+    "G1b_worst_recovery": {
+      "bar": ">= 0.20",
+      "pass": true,
+      "value": 0.3348
+    },
+    "G2_do_no_harm_tilt": {
+      "bar": "<= 3.0 deg",
+      "pass": true,
+      "value": 1.1611
+    },
+    "G2b_do_no_harm_drift": {
+      "bar": "<= 1e-6 cm",
+      "pass": true,
+      "value": 0.0
+    }
+  },
+  "note": "the injected tilt is ours, from a seed; the clean reference builds the test and measures recovery, and is never an input or target for anything run on Tier 2",
+  "per_episode": [
+    {
+      "do_no_harm_drift_cm": 0.0,
+      "do_no_harm_tilt_deg": 0.431,
+      "episode": 2,
+      "frames": 980,
+      "injected_deg": 12.0,
+      "object": "blue_easter_basket",
+      "recovered_fraction": 0.9597,
+      "rest_frames": 434,
+      "tilt_after_deg": 0.484,
+      "tilt_before_deg": 12.0
+    },
+    {
+      "do_no_harm_drift_cm": 0.0,
+      "do_no_harm_tilt_deg": 1.293,
+      "episode": 3,
+      "frames": 781,
+      "injected_deg": 12.0,
+      "object": "contigo_coffee_mug",
+      "recovered_fraction": 0.667,
+      "rest_frames": 381,
+      "tilt_after_deg": 3.996,
+      "tilt_before_deg": 12.0
+    },
+    {
+      "do_no_harm_drift_cm": 0.0,
+      "do_no_harm_tilt_deg": 1.568,
+      "episode": 9,
+      "frames": 870,
+      "injected_deg": 12.0,
+      "object": "big_red_bowl",
+      "recovered_fraction": 0.8048,
+      "rest_frames": 278,
+      "tilt_after_deg": 2.342,
+      "tilt_before_deg": 12.0
+    },
+    {
+      "do_no_harm_drift_cm": 0.0,
+      "do_no_harm_tilt_deg": 1.692,
+      "episode": 16,
+      "frames": 477,
+      "injected_deg": 12.0,
+      "object": "spray_bottle",
+      "recovered_fraction": 0.7641,
+      "rest_frames": 211,
+      "tilt_after_deg": 2.831,
+      "tilt_before_deg": 12.0
+    },
+    {
+      "do_no_harm_drift_cm": 0.0,
+      "do_no_harm_tilt_deg": 0.798,
+      "episode": 18,
+      "frames": 858,
+      "injected_deg": 12.0,
+      "object": "blue_trash_can",
+      "recovered_fraction": 0.3348,
+      "rest_frames": 581,
+      "tilt_after_deg": 7.982,
+      "tilt_before_deg": 12.0
+    },
+    {
+      "do_no_harm_drift_cm": 0.0,
+      "do_no_harm_tilt_deg": 0.885,
+      "episode": 24,
+      "frames": 748,
+      "injected_deg": 12.0,
+      "object": "watering_can",
+      "recovered_fraction": 0.87,
+      "rest_frames": 388,
+      "tilt_after_deg": 1.56,
+      "tilt_before_deg": 12.0
+    },
+    {
+      "do_no_harm_drift_cm": 0.0,
+      "do_no_harm_tilt_deg": 1.461,
+      "episode": 25,
+      "frames": 859,
+      "injected_deg": 12.0,
+      "object": "cyan_water_bottle",
+      "recovered_fraction": 0.8482,
+      "rest_frames": 170,
+      "tilt_after_deg": 1.821,
+      "tilt_before_deg": 12.0
+    }
+  ],
+  "summary": {
+    "episodes": 7,
+    "episodes_with_rest": 7,
+    "injected_tilt_deg": 12.0,
+    "mean_do_no_harm_tilt_deg": 1.1611,
+    "mean_recovered_fraction": 0.7498,
+    "seed": 0,
+    "worst_do_no_harm_drift_cm": 0.0,
+    "worst_do_no_harm_tilt_deg": 1.692,
+    "worst_recovered_fraction": 0.3348
+  },
+  "verdict": "PASS",
+  "what": "known-answer and do-no-harm gates for the support-contact cleaner"
+}

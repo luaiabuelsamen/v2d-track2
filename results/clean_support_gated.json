@@ -1,0 +1,685 @@
+{
+  "per_episode": {
+    "0": {
+      "frames": 778,
+      "object": "tall_bar_stool",
+      "rest_frames": 0,
+      "rest_segments": 0,
+      "segments_rejected_off_floor_cm": [],
+      "status": "below the synthetic recovery gate; passed through unchanged",
+      "support_candidates_cm": [
+        0.0
+      ],
+      "support_heights_cm": []
+    },
+    "1": {
+      "frames": 747,
+      "object": "vacuum",
+      "rest_frames": 0,
+      "rest_segments": 0,
+      "segments_rejected_off_floor_cm": [],
+      "status": "below the synthetic recovery gate; passed through unchanged",
+      "support_candidates_cm": [
+        0.0
+      ],
+      "support_heights_cm": []
+    },
+    "2": {
+      "corrected_frames": 413,
+      "frames": 980,
+      "matched_support_cm": [
+        77.9,
+        77.9,
+        77.9,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object": "blue_easter_basket",
+      "rest_frames": 413,
+      "rest_segments": 10,
+      "segments_rejected_off_floor_cm": [],
+      "status": "cleaned",
+      "support_candidates_cm": [
+        0.0,
+        77.9
+      ],
+      "support_facets": [
+        353,
+        226,
+        226,
+        353,
+        353,
+        353,
+        208,
+        208,
+        208,
+        226
+      ],
+      "support_heights_cm": [
+        77.38,
+        77.46,
+        77.48,
+        -0.35,
+        -0.81,
+        -1.31,
+        1.31,
+        1.1,
+        0.95,
+        0.16
+      ],
+      "tilt_applied_deg_max": 23.214,
+      "tilt_applied_deg_mean": 5.9
+    },
+    "3": {
+      "corrected_frames": 347,
+      "frames": 781,
+      "matched_support_cm": [
+        77.73,
+        77.73,
+        77.73,
+        77.73,
+        77.73,
+        77.73,
+        77.73,
+        77.73,
+        77.73
+      ],
+      "object": "contigo_coffee_mug",
+      "rest_frames": 347,
+      "rest_segments": 9,
+      "segments_rejected_off_floor_cm": [],
+      "status": "cleaned",
+      "support_candidates_cm": [
+        0.0,
+        77.73
+      ],
+      "support_facets": [
+        319,
+        319,
+        191,
+        191,
+        191,
+        191,
+        191,
+        191,
+        191
+      ],
+      "support_heights_cm": [
+        77.92,
+        77.41,
+        77.81,
+        76.58,
+        77.34,
+        77.29,
+        77.81,
+        77.33,
+        77.54
+      ],
+      "tilt_applied_deg_max": 31.826,
+      "tilt_applied_deg_mean": 22.213
+    },
+    "4": {
+      "frames": 803,
+      "object": "baseball_bat",
+      "rest_frames": 0,
+      "rest_segments": 0,
+      "segments_rejected_off_floor_cm": [],
+      "status": "below the synthetic recovery gate; passed through unchanged",
+      "support_candidates_cm": [
+        0.0
+      ],
+      "support_heights_cm": []
+    },
+    "5": {
+      "frames": 1003,
+      "object": "big_black_box",
+      "rest_frames": 0,
+      "rest_segments": 0,
+      "segments_rejected_off_floor_cm": [],
+      "status": "below the synthetic recovery gate; passed through unchanged",
+      "support_candidates_cm": [
+        0.0
+      ],
+      "support_heights_cm": []
+    },
+    "6": {
+      "frames": 546,
+      "object": "monitor",
+      "rest_frames": 0,
+      "rest_segments": 0,
+      "segments_rejected_off_floor_cm": [],
+      "status": "below the synthetic recovery gate; passed through unchanged",
+      "support_candidates_cm": [
+        0.0,
+        77.96
+      ],
+      "support_heights_cm": []
+    },
+    "7": {
+      "frames": 896,
+      "object": "iron",
+      "rest_frames": 0,
+      "rest_segments": 0,
+      "segments_rejected_off_floor_cm": [],
+      "status": "below the synthetic recovery gate; passed through unchanged",
+      "support_candidates_cm": [
+        0.0,
+        78.21
+      ],
+      "support_heights_cm": []
+    },
+    "8": {
+      "frames": 708,
+      "object": "skinny_wood_chair",
+      "rest_frames": 0,
+      "rest_segments": 0,
+      "segments_rejected_off_floor_cm": [],
+      "status": "below the synthetic recovery gate; passed through unchanged",
+      "support_candidates_cm": [
+        0.0
+      ],
+      "support_heights_cm": []
+    },
+    "9": {
+      "corrected_frames": 204,
+      "frames": 870,
+      "matched_support_cm": [
+        46.88,
+        46.88,
+        46.88,
+        46.88,
+        46.88,
+        46.88,
+        46.88,
+        46.88,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object": "big_red_bowl",
+      "rest_frames": 204,
+      "rest_segments": 13,
+      "segments_rejected_off_floor_cm": [],
+      "status": "cleaned",
+      "support_candidates_cm": [
+        0.0,
+        46.88
+      ],
+      "support_facets": [
+        16,
+        27,
+        13,
+        13,
+        13,
+        13,
+        13,
+        13,
+        9,
+        46,
+        46,
+        46,
+        58
+      ],
+      "support_heights_cm": [
+        46.96,
+        47.44,
+        46.2,
+        47.01,
+        46.76,
+        46.56,
+        46.83,
+        46.93,
+        -2.67,
+        -3.08,
+        -2.79,
+        -3.59,
+        -3.27
+      ],
+      "tilt_applied_deg_max": 15.346,
+      "tilt_applied_deg_mean": 7.623
+    },
+    "10": {
+      "frames": 794,
+      "object": "white_desk",
+      "rest_frames": 0,
+      "rest_segments": 0,
+      "segments_rejected_off_floor_cm": [],
+      "status": "below the synthetic recovery gate; passed through unchanged",
+      "support_candidates_cm": [
+        0.0
+      ],
+      "support_heights_cm": []
+    },
+    "11": {
+      "frames": 901,
+      "object": "light_blue_book",
+      "rest_frames": 0,
+      "rest_segments": 0,
+      "segments_rejected_off_floor_cm": [],
+      "status": "below the synthetic recovery gate; passed through unchanged",
+      "support_candidates_cm": [
+        0.0,
+        87.65
+      ],
+      "support_heights_cm": []
+    },
+    "12": {
+      "frames": 700,
+      "object": "black_platform",
+      "rest_frames": 0,
+      "rest_segments": 0,
+      "segments_rejected_off_floor_cm": [],
+      "status": "below the synthetic recovery gate; passed through unchanged",
+      "support_candidates_cm": [
+        0.0
+      ],
+      "support_heights_cm": []
+    },
+    "13": {
+      "frames": 922,
+      "object": "snack_box",
+      "rest_frames": 0,
+      "rest_segments": 0,
+      "segments_rejected_off_floor_cm": [],
+      "status": "below the synthetic recovery gate; passed through unchanged",
+      "support_candidates_cm": [
+        0.0,
+        88.22
+      ],
+      "support_heights_cm": []
+    },
+    "14": {
+      "frames": 993,
+      "object": "round_table",
+      "rest_frames": 0,
+      "rest_segments": 0,
+      "segments_rejected_off_floor_cm": [],
+      "status": "below the synthetic recovery gate; passed through unchanged",
+      "support_candidates_cm": [
+        0.0
+      ],
+      "support_heights_cm": []
+    },
+    "15": {
+      "frames": 715,
+      "object": "wet_floor_sign",
+      "rest_frames": 0,
+      "rest_segments": 0,
+      "segments_rejected_off_floor_cm": [],
+      "status": "below the synthetic recovery gate; passed through unchanged",
+      "support_candidates_cm": [
+        0.0
+      ],
+      "support_heights_cm": []
+    },
+    "16": {
+      "corrected_frames": 147,
+      "frames": 477,
+      "matched_support_cm": [
+        87.79,
+        87.79,
+        87.79,
+        87.79,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object": "spray_bottle",
+      "rest_frames": 147,
+      "rest_segments": 10,
+      "segments_rejected_off_floor_cm": [],
+      "status": "cleaned",
+      "support_candidates_cm": [
+        0.0,
+        87.79
+      ],
+      "support_facets": [
+        41,
+        136,
+        136,
+        136,
+        136,
+        41,
+        355,
+        7,
+        43,
+        136
+      ],
+      "support_heights_cm": [
+        87.39,
+        87.29,
+        88.06,
+        87.44,
+        0.46,
+        0.61,
+        -0.64,
+        -0.59,
+        -0.21,
+        -0.32
+      ],
+      "tilt_applied_deg_max": 7.947,
+      "tilt_applied_deg_mean": 3.384
+    },
+    "17": {
+      "frames": 440,
+      "object": "traffic_cone",
+      "rest_frames": 0,
+      "rest_segments": 0,
+      "segments_rejected_off_floor_cm": [],
+      "status": "below the synthetic recovery gate; passed through unchanged",
+      "support_candidates_cm": [
+        0.0,
+        77.12
+      ],
+      "support_heights_cm": []
+    },
+    "18": {
+      "corrected_frames": 525,
+      "frames": 858,
+      "matched_support_cm": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object": "blue_trash_can",
+      "rest_frames": 525,
+      "rest_segments": 13,
+      "segments_rejected_off_floor_cm": [],
+      "status": "cleaned",
+      "support_candidates_cm": [
+        0.0
+      ],
+      "support_facets": [
+        196,
+        354,
+        354,
+        354,
+        354,
+        354,
+        354,
+        354,
+        354,
+        354,
+        354,
+        354,
+        354
+      ],
+      "support_heights_cm": [
+        -3.28,
+        -4.29,
+        -3.98,
+        -4.03,
+        -4.23,
+        -4.42,
+        -4.77,
+        -5.38,
+        -6.37,
+        -5.74,
+        -6.72,
+        -7.17,
+        -6.18
+      ],
+      "tilt_applied_deg_max": 20.605,
+      "tilt_applied_deg_mean": 13.779
+    },
+    "19": {
+      "frames": 886,
+      "object": "cane",
+      "rest_frames": 0,
+      "rest_segments": 0,
+      "segments_rejected_off_floor_cm": [],
+      "status": "below the synthetic recovery gate; passed through unchanged",
+      "support_candidates_cm": [
+        0.0
+      ],
+      "support_heights_cm": []
+    },
+    "20": {
+      "frames": 553,
+      "object": "rice_cooker",
+      "rest_frames": 0,
+      "rest_segments": 0,
+      "segments_rejected_off_floor_cm": [],
+      "status": "below the synthetic recovery gate; passed through unchanged",
+      "support_candidates_cm": [
+        0.0,
+        79.74
+      ],
+      "support_heights_cm": []
+    },
+    "21": {
+      "frames": 678,
+      "object": "tall_bar_stool",
+      "rest_frames": 0,
+      "rest_segments": 0,
+      "segments_rejected_off_floor_cm": [],
+      "status": "below the synthetic recovery gate; passed through unchanged",
+      "support_candidates_cm": [
+        0.0
+      ],
+      "support_heights_cm": []
+    },
+    "22": {
+      "frames": 719,
+      "object": "step_ladder",
+      "rest_frames": 0,
+      "rest_segments": 0,
+      "segments_rejected_off_floor_cm": [],
+      "status": "below the synthetic recovery gate; passed through unchanged",
+      "support_candidates_cm": [
+        0.0
+      ],
+      "support_heights_cm": []
+    },
+    "23": {
+      "frames": 946,
+      "object": "toy_stroller",
+      "rest_frames": 0,
+      "rest_segments": 0,
+      "segments_rejected_off_floor_cm": [],
+      "status": "below the synthetic recovery gate; passed through unchanged",
+      "support_candidates_cm": [
+        0.0
+      ],
+      "support_heights_cm": []
+    },
+    "24": {
+      "corrected_frames": 254,
+      "frames": 748,
+      "matched_support_cm": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object": "watering_can",
+      "rest_frames": 315,
+      "rest_segments": 16,
+      "segments_rejected_off_floor_cm": [
+        13.04,
+        14.4,
+        13.16,
+        13.9,
+        14.29,
+        14.47,
+        13.72
+      ],
+      "status": "cleaned",
+      "support_candidates_cm": [
+        0.0
+      ],
+      "support_facets": [
+        221,
+        391,
+        391,
+        391,
+        391,
+        391,
+        391,
+        391,
+        391
+      ],
+      "support_heights_cm": [
+        0.07,
+        -0.07,
+        -0.41,
+        -0.84,
+        13.04,
+        14.4,
+        13.16,
+        13.9,
+        14.29,
+        14.47,
+        13.72,
+        -2.7,
+        -2.47,
+        -1.82,
+        -2.2,
+        -1.78
+      ],
+      "tilt_applied_deg_max": 29.98,
+      "tilt_applied_deg_mean": 19.725
+    },
+    "25": {
+      "corrected_frames": 153,
+      "frames": 859,
+      "matched_support_cm": [
+        78.33,
+        78.33,
+        78.33,
+        78.33,
+        78.33,
+        78.33
+      ],
+      "object": "cyan_water_bottle",
+      "rest_frames": 153,
+      "rest_segments": 6,
+      "segments_rejected_off_floor_cm": [],
+      "status": "cleaned",
+      "support_candidates_cm": [
+        0.0,
+        78.33,
+        78.69
+      ],
+      "support_facets": [
+        263,
+        263,
+        263,
+        263,
+        263,
+        292
+      ],
+      "support_heights_cm": [
+        78.09,
+        78.03,
+        77.82,
+        77.35,
+        77.27,
+        76.1
+      ],
+      "tilt_applied_deg_max": 17.048,
+      "tilt_applied_deg_mean": 9.503
+    },
+    "26": {
+      "frames": 669,
+      "object": "skateboard",
+      "rest_frames": 0,
+      "rest_segments": 0,
+      "segments_rejected_off_floor_cm": [],
+      "status": "below the synthetic recovery gate; passed through unchanged",
+      "support_candidates_cm": [
+        0.0
+      ],
+      "support_heights_cm": []
+    },
+    "27": {
+      "frames": 565,
+      "object": "woven_basket",
+      "rest_frames": 0,
+      "rest_segments": 0,
+      "segments_rejected_off_floor_cm": [],
+      "status": "below the synthetic recovery gate; passed through unchanged",
+      "support_candidates_cm": [
+        0.0,
+        87.17
+      ],
+      "support_heights_cm": []
+    },
+    "28": {
+      "frames": 988,
+      "object": "squeegee",
+      "rest_frames": 0,
+      "rest_segments": 0,
+      "segments_rejected_off_floor_cm": [],
+      "status": "below the synthetic recovery gate; passed through unchanged",
+      "support_candidates_cm": [
+        0.0,
+        69.75,
+        71.6
+      ],
+      "support_heights_cm": []
+    },
+    "29": {
+      "frames": 467,
+      "object": "rolling_luggage",
+      "rest_frames": 0,
+      "rest_segments": 0,
+      "segments_rejected_off_floor_cm": [],
+      "status": "below the synthetic recovery gate; passed through unchanged",
+      "support_candidates_cm": [
+        0.0
+      ],
+      "support_heights_cm": []
+    }
+  },
+  "summary": {
+    "any_support_height": false,
+    "cleaned": 7,
+    "episodes": 30,
+    "gated_out": 23,
+    "gated_to": [
+      2,
+      3,
+      9,
+      16,
+      18,
+      24,
+      25
+    ],
+    "mean_rest_fraction": 0.0873,
+    "mean_tilt_applied_deg": 11.732,
+    "rest_speed_m_per_s": 0.02,
+    "seat_vertical": false,
+    "smooth_frames": 9,
+    "support_penetration_cm": 10.0,
+    "support_primitives": true,
+    "support_tolerance_cm": 3.0,
+    "unchanged": 23
+  },
+  "what": "deployable support-contact tilt cleaner; uses no clean reference"
+}
