@@ -33,6 +33,10 @@ while [ $# -gt 0 ]; do
     --name) NAME="$2"; shift 2 ;;
     --g1-parquet) G1_PARQUET="$2"; shift 2 ;;
     --allow-raw-reference) ALLOW_RAW=1; shift ;;
+    # Check the reference provenance and exit, touching nothing else. Added because verifying
+    # the guard by running the script reaches the brev CLI, which prompts to log in; the guard
+    # is testable without going anywhere near an account.
+    --check-provenance-only) CHECK_ONLY=1; shift ;;
     --go) GO=1; shift ;;
     -h|--help) sed -n '2,20p' "$0"; exit 0 ;;
     *) echo "unknown argument: $1" >&2; exit 2 ;;
@@ -66,12 +70,25 @@ if [ -n "$G1_PARQUET" ] && [ "${ALLOW_RAW:-0}" != 1 ]; then
     echo "$prov says this motion came from the raw released reference:" >&2
     sed -n 's/^/    /p' "$prov" >&2
     echo "Retarget from the cleaned reference first:" >&2
-    echo "    python scripts/clean_support_contact.py --dataset-root DATA --npz-out NPZ_CLEAN" >&2
+    echo "    python scripts/clean_support_contact.py --dataset-root DATA --npz-out NPZ_CLEAN \\" >&2
+    echo "        --support-primitives" >&2
     echo "    python scripts/retarget_all.py ... --object-npz NPZ_CLEAN" >&2
     echo "Or pass --allow-raw-reference to override deliberately." >&2
     exit 2
   fi
-  echo "reference provenance: $(python3 -c 'import json,sys;print(json.load(open(sys.argv[1]))["object_source"])' "$prov")"
+  # Print both halves of the provenance. The object reference is what the guard enforces; the
+  # human root is reported so a run is never ambiguous about which cleaners produced it.
+  python3 -c 'import json,sys
+r=json.load(open(sys.argv[1]))
+print("reference provenance: object=%s" % r["object_source"])
+if "human_source" in r:
+    print("                      human =%s%s" % (
+        r["human_source"], "" if r.get("cleaned_human") else "  (released, not cleaned)"))
+' "$prov"
+fi
+if [ "${CHECK_ONLY:-0}" = 1 ]; then
+  echo "provenance check only; not contacting Brev."
+  exit 0
 fi
 
 say() { printf '\n== %s\n' "$*"; }
