@@ -1,0 +1,175 @@
+/workspace/src/flash_chord/embodiments/binding.py:371: UserWarning: Inertia validation corrected 2 bodies. Set validate_inertia_detailed=True for detailed per-body warnings.
+  model = builder.finalize(device=device, skip_all_validations=True)
+/workspace/src/flash_chord/scene/builder.py:508: UserWarning: Inertia validation corrected 4096 bodies. Set validate_inertia_detailed=True for detailed per-body warnings.
+  model = builder.finalize()
+[0;93m2026-10-24 16:02:19.107099115 [W:onnxruntime:Default, device_discovery.cc:285 GetGpuDevices] Failed to detect devices under "/sys/class/drm/card0": device_discovery.cc:94 ReadFileContents Failed to open file: "/sys/class/drm/card0/device/vendor"[m
+[0;93m2026-10-24 16:02:19.151684887 [W:onnxruntime:Default, onnxruntime_pybind_state.cc:711 operator()] No registered plugin EP device found for 'CUDAExecutionProvider' with device_id=0[m
+[0;93m2026-10-24 16:02:19.312169294 [W:onnxruntime:, inference_session.cc:2647 Initialize] This model has shape massaging nodes that will execute on CPU. Use the graph capture feature with caution. As long as the intermediate shapes produced in the model using the representative input used to capture the graph, will match the shapes produced in the model for other inputs of the same shape as the representative input (common case), it is safe to use the graph capture feature.[m
+[0;93m2026-10-24 16:02:19.570773636 [W:onnxruntime:Default, onnxruntime_pybind_state.cc:711 operator()] No registered plugin EP device found for 'CUDAExecutionProvider' with device_id=0[m
+Warp 1.14.0 initialized:
+   CUDA Toolkit 12.9, Driver 13.0
+   Devices:
+     "cpu"      : "x86_64"
+     "cuda:0"   : "NVIDIA RTX A6000" (47 GiB, sm_86, mempool enabled)
+   Kernel cache:
+     /tmp/.cache/warp/1.14.0
+Module newton._src.geometry.inertia 3654b45 load on device 'cuda:0' took 1.94 ms  (cached)
+Module validate_and_correct_inertia_kernel_2d598dcb 90f14cb load on device 'cpu' took 2.63 ms  (cached)
+Module newton._src.sim.articulation a705557 load on device 'cpu' took 0.51 ms  (cached)
+Module validate_and_correct_inertia_kernel_2d598dcb 2d598dc load on device 'cuda:0' took 1.01 ms  (cached)
+Module newton._src.sim.graph_coloring 8071a9f load on device 'cpu' took 0.98 ms  (cached)
+Module newton._src.solvers.mujoco.kernels 618b13f load on device 'cuda:0' took 16.19 ms  (cached)
+Module repeat_array_kernel_2767062b bae2300 load on device 'cuda:0' took 0.82 ms  (cached)
+Module repeat_array_kernel_2767062b 122cd4b load on device 'cuda:0' took 0.67 ms  (cached)
+Module repeat_array_kernel_2767062b 70fd208 load on device 'cuda:0' took 0.66 ms  (cached)
+Module repeat_array_kernel_2767062b ad5e920 load on device 'cuda:0' took 0.68 ms  (cached)
+Module repeat_array_kernel_2767062b 4770c98 load on device 'cuda:0' took 0.75 ms  (cached)
+Module repeat_array_kernel_2767062b 4d9e605 load on device 'cuda:0' took 0.75 ms  (cached)
+Module repeat_array_kernel_2767062b beb7dd7 load on device 'cuda:0' took 0.84 ms  (cached)
+Module mujoco_warp._src.io 2f253d2 load on device 'cuda:0' took 3.92 ms  (cached)
+Module mujoco_warp._src.smooth cf7a289 load on device 'cuda:0' took 4.44 ms  (cached)
+Module _solve_LD_sparse_fused__locals__kernel_13fa3396 abc6df3 load on device 'cuda:0' took 0.72 ms  (cached)
+Module flash_chord.lifecycle.reset cab254d load on device 'cuda:0' took 2.77 ms  (cached)
+Module newton._src.sim.articulation 24ff67e load on device 'cuda:0' took 6.83 ms  (cached)
+Module flash_chord.runtime.actions.sonic 9ac4ca7 load on device 'cuda:0' took 5.08 ms  (cached)
+Module flash_chord.runtime.delay 49f6340 load on device 'cuda:0' took 0.97 ms  (cached)
+Module flash_chord.envs.base 7bb0f78 load on device 'cuda:0' took 0.70 ms  (cached)
+Module flash_chord.envs.rl 4c4513a load on device 'cuda:0' took 1.03 ms  (cached)
+Module flash_chord.envs.recon_body 6b7f5a5 load on device 'cuda:0' took 3.07 ms  (cached)
+Module flash_chord.runtime.command 768bb56 load on device 'cuda:0' took 0.91 ms  (cached)
+Module flash_chord.runtime.object_control c5f9b6d load on device 'cuda:0' took 0.96 ms  (cached)
+Module mujoco_warp._src.collision_driver 621a3f9 load on device 'cuda:0' took 0.74 ms  (cached)
+Module _nxn_broadphase__locals__kernel_3c32c655 3c32c65 load on device 'cuda:0' took 0.71 ms  (cached)
+Module ccd_kernel_builder__locals__ccd_kernel_f8e1da98 f8e1da9 load on device 'cuda:0' took 2.92 ms  (cached)
+Module ccd_kernel_builder__locals__ccd_kernel_702804f0 702804f load on device 'cuda:0' took 2.84 ms  (cached)
+Module ccd_kernel_builder__locals__ccd_kernel_6090cf8f 6090cf8 load on device 'cuda:0' took 2.55 ms  (cached)
+Module _primitive_narrowphase__locals__primitive_narrowphase_70e69a29 70e69a2 load on device 'cuda:0' took 1.80 ms  (cached)
+Module mujoco_warp._src.constraint e56f243 load on device 'cuda:0' took 3.23 ms  (cached)
+Module _efc_contact_init__locals__kernel_7561548c 7561548 load on device 'cuda:0' took 0.79 ms  (cached)
+Module _efc_contact_jac_sparse__locals__kernel_a4c07dfc a4c07df load on device 'cuda:0' took 0.90 ms  (cached)
+Module _efc_contact_update__locals__kernel_c8073923 c807392 load on device 'cuda:0' took 0.85 ms  (cached)
+Module mujoco_warp._src.forward f5bfed4 load on device 'cuda:0' took 1.95 ms  (cached)
+Module mujoco_warp._src.passive cc48b2a load on device 'cuda:0' took 1.51 ms  (cached)
+Module mujoco_warp._src.forward 46b3f78 load on device 'cuda:0' took 1.95 ms  (cached)
+Module mujoco_warp._src.support d1e71d9 load on device 'cuda:0' took 0.76 ms  (cached)
+Module mujoco_warp._src.solver d53b47b load on device 'cuda:0' took 2.22 ms  (cached)
+Module solve_init_jaref__locals__kernel_8f289606 8f28960 load on device 'cuda:0' took 0.74 ms  (cached)
+Module mul_m_sparse__locals___mul_m_sparse_57bd8101 57bd810 load on device 'cuda:0' took 0.78 ms  (cached)
+Module update_constraint_efc__locals__kernel_e7fd7693 e7fd769 load on device 'cuda:0' took 0.75 ms  (cached)
+Module update_constraint_gauss_cost__locals__kernel_5f9e4daa 5f9e4da load on device 'cuda:0' took 0.73 ms  (cached)
+Module update_gradient_cholesky_blocked__locals__kernel_ff24a874 22c536e load on device 'cuda:0' took 332.72 ms  (cached)
+Module linesearch_jv_fused__locals__kernel_caac7c12 caac7c1 load on device 'cuda:0' took 0.91 ms  (cached)
+Module linesearch_iterative__locals__kernel_6637ae6e d82a261 load on device 'cuda:0' took 1.09 ms  (cached)
+Module update_constraint_efc__locals__kernel_565f38f0 565f38f load on device 'cuda:0' took 0.81 ms  (cached)
+Module update_gradient_cholesky_blocked_skip_unchanged__locals__kernel_e9533037 d389bb6 load on device 'cuda:0' took 368.74 ms  (cached)
+Module mujoco_warp._src.sensor a993087 load on device 'cuda:0' took 3.90 ms  (cached)
+Module mujoco_warp._src.derivative 212adeb load on device 'cuda:0' took 1.36 ms  (cached)
+Module flash_chord.runtime.joint_drive 1a1ab2a load on device 'cuda:0' took 1.36 ms  (cached)
+Module flash_chord.runtime.contact 6b5b079 load on device 'cuda:0' took 1.41 ms  (cached)
+Module flash_chord.lifecycle.termination 3e3f704 load on device 'cuda:0' took 1.67 ms  (cached)
+Module flash_chord.objectives.wrench 8e5d34b load on device 'cuda:0' took 1.18 ms  (cached)
+Module flash_chord.objectives.recon_body 0a954a1 load on device 'cuda:0' took 1.72 ms  (cached)
+[2026-10-24 16:02:21,848][jax._src.xla_bridge][INFO] - Unable to initialize backend 'tpu': INTERNAL: Failed to open libtpu.so: libtpu.so: cannot open shared object file: No such file or directory
+training progress: 0/10,000,384 environment steps (0.0%); checkpoints: /workspace/outputs/b2_clean
+compiled FlashSAC JAX executables on cuda:0 in 72.78s
+training progress: 100,352/10,000,384 environment steps (1.0%); 1,340 env steps/s; elapsed 00:01:15; ETA 02:03:07
+training progress: 200,704/10,000,384 environment steps (2.0%); 2,610 env steps/s; elapsed 00:01:17; ETA 01:02:35
+training progress: 301,056/10,000,384 environment steps (3.0%); 3,812 env steps/s; elapsed 00:01:19; ETA 00:42:24
+training progress: 401,408/10,000,384 environment steps (4.0%); 4,952 env steps/s; elapsed 00:01:21; ETA 00:32:19
+training progress: 501,760/10,000,384 environment steps (5.0%); 5,942 env steps/s; elapsed 00:01:24; ETA 00:26:39
+training progress: 600,064/10,000,384 environment steps (6.0%); 6,810 env steps/s; elapsed 00:01:28; ETA 00:23:00
+training progress: 700,416/10,000,384 environment steps (7.0%); 7,623 env steps/s; elapsed 00:01:32; ETA 00:20:20
+training progress: 800,768/10,000,384 environment steps (8.0%); 8,374 env steps/s; elapsed 00:01:36; ETA 00:18:19
+training progress: 901,120/10,000,384 environment steps (9.0%); 9,068 env steps/s; elapsed 00:01:39; ETA 00:16:43
+training progress: 1,001,472/10,000,384 environment steps (10.0%); 9,711 env steps/s; elapsed 00:01:43; ETA 00:15:27
+training progress: 1,101,824/10,000,384 environment steps (11.0%); 10,308 env steps/s; elapsed 00:01:47; ETA 00:14:23
+training progress: 1,200,128/10,000,384 environment steps (12.0%); 10,850 env steps/s; elapsed 00:01:51; ETA 00:13:31
+training progress: 1,300,480/10,000,384 environment steps (13.0%); 11,368 env steps/s; elapsed 00:01:54; ETA 00:12:45
+training progress: 1,400,832/10,000,384 environment steps (14.0%); 11,851 env steps/s; elapsed 00:01:58; ETA 00:12:06
+training progress: 1,501,184/10,000,384 environment steps (15.0%); 12,305 env steps/s; elapsed 00:02:02; ETA 00:11:31
+training progress: 1,601,536/10,000,384 environment steps (16.0%); 12,733 env steps/s; elapsed 00:02:06; ETA 00:11:00
+training progress: 1,701,888/10,000,384 environment steps (17.0%); 13,140 env steps/s; elapsed 00:02:10; ETA 00:10:32
+training progress: 1,800,192/10,000,384 environment steps (18.0%); 13,520 env steps/s; elapsed 00:02:13; ETA 00:10:07
+training progress: 1,900,544/10,000,384 environment steps (19.0%); 13,886 env steps/s; elapsed 00:02:17; ETA 00:09:43
+training progress: 2,000,896/10,000,384 environment steps (20.0%); 14,236 env steps/s; elapsed 00:02:21; ETA 00:09:22
+training progress: 2,101,248/10,000,384 environment steps (21.0%); 14,571 env steps/s; elapsed 00:02:24; ETA 00:09:02
+training progress: 2,201,600/10,000,384 environment steps (22.0%); 14,891 env steps/s; elapsed 00:02:28; ETA 00:08:44
+training progress: 2,301,952/10,000,384 environment steps (23.0%); 15,195 env steps/s; elapsed 00:02:31; ETA 00:08:27
+training progress: 2,400,256/10,000,384 environment steps (24.0%); 15,479 env steps/s; elapsed 00:02:35; ETA 00:08:11
+training progress: 2,500,608/10,000,384 environment steps (25.0%); 15,756 env steps/s; elapsed 00:02:39; ETA 00:07:56
+training progress: 2,600,960/10,000,384 environment steps (26.0%); 16,018 env steps/s; elapsed 00:02:42; ETA 00:07:42
+training progress: 2,701,312/10,000,384 environment steps (27.0%); 16,271 env steps/s; elapsed 00:02:46; ETA 00:07:29
+training progress: 2,801,664/10,000,384 environment steps (28.0%); 16,510 env steps/s; elapsed 00:02:50; ETA 00:07:16
+training progress: 2,902,016/10,000,384 environment steps (29.0%); 16,741 env steps/s; elapsed 00:02:53; ETA 00:07:04
+training progress: 3,000,320/10,000,384 environment steps (30.0%); 16,957 env steps/s; elapsed 00:02:57; ETA 00:06:53
+training progress: 3,100,672/10,000,384 environment steps (31.0%); 17,167 env steps/s; elapsed 00:03:01; ETA 00:06:42
+training progress: 3,201,024/10,000,384 environment steps (32.0%); 17,369 env steps/s; elapsed 00:03:04; ETA 00:06:31
+training progress: 3,301,376/10,000,384 environment steps (33.0%); 17,563 env steps/s; elapsed 00:03:08; ETA 00:06:21
+training progress: 3,401,728/10,000,384 environment steps (34.0%); 17,751 env steps/s; elapsed 00:03:12; ETA 00:06:12
+training progress: 3,502,080/10,000,384 environment steps (35.0%); 17,932 env steps/s; elapsed 00:03:15; ETA 00:06:02
+training progress: 3,600,384/10,000,384 environment steps (36.0%); 18,105 env steps/s; elapsed 00:03:19; ETA 00:05:53
+training progress: 3,700,736/10,000,384 environment steps (37.0%); 18,274 env steps/s; elapsed 00:03:23; ETA 00:05:45
+training progress: 3,801,088/10,000,384 environment steps (38.0%); 18,437 env steps/s; elapsed 00:03:26; ETA 00:05:36
+training progress: 3,901,440/10,000,384 environment steps (39.0%); 18,593 env steps/s; elapsed 00:03:30; ETA 00:05:28
+training progress: 4,001,792/10,000,384 environment steps (40.0%); 18,745 env steps/s; elapsed 00:03:33; ETA 00:05:20
+training progress: 4,102,144/10,000,384 environment steps (41.0%); 18,892 env steps/s; elapsed 00:03:37; ETA 00:05:12
+training progress: 4,200,448/10,000,384 environment steps (42.0%); 19,030 env steps/s; elapsed 00:03:41; ETA 00:05:05
+training progress: 4,300,800/10,000,384 environment steps (43.0%); 19,168 env steps/s; elapsed 00:03:44; ETA 00:04:57
+training progress: 4,401,152/10,000,384 environment steps (44.0%); 19,299 env steps/s; elapsed 00:03:48; ETA 00:04:50
+training progress: 4,501,504/10,000,384 environment steps (45.0%); 19,428 env steps/s; elapsed 00:03:52; ETA 00:04:43
+training progress: 4,601,856/10,000,384 environment steps (46.0%); 19,553 env steps/s; elapsed 00:03:55; ETA 00:04:36
+training progress: 4,702,208/10,000,384 environment steps (47.0%); 19,672 env steps/s; elapsed 00:03:59; ETA 00:04:29
+training progress: 4,800,512/10,000,384 environment steps (48.0%); 19,788 env steps/s; elapsed 00:04:03; ETA 00:04:23
+training progress: 4,900,864/10,000,384 environment steps (49.0%); 19,903 env steps/s; elapsed 00:04:06; ETA 00:04:16
+training progress: 5,001,216/10,000,384 environment steps (50.0%); 20,013 env steps/s; elapsed 00:04:10; ETA 00:04:10
+training progress: 5,101,568/10,000,384 environment steps (51.0%); 20,120 env steps/s; elapsed 00:04:14; ETA 00:04:03
+training progress: 5,201,920/10,000,384 environment steps (52.0%); 20,224 env steps/s; elapsed 00:04:17; ETA 00:03:57
+training progress: 5,300,224/10,000,384 environment steps (53.0%); 20,324 env steps/s; elapsed 00:04:21; ETA 00:03:51
+training progress: 5,400,576/10,000,384 environment steps (54.0%); 20,422 env steps/s; elapsed 00:04:24; ETA 00:03:45
+training progress: 5,500,928/10,000,384 environment steps (55.0%); 20,518 env steps/s; elapsed 00:04:28; ETA 00:03:39
+training progress: 5,601,280/10,000,384 environment steps (56.0%); 20,612 env steps/s; elapsed 00:04:32; ETA 00:03:33
+training progress: 5,701,632/10,000,384 environment steps (57.0%); 20,704 env steps/s; elapsed 00:04:35; ETA 00:03:28
+training progress: 5,801,984/10,000,384 environment steps (58.0%); 20,793 env steps/s; elapsed 00:04:39; ETA 00:03:22
+training progress: 5,900,288/10,000,384 environment steps (59.0%); 20,878 env steps/s; elapsed 00:04:43; ETA 00:03:16
+training progress: 6,000,640/10,000,384 environment steps (60.0%); 20,962 env steps/s; elapsed 00:04:46; ETA 00:03:11
+training progress: 6,100,992/10,000,384 environment steps (61.0%); 21,043 env steps/s; elapsed 00:04:50; ETA 00:03:05
+training progress: 6,201,344/10,000,384 environment steps (62.0%); 21,122 env steps/s; elapsed 00:04:54; ETA 00:03:00
+training progress: 6,301,696/10,000,384 environment steps (63.0%); 21,201 env steps/s; elapsed 00:04:57; ETA 00:02:54
+training progress: 6,402,048/10,000,384 environment steps (64.0%); 21,277 env steps/s; elapsed 00:05:01; ETA 00:02:49
+training progress: 6,500,352/10,000,384 environment steps (65.0%); 21,349 env steps/s; elapsed 00:05:04; ETA 00:02:44
+training progress: 6,600,704/10,000,384 environment steps (66.0%); 21,422 env steps/s; elapsed 00:05:08; ETA 00:02:39
+training progress: 6,701,056/10,000,384 environment steps (67.0%); 21,493 env steps/s; elapsed 00:05:12; ETA 00:02:34
+training progress: 6,801,408/10,000,384 environment steps (68.0%); 21,561 env steps/s; elapsed 00:05:15; ETA 00:02:28
+training progress: 6,901,760/10,000,384 environment steps (69.0%); 21,629 env steps/s; elapsed 00:05:19; ETA 00:02:23
+training progress: 7,002,112/10,000,384 environment steps (70.0%); 21,696 env steps/s; elapsed 00:05:23; ETA 00:02:18
+training progress: 7,100,416/10,000,384 environment steps (71.0%); 21,759 env steps/s; elapsed 00:05:26; ETA 00:02:13
+training progress: 7,200,768/10,000,384 environment steps (72.0%); 21,822 env steps/s; elapsed 00:05:30; ETA 00:02:08
+training progress: 7,301,120/10,000,384 environment steps (73.0%); 21,884 env steps/s; elapsed 00:05:34; ETA 00:02:03
+training progress: 7,401,472/10,000,384 environment steps (74.0%); 21,944 env steps/s; elapsed 00:05:37; ETA 00:01:58
+training progress: 7,501,824/10,000,384 environment steps (75.0%); 22,002 env steps/s; elapsed 00:05:41; ETA 00:01:54
+training progress: 7,602,176/10,000,384 environment steps (76.0%); 22,059 env steps/s; elapsed 00:05:45; ETA 00:01:49
+training progress: 7,700,480/10,000,384 environment steps (77.0%); 22,114 env steps/s; elapsed 00:05:48; ETA 00:01:44
+training progress: 7,800,832/10,000,384 environment steps (78.0%); 22,168 env steps/s; elapsed 00:05:52; ETA 00:01:39
+training progress: 7,901,184/10,000,384 environment steps (79.0%); 22,220 env steps/s; elapsed 00:05:56; ETA 00:01:34
+training progress: 8,001,536/10,000,384 environment steps (80.0%); 22,271 env steps/s; elapsed 00:05:59; ETA 00:01:30
+training progress: 8,101,888/10,000,384 environment steps (81.0%); 22,321 env steps/s; elapsed 00:06:03; ETA 00:01:25
+training progress: 8,202,240/10,000,384 environment steps (82.0%); 22,370 env steps/s; elapsed 00:06:07; ETA 00:01:20
+training progress: 8,300,544/10,000,384 environment steps (83.0%); 22,415 env steps/s; elapsed 00:06:10; ETA 00:01:16
+training progress: 8,400,896/10,000,384 environment steps (84.0%); 22,461 env steps/s; elapsed 00:06:14; ETA 00:01:11
+training progress: 8,501,248/10,000,384 environment steps (85.0%); 22,505 env steps/s; elapsed 00:06:18; ETA 00:01:07
+training progress: 8,601,600/10,000,384 environment steps (86.0%); 22,547 env steps/s; elapsed 00:06:21; ETA 00:01:02
+training progress: 8,701,952/10,000,384 environment steps (87.0%); 22,588 env steps/s; elapsed 00:06:25; ETA 00:00:57
+training progress: 8,802,304/10,000,384 environment steps (88.0%); 22,629 env steps/s; elapsed 00:06:29; ETA 00:00:53
+training progress: 8,900,608/10,000,384 environment steps (89.0%); 22,667 env steps/s; elapsed 00:06:33; ETA 00:00:49
+training progress: 9,000,960/10,000,384 environment steps (90.0%); 22,706 env steps/s; elapsed 00:06:36; ETA 00:00:44
+training progress: 9,101,312/10,000,384 environment steps (91.0%); 22,744 env steps/s; elapsed 00:06:40; ETA 00:00:40
+training progress: 9,201,664/10,000,384 environment steps (92.0%); 22,780 env steps/s; elapsed 00:06:44; ETA 00:00:35
+training progress: 9,302,016/10,000,384 environment steps (93.0%); 22,815 env steps/s; elapsed 00:06:48; ETA 00:00:31
+training progress: 9,402,368/10,000,384 environment steps (94.0%); 22,850 env steps/s; elapsed 00:06:51; ETA 00:00:26
+training progress: 9,500,672/10,000,384 environment steps (95.0%); 22,884 env steps/s; elapsed 00:06:55; ETA 00:00:22
+training progress: 9,601,024/10,000,384 environment steps (96.0%); 22,918 env steps/s; elapsed 00:06:59; ETA 00:00:17
+training progress: 9,701,376/10,000,384 environment steps (97.0%); 22,950 env steps/s; elapsed 00:07:03; ETA 00:00:13
+training progress: 9,801,728/10,000,384 environment steps (98.0%); 22,983 env steps/s; elapsed 00:07:06; ETA 00:00:09
+training progress: 9,902,080/10,000,384 environment steps (99.0%); 23,014 env steps/s; elapsed 00:07:10; ETA 00:00:04
+training progress: 10,000,384/10,000,384 environment steps (100.0%); 23,044 env steps/s; elapsed 00:07:14; ETA 00:00:00
+completed 10000384 environment steps; checkpoints: /workspace/outputs/b2_clean

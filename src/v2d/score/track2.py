@@ -156,7 +156,12 @@ def scored_grid(kit_root: Path, grid: str) -> set[str] | None:
 
 
 def build_frames(
-    dataset_root: Path, kit_root: Path, pred: str, tier: str, grid: str = "sample"
+    dataset_root: Path,
+    kit_root: Path,
+    pred: str,
+    tier: str,
+    grid: str = "sample",
+    episodes_only: list[int] | None = None,
 ) -> tuple[pd.DataFrame, pd.DataFrame, dict]:
     """Host-shaped (solution, submission) frames plus a few diagnostics."""
     metadata = episodes(dataset_root)
@@ -174,6 +179,10 @@ def build_frames(
     sol_rows, sub_rows, invisible, dropped = [], [], 0, 0
     for row in metadata:
         episode = row.index
+        # A rollout may cover only some clips. Restricting the grid is honest as long as the
+        # aggregate is labelled as being over the subset, which `episodes_scored` records.
+        if episodes_only is not None and episode not in episodes_only:
+            continue
         reference, visible = object_pose(dataset_root, "tier1", episode)
         reference, filled = hold_last_visible(reference, visible)
         invisible += filled
@@ -273,12 +282,19 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument(
         "--per-episode", action="store_true", help="also score each episode on its own"
     )
+    parser.add_argument(
+        "--episodes",
+        type=int,
+        nargs="*",
+        default=None,
+        help="score only these episodes; the aggregate is then over the subset, not the host grid",
+    )
     parser.add_argument("-o", "--out", type=Path, help="write the result as JSON")
     args = parser.parse_args(argv)
 
     modules = load_metric_modules(args.kit_root)
     solution, submission, diagnostics = build_frames(
-        args.dataset_root, args.kit_root, args.pred, args.tier, args.grid
+        args.dataset_root, args.kit_root, args.pred, args.tier, args.grid, args.episodes
     )
     overall = score_all(modules, solution, submission)
 
@@ -306,6 +322,9 @@ def main(argv: list[str] | None = None) -> None:
         result["per_episode"] = per_episode
 
     result["grid"] = args.grid
+    result["episodes_scored"] = (
+        sorted(args.episodes) if args.episodes is not None else "all (the host grid)"
+    )
     print(json.dumps(result["overall"], indent=2))
     print(
         f"frames={diagnostics['frames']} invisible_filled={diagnostics['invisible_frames_filled']} "

@@ -1,0 +1,17 @@
+{
+  "achieved_vs_released_mean_cm": 14.1948,
+  "checkpoint_sha256": "3e8165abf21f576809d9c18f883a08eb7e9150b4c14fc21091dab5adb0201b1c",
+  "episode": 24,
+  "eval_code_sha256": "b1b3ebe3ae4629d1687a83f420149e3f6fdfc154d70acad55c12fc8fa69811a1",
+  "eval_script_sha256": "160d24f5fbeb70ccd569ca4192056f1892b2a9f2999066db9d8279461648fdf1",
+  "frames": 748,
+  "npz_out": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/npz_b2_pkg",
+  "reference_check_angle_deg": 5e-06,
+  "reference_check_position_cm": 4e-06,
+  "reference_check_within_packer_tolerance": true,
+  "schema": "flash_chord_object_trajectories_v1",
+  "tier_rolled_out_against": "tier1",
+  "trajectory": "results/b1b2/b2_clean_objects.parquet",
+  "what": "a FlashCHORD rollout converted into the released Track 2 world frame",
+  "world": 0
+}

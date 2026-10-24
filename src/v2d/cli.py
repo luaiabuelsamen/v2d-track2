@@ -111,6 +111,10 @@ FORWARDED: dict[str, tuple[str, str]] = {
         "apply docs/EXP_SUPPORT_AND_ROOT.md's rule",
     ),
     "pack-tier1": ("v2d.submit.tier1", "pack a Tier 1 submission with the kit's own packer"),
+    "rollout-to-npz": (
+        "v2d.submit.rollout",
+        "convert a FlashCHORD rollout into the released frame for scoring",
+    ),
     "rebase-assets": (
         "v2d.submit.rebase_assets",
         "rewrite a motion parquet's absolute asset paths for another machine",
