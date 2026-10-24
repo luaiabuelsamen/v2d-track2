@@ -23,17 +23,36 @@ Per episode:
    floor plane over that segment's frames. Fitting this per segment recovers the real furniture
    heights from noisy data alone: `traffic_cone_ground_table` reads -7 cm then 74.8 cm,
    `woven_basket_ground_desk` reads ~0 then 83 cm, matching the task names.
-3. **Only floor-level segments are used**: a segment qualifies when its lowest vertex sits no
-   more than `--floor-tolerance-cm` (default 3) *above* the plane. Penetration is accepted
-   without bound, because a tilt error is precisely what digs a corner into the floor -- a 20°
-   error on an 86 cm box buries one by ~15 cm -- so gating on absolute distance would discard
-   exactly the frames worth correcting. Motionless is not
-   the same as supported: a watering can held steady in mid-air while pouring produces seven
-   "rest" segments at 13-14 cm, and seating it on a plane tangent to itself would invent a
-   constraint that does not exist. At floor level the support plane is known and was validated
-   to +-1.5 cm, so the correction is sound exactly where it is applied. Extending it to tables
-   needs the released `support_surface/` primitives, which ship in a different frame with no
-   published transform -- deliberately out of scope here.
+3. **A segment is used only where a support plane is actually known.** Motionless is not the
+   same as supported: a watering can held steady in mid-air while pouring produces seven "rest"
+   segments at 13-14 cm, and seating it on a plane tangent to itself would invent a constraint
+   that does not exist. So each segment must match a *candidate support height*, and candidates
+   come from two places:
+
+   - **The floor**, always, at height 0 -- validated to +-1.5 cm against the released plane.
+   - **The released `support_surface/` primitives** with `--support-primitives`. These ship in a
+     Z-up `g1_retarget_world` with no published transform to the pose frame, but a *height above
+     the floor* is a scalar and survives any transform that preserves up and slides within the
+     floor plane, so a primitive's top-face height is directly comparable to a measured one. Over
+     the 96 non-floor rest segments the floor-only gate refuses, 73 land within 2 cm of a
+     horizontal primitive top at a median gap of 0.61 cm (`scripts/probe_support_root.py`), which
+     is also the evidence that the two frames share an up axis. Only *horizontal* primitives
+     count -- thin in z, like a tabletop -- because a panel thin in x is something you lean
+     against, not something you rest on, and `vacuum`'s only primitive is exactly that.
+
+   Tolerances are asymmetric. A segment may sit at most `--support-tolerance-cm` (default 3)
+   *above* its support, because an object at rest touches it. Penetration is accepted, because a
+   tilt error is precisely what digs a corner through a surface -- a 20° error on an 86 cm box
+   buries one by ~15 cm, `traffic_cone` sits 2.3 cm under its table and `woven_basket` 4-6 cm
+   under its desk -- so gating on absolute distance would discard exactly the frames worth
+   correcting. Below the floor penetration is unbounded, there being nothing further down to
+   confuse it with; below a raised surface it is capped at `--support-penetration-cm` (default
+   10), because the floor is down there. That cap is safe: the lowest table top in any episode
+   sits 46.9 cm up, far outside the window.
+
+   The correction itself is unchanged by which candidate matched, because a tabletop's normal is
+   the floor's normal -- both frames describe one gravity-aligned room. The matched height enters
+   only `--seat-vertical`.
 4. **Support facet per rest segment.** The facet of the mesh's convex hull whose outward normal
    best matches the object's current downward direction, chosen once per segment by summed
    agreement so it cannot jitter frame to frame.
@@ -53,7 +72,7 @@ Output matches `tilt_yaw_split.py`'s npz contract, so `score_track2.py --pred np
 
 Usage:
   python scripts/clean_support_contact.py --dataset-root DATA --npz-out DIR \
-      [--seat-vertical] [-o results/clean_support_contact.json]
+      [--support-primitives] [--seat-vertical] [-o results/clean_support_contact.json]
 """
 
 from __future__ import annotations
@@ -143,8 +162,59 @@ def minimal_rotation(source: np.ndarray, target: np.ndarray) -> Rotation:
     return Rotation.from_rotvec(axis / norm * np.arccos(dot))
 
 
+def support_primitives(path: Path) -> list[float]:
+    """Heights above the floor of every *horizontal* support primitive in a `_support.usda`.
+
+    Horizontal means thin along z: a surface you rest on. A primitive thin along x or y is a
+    panel you lean against, which pins no tilt, and `vacuum`'s `chair_back` is one of those.
+
+    Duplicated from scripts/probe_support_root.py rather than imported: these tools run under
+    `python -I`, which implies `-P`, so the script's own directory is not on sys.path and
+    scripts/ cannot import from itself.
+    """
+    from pxr import Usd, UsdGeom  # noqa: PLC0415  (lazy: only needed with --support-primitives)
+
+    axis_index = {"X": 0, "Y": 1, "Z": 2}
+    stage = Usd.Stage.Open(str(path))
+    heights = []
+    for prim in stage.Traverse():
+        kind = prim.GetTypeName()
+        if kind not in ("Cylinder", "Cube", "Sphere"):
+            continue
+        transform = UsdGeom.Xformable(prim).ComputeLocalToWorldTransform(Usd.TimeCode.Default())
+        centre = np.array(transform.ExtractTranslation(), dtype=np.float64)
+        if kind == "Cylinder":
+            cylinder = UsdGeom.Cylinder(prim)
+            local = np.full(3, float(cylinder.GetRadiusAttr().Get()))
+            local[axis_index[str(cylinder.GetAxisAttr().Get())]] = float(cylinder.GetHeightAttr().Get()) / 2.0
+        elif kind == "Cube":
+            local = np.full(3, float(UsdGeom.Cube(prim).GetSizeAttr().Get()) / 2.0)
+        else:
+            local = np.full(3, float(UsdGeom.Sphere(prim).GetRadiusAttr().Get()))
+        half = local * np.linalg.norm(np.array(transform, dtype=np.float64)[:3, :3], axis=1)
+        if np.argmin(half) == 2:
+            heights.append(float(centre[2] + half[2]))
+    return sorted(heights)
+
+
+def match_support(height: float, candidates: list[float], above: float, below: float) -> float | None:
+    """The candidate support height a rest segment at `height` sits on, or None if none fits.
+
+    Asymmetric by design; see the module docstring. Unbounded penetration below the floor,
+    bounded below a raised surface.
+    """
+    best = min(candidates, key=lambda candidate: abs(height - candidate))
+    gap = height - best
+    if gap > above:
+        return None
+    if best > 0.0 and gap < -below:
+        return None
+    return best
+
+
 def clean_episode(pose: np.ndarray, vertices: np.ndarray, hull_normals: np.ndarray,
-                  normal: np.ndarray, offset: float, args) -> tuple[np.ndarray, dict]:
+                  normal: np.ndarray, offset: float, candidates: list[float],
+                  args) -> tuple[np.ndarray, dict]:
     """Return the cleaned (T,7) trajectory and this episode's diagnostics."""
     frames = len(pose)
     rotation = Rotation.from_quat(pose[:, 3:])
@@ -168,10 +238,17 @@ def clean_episode(pose: np.ndarray, vertices: np.ndarray, hull_normals: np.ndarr
         lowest = (world @ normal + offset).min(axis=1)
         height = float(np.median(lowest))
         diagnostics["support_heights_cm"].append(round(height * 100.0, 2))
-        # Only the floor is a support plane we actually know. See the module docstring.
-        if not args.any_support_height and height > args.floor_tolerance_cm / 100.0:
-            rejected.append(round(height * 100.0, 2))
-            continue
+        # Correct only where a support plane is actually known. See the module docstring.
+        if args.any_support_height:
+            matched = 0.0
+        else:
+            matched = match_support(height, candidates,
+                                    args.support_tolerance_cm / 100.0,
+                                    args.support_penetration_cm / 100.0)
+            if matched is None:
+                rejected.append(round(height * 100.0, 2))
+                continue
+        diagnostics.setdefault("matched_support_cm", []).append(round(matched * 100.0, 2))
 
         for index in range(start, stop):
             current = matrices[index] @ hull_normals[facet]
@@ -209,8 +286,12 @@ def clean_episode(pose: np.ndarray, vertices: np.ndarray, hull_normals: np.ndarr
         lowest = (world @ normal + offset).min(axis=1)
         target = np.full(frames, np.nan)
         for (start, stop), height in zip(segments, diagnostics["support_heights_cm"]):
-            if args.any_support_height or height <= args.floor_tolerance_cm:
-                target[start:stop] = height / 100.0
+            matched = (0.0 if args.any_support_height
+                       else match_support(height / 100.0, candidates,
+                                          args.support_tolerance_cm / 100.0,
+                                          args.support_penetration_cm / 100.0))
+            if matched is not None:
+                target[start:stop] = matched
         if np.isfinite(target).any():
             index = np.arange(frames)
             finite = np.isfinite(target)
@@ -239,10 +320,17 @@ def main() -> None:
                         help="moving-average window for the speed estimate; 1 disables it")
     parser.add_argument("--max-tilt-deg", type=float, default=45.0,
                         help="reject a per-frame correction above this as a facet mix-up")
-    parser.add_argument("--floor-tolerance-cm", type=float, default=3.0,
-                        help="how far ABOVE the floor a resting object's lowest vertex may sit and "
-                             "still count as floor-supported; penetration is unbounded, because a "
-                             "tilt error digs a corner in and that is the error being corrected")
+    parser.add_argument("--support-tolerance-cm", "--floor-tolerance-cm", type=float, default=3.0,
+                        dest="support_tolerance_cm",
+                        help="how far ABOVE a support a resting object's lowest vertex may sit and "
+                             "still count as supported; penetration is allowed, because a tilt "
+                             "error digs a corner in and that is the error being corrected")
+    parser.add_argument("--support-penetration-cm", type=float, default=10.0,
+                        help="how far BELOW a raised support a segment may sit and still match it; "
+                             "unbounded below the floor, where nothing is further down")
+    parser.add_argument("--support-primitives", action="store_true",
+                        help="also accept rest on the released support_surface/ primitives, not "
+                             "just on the floor; see the module docstring")
     parser.add_argument("--any-support-height", action="store_true",
                         help="also correct rest segments away from the floor; see the docstring")
     parser.add_argument("--seat-vertical", action="store_true",
@@ -286,7 +374,12 @@ def main() -> None:
             hulls[name] = (np.asarray(hull.vertices, dtype=np.float64), normals)
         vertices, hull_normals = hulls[name]
 
-        cleaned, diagnostics = clean_episode(noisy, vertices, hull_normals, normal, offset, args)
+        candidates = [0.0]
+        if args.support_primitives:
+            candidates += support_primitives(root / row["support_surface"])
+        cleaned, diagnostics = clean_episode(noisy, vertices, hull_normals, normal, offset,
+                                             candidates, args)
+        diagnostics["support_candidates_cm"] = [round(c * 100.0, 2) for c in candidates]
         diagnostics["object"] = name
         episodes[episode] = diagnostics
 
@@ -310,7 +403,9 @@ def main() -> None:
         "seat_vertical": bool(args.seat_vertical),
         "rest_speed_m_per_s": args.rest_speed,
         "smooth_frames": args.smooth_frames,
-        "floor_tolerance_cm": args.floor_tolerance_cm,
+        "support_tolerance_cm": args.support_tolerance_cm,
+        "support_penetration_cm": args.support_penetration_cm,
+        "support_primitives": bool(args.support_primitives),
         "any_support_height": bool(args.any_support_height),
         "mean_rest_fraction": round(float(np.mean([v["rest_frames"] / v["frames"] for v in episodes.values()])), 4),
         "mean_tilt_applied_deg": round(float(np.mean(
