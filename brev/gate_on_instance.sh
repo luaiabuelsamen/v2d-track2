@@ -113,13 +113,35 @@ else
   echo "training reference: $TRAIN_PARQUET (repo example; throughput probe only)"
 fi
 
+# The repo's own wrapper runs `docker exec -it`, and -t fails with "the input device is not a
+# TTY" whenever stdin is not a terminal -- which it never is here, because this script arrives
+# over `ssh 'bash -s'`. The second probe run reached the GPU, built the image in 229 s, and then
+# lost every single container call to this. Talk to docker directly with -i and no -t.
+CONTAINER=""
+container_id() {
+  [ -n "$CONTAINER" ] && { echo "$CONTAINER"; return 0; }
+  CONTAINER="$(docker ps -q --filter name=flash_chord | head -1)"
+  [ -n "$CONTAINER" ] || return 1
+  echo "$CONTAINER"
+}
 run_in_container() {
-  docker/run.sh exec latest 0 -- bash -lc "$1"
+  local cid
+  cid="$(container_id)" || { echo "no flash_chord container is running" >&2; return 1; }
+  docker exec -i "$cid" bash -lc "$1"
 }
 
 say "Start the container"
 V2D_ASSETS_DIR="$ASSETS" docker/run.sh start latest 0 </dev/null >/dev/null 2>&1 &
-sleep 30
+for _ in $(seq 1 20); do
+  sleep 5
+  container_id >/dev/null 2>&1 && break
+done
+if ! container_id >/dev/null 2>&1; then
+  echo "FATAL: no flash_chord container after 100s. docker ps:" >&2
+  docker ps -a | head -5 >&2
+  exit 1
+fi
+echo "container $(container_id) is up"
 run_in_container 'python -c "import flash_chord, jax; print(\"flash_chord ok\", jax.devices())"' \
   || echo "WARNING: could not import flash_chord/jax in the container"
 

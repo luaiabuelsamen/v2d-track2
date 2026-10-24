@@ -126,6 +126,56 @@ def _forward(module: str, argv: list[str]) -> int:
     return 0
 
 
+def _gate_cleaner(args: argparse.Namespace) -> int:
+    """Run the known-answer and do-no-harm gates, and check them against docs/GATES.md."""
+    from .clean.gates import Injection, run, save
+    from .clean.support_contact import Options
+
+    record = run(
+        Path(args.dataset_root),
+        Options(support_primitives=args.support_primitives),
+        Injection(tilt_deg=args.tilt_deg, seed=args.seed),
+        only=args.episodes,
+    )
+    summary = record["summary"]
+    checks = {
+        "G1_mean_recovery": {
+            "bar": ">= 0.70",
+            "value": summary["mean_recovered_fraction"],
+            "pass": bool((summary["mean_recovered_fraction"] or 0) >= 0.70),
+        },
+        "G1b_worst_recovery": {
+            "bar": ">= 0.20",
+            "value": summary["worst_recovered_fraction"],
+            "pass": bool((summary["worst_recovered_fraction"] or -1) >= 0.20),
+        },
+        "G2_do_no_harm_tilt": {
+            "bar": "<= 3.0 deg",
+            "value": summary["mean_do_no_harm_tilt_deg"],
+            "pass": bool(summary["mean_do_no_harm_tilt_deg"] <= 3.0),
+        },
+        "G2b_do_no_harm_drift": {
+            "bar": "<= 1e-6 cm",
+            "value": summary["worst_do_no_harm_drift_cm"],
+            "pass": bool(summary["worst_do_no_harm_drift_cm"] <= 1e-6),
+        },
+    }
+    record["checks"] = checks
+    record["verdict"] = "PASS" if all(c["pass"] for c in checks.values()) else "FAIL"
+    print(
+        "\n"
+        + json.dumps(
+            {"summary": summary, "checks": checks, "verdict": record["verdict"]},
+            indent=2,
+            sort_keys=True,
+        )
+    )
+    if args.out:
+        save(record, Path(args.out))
+        print(f"wrote {args.out}", file=sys.stderr)
+    return 0 if record["verdict"] == "PASS" else 1
+
+
 def _contact(args: argparse.Namespace) -> int:
     """Hand-object contact coverage across the retargeted arms, with paired sign tests."""
     from .score.contact import coverage, ladder, paired, sign_test
@@ -277,6 +327,19 @@ def build_parser() -> argparse.ArgumentParser:
     gate.add_argument("--no-upload", action="store_true", help="skip the Hugging Face upload")
     gate.add_argument("-o", "--out", help="also write the record here")
     gate.set_defaults(func=_gate_report)
+
+    gates = sub.add_parser(
+        "gate-cleaner",
+        help="known-answer and do-no-harm gates for the object cleaner",
+        description=_gate_cleaner.__doc__,
+    )
+    gates.add_argument("--dataset-root", required=True)
+    gates.add_argument("--support-primitives", action="store_true")
+    gates.add_argument("--tilt-deg", type=float, default=12.0)
+    gates.add_argument("--seed", type=int, default=0)
+    gates.add_argument("--episodes", type=int, nargs="*", default=None)
+    gates.add_argument("-o", "--out")
+    gates.set_defaults(func=_gate_cleaner)
 
     contact = sub.add_parser(
         "contact", help="contact coverage across arms", description=_contact.__doc__

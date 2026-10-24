@@ -1,0 +1,46 @@
+{
+  "eval_metrics": {},
+  "extrapolation": {
+    "driver": "580.126.09",
+    "env_steps_per_second": 0,
+    "free_mib_at_start": "48539",
+    "gpu": "NVIDIA RTX A6000",
+    "image_build_seconds": 229,
+    "peak_gpu_mib": 1,
+    "phase": "probe",
+    "projected_hours_per_clip_350M": null,
+    "steps_run": 10000896,
+    "train_return_code": 1,
+    "train_seconds": 0
+  },
+  "files_found": [
+    "composed_config.txt",
+    "gate_probe.json",
+    "gate_probe_console.log",
+    "gpu_samples.csv",
+    "on_instance.log"
+  ],
+  "huggingface": {
+    "reason": null,
+    "repo": "luaia/v2d-track2",
+    "uploaded": [
+      "gate/probe/gate/composed_config.txt",
+      "gate/probe/gate/gate_probe.json",
+      "gate/probe/gate/gate_probe_console.log",
+      "gate/probe/gate/on_instance.log"
+    ]
+  },
+  "instance_type": "massedcompute_A6000",
+  "local_scores": {},
+  "phase": "probe",
+  "usd": 0.136,
+  "usd_per_hour": 0.68,
+  "wall_hours": 0.2,
+  "wandb": {
+    "logged": true,
+    "project": "v2d-track2",
+    "reason": null,
+    "url": "https://forge.coreweave.com/wandb/luai-abuelsamen-university-of-california-berkeley/v2d-track2/runs/tazofyiy"
+  },
+  "what": "observability record for the probe gate run"
+}
