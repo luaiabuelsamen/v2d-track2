@@ -295,3 +295,36 @@ between `table_root` and `table`, and declining to run a committed test because 
 fail is precisely the bias pre-registration exists to prevent. It is also not a foregone
 conclusion: contact depends on hand-to-object geometry, and a body further from the clean
 reference overall could still happen to place the hands better.
+
+## T6: the scored metrics and the grasp signal come apart
+
+The table arm retargeted 30/30 at 0.0 mm rigid-fit residual and 0.033° orientation
+(`results/arm_table.json`), so its contact number is readable.
+
+| reference | contact | vs Tier 2 | AUC |
+|---|---|---|---|
+| tier1 | 0.5744 | +0.2043 | 1.0000 |
+| floor-only cleaner | 0.3841 | +0.0140 | 0.4660 |
+| **support-surface cleaner** | **0.3817** | **+0.0116** | **0.4755** |
+| tier2 released | 0.3701 | — | 0.4247 |
+
+**T6 fails: 0.3817 against a 0.3950 bar.** It fails because contact did not move, not because it
+fell. Paired against the floor-only cleaner the difference is **−0.0024 with 6 clips up, 5 down
+and 19 tied, two-sided sign test p = 1.000** — indistinguishable from zero on any reading. So
+the support-surface extension **buys a clear scored gain and leaves the grasp signal
+untouched**: AUC +0.0095 and MPPE −0.028 cm, contact unchanged.
+
+The dissociation is the finding. Over the 12 episodes the extension actually changed, per-clip
+AUC gain and contact change do correlate (**r = +0.481**), but the mean AUC gain is **+0.0237**
+while the mean contact change is **−0.0060**. Improving the object's absolute pose is not the
+same as closing the hand-to-object gap, and the reason is sitting in the previous section: the
+retargeted hands follow the *human*, whose root is still displaced by a perturbation that moves
+the hands ~7 cm against a 2 cm contact threshold, and which the root cleaner failed to remove. A
+correction that moves the object closer to its true pose can move it *further* from where the
+perturbed hands actually are. `e09 big_red_bowl` is the clearest case: AUC +0.0218, contact
+−0.037.
+
+This is also the quantitative answer to why both object cleaners capture so little of the tilt
+oracle's contact gain. The oracle fixes the object's orientation while the hands stay wrong;
+most of the remaining contact loss is on the human side, and `object_clean` already measured that
+at **38 % of the total** (0.0777 of 0.2043). Nothing that touches only the object can reach it.
