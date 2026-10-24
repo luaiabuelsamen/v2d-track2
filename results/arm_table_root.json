@@ -8,9 +8,8 @@
       "pass": true,
       "relative_rotation_max_diff_deg": 0.02755,
       "rigid_fit_residual_mm": 0.0,
-      "seconds": 172.8,
       "sequence_id": "2026-06-04_14-16-23_tall_bar_stool_tip_up_04",
-      "status": "ok",
+      "status": "skipped",
       "tier": "tier2"
     },
     {
@@ -141,9 +140,8 @@
       "pass": true,
       "relative_rotation_max_diff_deg": 0.01884,
       "rigid_fit_residual_mm": 0.0,
-      "seconds": 321.3,
       "sequence_id": "2026-04-24_13-56-58_light_blue_book_pick_place_09",
-      "status": "ok",
+      "status": "skipped",
       "tier": "tier2"
     },
     {
@@ -154,9 +152,8 @@
       "pass": true,
       "relative_rotation_max_diff_deg": 0.02882,
       "rigid_fit_residual_mm": 0.0,
-      "seconds": 254.6,
       "sequence_id": "2026-04-25_17-20-04_black_platform_turn_05",
-      "status": "ok",
+      "status": "skipped",
       "tier": "tier2"
     },
     {
@@ -167,9 +164,8 @@
       "pass": true,
       "relative_rotation_max_diff_deg": 0.02599,
       "rigid_fit_residual_mm": 0.0,
-      "seconds": 264.7,
       "sequence_id": "2026-06-09_10-19-09_snack_box_desk_through_06",
-      "status": "ok",
+      "status": "skipped",
       "tier": "tier2"
     },
     {
@@ -180,9 +176,8 @@
       "pass": true,
       "relative_rotation_max_diff_deg": 0.02872,
       "rigid_fit_residual_mm": 0.0,
-      "seconds": 283.8,
       "sequence_id": "2026-05-28_14-44-09_round_table_flip_08",
-      "status": "ok",
+      "status": "skipped",
       "tier": "tier2"
     },
     {
@@ -193,9 +188,8 @@
       "pass": true,
       "relative_rotation_max_diff_deg": 0.01347,
       "rigid_fit_residual_mm": 0.0,
-      "seconds": 321.9,
       "sequence_id": "2026-05-06_11-06-15_wet_floor_sign_pick_place_ground_08",
-      "status": "ok",
+      "status": "skipped",
       "tier": "tier2"
     },
     {
@@ -206,9 +200,8 @@
       "pass": true,
       "relative_rotation_max_diff_deg": 0.00787,
       "rigid_fit_residual_mm": 0.0,
-      "seconds": 201.1,
       "sequence_id": "2026-03-12_15-06-36_spray_bottle_left_desk_ground_02",
-      "status": "ok",
+      "status": "skipped",
       "tier": "tier2"
     },
     {
@@ -219,18 +212,21 @@
       "pass": true,
       "relative_rotation_max_diff_deg": 0.02013,
       "rigid_fit_residual_mm": 0.0,
-      "seconds": 198.5,
       "sequence_id": "2026-05-01_17-04-55_traffic_cone_ground_table_02",
-      "status": "ok",
+      "status": "skipped",
       "tier": "tier2"
     },
     {
       "episode": 18,
-      "log": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/arms/table_root/logs/tier2_e18.log",
+      "frames": 858,
       "object": "blue_trash_can",
-      "seconds": 401.9,
+      "orientation_residual_max_deg": 0.03236,
+      "pass": true,
+      "relative_rotation_max_diff_deg": 0.02122,
+      "rigid_fit_residual_mm": 0.0,
+      "seconds": 389.6,
       "sequence_id": "2026-05-06_10-00-19_blue_trash_can_drag_sideways_08",
-      "status": "validate_failed",
+      "status": "ok",
       "tier": "tier2"
     },
     {
@@ -241,49 +237,73 @@
       "pass": true,
       "relative_rotation_max_diff_deg": 0.01253,
       "rigid_fit_residual_mm": 0.0,
-      "seconds": 439.0,
       "sequence_id": "2026-05-19_10-19-48_cane_swing_05",
-      "status": "ok",
+      "status": "skipped",
       "tier": "tier2"
     },
     {
       "episode": 20,
-      "log": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/arms/table_root/logs/tier2_e20.log",
+      "frames": 553,
       "object": "rice_cooker",
+      "orientation_residual_max_deg": 0.03186,
+      "pass": true,
+      "relative_rotation_max_diff_deg": 0.02799,
+      "rigid_fit_residual_mm": 0.0,
+      "seconds": 211.2,
       "sequence_id": "2026-06-08_16-57-34_rice_cooker_clockwise_04",
-      "status": "convert_failed",
+      "status": "ok",
       "tier": "tier2"
     },
     {
       "episode": 21,
-      "log": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/arms/table_root/logs/tier2_e21.log",
+      "frames": 678,
       "object": "tall_bar_stool",
+      "orientation_residual_max_deg": 0.03142,
+      "pass": true,
+      "relative_rotation_max_diff_deg": 0.01833,
+      "rigid_fit_residual_mm": 0.0,
+      "seconds": 253.6,
       "sequence_id": "2026-04-29_11-53-57_tall_bar_stool_pull_08",
-      "status": "convert_failed",
+      "status": "ok",
       "tier": "tier2"
     },
     {
       "episode": 22,
-      "log": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/arms/table_root/logs/tier2_e22.log",
+      "frames": 719,
       "object": "step_ladder",
+      "orientation_residual_max_deg": 0.02598,
+      "pass": true,
+      "relative_rotation_max_diff_deg": 0.01584,
+      "rigid_fit_residual_mm": 0.0,
+      "seconds": 215.3,
       "sequence_id": "2026-05-22_16-52-36_step_ladder_drag_03",
-      "status": "convert_failed",
+      "status": "ok",
       "tier": "tier2"
     },
     {
       "episode": 23,
-      "log": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/arms/table_root/logs/tier2_e23.log",
+      "frames": 946,
       "object": "toy_stroller",
+      "orientation_residual_max_deg": 0.02793,
+      "pass": true,
+      "relative_rotation_max_diff_deg": 0.02718,
+      "rigid_fit_residual_mm": 0.0,
+      "seconds": 491.2,
       "sequence_id": "2026-06-03_15-08-03_toy_stroller_back_forth_ground_04",
-      "status": "convert_failed",
+      "status": "ok",
       "tier": "tier2"
     },
     {
       "episode": 24,
-      "log": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/arms/table_root/logs/tier2_e24.log",
+      "frames": 748,
       "object": "watering_can",
+      "orientation_residual_max_deg": 0.03194,
+      "pass": true,
+      "relative_rotation_max_diff_deg": 0.02624,
+      "rigid_fit_residual_mm": 0.0,
+      "seconds": 250.4,
       "sequence_id": "2026-05-29_15-43-20_watering_can_pour_right_02",
-      "status": "convert_failed",
+      "status": "ok",
       "tier": "tier2"
     },
     {
@@ -291,23 +311,33 @@
       "log": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/arms/table_root/logs/tier2_e25.log",
       "object": "cyan_water_bottle",
       "sequence_id": "2026-03-20_11-59-57_cyan_water_bottle_rotate_01",
-      "status": "convert_failed",
+      "status": "retarget_failed",
       "tier": "tier2"
     },
     {
       "episode": 26,
-      "log": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/arms/table_root/logs/tier2_e26.log",
+      "frames": 669,
       "object": "skateboard",
+      "orientation_residual_max_deg": 0.03063,
+      "pass": true,
+      "relative_rotation_max_diff_deg": 0.01633,
+      "rigid_fit_residual_mm": 0.0,
+      "seconds": 315.0,
       "sequence_id": "2026-06-05_16-05-08_skateboard_rotate_ground_10",
-      "status": "convert_failed",
+      "status": "ok",
       "tier": "tier2"
     },
     {
       "episode": 27,
-      "log": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/arms/table_root/logs/tier2_e27.log",
+      "frames": 565,
       "object": "woven_basket",
+      "orientation_residual_max_deg": 0.03177,
+      "pass": true,
+      "relative_rotation_max_diff_deg": 0.02168,
+      "rigid_fit_residual_mm": 0.0,
+      "seconds": 336.9,
       "sequence_id": "2026-05-01_11-15-05_woven_basket_ground_desk_10",
-      "status": "convert_failed",
+      "status": "ok",
       "tier": "tier2"
     },
     {
@@ -315,29 +345,33 @@
       "log": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/arms/table_root/logs/tier2_e28.log",
       "object": "squeegee",
       "sequence_id": "2026-05-19_11-27-07_squeegee_sweep_away_from_you_03_",
-      "status": "convert_failed",
+      "status": "retarget_failed",
       "tier": "tier2"
     },
     {
       "episode": 29,
-      "log": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/arms/table_root/logs/tier2_e29.log",
+      "frames": 467,
       "object": "rolling_luggage",
+      "orientation_residual_max_deg": 0.02573,
+      "pass": true,
+      "relative_rotation_max_diff_deg": 0.01441,
+      "rigid_fit_residual_mm": 0.0,
+      "seconds": 163.2,
       "sequence_id": "2026-06-05_18-27-40_rolling_luggage_left_foot_push_06",
-      "status": "convert_failed",
+      "status": "ok",
       "tier": "tier2"
     }
   ],
   "summary": {
     "abort_reason": null,
     "counts": {
-      "convert_failed": 10,
       "ok": 9,
-      "skipped": 10,
-      "validate_failed": 1
+      "retarget_failed": 2,
+      "skipped": 19
     },
-    "episodes_passed": 19,
+    "episodes_passed": 28,
     "episodes_total": 30,
-    "free_disk_gb_after": 28.6,
+    "free_disk_gb_after": 28.0,
     "object_source": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/npz_table",
     "worst_orientation_residual_deg": 0.03299,
     "worst_rigid_fit_residual_mm": 0
