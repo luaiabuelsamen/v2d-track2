@@ -3,29 +3,33 @@ Goal: A valid Track 2 submission before the freeze (this keeps the $250 Brev cre
 Finish line: Tier 1 insurance submission accepted; Tier 2 submitted; results/ frozen; README + short tech report; every number traceable to a committed results file.
 Deadline: leaderboard freeze 2026-11-04 17:00 EST (internal cutoff 12:00 EST that day)
 Milestone: GO, and the first paid compute has run. Gate G1 passed long since (all 60 clips retargeted on CPU at 0.0 mm). **Brev is live**: three probe attempts, two real bugs found and fixed, the hardware confirmed, ~$0.22 spent of a $2 cap. The reference cleaner now has a **known-answer gate, and the original cleaner failed it** -- a gated variant that passes is built and scored. Code is one package with one CLI, ruff/format clean, 76 tests. Observability is live to W&B and a private Hugging Face repo.
-Last result: **The support-contact cleaner fails its own known-answer gate, and that changes what we
-claim.** Injecting a 12 deg tilt of our own and asking the cleaner to remove it, it recovers
-**0.2683** (support-surface) and **0.2137** (floor-only) against a pre-registered bar of 0.70,
-and 9 of 30 clips come out worse than the injected tilt. Do-no-harm passes cleanly (1.4-1.7 deg
-on clean input, position drift exactly 0). The diagnosis is sharp: recovery tracks object shape,
-0.72-0.91 for objects with one flat base and **negative** for squeegee, luggage, stroller, chair
-and bat, because the support facet is an argmax over hull facets against "down" and a 12 deg tilt
-makes a different facet win. That also supersedes my earlier guess about the e17 traffic_cone
-regression. Gating per clip on synthetic recovery -- correct the 7 clips that pass, leave 23
-untouched -- gives recovery **0.7498** and **AUC 0.4423161** against a pre-registered bar of
-0.4423 derived from the per-clip decomposition, a four-decimal hit. All four predictions pass, so
-the gated cleaner ships. **The price, flagged for Luai: SP-SR steps back from 1.0000 to 0.9667**,
-and under rank-sum that one episode may cost more than AUC +0.0176 buys; both reference sets are
-built and switching is one flag.
+Last result: **B0 is measured: FlashCHORD trains the G1 at 22,977 env steps/s on a rented A6000, 100 % GPU,
+peak 40,156 MiB of 49,140.** That is **4.23 h per clip** at 350M steps and **126.9 GPU-hours for
+30 clips** -- $76 at $0.60/h or $86 at $0.68/h, which is ABOVE docs/SCOPING.md's 90-120 h and
+$54-72, so one pass costs a third of the credit. Peak memory also confirms the 46,000 MiB floor
+is load-bearing rather than cautious: a 24 GB card would OOM. Getting there took **eleven
+attempts and ten distinct bugs**, four of them found in seconds on a kept-alive dev box instead
+of 12-minute create-build-die cycles. Two would each have destroyed a full run on their own:
+git-lfs is absent from the Brev image so every mesh and ONNX policy is a ~130-byte pointer
+(training could never start, and the error named neither LFS nor the asset), and
+`scene.support=true` crashes the 16 of 30 clips that ship the empty support stage. Separately,
+**both root cleaners are now dead**: foot-planting costs contact significantly (-0.0153 paired,
+21 of 30 clips down, p = 0.0428) and the floor-anchored version is worse still (rotation
+5.17 -> 7.23 deg, translation 1.09 -> 12.21 cm), because the clean body's sole already sits
+7-14 deg off the released plane -- the floor pins foot height, not foot tilt.
 Blocked: nothing. Brev is logged in and B0 is approved; W&B and Hugging Face are logged in and detected. Needs Luai: (1) decide the gated-vs-ungated reference set, since that is a ranking call not a scientific one, (2) re-save the quality-gates / dev-confirm section of ~/projects/_ops/briefs/v2d_allhands.md -- it is not on disk, the file ends at the Rules bullets and nothing under _ops mentions it, so I followed the Rules section's three-gate requirement instead and did not guess at the rest.
-Next: finish the probe (attempt 3 in flight with the TTY fix) to get throughput and hours-per-clip, then B1's zero-training floor through evaluate -> pack -> score. The cleaner's facet rule is the thing to replace: require a *dominant* facet and abstain otherwise, which should turn today's 7 corrected clips into however many have an identifiable support face. That is a new cleaner and needs its own pre-registration.
-Updated: 2026-10-24 14:45
+Next: B1 (one-interval floor) and B2 (short train on clean Tier 1 e24, must beat B1) are running on the same dev box. Then fold the ten fixes into a single clean gate run on a fresh box to prove they work from scratch, and decide the full-run budget against the measured 127 GPU-hours. The cleaner's facet rule remains the biggest open science item: require a dominant facet and abstain otherwise, which needs its own pre-registration.
+Updated: 2026-10-24 16:05
 
 ## Rules
 No paid compute until Luai redeems the code and approves the specific run. No registration, submission, posting, pushing or email without his approval. Every Brev run deletes its instance on exit. Jetson: MemAvailable above 2.5 GB, 20 GB disk floor, check ~/projects/_ops/GPU_RELEASED before local GPU use.
 
 ## Paid compute used
-None. $250 Brev credit granted 2026-10-24, not yet redeemed. Revoked unless a valid submission lands before Nov 4; code expires Nov 13.
+~$0.85 of $250 as of 16:05 PT: four probe attempts (~$0.35) plus a kept-alive dev box. Every
+instance deleted or watchdog-bounded; `brev ls` confirmed empty between runs. Measured full-run
+cost is 126.9 GPU-hours, $76-86 per 30-clip pass.
+
+Superseded:  $250 Brev credit granted 2026-10-24, not yet redeemed. Revoked unless a valid submission lands before Nov 4; code expires Nov 13.
 
 ## Day 1 log — 2026-10-24
 - **All 60 clips retargeted on CPU, zero GPU, zero dollars** (`results/retarget_all.json`). Worst rigid-fit residual across all 60 is **0.0 mm** and worst orientation residual **0.043°**, i.e. one rigid transform explains each retargeted object trajectory exactly — which is precisely what the submission packer has to undo, so the pipeline is faithful end to end. Output is `motion_v1/single_robot`, 43 robot joints, left/right_hand_palm_link end effectors. ~3–4 min per clip at ~4 frames/s per worker.
@@ -115,6 +119,9 @@ Kit (0.7 MB) and FAQ; Track 2 tier 1+2 parquets, meshes, ground planes, support 
 - 2026-10-06: scoping complete, conditional GO (docs/SCOPING.md).
 - 2026-10-07: Luai emailed v2d_challenge@nvidia.com about credits and the rules questions.
 - 2026-10-24: all 60 Tier-1/2 clips retargeted to G1 on CPU at $0; Tier 2 noise measured to cost 36 % of hand-object contact.
+- 2026-10-24: B0 MEASURED on an A6000: 22,977 env steps/s, 40,156 MiB peak, 4.23 h/clip, 126.9 GPU-hours for 30 clips ($76-86) -- above the scoping estimate.
+- 2026-10-24: ten Brev bugs found and fixed, four on a kept-alive dev box; git-lfs absent from the image (no training could ever start) and scene.support crashing 16 of 30 clips were the two that would each have destroyed a full run.
+- 2026-10-24: both root cleaners dead; the floor pins foot height, not foot tilt (clean sole sits 7-14 deg off the plane).
 - 2026-10-24: first paid compute. Brev probe attempts 1-3; GPU picker, instance-readiness and container-TTY bugs found and fixed; A6000 with driver 580 and 48.5 GB confirmed; ~$0.22 spent.
 - 2026-10-24: known-answer gate added; BOTH cleaners failed it (0.21/0.27 vs 0.70), diagnosed to facet selection; a per-clip gated variant passes at 0.7498 recovery and AUC 0.4423.
 - 2026-10-24: reference cleanup pre-registered, run (PARTIAL), and shipped; Tier 2 input ceiling AUC 0.4247 -> 0.4660 with no metric regressing, and the Brev gate now refuses an uncleaned reference.
