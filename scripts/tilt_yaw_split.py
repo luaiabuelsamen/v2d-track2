@@ -14,6 +14,10 @@ two the **yaw** error. It then emits two hypothetical trajectories:
 
     tilt_fixed   Tier 2 orientation with its tilt replaced by the clean tilt, Tier 2 yaw kept
     yaw_fixed    Tier 2 orientation with its yaw replaced by the clean yaw, Tier 2 tilt kept
+    rot_fixed    Tier 2 position with the clean orientation outright
+
+All three keep the Tier 2 position, so `rot_fixed` is the ceiling for a cleaner that fixes
+orientation alone, and tilt_fixed/yaw_fixed decompose the way to it.
 
 Scoring those with scripts/score_track2.py bounds what a support-contact cleaner can buy,
 before any of it is built. The clean reference is used here only to measure recoverability;
@@ -105,7 +109,8 @@ def load_pose(path: Path) -> tuple[np.ndarray, np.ndarray]:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--dataset-root", type=Path, required=True)
-    parser.add_argument("--npz-out", type=Path, help="write tilt_fixed/ and yaw_fixed/ npz trajectories here")
+    parser.add_argument("--npz-out", type=Path,
+                        help="write tilt_fixed/, yaw_fixed/ and rot_fixed/ npz trajectories here")
     parser.add_argument("-o", "--out", type=Path)
     args = parser.parse_args()
 
@@ -180,7 +185,8 @@ def main() -> None:
         }
 
         if args.npz_out:
-            for label, quat in (("tilt_fixed", q_tilt), ("yaw_fixed", q_yaw)):
+            for label, quat in (("tilt_fixed", q_tilt), ("yaw_fixed", q_yaw),
+                                ("rot_fixed", clean[:, 3:])):
                 directory = args.npz_out / label
                 directory.mkdir(parents=True, exist_ok=True)
                 # Both arms keep the Tier 2 position, so they differ only in orientation.

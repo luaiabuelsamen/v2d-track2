@@ -22,9 +22,15 @@ object was never at. Including even one drags the global Kabsch fit off by centi
 converter carries the last visible pose across those frames, the evaluator does not score them
 (episode 11's final frame is absent from the scored grid), so neither should this.
 
+When the retarget was built from an overridden object trajectory (the reference-cleanup arms),
+pass the same `--object-npz` / `--object-from-tier` used to build it. The check is then against
+that arm's own input, so a contact change can never be an artefact of a retarget that silently
+diverged from what it was given.
+
 Usage:
   python scripts/validate_retarget.py --motion-parquet P --dataset-root DATA --episode 24 \
-      [--tier tier1] [-o results/retarget_validation.json]
+      [--tier tier1] [--object-npz DIR | --object-from-tier tier1] \
+      [-o results/retarget_validation.json]
 """
 
 from __future__ import annotations
@@ -39,6 +45,29 @@ import pyarrow.parquet as pq
 TIER_DIRS = {"tier1": "tier_1_multiview_caption", "tier2": "tier_2_synthetic_noise"}
 # soma_to_g1.load_data: OpenCV world (X right, Y down, Z forward) -> SOMA world (X right, Y up)
 CV_TO_SOMA = np.diag([1.0, -1.0, -1.0])
+
+
+def object_pose_override(episode: int, dataset_root: Path, npz_dir: Path | None,
+                         from_tier: str | None) -> np.ndarray | None:
+    """As `make_soma_sequences.object_pose_override`; duplicated because `python -I` implies
+    `-P`, so scripts/ is not on sys.path and these tools cannot import from each other."""
+    if npz_dir is not None:
+        with np.load(npz_dir / f"episode_{episode:06d}.npz") as archive:
+            frame = str(archive["coordinate_frame"])
+            if frame != "released_track2_world":
+                raise SystemExit(f"episode {episode}: npz is in {frame!r}, expected released_track2_world")
+            pose = np.asarray(archive["pose_xyzw"], dtype=np.float64)
+        if pose.ndim == 3:
+            pose = pose[:, 0, :]
+        return np.concatenate([pose[:, :3], pose[:, [6, 3, 4, 5]]], axis=1)
+    if from_tier is not None:
+        table = pq.read_table(
+            dataset_root / "track_2" / TIER_DIRS[from_tier] / "data" / "chunk-000"
+            / f"episode_{episode:06d}.parquet",
+            columns=["observation.object.pose"],
+        )
+        return np.asarray(table["observation.object.pose"].to_pylist(), dtype=np.float64)
+    return None
 
 
 def quat_wxyz_to_matrix(quat: np.ndarray) -> np.ndarray:
@@ -78,6 +107,9 @@ def main() -> None:
     parser.add_argument("--dataset-root", type=Path, required=True)
     parser.add_argument("--episode", type=int, required=True)
     parser.add_argument("--tier", default="tier1", choices=sorted(TIER_DIRS))
+    source = parser.add_mutually_exclusive_group()
+    source.add_argument("--object-npz", type=Path, default=None)
+    source.add_argument("--object-from-tier", default=None, choices=sorted(TIER_DIRS))
     parser.add_argument("-o", "--out", type=Path)
     args = parser.parse_args()
 
@@ -91,7 +123,11 @@ def main() -> None:
         / f"episode_{args.episode:06d}.parquet",
         columns=["observation.object.pose", "observation.object.visible"],
     )
-    pose = np.asarray(released["observation.object.pose"].to_pylist(), dtype=np.float64)[:frames]
+    override = object_pose_override(args.episode, args.dataset_root, args.object_npz, args.object_from_tier)
+    if override is None:
+        pose = np.asarray(released["observation.object.pose"].to_pylist(), dtype=np.float64)[:frames]
+    else:
+        pose = override[:frames]
     visible = np.asarray(released["observation.object.visible"].to_pylist(), dtype=bool)[:frames]
     pose, retarget_position_cmp, retarget_wxyz_cmp = pose[visible], retarget_position[visible], retarget_wxyz[visible]
     # released: xyz + wxyz in OpenCV world. Put it in the SOMA axes the retargeter works in.
@@ -113,6 +149,7 @@ def main() -> None:
         "motion_parquet": str(args.motion_parquet),
         "episode": args.episode,
         "tier": args.tier,
+        "object_source": str(args.object_npz or args.object_from_tier or args.tier),
         "frames_compared": int(visible.sum()),
         "frames_invisible_skipped": int((~visible).sum()),
         "schema_version": motion.get("schema_version"),

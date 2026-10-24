@@ -6,9 +6,14 @@ GLB-to-OBJ conversion it holds is ~22 MB and the Jetson has a 20 GB disk floor.
 
 Resumable: an episode whose output parquet already exists and validates is skipped.
 
+`--object-npz` / `--object-from-tier` are forwarded to both the converter and the validator, so
+a reference-cleanup arm is retargeted from its own object trajectory and checked against the
+same one. Give each arm its own `--seq-root/--out-root/--log-dir/--validation-dir`.
+
 Usage:
   python scripts/retarget_all.py --dataset-root DATA --repo REPO --soma-root SOMA \
       --seq-root SEQ --out-root OUT --tiers tier1 tier2 --workers 2
+      [--object-npz DIR | --object-from-tier tier1]
 """
 
 from __future__ import annotations
@@ -93,13 +98,19 @@ def process(args, tier: str, row: dict, abort: dict) -> dict:
         except json.JSONDecodeError:
             pass
 
+    override: list[str] = []
+    if args.object_npz is not None:
+        override = ["--object-npz", str(args.object_npz)]
+    elif args.object_from_tier is not None:
+        override = ["--object-from-tier", args.object_from_tier]
+
     started = time.time()
     # 1. Build the sequence folder.
     code = run(
         [PYTHON, "-I", str(HERE / "make_soma_sequences.py"),
          "--dataset-root", str(args.dataset_root), "--tier", tier,
          "--out", str(seq_root), "--soma-neutral", str(args.soma_root / "SOMA_neutral.npz"),
-         "--episodes", str(episode)],
+         "--episodes", str(episode), *override],
         log,
     )
     if code != 0:
@@ -124,7 +135,7 @@ def process(args, tier: str, row: dict, abort: dict) -> dict:
         [PYTHON, "-I", str(HERE / "validate_retarget.py"),
          "--motion-parquet", str(out_parquet),
          "--dataset-root", str(args.dataset_root),
-         "--episode", str(episode), "--tier", tier,
+         "--episode", str(episode), "--tier", tier, *override,
          "-o", str(validation_out)],
         log,
     )
@@ -167,6 +178,10 @@ def main() -> None:
     parser.add_argument("--workers", type=int, default=2)
     parser.add_argument("--threads", type=int, default=2, help="OMP threads per worker")
     parser.add_argument("--keep-sequences", action="store_true")
+    source = parser.add_mutually_exclusive_group()
+    source.add_argument("--object-npz", type=Path, default=None,
+                        help="object trajectory from episode_%%06d.npz in this directory")
+    source.add_argument("--object-from-tier", default=None, choices=sorted(TIER_DIRS))
     parser.add_argument("-o", "--out", type=Path)
     args = parser.parse_args()
     for directory in (args.log_dir, args.validation_dir, args.out_root, args.seq_root):
@@ -190,6 +205,7 @@ def main() -> None:
         counts[item["status"]] = counts.get(item["status"], 0) + 1
     passed = [r for r in results if r["status"] in ("ok", "skipped")]
     summary = {
+        "object_source": str(args.object_npz or args.object_from_tier or "released tier"),
         "counts": counts,
         "episodes_total": len(results),
         "episodes_passed": len(passed),

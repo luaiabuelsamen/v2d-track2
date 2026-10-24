@@ -24,8 +24,15 @@ Field contracts, all read out of `robotic_grounding/retarget/read_soma.py` rathe
 - `poses.npy` is consumed as `einsum("ij,tjk->tik", diag(1,-1,-1,1), poses)`, so it must hold
   4x4 homogeneous matrices, not 7-vectors.
 
+The object trajectory can be overridden, which is how the reference-cleanup arms are built:
+`--object-npz DIR` takes it from `episode_%06d.npz` (`pose_xyzw`, as `tilt_yaw_split.py`
+writes), and `--object-from-tier TIER` takes it from another tier's parquet. The human
+parameters always come from `--tier`, so an override changes only what the hands are reaching
+for. The visibility mask also stays with `--tier`; it is identical across tiers.
+
 Usage:
   python scripts/make_soma_sequences.py --dataset-root DATA --tier tier1 --out DIR
+      [--object-npz DIR | --object-from-tier tier1]
 """
 
 from __future__ import annotations
@@ -73,6 +80,35 @@ def pose_matrices(position: np.ndarray, quat_wxyz: np.ndarray) -> np.ndarray:
     return out
 
 
+def object_pose_override(episode: int, dataset_root: Path, npz_dir: Path | None,
+                         from_tier: str | None) -> np.ndarray | None:
+    """An object trajectory from somewhere other than the tier being converted, as xyz + wxyz.
+
+    Duplicated rather than imported: these tools run under `python -I`, which implies `-P`, so
+    the script's own directory is not on sys.path and scripts/ cannot import from itself.
+    """
+    if npz_dir is not None:
+        with np.load(npz_dir / f"episode_{episode:06d}.npz") as archive:
+            frame = str(archive["coordinate_frame"])
+            if frame != "released_track2_world":
+                raise SystemExit(f"episode {episode}: npz is in {frame!r}, expected released_track2_world")
+            pose = np.asarray(archive["pose_xyzw"], dtype=np.float64)
+        if pose.ndim == 3:
+            if pose.shape[1] != 1:
+                raise SystemExit(f"episode {episode}: npz holds {pose.shape[1]} bodies, expected 1")
+            pose = pose[:, 0, :]
+        # npz is xyz + xyzw; the rest of this script speaks xyz + wxyz
+        return np.concatenate([pose[:, :3], pose[:, [6, 3, 4, 5]]], axis=1)
+    if from_tier is not None:
+        table = pq.read_table(
+            dataset_root / "track_2" / TIER_DIRS[from_tier] / "data" / "chunk-000"
+            / f"episode_{episode:06d}.parquet",
+            columns=["observation.object.pose"],
+        )
+        return np.asarray(table["observation.object.pose"].to_pylist(), dtype=np.float64)
+    return None
+
+
 def hold_last_visible(pose: np.ndarray, visible: np.ndarray) -> tuple[np.ndarray, int]:
     """Carry the last visible object pose over invisible frames.
 
@@ -99,7 +135,9 @@ def mesh_source(mesh_root: Path, name: str) -> Path:
     raise FileNotFoundError(f"no mesh for {name!r} under {mesh_root / name}")
 
 
-def convert(dataset_root: Path, tier: str, out_root: Path, soma_neutral: Path, episodes: list[int] | None) -> list[dict]:
+def convert(dataset_root: Path, tier: str, out_root: Path, soma_neutral: Path,
+            episodes: list[int] | None, object_npz: Path | None = None,
+            object_from_tier: str | None = None) -> list[dict]:
     tier_root = dataset_root / "track_2" / TIER_DIRS[tier]
     clean_root = dataset_root / "track_2" / TIER_DIRS["tier1"]  # meshes and planes ship per tier, identically
     metadata = [json.loads(l) for l in (tier_root / "meta" / "episodes_metadata.jsonl").read_text().splitlines() if l.strip()]
@@ -119,8 +157,16 @@ def convert(dataset_root: Path, tier: str, out_root: Path, soma_neutral: Path, e
         identity = np.asarray(table["observation.human.identity_coeffs"].to_pylist(), dtype=np.float64)
         scale = np.asarray(table["observation.human.scale_params"].to_pylist(), dtype=np.float64)
         flexibles = np.asarray(table["observation.human.bone_length_flexibles"].to_pylist(), dtype=np.float64)
-        object_pose = np.asarray(table["observation.object.pose"].to_pylist(), dtype=np.float64)
         visible = np.asarray(table["observation.object.visible"].to_pylist(), dtype=bool)
+        override = object_pose_override(episode, dataset_root, object_npz, object_from_tier)
+        if override is None:
+            object_pose = np.asarray(table["observation.object.pose"].to_pylist(), dtype=np.float64)
+        else:
+            if len(override) != len(visible):
+                raise SystemExit(
+                    f"episode {episode}: override has {len(override)} frames, tier has {len(visible)}"
+                )
+            object_pose = override
         object_pose, filled = hold_last_visible(object_pose, visible)
 
         frames = len(pose)
@@ -156,7 +202,8 @@ def convert(dataset_root: Path, tier: str, out_root: Path, soma_neutral: Path, e
 
         written.append(
             {"episode": episode, "sequence_id": row["sequence_id"], "object": row["object"],
-             "frames": frames, "invisible_frames_filled": filled, "folder": str(sequence)}
+             "frames": frames, "invisible_frames_filled": filled, "folder": str(sequence),
+             "object_source": str(object_npz or object_from_tier or tier)}
         )
         note = f"  ({filled} invisible frame(s) held)" if filled else ""
         print(f"e{episode:02d} {row['object'][:22]:22s} {frames:5d} frames -> {sequence.name}{note}")
@@ -170,9 +217,15 @@ def main() -> None:
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--soma-neutral", type=Path, required=True, help="staged SOMA_neutral.npz")
     parser.add_argument("--episodes", type=int, nargs="*", default=None)
+    source = parser.add_mutually_exclusive_group()
+    source.add_argument("--object-npz", type=Path, default=None,
+                        help="take the object trajectory from episode_%%06d.npz in this directory")
+    source.add_argument("--object-from-tier", default=None, choices=sorted(TIER_DIRS),
+                        help="take the object trajectory from this tier instead of --tier")
     args = parser.parse_args()
 
-    written = convert(args.dataset_root, args.tier, args.out, args.soma_neutral, args.episodes)
+    written = convert(args.dataset_root, args.tier, args.out, args.soma_neutral, args.episodes,
+                      args.object_npz, args.object_from_tier)
     print(f"\n{len(written)} sequence folder(s) under {args.out}")
 
 

@@ -54,6 +54,7 @@ the object trajectory differs.
 | `tier1` | clean | clean | upper reference (already run) |
 | `tier2` | noisy | noisy, as released | baseline (already run) |
 | `object_clean` | noisy | **Tier 1's clean object pose** | **ceiling**: the most any object-pose cleaner can buy |
+| `rot_clean` | noisy | Tier 2 position, clean orientation | **ceiling for an orientation-only cleaner** |
 | `tilt_fixed` | noisy | Tier 2 with tilt replaced by clean tilt | the cleanup under test |
 | `yaw_fixed` | noisy | Tier 2 with yaw replaced by clean yaw | the control that should *not* work |
 
@@ -63,6 +64,16 @@ pipeline may not use them, and nothing here implies otherwise.
 
 `object_clean` is the arm that makes the result interpretable. Without it, a weak tilt result is
 ambiguous between "tilt is not the recoverable part" and "the human root noise dominates".
+
+**Amendment, made before any arm was run.** `rot_clean` was added after the plumbing check
+showed the flaw it fixes. `tilt_fixed` and `yaw_fixed` keep Tier 2's **positions** by
+construction, but `object_clean` also removes the 1.94 cm position noise. Recovery measured
+against `object_clean` is therefore depressed for an orientation-only cleaner no matter how well
+tilt works, which could have made a real effect read as "partial". `rot_clean` is Tier 2's
+position with the clean orientation outright, so it is the honest denominator for tilt and yaw,
+and `tilt_fixed`/`yaw_fixed` decompose the path to it. Both recovery figures are reported; the
+decision rule below now reads against `rot_clean`, and the `object_clean` figure is reported
+alongside so the position noise's share is visible rather than hidden in a denominator.
 
 ## Metric
 
@@ -75,9 +86,11 @@ reported separately so it cannot carry a conclusion.
 
 Recovery fraction for an arm, the quantity the predictions are stated in:
 
-    recovery = (C_arm - C_tier2) / (C_object_clean - C_tier2)
+    recovery_rot    = (C_arm - C_tier2) / (C_rot_clean - C_tier2)      # orientation-only ceiling
+    recovery_object = (C_arm - C_tier2) / (C_object_clean - C_tier2)   # whole-object ceiling
 
-0 means the arm restored nothing; 1 means it reached the object-only ceiling.
+0 means the arm restored nothing; 1 means it reached that ceiling. `recovery_rot` is the figure
+the decision rule uses, because tilt and yaw only ever touch orientation.
 
 ## Predictions
 
@@ -90,9 +103,14 @@ accounts for 25–60 % of the total 0.2043 loss.
 **P2 — tilt beats yaw.** `C_tilt_fixed > C_yaw_fixed`, mean paired difference **at least
 +0.03**, with the sign consistent in **at least 20 of 30** episodes.
 
-**P3 — tilt recovers most of what is recoverable.** `recovery(tilt_fixed) >= 0.5`.
+**P3 — tilt recovers most of what is recoverable.** `recovery_rot(tilt_fixed) >= 0.5`.
 
-**P4 — yaw recovers little.** `recovery(yaw_fixed) <= 0.25`.
+**P4 — yaw recovers little.** `recovery_rot(yaw_fixed) <= 0.25`.
+
+**P6 — the two arms bracket the orientation ceiling.** `C_tilt_fixed` and `C_yaw_fixed` both lie
+between `C_tier2` and `C_rot_clean`, since each fixes one component of the error `rot_clean`
+removes entirely. A tilt or yaw arm *above* `rot_clean` would mean the contact metric is not
+monotone in orientation error and the whole framing is wrong.
 
 **P5 — the 8 worst clips move most.** Of the 8 clips that lost over half their contact
 (e00, e01, e14, e15, e18, e19, e22, e28), at least 5 gain more contact under `tilt_fixed` than
@@ -102,7 +120,7 @@ the 30-clip mean gain.
 
 - **Holds** — P2 and P3 both pass. The tilt cleanup goes into the Tier 2 pipeline and the Brev
   gate trains on cleaned references.
-- **Fails** — `recovery(tilt_fixed) < 0.25`. The orientation cleanup does not help the grasp
+- **Fails** — `recovery_rot(tilt_fixed) < 0.25`. The orientation cleanup does not help the grasp
   signal. It stays in for its scored-metric gain only (AUC 0.425 → 0.654 is already measured
   and is not affected by this experiment either way), and I say so plainly rather than
   implying the two results support each other.
@@ -122,6 +140,6 @@ can never be an artefact of a retarget that silently diverged.
 
 ## Cost
 
-CPU only, $0, no GPU (`~/projects/_ops/GPU_RELEASED` untouched), no Brev. 90 clips at ~3.5 min
-each with 2 workers ≈ 3 h wall clock. 2 workers is the ceiling on this 15.6 GB box; 3 lost 28
+CPU only, $0, no GPU (`~/projects/_ops/GPU_RELEASED` untouched), no Brev. 120 clips at ~3.5 min
+each with 2 workers ≈ 4 h wall clock. 2 workers is the ceiling on this 15.6 GB box; 3 lost 28
 clips to OOM kills.
