@@ -30,6 +30,9 @@ HF=https://huggingface.co/datasets/nvidia/video_to_data_challenge/resolve/main
 
 mkdir -p "$OUT"
 exec > >(tee -a "$OUT/on_instance.log") 2>&1
+# Signal completion on EVERY exit path, and set it here rather than at the end: a trap installed
+# near the bottom only fires if execution gets there, which is exactly the case that fails.
+trap 'touch "$OUT/DONE"' EXIT
 say() { printf '\n== %s (%s)\n' "$*" "$(date -u +%H:%M:%S)"; }
 json_escape() { python3 -c 'import json,sys;print(json.dumps(sys.stdin.read().strip()))'; }
 

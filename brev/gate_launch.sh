@@ -261,18 +261,46 @@ if [ -n "$G1_PARQUET" ]; then
   say "Uploading the retargeted reference"
   # It has to land inside the directory the container mounts at /v2d/assets, or the training
   # step cannot see it.
-  ssh -o StrictHostKeyChecking=accept-new "$NAME" 'mkdir -p ~/v2d_assets'
-  scp "$G1_PARQUET" "$NAME":'~/v2d_assets/gate_reference.parquet'
+  ssh -o StrictHostKeyChecking=accept-new -o ServerAliveInterval=30 "$NAME" 'mkdir -p ~/v2d_assets'
+  scp -o StrictHostKeyChecking=accept-new "$G1_PARQUET" "$NAME":'~/v2d_assets/gate_reference.parquet'
   REMOTE_PARQUET=/v2d/assets/gate_reference.parquet
 fi
 
-say "Running the gate on the instance (phase=$PHASE)"
-ssh -o StrictHostKeyChecking=accept-new "$NAME" 'bash -s' -- "$PHASE" "$STEPS" "$REMOTE_PARQUET" \
-  "$EVAL_EP" "$EVAL_WORLDS" \
-  < "$REPO_ROOT/brev/gate_on_instance.sh" 2>&1 | tee "$OUT_DIR/gate_${PHASE}_console.log"
+# Run it DETACHED and poll, rather than holding the work on one ssh channel. Attempt 3 was lost
+# exactly there: the image built, the container came up, jax saw the GPU, and then the session
+# died during the first long silent step (the hydra config resolve), taking the run with it. A
+# detached job survives a dropped link, and the poll reconnects.
+SSH_KEEPALIVE=(-o StrictHostKeyChecking=accept-new -o ServerAliveInterval=30
+               -o ServerAliveCountMax=10 -o ConnectTimeout=30)
+say "Uploading the gate script"
+scp "${SSH_KEEPALIVE[@]}" "$REPO_ROOT/brev/gate_on_instance.sh" "$NAME":'~/gate_on_instance.sh'
+
+say "Starting the gate detached (phase=$PHASE)"
+ssh "${SSH_KEEPALIVE[@]}" "$NAME" \
+  "mkdir -p ~/gate_results && rm -f ~/gate_results/DONE && \
+   setsid nohup bash ~/gate_on_instance.sh '$PHASE' '$STEPS' '$REMOTE_PARQUET' \
+     '$EVAL_EP' '$EVAL_WORLDS' > ~/gate_results/launch.log 2>&1 < /dev/null & \
+   echo started \$!" </dev/null
+
+say "Polling until it finishes (watchdog still bounds this at ${WATCHDOG_HOURS} h)"
+POLL_LIMIT="$(awk -v h="$WATCHDOG_HOURS" 'BEGIN{printf "%d", (h*3600)/30}')"
+SEEN=0
+for _ in $(seq 1 "$POLL_LIMIT"); do
+  if ssh "${SSH_KEEPALIVE[@]}" "$NAME" 'test -f ~/gate_results/DONE' </dev/null 2>/dev/null; then
+    SEEN=1; break
+  fi
+  # Show the tail so a stuck run is visible rather than silent.
+  ssh "${SSH_KEEPALIVE[@]}" "$NAME" 'tail -3 ~/gate_results/on_instance.log 2>/dev/null' \
+    </dev/null 2>/dev/null | sed 's/^/   | /' || true
+  sleep 30
+done
+[ "$SEEN" = 1 ] || echo "!! the gate did not finish before the watchdog bound; copying what exists." >&2
+
+ssh "${SSH_KEEPALIVE[@]}" "$NAME" 'cat ~/gate_results/on_instance.log 2>/dev/null' \
+  </dev/null > "$OUT_DIR/gate_${PHASE}_console.log" 2>/dev/null || true
 
 say "Copying results back"
-scp -r "$NAME":'~/gate_results/*' "$OUT_DIR/" 2>/dev/null || echo "no results copied; see the console log"
+scp -r -o StrictHostKeyChecking=accept-new "$NAME":'~/gate_results/*' "$OUT_DIR/" 2>/dev/null || echo "no results copied; see the console log"
 
 say "Done. Results in $OUT_DIR"
 ls -la "$OUT_DIR"
