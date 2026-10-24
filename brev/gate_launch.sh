@@ -275,10 +275,10 @@ if [ "$READY" != 1 ]; then
 fi
 say "SSH is up after ~${WAITED}s"
 
-# Ship the resolved robot meshes from here. `git lfs pull` on the instance hangs with zero
-# progress (0-byte log, 8 KB cache, 0 of 49 meshes after minutes), and without them every mesh
-# is a 130-byte pointer that Newton reads as a zero-face mesh. This host's copies are known good
-# -- they are what retargeted all 60 clips -- so they are the reliable source.
+# Belt and braces for the LFS problem. gate_on_instance.sh resolves pointers from GitHub's
+# /raw/<sha>/ endpoint, which is the primary mechanism and covers the ONNX policies too; this
+# ships this host's already-resolved meshes as well, because they are known good (they are what
+# retargeted all 60 clips) and the cost is one 23 MB transfer.
 G1_MESHES="$(find "$REPO_ROOT" /tmp/claude-1000 -maxdepth 12 -type d -path "*assets/meshes/g1" \
   2>/dev/null | head -1)"
 if [ -n "$G1_MESHES" ] && [ -z "$(grep -rl "git-lfs.github.com/spec" "$G1_MESHES" 2>/dev/null)" ]; then
