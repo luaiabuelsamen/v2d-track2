@@ -24,6 +24,11 @@ Field contracts, all read out of `robotic_grounding/retarget/read_soma.py` rathe
 - `poses.npy` is consumed as `einsum("ij,tjk->tik", diag(1,-1,-1,1), poses)`, so it must hold
   4x4 homogeneous matrices, not 7-vectors.
 
+The human root can be overridden too, with `--human-npz DIR` taking `root_rotvec` and
+`translation` from `episode_%06d.npz` as `clean_root_planting.py` writes them. Only those two
+fields change; the other 76 joints are bit-identical across tiers, so there is nothing in them
+to clean.
+
 The object trajectory can be overridden, which is how the reference-cleanup arms are built:
 `--object-npz DIR` takes it from `episode_%06d.npz` (`pose_xyzw`, as `tilt_yaw_split.py`
 writes), and `--object-from-tier TIER` takes it from another tier's parquet. The human
@@ -32,7 +37,7 @@ for. The visibility mask also stays with `--tier`; it is identical across tiers.
 
 Usage:
   python scripts/make_soma_sequences.py --dataset-root DATA --tier tier1 --out DIR
-      [--object-npz DIR | --object-from-tier tier1]
+      [--object-npz DIR | --object-from-tier tier1] [--human-npz DIR]
 """
 
 from __future__ import annotations
@@ -135,9 +140,23 @@ def mesh_source(mesh_root: Path, name: str) -> Path:
     raise FileNotFoundError(f"no mesh for {name!r} under {mesh_root / name}")
 
 
+def human_root_override(episode: int, human_npz: Path | None) -> tuple[np.ndarray, np.ndarray] | None:
+    """A cleaned root rotation vector and translation, as written by clean_root_planting.py.
+
+    Only the root joint and the translation are replaced, because those are the only human
+    fields Tier 2 perturbs -- the other 76 joints are bit-identical across tiers, so a cleaner
+    that touched them would be inventing a correction to data that has no error.
+    """
+    if human_npz is None:
+        return None
+    with np.load(human_npz / f"episode_{episode:06d}.npz") as archive:
+        return (np.asarray(archive["root_rotvec"], dtype=np.float64),
+                np.asarray(archive["translation"], dtype=np.float64))
+
+
 def convert(dataset_root: Path, tier: str, out_root: Path, soma_neutral: Path,
             episodes: list[int] | None, object_npz: Path | None = None,
-            object_from_tier: str | None = None) -> list[dict]:
+            object_from_tier: str | None = None, human_npz: Path | None = None) -> list[dict]:
     tier_root = dataset_root / "track_2" / TIER_DIRS[tier]
     clean_root = dataset_root / "track_2" / TIER_DIRS["tier1"]  # meshes and planes ship per tier, identically
     metadata = [json.loads(l) for l in (tier_root / "meta" / "episodes_metadata.jsonl").read_text().splitlines() if l.strip()]
@@ -172,6 +191,18 @@ def convert(dataset_root: Path, tier: str, out_root: Path, soma_neutral: Path,
         frames = len(pose)
         if pose.shape[1] != EXPECTED_JOINTS * 3:
             raise SystemExit(f"episode {episode}: pose is {pose.shape}, expected (T,{EXPECTED_JOINTS * 3})")
+        human = human_root_override(episode, human_npz)
+        if human is not None:
+            root_rotvec, clean_transl = human
+            if len(root_rotvec) != frames or len(clean_transl) != frames:
+                raise SystemExit(
+                    f"episode {episode}: human override has {len(root_rotvec)} frames, "
+                    f"tier has {frames}"
+                )
+            pose = pose.reshape(frames, EXPECTED_JOINTS, 3).copy()
+            pose[:, 0] = root_rotvec
+            pose = pose.reshape(frames, EXPECTED_JOINTS * 3)
+            transl = clean_transl
         for label, array in (("identity_coeffs", identity), ("scale_params", scale)):
             if not np.allclose(array, array[0]):
                 raise SystemExit(f"episode {episode}: {label} varies over time; read_soma takes only frame 0")
@@ -203,7 +234,8 @@ def convert(dataset_root: Path, tier: str, out_root: Path, soma_neutral: Path,
         written.append(
             {"episode": episode, "sequence_id": row["sequence_id"], "object": row["object"],
              "frames": frames, "invisible_frames_filled": filled, "folder": str(sequence),
-             "object_source": str(object_npz or object_from_tier or tier)}
+             "object_source": str(object_npz or object_from_tier or tier),
+             "human_source": str(human_npz or tier)}
         )
         note = f"  ({filled} invisible frame(s) held)" if filled else ""
         print(f"e{episode:02d} {row['object'][:22]:22s} {frames:5d} frames -> {sequence.name}{note}")
@@ -220,12 +252,15 @@ def main() -> None:
     source = parser.add_mutually_exclusive_group()
     source.add_argument("--object-npz", type=Path, default=None,
                         help="take the object trajectory from episode_%%06d.npz in this directory")
+    parser.add_argument("--human-npz", type=Path, default=None,
+                        help="take the human root rotation and translation from "
+                             "episode_%%06d.npz in this directory (clean_root_planting.py)")
     source.add_argument("--object-from-tier", default=None, choices=sorted(TIER_DIRS),
                         help="take the object trajectory from this tier instead of --tier")
     args = parser.parse_args()
 
     written = convert(args.dataset_root, args.tier, args.out, args.soma_neutral, args.episodes,
-                      args.object_npz, args.object_from_tier)
+                      args.object_npz, args.object_from_tier, args.human_npz)
     print(f"\n{len(written)} sequence folder(s) under {args.out}")
 
 

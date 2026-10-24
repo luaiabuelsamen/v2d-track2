@@ -6,6 +6,9 @@ GLB-to-OBJ conversion it holds is ~22 MB and the Jetson has a 20 GB disk floor.
 
 Resumable: an episode whose output parquet already exists and validates is skipped.
 
+`--human-npz` is forwarded to the converter alone, since the validator checks the object
+trajectory and the human override does not change it.
+
 `--object-npz` / `--object-from-tier` are forwarded to both the converter and the validator, so
 a reference-cleanup arm is retargeted from its own object trajectory and checked against the
 same one. Give each arm its own `--seq-root/--out-root/--log-dir/--validation-dir`.
@@ -103,6 +106,9 @@ def process(args, tier: str, row: dict, abort: dict) -> dict:
         override = ["--object-npz", str(args.object_npz)]
     elif args.object_from_tier is not None:
         override = ["--object-from-tier", args.object_from_tier]
+    # The human override goes only to the converter: the validator checks the object trajectory,
+    # which is not what --human-npz changes.
+    human = ["--human-npz", str(args.human_npz)] if args.human_npz is not None else []
 
     started = time.time()
     # 1. Build the sequence folder.
@@ -110,7 +116,7 @@ def process(args, tier: str, row: dict, abort: dict) -> dict:
         [PYTHON, "-I", str(HERE / "make_soma_sequences.py"),
          "--dataset-root", str(args.dataset_root), "--tier", tier,
          "--out", str(seq_root), "--soma-neutral", str(args.soma_root / "SOMA_neutral.npz"),
-         "--episodes", str(episode), *override],
+         "--episodes", str(episode), *override, *human],
         log,
     )
     if code != 0:
@@ -179,6 +185,9 @@ def main() -> None:
     parser.add_argument("--threads", type=int, default=2, help="OMP threads per worker")
     parser.add_argument("--keep-sequences", action="store_true")
     source = parser.add_mutually_exclusive_group()
+    parser.add_argument("--human-npz", type=Path, default=None,
+                        help="cleaned human root from clean_root_planting.py; forwarded to the "
+                             "converter only")
     source.add_argument("--object-npz", type=Path, default=None,
                         help="object trajectory from episode_%%06d.npz in this directory")
     source.add_argument("--object-from-tier", default=None, choices=sorted(TIER_DIRS))
