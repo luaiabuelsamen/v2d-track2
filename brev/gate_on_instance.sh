@@ -15,6 +15,12 @@ STEPS="${2:-10000896}"
 # launcher uploads it with --g1-parquet. phase=probe only measures throughput, which does not
 # depend on which clip it is, so it falls back to the example sequence shipped in the repo.
 G1_PARQUET_ARG="${3:-}"
+# B1: after the probe's short training run, evaluate the checkpoint it produced and export a
+# trajectory, so the evaluate -> pack -> score path is exercised on real evaluator output. This
+# is a *10M-step* floor, not a zero-training floor: evaluate_policy.py takes a checkpoint path
+# and has no random-policy mode, so there is no cheaper honest number to get here.
+EVAL_EP="${4:-}"
+EVAL_WORLDS="${5:-64}"
 COMMIT=8c778f905cb35f76f8e6cd6e2ea486da4fb9e0ef   # the evaluator commit pinned by KIT_MANIFEST
 EASY_EP=24    # watering_can, 748 frames
 HARD_EP=5     # big_black_box, 1003 frames
@@ -153,6 +159,18 @@ if [ "$PHASE" = full ] && [ -n "$CHECKPOINT" ]; then
   run_in_container "cat ${CHECKPOINT}.metrics.json" > "$OUT/eval_metrics.json" 2>/dev/null || true
   run_in_container "ls -1 /workspace/outputs/gate_full" > "$OUT/full_outputs.txt" 2>/dev/null || true
   docker cp "$(docker ps -q --filter name=flash_chord | head -1)":/workspace/outputs/gate_full "$OUT/" 2>/dev/null || true
+elif [ -n "$EVAL_EP" ] && [ -n "$CHECKPOINT" ]; then
+  say "B1 floor: evaluate the probe checkpoint on e${EVAL_EP} (world_count=${EVAL_WORLDS})"
+  # WANDB_MODE=disabled on purpose: evaluate_policy.py calls wandb.init itself, and this
+  # instance has no W&B credential and is not getting one -- a rented VM is not a place to put a
+  # token. The run is logged from the host instead, from the results copied back.
+  run_in_container "cd /workspace && WANDB_MODE=disabled python scripts/evaluate_policy.py \
+    \"evaluation.checkpoint=${CHECKPOINT}\" evaluation.world_count=${EVAL_WORLDS} \
+    \"evaluation.metrics_output=${CHECKPOINT}.b1.metrics.json\"" 2>&1 | tail -40
+  run_in_container "cat ${CHECKPOINT}.b1.metrics.json" > "$OUT/b1_eval_metrics.json" 2>/dev/null || true
+  CID="$(docker ps -q --filter name=flash_chord | head -1)"
+  run_in_container "ls -1R /workspace/outputs/gate_${PHASE}" > "$OUT/b1_outputs.txt" 2>/dev/null || true
+  docker cp "$CID":/workspace/outputs/gate_${PHASE} "$OUT/b1_outputs" 2>/dev/null || true
 fi
 
 # ---------------------------------------------------------------- the numbers that matter

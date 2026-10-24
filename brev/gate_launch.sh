@@ -21,6 +21,8 @@ MAX_USD=0               # 0 = no cap. With a cap, the watchdog is bounded by it 
 GO=0
 TYPE=""
 G1_PARQUET=""           # retargeted G1 reference for the gate clip; required for --phase full
+EVAL_EP=""              # B1: also evaluate the probe's checkpoint on this episode
+EVAL_WORLDS=64
 NAME="v2d-gate-$(date +%m%d-%H%M)"
 MIN_VRAM_GB=46          # FlashCHORD needs >=46,000 MiB free on a 48 GiB card
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -34,6 +36,8 @@ while [ $# -gt 0 ]; do
     --type) TYPE="$2"; shift 2 ;;
     --name) NAME="$2"; shift 2 ;;
     --g1-parquet) G1_PARQUET="$2"; shift 2 ;;
+    --eval-episode) EVAL_EP="$2"; shift 2 ;;
+    --eval-worlds) EVAL_WORLDS="$2"; shift 2 ;;
     --allow-raw-reference) ALLOW_RAW=1; shift ;;
     # Check the reference provenance and exit, touching nothing else. Added because verifying
     # the guard by running the script reaches the brev CLI, which prompts to log in; the guard
@@ -149,6 +153,8 @@ if awk -v v="$VRAM" -v f="$MIN_VRAM_GB" 'BEGIN{exit !(v+0 < f+0)}'; then
   exit 2
 fi
 
+B1_DESCRIPTION="none"
+[ -n "$EVAL_EP" ] && B1_DESCRIPTION="e$EVAL_EP at ${EVAL_WORLDS} worlds"
 if [ "$PHASE" = probe ]; then STEPS=10000896; EST_HOURS=0.7; else STEPS=349999104; EST_HOURS=6; fi
 EST_COST="$(awk -v h="$EST_HOURS" -v r="$HOURLY" 'BEGIN{printf "%.2f", h*r}')"
 # The watchdog is bounded by the money cap as well as by --max-hours, so a hung run cannot spend
@@ -176,6 +182,7 @@ cat <<PLAN
   watchdog         delete after ${WATCHDOG_HOURS} h
   rough cost       ~\$${EST_COST} at \$${HOURLY}/h for ~${EST_HOURS} h
   hard cost cap    ${MAX_USD:+\$}${MAX_USD:-none}
+  B1 eval          $B1_DESCRIPTION
   results to       $OUT_DIR
 
 == Commands it would run
@@ -236,6 +243,7 @@ fi
 
 say "Running the gate on the instance (phase=$PHASE)"
 ssh -o StrictHostKeyChecking=accept-new "$NAME" 'bash -s' -- "$PHASE" "$STEPS" "$REMOTE_PARQUET" \
+  "$EVAL_EP" "$EVAL_WORLDS" \
   < "$REPO_ROOT/brev/gate_on_instance.sh" 2>&1 | tee "$OUT_DIR/gate_${PHASE}_console.log"
 
 say "Copying results back"
