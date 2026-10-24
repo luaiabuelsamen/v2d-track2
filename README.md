@@ -18,6 +18,12 @@ relative to it, and the release ships the floor plane and the support surfaces.
 Cleaning the reference lifts the ceiling to **AUC 0.4755** with no metric regressing — and that
 is the input to training, so it costs nothing at inference.
 
+**Caveat, measured and load-bearing:** the cleaner recovers only **21–27 %** of a tilt we inject
+ourselves, so it fails its own known-answer gate (`docs/GATES.md`). The scored gain is real and
+reproducible; the claim that the support-contact *mechanism* is what produces it holds only for
+the clips with an unambiguous flat base. Read the ceiling table as a measurement of what the
+cleaned reference scores, not as a validated mechanism.
+
 ## Results
 
 Every row is reproducible with one command (see below) and backed by a JSON file in `results/`.
@@ -30,7 +36,7 @@ Scores come from the kit's own `metric_code/track_2/*.py`, sha256-checked agains
 |---|---|---|---|---|---|
 | Tier 2 as released | 0.4247 | 0.9667 | 1.0000 | 2.3605 | 0.3701 |
 | floor-only cleaner | 0.4660 | 1.0000 | 1.0000 | 2.3053 | 0.3841 |
-| **support-surface cleaner** (shipped) | **0.4755** | **1.0000** | **1.0000** | **2.2777** | 0.3817 |
+| **support-surface cleaner** (see gate caveat) | **0.4755** | **1.0000** | **1.0000** | **2.2777** | 0.3817 |
 | tilt oracle *(not reachable)* | 0.6541 | 1.0000 | 1.0000 | 2.0672 | 0.4352 |
 | full-orientation oracle *(not reachable)* | 0.8806 | 1.0000 | 1.0000 | 1.8698 | 0.4709 |
 | clean Tier 1 reference | 1.0000 | 1.0000 | 1.0000 | 0.0000 | 0.5744 |
@@ -57,11 +63,11 @@ Measured, not assumed (`results/probe_support_root.json`):
 So the human corruption is a rigid, time-varying displacement of the whole body — and only
 38.9 % of it is a constant per-clip offset.
 
-### Two cleaners, one of which failed
+### Two cleaners, one of which failed outright
 
 | cleaner | reference it uses | result |
 |---|---|---|
-| **support contact** (object tilt) | the floor plane and the released support primitives — **external** to the noisy data | **works**: AUC 0.4247 → 0.4755 |
+| **support contact** (object tilt) | the floor plane and the released support primitives — **external** to the noisy data | **scores better** (AUC 0.4247 → 0.4755) but **fails its known-answer gate** at 0.27 recovery |
 | **foot planting** (human root) | "a planted foot does not move" — **internal** to the noisy data | **fails**: root error 5.17° → 5.58°, translation 1.09 → 2.10 cm, improved on 0 of 30 clips |
 
 That contrast is the transferable result: **a cleaner needs an external reference, not merely a
@@ -138,6 +144,30 @@ Then, with `$DATA` pointing at the released dataset and `$KIT` at the extracted 
 | the Tier 1 package | `v2d pack-tier1 --kit-root $KIT --dataset-root $DATA --motion-root MOTION --dry-run` |
 
 `v2d --help` lists everything. Each command writes its JSON record under `results/`.
+
+### The gates
+
+Every cleaner has to pass three gates in order, with the bar fixed first (`docs/GATES.md`):
+known-answer (recover noise we injected), do-no-harm (clean input stays put), then the local
+score on real Tier 2.
+
+| gate | floor-only | support-surface | bar |
+|---|---|---|---|
+| G1 mean recovery of an injected 12° tilt | **0.2137** | **0.2683** | ≥ 0.70 → **FAIL** |
+| G1b worst clip | **−0.2758** | **−0.2758** | ≥ 0.20 → **FAIL** |
+| G2 movement on clean input | 1.4264° | 1.7397° | ≤ 3.0° → pass |
+| G2b position drift on clean input | 0.0000 cm | 0.0000 cm | ≤ 1e-6 cm → pass |
+
+Recovery tracks object shape, not noise: objects with one flat base recover 0.72–0.91, objects
+without one (squeegee, luggage, stroller, chair, bat) recover **negatively**. The support facet
+is an argmax over hull facets against "down", and when no facet dominates, a 12° tilt makes a
+different one win and the cleaner flattens the wrong face. Clips that pass the gate gain
+**+0.0755** AUC against raw Tier 2; clips that fail gain **+0.0261** for reasons the mechanism
+does not explain.
+
+Per the project rule to choose on synthetic validation rather than on a Tier-1-scored number, the
+cleaner is therefore not selected on its AUC. The next variant is gated per clip on synthetic
+recovery and is pre-registered in `docs/GATES.md`.
 
 ## Method
 
