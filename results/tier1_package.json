@@ -1,0 +1,205 @@
+{
+  "csv": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/tier1_pkg/track2_tier1_NOT_FOR_SUBMISSION.csv",
+  "frame_conversion": [
+    {
+      "episode": 0,
+      "fit_residual_max_mm": 6.7e-05,
+      "frames": 778,
+      "frames_invisible": 0
+    },
+    {
+      "episode": 1,
+      "fit_residual_max_mm": 3.7e-05,
+      "frames": 747,
+      "frames_invisible": 0
+    },
+    {
+      "episode": 2,
+      "fit_residual_max_mm": 6.8e-05,
+      "frames": 980,
+      "frames_invisible": 0
+    },
+    {
+      "episode": 3,
+      "fit_residual_max_mm": 8e-05,
+      "frames": 781,
+      "frames_invisible": 0
+    },
+    {
+      "episode": 4,
+      "fit_residual_max_mm": 8.1e-05,
+      "frames": 803,
+      "frames_invisible": 0
+    },
+    {
+      "episode": 5,
+      "fit_residual_max_mm": 6e-05,
+      "frames": 1003,
+      "frames_invisible": 0
+    },
+    {
+      "episode": 6,
+      "fit_residual_max_mm": 8.1e-05,
+      "frames": 546,
+      "frames_invisible": 0
+    },
+    {
+      "episode": 7,
+      "fit_residual_max_mm": 6.2e-05,
+      "frames": 896,
+      "frames_invisible": 0
+    },
+    {
+      "episode": 8,
+      "fit_residual_max_mm": 4.2e-05,
+      "frames": 708,
+      "frames_invisible": 0
+    },
+    {
+      "episode": 9,
+      "fit_residual_max_mm": 6.9e-05,
+      "frames": 870,
+      "frames_invisible": 0
+    },
+    {
+      "episode": 10,
+      "fit_residual_max_mm": 6.6e-05,
+      "frames": 794,
+      "frames_invisible": 0
+    },
+    {
+      "episode": 11,
+      "fit_residual_max_mm": 6.7e-05,
+      "frames": 901,
+      "frames_invisible": 1
+    },
+    {
+      "episode": 12,
+      "fit_residual_max_mm": 4e-05,
+      "frames": 700,
+      "frames_invisible": 0
+    },
+    {
+      "episode": 13,
+      "fit_residual_max_mm": 8.2e-05,
+      "frames": 922,
+      "frames_invisible": 0
+    },
+    {
+      "episode": 14,
+      "fit_residual_max_mm": 6.7e-05,
+      "frames": 993,
+      "frames_invisible": 0
+    },
+    {
+      "episode": 15,
+      "fit_residual_max_mm": 6.5e-05,
+      "frames": 715,
+      "frames_invisible": 0
+    },
+    {
+      "episode": 16,
+      "fit_residual_max_mm": 7.3e-05,
+      "frames": 477,
+      "frames_invisible": 0
+    },
+    {
+      "episode": 17,
+      "fit_residual_max_mm": 6.6e-05,
+      "frames": 440,
+      "frames_invisible": 0
+    },
+    {
+      "episode": 18,
+      "fit_residual_max_mm": 5e-05,
+      "frames": 858,
+      "frames_invisible": 0
+    },
+    {
+      "episode": 19,
+      "fit_residual_max_mm": 6.7e-05,
+      "frames": 886,
+      "frames_invisible": 0
+    },
+    {
+      "episode": 20,
+      "fit_residual_max_mm": 4.2e-05,
+      "frames": 553,
+      "frames_invisible": 0
+    },
+    {
+      "episode": 21,
+      "fit_residual_max_mm": 7e-05,
+      "frames": 678,
+      "frames_invisible": 0
+    },
+    {
+      "episode": 22,
+      "fit_residual_max_mm": 7.6e-05,
+      "frames": 719,
+      "frames_invisible": 0
+    },
+    {
+      "episode": 23,
+      "fit_residual_max_mm": 6.5e-05,
+      "frames": 946,
+      "frames_invisible": 0
+    },
+    {
+      "episode": 24,
+      "fit_residual_max_mm": 2.1e-05,
+      "frames": 748,
+      "frames_invisible": 0
+    },
+    {
+      "episode": 25,
+      "fit_residual_max_mm": 8.5e-05,
+      "frames": 859,
+      "frames_invisible": 0
+    },
+    {
+      "episode": 26,
+      "fit_residual_max_mm": 3.3e-05,
+      "frames": 669,
+      "frames_invisible": 0
+    },
+    {
+      "episode": 27,
+      "fit_residual_max_mm": 6.5e-05,
+      "frames": 565,
+      "frames_invisible": 0
+    },
+    {
+      "episode": 28,
+      "fit_residual_max_mm": 7.3e-05,
+      "frames": 988,
+      "frames_invisible": 0
+    },
+    {
+      "episode": 29,
+      "fit_residual_max_mm": 6e-05,
+      "frames": 467,
+      "frames_invisible": 0
+    }
+  ],
+  "local_score": {
+    "add_auc": 1.0,
+    "maniptrans_sr": 1.0,
+    "mppe_cm": 4.814863838976913e-05,
+    "spider_sr": 1.0
+  },
+  "packer": "kit tools/pack_submission.py",
+  "provenance_gaps": {
+    "checkpoint_sha256": "NOT_FOR_SUBMISSION: no policy was trained",
+    "code_commit_url": "https://github.com/NOT-FOR-SUBMISSION/v2d-dry-run/commit/0000000000000000000000000000000000000000",
+    "eval_code_sha256": "NOT_FOR_SUBMISSION",
+    "eval_script_sha256": "hash of the kit's released evaluate_policy.py; NOT run here"
+  },
+  "row_ids_match_sample": true,
+  "rows": 22989,
+  "source": "kinematic retarget",
+  "stamped": "NOT_FOR_SUBMISSION",
+  "submittable": false,
+  "what": "Track 2 Tier 1 submission package, built with the kit's own packer",
+  "why_not_submittable": "the kinematic retarget reproduces the released input to 0.0 mm, so this CSV is the scoring reference echoed back; eval_code_sha256 carries the literal string 'NOT_FOR_SUBMISSION' instead of a digest, so does checkpoint_sha256, and eval_script_sha256 is the hash of the kit's released evaluator, which was never run"
+}
