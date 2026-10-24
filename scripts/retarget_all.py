@@ -200,6 +200,20 @@ def main() -> None:
         with ThreadPoolExecutor(max_workers=args.workers) as pool:
             results += list(pool.map(lambda row: process(args, tier, row, abort), rows))
 
+    # Record which reference these motions came from, so a downstream consumer (the Brev gate)
+    # cannot train on the raw noisy reference by accident.
+    source = str(args.object_npz or args.object_from_tier or "released tier")
+    provenance = {
+        "object_source": source,
+        "cleaned_reference": bool(args.object_npz or args.object_from_tier),
+        "tiers": list(args.tiers),
+        "dataset_root": str(args.dataset_root),
+        "retarget_commit": subprocess.run(
+            ["git", "-C", str(HERE.parent), "rev-parse", "HEAD"],
+            capture_output=True, text=True).stdout.strip() or None,
+    }
+    (args.out_root / "provenance.json").write_text(json.dumps(provenance, indent=2, sort_keys=True) + "\n")
+
     counts: dict[str, int] = {}
     for item in results:
         counts[item["status"]] = counts.get(item["status"], 0) + 1

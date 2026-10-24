@@ -32,6 +32,7 @@ while [ $# -gt 0 ]; do
     --type) TYPE="$2"; shift 2 ;;
     --name) NAME="$2"; shift 2 ;;
     --g1-parquet) G1_PARQUET="$2"; shift 2 ;;
+    --allow-raw-reference) ALLOW_RAW=1; shift ;;
     --go) GO=1; shift ;;
     -h|--help) sed -n '2,20p' "$0"; exit 0 ;;
     *) echo "unknown argument: $1" >&2; exit 2 ;;
@@ -44,6 +45,34 @@ if [ "$PHASE" = full ] && [ -z "$G1_PARQUET" ]; then
   exit 2
 fi
 [ -n "$G1_PARQUET" ] && [ ! -f "$G1_PARQUET" ] && { echo "no such file: $G1_PARQUET" >&2; exit 2; }
+
+# The gate must train on a cleaned reference. The support-contact cleaner lifts the Tier 2 input
+# ceiling from AUC 0.4247 to 0.4660 and SP-SR to 1.000 (results/cleanup_ladder.json), so a run
+# against the raw noisy reference spends money measuring the wrong thing. retarget_all.py drops a
+# provenance.json at the motion root; walk up from the parquet to find it.
+if [ -n "$G1_PARQUET" ] && [ "${ALLOW_RAW:-0}" != 1 ]; then
+  prov=""; dir="$(cd "$(dirname "$G1_PARQUET")" && pwd)"
+  while [ "$dir" != "/" ]; do
+    [ -f "$dir/provenance.json" ] && { prov="$dir/provenance.json"; break; }
+    dir="$(dirname "$dir")"
+  done
+  if [ -z "$prov" ]; then
+    echo "No provenance.json above $G1_PARQUET, so I cannot tell which reference it was" >&2
+    echo "retargeted from. Re-run scripts/retarget_all.py (it writes one), or pass" >&2
+    echo "--allow-raw-reference to override deliberately." >&2
+    exit 2
+  fi
+  if ! grep -q '"cleaned_reference": true' "$prov"; then
+    echo "$prov says this motion came from the raw released reference:" >&2
+    sed -n 's/^/    /p' "$prov" >&2
+    echo "Retarget from the cleaned reference first:" >&2
+    echo "    python scripts/clean_support_contact.py --dataset-root DATA --npz-out NPZ_CLEAN" >&2
+    echo "    python scripts/retarget_all.py ... --object-npz NPZ_CLEAN" >&2
+    echo "Or pass --allow-raw-reference to override deliberately." >&2
+    exit 2
+  fi
+  echo "reference provenance: $(python3 -c 'import json,sys;print(json.load(open(sys.argv[1]))["object_source"])' "$prov")"
+fi
 
 say() { printf '\n== %s\n' "$*"; }
 

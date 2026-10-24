@@ -113,3 +113,34 @@ brev/gate_launch.sh --phase full --max-hours 10 --go
 
 Teardown is automatic. If the launcher dies between create and delete it prints the exact
 `brev delete` command; run it, then confirm with `brev ls` that nothing is RUNNING.
+
+## The gate trains on a cleaned reference
+
+`gate_launch.sh --phase full` refuses a motion parquet that was retargeted from the raw Tier 2
+reference. `retarget_all.py` writes a `provenance.json` at its motion root recording the object
+source; the launcher walks up from the parquet to find it and checks `cleaned_reference`.
+
+The reason is measured, not assumed. Scored with the kit's own metric code
+(`results/cleanup_ladder.json`), a perfect tracker of each reference would get:
+
+| reference | AUC | SP-SR | MP-SR | MPPE cm |
+|---|---|---|---|---|
+| Tier 2 as released | 0.4247 | 0.9667 | 1.0000 | 2.3605 |
+| **support-contact cleaned** | **0.4660** | **1.0000** | 1.0000 | **2.3053** |
+| tilt oracle (not usable) | 0.6541 | 1.0000 | 1.0000 | 2.0672 |
+
+So a full-phase run against the raw reference spends $2–5 measuring a reference we already know
+is worse on three of four metrics. Produce the cleaned one first:
+
+    python scripts/clean_support_contact.py --dataset-root DATA --npz-out NPZ_CLEAN \
+        -o results/clean_support_contact.json
+    python scripts/retarget_all.py --dataset-root DATA --repo REPO --soma-root SOMA \
+        --seq-root SEQ --out-root OUT --log-dir LOGS --validation-dir VAL \
+        --tiers tier2 --object-npz NPZ_CLEAN -o results/arm_support_cleaned.json
+
+then point `--g1-parquet` at a clip under `OUT`. `--allow-raw-reference` overrides the check for
+a deliberate baseline comparison; nothing overrides it silently.
+
+**The oracle rows are not a target.** `tilt_oracle` is built from the clean Tier 1 trajectory and
+cannot be used by a submission. It is the upper bound the deployable cleaner reaches for, and it
+currently captures 18 % of that bound's AUC gain.
