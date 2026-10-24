@@ -286,6 +286,8 @@ def main(argv: list[str] | None = None) -> None:
     provenance = {
         "object_source": source,
         "cleaned_reference": bool(args.object_npz or args.object_from_tier),
+        "cleaned_human": bool(args.human_npz),
+        "human_source": str(args.human_npz or "released tier"),
         "tiers": list(args.tiers),
         "dataset_root": str(args.dataset_root),
         "retarget_commit": subprocess.run(
