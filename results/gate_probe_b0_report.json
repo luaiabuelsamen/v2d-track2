@@ -1,0 +1,27 @@
+{
+  "eval_metrics": {},
+  "extrapolation": {},
+  "files_found": [
+    "gate_probe_throughput.json"
+  ],
+  "huggingface": {
+    "reason": null,
+    "repo": "luaia/v2d-track2",
+    "uploaded": [
+      "gate/probe/gate_probe_b0/gate_probe_throughput.json"
+    ]
+  },
+  "instance_type": "massedcompute_A6000",
+  "local_scores": {},
+  "phase": "probe",
+  "usd": 0.1605,
+  "usd_per_hour": 0.68,
+  "wall_hours": 0.236,
+  "wandb": {
+    "logged": true,
+    "project": "v2d-track2",
+    "reason": null,
+    "url": "https://forge.coreweave.com/wandb/luai-abuelsamen-university-of-california-berkeley/v2d-track2/runs/7njq4t6y"
+  },
+  "what": "observability record for the probe gate run"
+}
