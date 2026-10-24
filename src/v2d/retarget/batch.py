@@ -32,7 +32,16 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-PYTHON = str(HERE.parent / ".venv311" / "bin" / "python")
+#: The repo root, three levels up from src/v2d/retarget/.
+REPO_ROOT = HERE.parents[2]
+PYTHON = sys.executable
+#: Child stages are spawned as modules, not as file paths. Paths were fragile for a concrete
+#: reason: moving these files during a live batch made 11 of 30 clips fail with "can't open
+#: file", because the parent resolves each child at spawn time. `-m` resolves through the
+#: installed package instead. They stay separate processes on purpose, so an OOM kill costs one
+#: clip rather than the batch, and so PYTHONPATH can be stripped per child.
+SEQUENCES_MODULE = "v2d.retarget.sequences"
+VALIDATE_MODULE = "v2d.retarget.validate"
 TIER_DIRS = {"tier1": "tier_1_multiview_caption", "tier2": "tier_2_synthetic_noise"}
 DISK_FLOOR_GB = 20.0
 MEM_FLOOR_MB = 2500.0
@@ -69,7 +78,7 @@ def run(command: list[str], log: Path, env: dict | None = None) -> int:
 
 def episode_metadata(dataset_root: Path, tier: str) -> list[dict]:
     path = dataset_root / "track_2" / TIER_DIRS[tier] / "meta" / "episodes_metadata.jsonl"
-    rows = [json.loads(l) for l in path.read_text().splitlines() if l.strip()]
+    rows = [json.loads(line) for line in path.read_text().splitlines() if line.strip()]
     return sorted(rows, key=lambda r: r["episode_index"])
 
 
@@ -80,7 +89,14 @@ def process(args, tier: str, row: dict, abort: dict) -> dict:
     seq_root = args.seq_root / tier
     out_root = args.out_root / tier
     sequence_dir = seq_root / f"sequence_id={sequence_id}"
-    out_parquet = out_root / "whole_body" / "soma" / f"sequence_id={sequence_id}" / "robot_name=g1" / "data.parquet"
+    out_parquet = (
+        out_root
+        / "whole_body"
+        / "soma"
+        / f"sequence_id={sequence_id}"
+        / "robot_name=g1"
+        / "data.parquet"
+    )
     log = args.log_dir / f"{tier}_e{episode:02d}.log"
     log.parent.mkdir(parents=True, exist_ok=True)
     record = {"tier": tier, "episode": episode, "sequence_id": sequence_id, "object": row["object"]}
@@ -113,10 +129,23 @@ def process(args, tier: str, row: dict, abort: dict) -> dict:
     started = time.time()
     # 1. Build the sequence folder.
     code = run(
-        [PYTHON, "-I", str(HERE / "make_soma_sequences.py"),
-         "--dataset-root", str(args.dataset_root), "--tier", tier,
-         "--out", str(seq_root), "--soma-neutral", str(args.soma_root / "SOMA_neutral.npz"),
-         "--episodes", str(episode), *override, *human],
+        [
+            PYTHON,
+            "-m",
+            SEQUENCES_MODULE,
+            "--dataset-root",
+            str(args.dataset_root),
+            "--tier",
+            tier,
+            "--out",
+            str(seq_root),
+            "--soma-neutral",
+            str(args.soma_root / "SOMA_neutral.npz"),
+            "--episodes",
+            str(episode),
+            *override,
+            *human,
+        ],
         log,
     )
     if code != 0:
@@ -126,23 +155,43 @@ def process(args, tier: str, row: dict, abort: dict) -> dict:
     env = dict(os.environ, OMP_NUM_THREADS=str(args.threads), MKL_NUM_THREADS=str(args.threads))
     env.pop("PYTHONPATH", None)  # a PyTorch source tree on the global path shadows the venv
     code = run(
-        [PYTHON, "-I", str(args.repo / "robotic_grounding" / "scripts" / "retarget" / "soma_to_g1.py"),
-         str(sequence_dir), "--save",
-         "--soma-data-root", str(args.soma_root),
-         "--motion-root", str(out_root),
-         "--fps", "30"],
-        log, env,
+        [
+            PYTHON,
+            "-I",
+            str(args.repo / "robotic_grounding" / "scripts" / "retarget" / "soma_to_g1.py"),
+            str(sequence_dir),
+            "--save",
+            "--soma-data-root",
+            str(args.soma_root),
+            "--motion-root",
+            str(out_root),
+            "--fps",
+            "30",
+        ],
+        log,
+        env,
     )
     if code != 0:
         return {**record, "status": "retarget_failed", "log": str(log)}
 
     # 3. Validate against the released trajectory.
     code = run(
-        [PYTHON, "-I", str(HERE / "validate_retarget.py"),
-         "--motion-parquet", str(out_parquet),
-         "--dataset-root", str(args.dataset_root),
-         "--episode", str(episode), "--tier", tier, *override,
-         "-o", str(validation_out)],
+        [
+            PYTHON,
+            "-m",
+            VALIDATE_MODULE,
+            "--motion-parquet",
+            str(out_parquet),
+            "--dataset-root",
+            str(args.dataset_root),
+            "--episode",
+            str(episode),
+            "--tier",
+            tier,
+            *override,
+            "-o",
+            str(validation_out),
+        ],
         log,
     )
     elapsed = round(time.time() - started, 1)
@@ -155,8 +204,11 @@ def process(args, tier: str, row: dict, abort: dict) -> dict:
         shutil.rmtree(sequence_dir, ignore_errors=True)
 
     status = "ok" if (code == 0 and validation.get("pass")) else "validation_failed"
-    print(f"[{tag}] {status} in {elapsed}s  residual={validation.get('rigid_fit_residual_mm')}mm "
-          f"orient={validation.get('orientation_residual_max_deg')}deg", flush=True)
+    print(
+        f"[{tag}] {status} in {elapsed}s  residual={validation.get('rigid_fit_residual_mm')}mm "
+        f"orient={validation.get('orientation_residual_max_deg')}deg",
+        flush=True,
+    )
     return {**record, "status": status, "seconds": elapsed, **_summary(validation)}
 
 
@@ -170,10 +222,14 @@ def _summary(validation: dict) -> dict:
     }
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+def main(argv: list[str] | None = None) -> None:
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     parser.add_argument("--dataset-root", type=Path, required=True)
-    parser.add_argument("--repo", type=Path, required=True, help="sparse checkout holding robotic_grounding/")
+    parser.add_argument(
+        "--repo", type=Path, required=True, help="sparse checkout holding robotic_grounding/"
+    )
     parser.add_argument("--soma-root", type=Path, required=True, help="staged body_models/soma")
     parser.add_argument("--seq-root", type=Path, required=True)
     parser.add_argument("--out-root", type=Path, required=True)
@@ -185,14 +241,21 @@ def main() -> None:
     parser.add_argument("--threads", type=int, default=2, help="OMP threads per worker")
     parser.add_argument("--keep-sequences", action="store_true")
     source = parser.add_mutually_exclusive_group()
-    parser.add_argument("--human-npz", type=Path, default=None,
-                        help="cleaned human root from clean_root_planting.py; forwarded to the "
-                             "converter only")
-    source.add_argument("--object-npz", type=Path, default=None,
-                        help="object trajectory from episode_%%06d.npz in this directory")
+    parser.add_argument(
+        "--human-npz",
+        type=Path,
+        default=None,
+        help="cleaned human root from clean_root_planting.py; forwarded to the converter only",
+    )
+    source.add_argument(
+        "--object-npz",
+        type=Path,
+        default=None,
+        help="object trajectory from episode_%%06d.npz in this directory",
+    )
     source.add_argument("--object-from-tier", default=None, choices=sorted(TIER_DIRS))
     parser.add_argument("-o", "--out", type=Path)
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
     for directory in (args.log_dir, args.validation_dir, args.out_root, args.seq_root):
         directory.mkdir(parents=True, exist_ok=True)
 
@@ -203,11 +266,19 @@ def main() -> None:
     abort: dict = {}
     results = []
     for tier in args.tiers:
-        rows = [r for r in episode_metadata(args.dataset_root, tier)
-                if args.episodes is None or int(r["episode_index"]) in args.episodes]
+        rows = [
+            r
+            for r in episode_metadata(args.dataset_root, tier)
+            if args.episodes is None or int(r["episode_index"]) in args.episodes
+        ]
         print(f"\n=== {tier}: {len(rows)} episodes, {args.workers} workers ===", flush=True)
         with ThreadPoolExecutor(max_workers=args.workers) as pool:
-            results += list(pool.map(lambda row: process(args, tier, row, abort), rows))
+            # `tier` is bound as a default so the closure cannot pick up a later value: the
+            # map is consumed inside this iteration today, but that is an accident of
+            # scheduling, not a guarantee.
+            results += list(
+                pool.map(lambda row, _tier=tier: process(args, _tier, row, abort), rows)
+            )
 
     # Record which reference these motions came from, so a downstream consumer (the Brev gate)
     # cannot train on the raw noisy reference by accident.
@@ -218,10 +289,13 @@ def main() -> None:
         "tiers": list(args.tiers),
         "dataset_root": str(args.dataset_root),
         "retarget_commit": subprocess.run(
-            ["git", "-C", str(HERE.parent), "rev-parse", "HEAD"],
-            capture_output=True, text=True).stdout.strip() or None,
+            ["git", "-C", str(REPO_ROOT), "rev-parse", "HEAD"], capture_output=True, text=True
+        ).stdout.strip()
+        or None,
     }
-    (args.out_root / "provenance.json").write_text(json.dumps(provenance, indent=2, sort_keys=True) + "\n")
+    (args.out_root / "provenance.json").write_text(
+        json.dumps(provenance, indent=2, sort_keys=True) + "\n"
+    )
 
     counts: dict[str, int] = {}
     for item in results:
@@ -232,15 +306,23 @@ def main() -> None:
         "counts": counts,
         "episodes_total": len(results),
         "episodes_passed": len(passed),
-        "worst_rigid_fit_residual_mm": max((r.get("rigid_fit_residual_mm") or 0) for r in passed) if passed else None,
-        "worst_orientation_residual_deg": max((r.get("orientation_residual_max_deg") or 0) for r in passed) if passed else None,
+        "worst_rigid_fit_residual_mm": max((r.get("rigid_fit_residual_mm") or 0) for r in passed)
+        if passed
+        else None,
+        "worst_orientation_residual_deg": max(
+            (r.get("orientation_residual_max_deg") or 0) for r in passed
+        )
+        if passed
+        else None,
         "abort_reason": abort.get("reason"),
         "free_disk_gb_after": round(free_disk_gb(Path.cwd()), 1),
     }
     print("\n" + json.dumps(summary, indent=2))
     if args.out:
         args.out.parent.mkdir(parents=True, exist_ok=True)
-        args.out.write_text(json.dumps({"summary": summary, "episodes": results}, indent=2, sort_keys=True) + "\n")
+        args.out.write_text(
+            json.dumps({"summary": summary, "episodes": results}, indent=2, sort_keys=True) + "\n"
+        )
         print(f"wrote {args.out}")
     sys.exit(0 if summary["episodes_passed"] == summary["episodes_total"] else 1)
 

@@ -35,7 +35,9 @@ from pathlib import Path
 import numpy as np
 
 PATTERNS = {
-    "ground_correction_min_m": re.compile(r"object frame-0 ground correction: minimum=([-+0-9.eE]+) m"),
+    "ground_correction_min_m": re.compile(
+        r"object frame-0 ground correction: minimum=([-+0-9.eE]+) m"
+    ),
     "ground_correction_applied_m": re.compile(r"ground correction:.*applied=([-+0-9.eE]+) m"),
     "plane_tilt_deg": re.compile(r"plane leveling: tilt=([-+0-9.eE]+) deg"),
     "plane_translation_z_m": re.compile(r"plane leveling:.*translation_z=([-+0-9.eE]+) m"),
@@ -45,7 +47,9 @@ PATTERNS = {
     "foot_offset_max_m": re.compile(r"foot-target Z offset range: \[[-+0-9.eE]+, *([-+0-9.eE]+)\]"),
 }
 CONTACT = re.compile(r"(left|right)_hand_contact_active: (\d+)/(\d+) frames")
-ANTIPEN = re.compile(r"anti-penetration lift: \[([-+0-9.eE]+), *([-+0-9.eE]+)\] m; (\d+)/(\d+) frames")
+ANTIPEN = re.compile(
+    r"anti-penetration lift: \[([-+0-9.eE]+), *([-+0-9.eE]+)\] m; (\d+)/(\d+) frames"
+)
 GROUND_SOURCE = re.compile(r"grounding plane: (\w+)")
 SEQUENCE_ID = re.compile(r"sequence_id=([^ /\n]+)")
 
@@ -65,27 +69,36 @@ def parse(log: Path) -> dict | None:
 
     contacts = {}
     for side, active, total in CONTACT.findall(text):
-        contacts[side] = {"frames": int(total), "active": int(active),
-                          "fraction": round(int(active) / int(total), 4) if int(total) else None}
+        contacts[side] = {
+            "frames": int(total),
+            "active": int(active),
+            "fraction": round(int(active) / int(total), 4) if int(total) else None,
+        }
     record["contact"] = contacts
     fractions = [v["fraction"] for v in contacts.values() if v["fraction"] is not None]
     record["contact_fraction_either"] = round(max(fractions), 4) if fractions else None
 
     lift = ANTIPEN.findall(text)
     if lift:
-        low, high, frames, total = lift[-1]
+        _low, high, frames, total = lift[-1]
         record["antipenetration_lift_max_m"] = float(high)
         record["antipenetration_frames"] = f"{frames}/{total}"
     return record
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+def main(argv: list[str] | None = None) -> None:
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     parser.add_argument("--log-dir", type=Path, required=True)
-    parser.add_argument("--contact-floor", type=float, default=0.02,
-                        help="flag a clip whose best hand-contact fraction is below this")
+    parser.add_argument(
+        "--contact-floor",
+        type=float,
+        default=0.02,
+        help="flag a clip whose best hand-contact fraction is below this",
+    )
     parser.add_argument("-o", "--out", type=Path)
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     clips = {}
     for log in sorted(args.log_dir.glob("tier*_e*.log")):
@@ -99,19 +112,24 @@ def main() -> None:
         return [v[key] for v in clips.values() if v.get(key) is not None]
 
     flagged = sorted(
-        name for name, v in clips.items()
-        if v.get("contact_fraction_either") is not None and v["contact_fraction_either"] < args.contact_floor
+        name
+        for name, v in clips.items()
+        if v.get("contact_fraction_either") is not None
+        and v["contact_fraction_either"] < args.contact_floor
     )
     paired = {}
     for name, value in clips.items():
         tier, _, episode = name.partition("_")
         paired.setdefault(episode, {})[tier] = value.get("contact_fraction_either")
-    both = {e: v for e, v in paired.items()
-            if v.get("tier1") is not None and v.get("tier2") is not None}
+    both = {
+        e: v for e, v in paired.items() if v.get("tier1") is not None and v.get("tier2") is not None
+    }
     tier_noise = None
     if both:
         deltas = {e: round(v["tier2"] - v["tier1"], 4) for e, v in sorted(both.items())}
-        lost_half = sorted(e for e, v in both.items() if v["tier1"] > 0.05 and v["tier2"] < 0.5 * v["tier1"])
+        lost_half = sorted(
+            e for e, v in both.items() if v["tier1"] > 0.05 and v["tier2"] < 0.5 * v["tier1"]
+        )
         tier_noise = {
             "paired_episodes": len(both),
             "contact_mean_tier1": round(float(np.mean([v["tier1"] for v in both.values()])), 4),
@@ -124,12 +142,16 @@ def main() -> None:
 
     summary = {
         "clips": len(clips),
-        "grounding_plane_sources": {s: sum(1 for v in clips.values() if v.get("grounding_plane") == s)
-                                    for s in {v.get("grounding_plane") for v in clips.values()}},
+        "grounding_plane_sources": {
+            s: sum(1 for v in clips.values() if v.get("grounding_plane") == s)
+            for s in {v.get("grounding_plane") for v in clips.values()}
+        },
         "contact_fraction_either_mean": round(float(np.mean(column("contact_fraction_either"))), 4),
         "contact_fraction_either_min": round(float(np.min(column("contact_fraction_either"))), 4),
         "clips_below_contact_floor": flagged,
-        "ground_correction_applied_max_m": round(float(np.max(np.abs(column("ground_correction_applied_m")))), 5),
+        "ground_correction_applied_max_m": round(
+            float(np.max(np.abs(column("ground_correction_applied_m")))), 5
+        ),
         "plane_tilt_deg_max": round(float(np.max(column("plane_tilt_deg"))), 3),
         "sole_z_min_m_worst": round(float(np.min(column("sole_z_min_m"))), 5),
         "sole_z_max_m_worst": round(float(np.max(column("sole_z_max_m"))), 5),
@@ -141,12 +163,17 @@ def main() -> None:
         left = value["contact"].get("left", {}).get("fraction")
         right = value["contact"].get("right", {}).get("fraction")
         task = (value.get("sequence_id") or "")[20:]
-        print(f"  {name:14s} L={left if left is None else f'{left:.3f}'} R={right if right is None else f'{right:.3f}'}"
-              f"  tilt={value.get('plane_tilt_deg')}deg"
-              f"  sole=[{value.get('sole_z_min_m')}, {value.get('sole_z_max_m')}]  {task}")
+        print(
+            f"  {name:14s} L={left if left is None else f'{left:.3f}'} "
+            f"R={right if right is None else f'{right:.3f}'}"
+            f"  tilt={value.get('plane_tilt_deg')}deg"
+            f"  sole=[{value.get('sole_z_min_m')}, {value.get('sole_z_max_m')}]  {task}"
+        )
     if args.out:
         args.out.parent.mkdir(parents=True, exist_ok=True)
-        args.out.write_text(json.dumps({"summary": summary, "clips": clips}, indent=2, sort_keys=True) + "\n")
+        args.out.write_text(
+            json.dumps({"summary": summary, "clips": clips}, indent=2, sort_keys=True) + "\n"
+        )
         print(f"\nwrote {args.out}")
 
 

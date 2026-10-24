@@ -28,6 +28,7 @@ Usage:
 
 from __future__ import annotations
 
+import argparse
 import hashlib
 import importlib.util
 import json
@@ -242,3 +243,79 @@ def score_all(modules: dict, solution: pd.DataFrame, submission: pd.DataFrame) -
         metric: float(module.score(solution.copy(), submission.copy(), "row_id"))
         for metric, module in modules.items()
     }
+
+
+def main(argv: list[str] | None = None) -> None:
+    parser = argparse.ArgumentParser(
+        prog="v2d score",
+        description=__doc__,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    parser.add_argument(
+        "--kit-root", type=Path, required=True, help="extracted v2d_submission_kit/"
+    )
+    parser.add_argument("--dataset-root", type=Path, required=True, help="holds track_2/tier_*/")
+    parser.add_argument(
+        "--pred", default="reference", help="prediction source; see the module docstring"
+    )
+    parser.add_argument(
+        "--tier",
+        default="tier2",
+        choices=sorted(TIER_DIRS),
+        help="tier label recorded in the output",
+    )
+    parser.add_argument(
+        "--grid",
+        default="sample",
+        help="scored rows: 'sample' (the kit's sample submission, the host's grid), 'all' "
+        "(every released frame), or a path to another sample CSV",
+    )
+    parser.add_argument(
+        "--per-episode", action="store_true", help="also score each episode on its own"
+    )
+    parser.add_argument("-o", "--out", type=Path, help="write the result as JSON")
+    args = parser.parse_args(argv)
+
+    modules = load_metric_modules(args.kit_root)
+    solution, submission, diagnostics = build_frames(
+        args.dataset_root, args.kit_root, args.pred, args.tier, args.grid
+    )
+    overall = score_all(modules, solution, submission)
+
+    result = {
+        "pred": args.pred,
+        "tier": args.tier,
+        "scorer": "submission kit metric_code/track_2 (sha256-checked against KIT_MANIFEST.json)",
+        "auc_note": "AUC vertices rebuilt from released .glb with v2dlb/vertices.py "
+        "(500 pts, seed 0); the host samples the simulation mesh, so AUC can differ in "
+        "~the 4th decimal",
+        "overall": overall,
+        **diagnostics,
+    }
+
+    if args.per_episode:
+        per_episode = {}
+        for episode, group in solution.groupby("episode_index", sort=True):
+            block = submission[submission["row_id"].isin(set(group["row_id"]))]
+            one = group.copy()
+            one["auc_vertex_samples_b64"] = ""
+            one.loc[one.index[0], "auc_vertex_samples_b64"] = solution.loc[
+                0, "auc_vertex_samples_b64"
+            ]
+            per_episode[int(episode)] = score_all(modules, one, block)
+        result["per_episode"] = per_episode
+
+    result["grid"] = args.grid
+    print(json.dumps(result["overall"], indent=2))
+    print(
+        f"frames={diagnostics['frames']} invisible_filled={diagnostics['invisible_frames_filled']} "
+        f"outside_grid={diagnostics['frames_outside_scored_grid']}"
+    )
+    if args.out:
+        args.out.parent.mkdir(parents=True, exist_ok=True)
+        args.out.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")
+        print(f"wrote {args.out}")
+
+
+if __name__ == "__main__":
+    main()

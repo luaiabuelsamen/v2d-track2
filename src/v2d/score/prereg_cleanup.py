@@ -58,17 +58,18 @@ def mean(values: dict[int, float], episodes: list[int]) -> float:
     return float(np.mean([values[e] for e in episodes]))
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+def main(argv: list[str] | None = None) -> None:
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     parser.add_argument("--arms-root", type=Path, required=True, help="holds <arm>/logs per arm")
     parser.add_argument("--tier1-logs", type=Path, required=True)
     parser.add_argument("--tier2-logs", type=Path, required=True)
     parser.add_argument("-o", "--out", type=Path)
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
-    # The baselines live in the main run's log dir, where tier1 and tier2 share one directory.
-    tier1 = {e: v for e, v in coverage(args.tier1_logs).items()}
-    tier2_all = coverage(args.tier2_logs)
+    # The baselines live in the main run's log dir, where tier1 and tier2 share one directory,
+    # so they are split by filename prefix below rather than by directory.
     # tier1_*.log and tier2_*.log sit together; split by filename prefix.
     def by_prefix(log_dir: Path, prefix: str) -> dict[int, float]:
         out = {}
@@ -133,16 +134,22 @@ def main() -> None:
             "mean_paired_delta": round(float(np.mean(tilt_vs_yaw)), 4),
             "episodes_tilt_higher": int(sum(1 for d in tilt_vs_yaw if d > 0)),
             "episodes_total": len(shared),
-            "pass": bool(np.mean(tilt_vs_yaw) >= 0.03 and sum(1 for d in tilt_vs_yaw if d > 0) >= 20),
+            "pass": bool(
+                np.mean(tilt_vs_yaw) >= 0.03 and sum(1 for d in tilt_vs_yaw if d > 0) >= 20
+            ),
         },
         "P3_tilt_recovers_half": {
             "claim": "recovery_rot(tilt_fixed) >= 0.5",
-            "recovery_rot": None if rec_rot["tilt_fixed"] is None else round(rec_rot["tilt_fixed"], 4),
+            "recovery_rot": None
+            if rec_rot["tilt_fixed"] is None
+            else round(rec_rot["tilt_fixed"], 4),
             "pass": bool(rec_rot["tilt_fixed"] is not None and rec_rot["tilt_fixed"] >= 0.5),
         },
         "P4_yaw_recovers_little": {
             "claim": "recovery_rot(yaw_fixed) <= 0.25",
-            "recovery_rot": None if rec_rot["yaw_fixed"] is None else round(rec_rot["yaw_fixed"], 4),
+            "recovery_rot": None
+            if rec_rot["yaw_fixed"] is None
+            else round(rec_rot["yaw_fixed"], 4),
             "pass": bool(rec_rot["yaw_fixed"] is not None and rec_rot["yaw_fixed"] <= 0.25),
         },
         "P5_worst_clips_move_most": {
@@ -169,31 +176,44 @@ def main() -> None:
     tilt_recovery = rec_rot["tilt_fixed"]
     if checks["P2_tilt_beats_yaw"]["pass"] and checks["P3_tilt_recovers_half"]["pass"]:
         verdict = "HOLDS"
-        action = ("Build the tilt cleanup into the Tier 2 pipeline; the Brev gate trains on "
-                  "cleaned references.")
+        action = (
+            "Build the tilt cleanup into the Tier 2 pipeline; the Brev gate trains on "
+            "cleaned references."
+        )
     elif tilt_recovery is not None and tilt_recovery < 0.25:
         verdict = "FAILS"
-        action = ("The orientation cleanup does not help the grasp signal. Keep it for its "
-                  "scored-metric gain only (AUC 0.425 -> 0.654, measured separately and "
-                  "unaffected by this result), and do not claim a training-signal benefit.")
+        action = (
+            "The orientation cleanup does not help the grasp signal. Keep it for its "
+            "scored-metric gain only (AUC 0.425 -> 0.654, measured separately and "
+            "unaffected by this result), and do not claim a training-signal benefit."
+        )
     else:
         verdict = "PARTIAL"
-        action = ("Build the cleanup in for the scoring gain; do not claim a training-signal "
-                  "benefit. Report the recovery figure as measured.")
+        action = (
+            "Build the cleanup in for the scoring gain; do not claim a training-signal "
+            "benefit. Report the recovery figure as measured."
+        )
 
     result = {
-        "what": "pre-registered test of whether cleaning Tier 2 object orientation restores hand-object contact",
+        "what": "pre-registered test of whether cleaning Tier 2 object orientation restores "
+        "hand-object contact",
         "preregistration": "docs/EXP_CLEANUP_CONTACT.md",
         "episodes_scored": shared,
         "episodes_missing_per_series": missing,
         "contact_mean": {k: round(v, 4) for k, v in means.items()},
         "contact_mean_excluding_foot_episode": {k: round(v, 4) for k, v in means_no_foot.items()},
-        "recovery_vs_rot_clean": {k: None if v is None else round(v, 4) for k, v in rec_rot.items()},
-        "recovery_vs_object_clean": {k: None if v is None else round(v, 4) for k, v in rec_obj.items()},
+        "recovery_vs_rot_clean": {
+            k: None if v is None else round(v, 4) for k, v in rec_rot.items()
+        },
+        "recovery_vs_object_clean": {
+            k: None if v is None else round(v, 4) for k, v in rec_obj.items()
+        },
         "checks": checks,
         "verdict": verdict,
         "action": action,
-        "per_episode_contact": {k: {str(e): round(v[e], 4) for e in shared} for k, v in series.items()},
+        "per_episode_contact": {
+            k: {str(e): round(v[e], 4) for e in shared} for k, v in series.items()
+        },
     }
 
     print(json.dumps({k: v for k, v in result.items() if k != "per_episode_contact"}, indent=2))

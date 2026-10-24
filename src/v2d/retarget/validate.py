@@ -47,22 +47,29 @@ TIER_DIRS = {"tier1": "tier_1_multiview_caption", "tier2": "tier_2_synthetic_noi
 CV_TO_SOMA = np.diag([1.0, -1.0, -1.0])
 
 
-def object_pose_override(episode: int, dataset_root: Path, npz_dir: Path | None,
-                         from_tier: str | None) -> np.ndarray | None:
+def object_pose_override(
+    episode: int, dataset_root: Path, npz_dir: Path | None, from_tier: str | None
+) -> np.ndarray | None:
     """As `make_soma_sequences.object_pose_override`; duplicated because `python -I` implies
     `-P`, so scripts/ is not on sys.path and these tools cannot import from each other."""
     if npz_dir is not None:
         with np.load(npz_dir / f"episode_{episode:06d}.npz") as archive:
             frame = str(archive["coordinate_frame"])
             if frame != "released_track2_world":
-                raise SystemExit(f"episode {episode}: npz is in {frame!r}, expected released_track2_world")
+                raise SystemExit(
+                    f"episode {episode}: npz is in {frame!r}, expected released_track2_world"
+                )
             pose = np.asarray(archive["pose_xyzw"], dtype=np.float64)
         if pose.ndim == 3:
             pose = pose[:, 0, :]
         return np.concatenate([pose[:, :3], pose[:, [6, 3, 4, 5]]], axis=1)
     if from_tier is not None:
         table = pq.read_table(
-            dataset_root / "track_2" / TIER_DIRS[from_tier] / "data" / "chunk-000"
+            dataset_root
+            / "track_2"
+            / TIER_DIRS[from_tier]
+            / "data"
+            / "chunk-000"
             / f"episode_{episode:06d}.parquet",
             columns=["observation.object.pose"],
         )
@@ -74,9 +81,15 @@ def quat_wxyz_to_matrix(quat: np.ndarray) -> np.ndarray:
     w, x, y, z = (quat[..., i] for i in range(4))
     return np.stack(
         [
-            1 - 2 * (y * y + z * z), 2 * (x * y - z * w), 2 * (x * z + y * w),
-            2 * (x * y + z * w), 1 - 2 * (x * x + z * z), 2 * (y * z - x * w),
-            2 * (x * z - y * w), 2 * (y * z + x * w), 1 - 2 * (x * x + y * y),
+            1 - 2 * (y * y + z * z),
+            2 * (x * y - z * w),
+            2 * (x * z + y * w),
+            2 * (x * y + z * w),
+            1 - 2 * (x * x + z * z),
+            2 * (y * z - x * w),
+            2 * (x * z - y * w),
+            2 * (y * z + x * w),
+            1 - 2 * (x * x + y * y),
         ],
         axis=-1,
     ).reshape(*quat.shape[:-1], 3, 3)
@@ -101,8 +114,10 @@ def relative_rotation_angles(matrices: np.ndarray) -> np.ndarray:
     return np.degrees(np.arccos(trace))
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+def main(argv: list[str] | None = None) -> None:
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     parser.add_argument("--motion-parquet", type=Path, required=True)
     parser.add_argument("--dataset-root", type=Path, required=True)
     parser.add_argument("--episode", type=int, required=True)
@@ -111,7 +126,7 @@ def main() -> None:
     source.add_argument("--object-npz", type=Path, default=None)
     source.add_argument("--object-from-tier", default=None, choices=sorted(TIER_DIRS))
     parser.add_argument("-o", "--out", type=Path)
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     motion = pq.read_table(args.motion_parquet).to_pylist()[0]
     retarget_position = np.asarray(motion["object_body_position"], dtype=np.float64)[:, 0, :]
@@ -119,17 +134,29 @@ def main() -> None:
     frames = len(retarget_position)
 
     released = pq.read_table(
-        args.dataset_root / "track_2" / TIER_DIRS[args.tier] / "data" / "chunk-000"
+        args.dataset_root
+        / "track_2"
+        / TIER_DIRS[args.tier]
+        / "data"
+        / "chunk-000"
         / f"episode_{args.episode:06d}.parquet",
         columns=["observation.object.pose", "observation.object.visible"],
     )
-    override = object_pose_override(args.episode, args.dataset_root, args.object_npz, args.object_from_tier)
+    override = object_pose_override(
+        args.episode, args.dataset_root, args.object_npz, args.object_from_tier
+    )
     if override is None:
-        pose = np.asarray(released["observation.object.pose"].to_pylist(), dtype=np.float64)[:frames]
+        pose = np.asarray(released["observation.object.pose"].to_pylist(), dtype=np.float64)[
+            :frames
+        ]
     else:
         pose = override[:frames]
     visible = np.asarray(released["observation.object.visible"].to_pylist(), dtype=bool)[:frames]
-    pose, retarget_position_cmp, retarget_wxyz_cmp = pose[visible], retarget_position[visible], retarget_wxyz[visible]
+    pose, retarget_position_cmp, retarget_wxyz_cmp = (
+        pose[visible],
+        retarget_position[visible],
+        retarget_wxyz[visible],
+    )
     # released: xyz + wxyz in OpenCV world. Put it in the SOMA axes the retargeter works in.
     released_position = pose[:, :3] @ CV_TO_SOMA.T
     released_matrix = CV_TO_SOMA @ quat_wxyz_to_matrix(pose[:, 3:])

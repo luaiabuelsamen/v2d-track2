@@ -86,6 +86,95 @@ def _brev_pick(args: argparse.Namespace) -> int:
     return 0
 
 
+#: Stages that keep their own argparse because each is also spawned as an isolated subprocess.
+#: The CLI forwards the remaining arguments to them unchanged, so there is one entry point
+#: without a second copy of every flag.
+FORWARDED: dict[str, tuple[str, str]] = {
+    "clean-support": ("v2d.clean.support_contact_cli", "clean the Tier 2 object pose"),
+    "clean-root": (
+        "v2d.clean.root_planting",
+        "the root cleaner that failed; kept with its measurement",
+    ),
+    "tilt-yaw": (
+        "v2d.clean.tilt_yaw",
+        "the tilt/yaw oracles (upper bounds, not usable in a submission)",
+    ),
+    "retarget": ("v2d.retarget.batch", "retarget every clip to the G1"),
+    "retarget-sequences": ("v2d.retarget.sequences", "convert one episode into soma_to_g1 layout"),
+    "retarget-validate": ("v2d.retarget.validate", "check a retargeted clip against its input"),
+    "retarget-qa": ("v2d.retarget.qa", "aggregate the retargeter's own diagnostics"),
+    "score": ("v2d.score.track2", "score a prediction with the kit's metric code"),
+    "probe-supports": ("v2d.probe.support_root", "what Tier 2 corrupts; are the primitives usable"),
+    "prereg-cleanup": ("v2d.score.prereg_cleanup", "apply docs/EXP_CLEANUP_CONTACT.md's rule"),
+    "prereg-support-root": (
+        "v2d.score.prereg_support_root",
+        "apply docs/EXP_SUPPORT_AND_ROOT.md's rule",
+    ),
+    "pack-tier1": ("v2d.submit.tier1", "pack a Tier 1 submission with the kit's own packer"),
+}
+
+
+def _forward(module: str, argv: list[str]) -> int:
+    """Run a stage that owns its own argparse, with `argv` passed through."""
+    import importlib
+
+    stage = importlib.import_module(module)
+    try:
+        stage.main(argv)
+    except SystemExit as exit_code:
+        return int(exit_code.code or 0)
+    return 0
+
+
+def _contact(args: argparse.Namespace) -> int:
+    """Hand-object contact coverage across the retargeted arms, with paired sign tests."""
+    from .score.contact import coverage, ladder, paired, sign_test
+
+    series: dict[str, dict[int, float]] = {
+        "tier1": coverage(Path(args.baseline_logs), "tier1"),
+        "tier2": coverage(Path(args.baseline_logs), "tier2"),
+    }
+    for arm in args.arms:
+        found = coverage(Path(args.arms_root) / arm / "logs")
+        if found:
+            series[arm] = found
+    means = ladder(series)
+    comparisons = {}
+    for arm in args.arms:
+        if arm in series and args.against in series:
+            difference = paired(series[arm], series[args.against])
+            comparisons[f"{arm}_vs_{args.against}"] = {
+                "mean": round(sum(difference.values()) / len(difference), 4)
+                if difference
+                else None,
+                **sign_test(difference),
+            }
+    populated = [value for value in series.values() if value]
+    shared = sorted(set.intersection(*(set(value) for value in populated))) if populated else []
+    record = {
+        "what": "hand-object contact coverage per arm, at the retargeter's 2 cm threshold",
+        "episodes_scored": shared,
+        "contact_mean": means,
+        "paired": comparisons,
+        "per_episode": {
+            name: {str(episode): round(value[episode], 4) for episode in shared}
+            for name, value in series.items()
+            if value
+        },
+    }
+    print(
+        json.dumps(
+            {k: v for k, v in record.items() if k != "per_episode"}, indent=2, sort_keys=True
+        )
+    )
+    if args.out:
+        out = Path(args.out)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(json.dumps(record, indent=2, sort_keys=True) + "\n")
+        print(f"wrote {out}", file=sys.stderr)
+    return 0
+
+
 def _brev_ready(args: argparse.Namespace) -> int:
     """Exit 0 if a `brev ls` row is ready for SSH (or, with --dead-check, is unrecoverable)."""
     from .brev import is_dead, is_shell_ready
@@ -189,6 +278,22 @@ def build_parser() -> argparse.ArgumentParser:
     gate.add_argument("-o", "--out", help="also write the record here")
     gate.set_defaults(func=_gate_report)
 
+    contact = sub.add_parser(
+        "contact", help="contact coverage across arms", description=_contact.__doc__
+    )
+    contact.add_argument("--arms-root", required=True, help="holds <arm>/logs per arm")
+    contact.add_argument("--baseline-logs", required=True, help="the main run's log directory")
+    contact.add_argument("--arms", nargs="*", default=["table", "table_root", "root"])
+    contact.add_argument("--against", default="tier2", help="series to pair each arm against")
+    contact.add_argument("-o", "--out")
+    contact.set_defaults(func=_contact)
+
+    # Registered so `v2d --help` lists them, but never parsed through: main() dispatches these
+    # before argparse runs, because a top-level parser consumes `--help` before a subparser's
+    # REMAINDER can capture it, and `v2d score --help` must reach the stage's own parser.
+    for name, (_module, help_text) in FORWARDED.items():
+        sub.add_parser(name, help=help_text, add_help=False)
+
     status = sub.add_parser(
         "observe-status", help="report which W&B / Hugging Face credentials are available"
     )
@@ -199,7 +304,10 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: list[str] | None = None) -> int:
-    args = build_parser().parse_args(argv)
+    arguments = list(sys.argv[1:] if argv is None else argv)
+    if arguments and arguments[0] in FORWARDED:
+        return _forward(FORWARDED[arguments[0]][0], arguments[1:])
+    args = build_parser().parse_args(arguments)
     return int(args.func(args))
 
 

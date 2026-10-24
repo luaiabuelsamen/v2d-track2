@@ -104,12 +104,18 @@ def smooth(position: np.ndarray, window: int) -> np.ndarray:
     pad = window // 2
     padded = np.pad(position, ((pad, pad), (0, 0)), mode="edge")
     kernel = np.ones(window) / window
-    return np.stack([np.convolve(padded[:, axis], kernel, mode="valid")[: len(position)]
-                     for axis in range(position.shape[1])], axis=1)
+    return np.stack(
+        [
+            np.convolve(padded[:, axis], kernel, mode="valid")[: len(position)]
+            for axis in range(position.shape[1])
+        ],
+        axis=1,
+    )
 
 
-def slow_segments(position: np.ndarray, fps: float, quantile: float, min_frames: int,
-                  window: int) -> tuple[list[tuple[int, int]], np.ndarray, float]:
+def slow_segments(
+    position: np.ndarray, fps: float, quantile: float, min_frames: int, window: int
+) -> tuple[list[tuple[int, int]], np.ndarray, float]:
     """Contiguous [start, stop) runs among this foot's own quietest `quantile` of frames.
 
     Returns the segments, the per-frame speed, and the speed the quantile resolved to, so the
@@ -142,8 +148,9 @@ def kabsch(source: np.ndarray, target: np.ndarray) -> tuple[np.ndarray, np.ndarr
     return rotation, target_mean - rotation @ source_mean
 
 
-def clean_episode(vertices: np.ndarray, left: np.ndarray, right: np.ndarray,
-                  args) -> tuple[np.ndarray, np.ndarray, dict]:
+def clean_episode(
+    vertices: np.ndarray, left: np.ndarray, right: np.ndarray, args
+) -> tuple[np.ndarray, np.ndarray, dict]:
     """Return per-frame (rotation (T,3,3), translation (T,3)) corrections and diagnostics."""
     frames = len(vertices)
     # One stance segment list per foot, and the median stance pose each one should hold.
@@ -151,17 +158,22 @@ def clean_episode(vertices: np.ndarray, left: np.ndarray, right: np.ndarray,
     limits = []
     for side in (left, right):
         centroid = vertices[:, side].mean(axis=1)
-        segments, _, limit = slow_segments(centroid, args.fps, args.stance_quantile,
-                                           args.min_stance_frames, args.smooth_frames)
+        segments, _, limit = slow_segments(
+            centroid, args.fps, args.stance_quantile, args.min_stance_frames, args.smooth_frames
+        )
         limits.append(round(limit, 5))
-        planted.append([(start, stop, np.median(vertices[start:stop][:, side], axis=0))
-                        for start, stop in segments])
+        planted.append(
+            [
+                (start, stop, np.median(vertices[start:stop][:, side], axis=0))
+                for start, stop in segments
+            ]
+        )
 
     corrections: dict[int, tuple[np.ndarray, np.ndarray]] = {}
     applied_deg, rejected_deg = [], []
     for frame in range(frames):
         source, target = [], []
-        for side, segments in zip((left, right), planted):
+        for side, segments in zip((left, right), planted, strict=True):
             for start, stop, reference in segments:
                 if start <= frame < stop:
                     source.append(vertices[frame][side])
@@ -201,8 +213,9 @@ def clean_episode(vertices: np.ndarray, left: np.ndarray, right: np.ndarray,
         translations = np.tile(key_translations[0], (frames, 1))
     else:
         rotations = Slerp(keys, key_rotations)(index).as_matrix()
-        translations = np.stack([np.interp(index, keys, key_translations[:, axis])
-                                 for axis in range(3)], axis=1)
+        translations = np.stack(
+            [np.interp(index, keys, key_translations[:, axis]) for axis in range(3)], axis=1
+        )
     # The mechanism check: does the correction actually hold the stance foot still? Measured as
     # the stance-foot centroid's scatter within its own segment, before and after, in 3D.
     #
@@ -212,54 +225,77 @@ def clean_episode(vertices: np.ndarray, left: np.ndarray, right: np.ndarray,
     # 3D scatter is the honest substitute and is strictly the harder test, since it contains the
     # vertical component plus two more.
     before, after = [], []
-    for side, segments in zip((left, right), planted):
+    for side, segments in zip((left, right), planted, strict=True):
         for start, stop, _ in segments:
             raw = vertices[start:stop][:, side].mean(axis=1)
-            fixed = (np.einsum("tij,tj->ti", rotations[start:stop], raw)
-                     + translations[start:stop])
+            fixed = np.einsum("tij,tj->ti", rotations[start:stop], raw) + translations[start:stop]
             before.append(float(np.linalg.norm(raw - raw.mean(axis=0), axis=-1).mean()))
             after.append(float(np.linalg.norm(fixed - fixed.mean(axis=0), axis=-1).mean()))
     if before:
         diagnostics["stance_scatter_cm_before"] = round(float(np.mean(before)) * 100, 4)
         diagnostics["stance_scatter_cm_after"] = round(float(np.mean(after)) * 100, 4)
-        diagnostics["stance_scatter_drop"] = round(
-            1.0 - float(np.mean(after)) / float(np.mean(before)), 4) if np.mean(before) > 0 else 0.0
+        diagnostics["stance_scatter_drop"] = (
+            round(1.0 - float(np.mean(after)) / float(np.mean(before)), 4)
+            if np.mean(before) > 0
+            else 0.0
+        )
     diagnostics["status"] = "cleaned"
     return rotations, translations, diagnostics
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--seq-root", type=Path, required=True,
-                        help="tier2 sequence tree from make_soma_sequences.py")
+def main(argv: list[str] | None = None) -> None:
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    parser.add_argument(
+        "--seq-root",
+        type=Path,
+        required=True,
+        help="tier2 sequence tree from make_soma_sequences.py",
+    )
     parser.add_argument("--repo", type=Path, required=True, help="extracted challenge repo")
     parser.add_argument("--soma-root", type=Path, required=True, help="body_models/soma")
     parser.add_argument("--dataset-root", type=Path, required=True)
     parser.add_argument("--npz-out", type=Path, required=True)
     parser.add_argument("--fps", type=float, default=30.0)
-    parser.add_argument("--stance-quantile", type=float, default=0.4,
-                        help="a foot is planted in its own quietest fraction of frames; an "
-                             "absolute speed cannot work, see the module docstring")
+    parser.add_argument(
+        "--stance-quantile",
+        type=float,
+        default=0.4,
+        help="a foot is planted in its own quietest fraction of frames; an "
+        "absolute speed cannot work, see the module docstring",
+    )
     parser.add_argument("--min-stance-frames", type=int, default=5)
     parser.add_argument("--smooth-frames", type=int, default=9)
-    parser.add_argument("--max-root-deg", type=float, default=15.0,
-                        help="discard a per-frame correction above this as a stance mis-detection")
-    parser.add_argument("--self-check", action="store_true",
-                        help="verify the write-back identity numerically on the first episode")
+    parser.add_argument(
+        "--max-root-deg",
+        type=float,
+        default=15.0,
+        help="discard a per-frame correction above this as a stance mis-detection",
+    )
+    parser.add_argument(
+        "--self-check",
+        action="store_true",
+        help="verify the write-back identity numerically on the first episode",
+    )
     parser.add_argument("--episodes", type=int, nargs="*", default=None)
     parser.add_argument("-o", "--out", type=Path)
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     sys.path.insert(0, str(args.repo / "robotic_grounding/source/robotic_grounding"))
-    import torch  # noqa: PLC0415
-    from robotic_grounding.retarget.read_soma import SOMA  # noqa: PLC0415
+    import torch
+    from robotic_grounding.retarget.read_soma import SOMA
 
     reader = SOMA(data_root=args.soma_root, device=torch.device("cpu"))
     with np.load(args.soma_root / "SOMA_neutral.npz", allow_pickle=True) as archive:
         feet = np.asarray(archive["segment_feet"]).ravel()
 
     root = args.dataset_root / "track_2" / TIER1
-    metadata = [json.loads(l) for l in (root / "meta" / "episodes_metadata.jsonl").read_text().splitlines() if l.strip()]
+    metadata = [
+        json.loads(line)
+        for line in (root / "meta" / "episodes_metadata.jsonl").read_text().splitlines()
+        if line.strip()
+    ]
     metadata.sort(key=lambda r: r["episode_index"])
     args.npz_out.mkdir(parents=True, exist_ok=True)
 
@@ -275,8 +311,12 @@ def main() -> None:
         joints = np.asarray(motion["joints"], dtype=np.float64)
 
         # Split the shipped foot vertex set by side: nearer toe-end joint at frame 0.
-        toes = np.stack([joints[0, names.index("LeftToeEnd")], joints[0, names.index("RightToeEnd")]])
-        side_of = np.argmin(np.linalg.norm(vertices[0, feet][:, None, :] - toes[None], axis=-1), axis=1)
+        toes = np.stack(
+            [joints[0, names.index("LeftToeEnd")], joints[0, names.index("RightToeEnd")]]
+        )
+        side_of = np.argmin(
+            np.linalg.norm(vertices[0, feet][:, None, :] - toes[None], axis=-1), axis=1
+        )
         left, right = feet[side_of == 0], feet[side_of == 1]
 
         rotations, translations, diagnostics = clean_episode(vertices, left, right, args)
@@ -290,7 +330,7 @@ def main() -> None:
         # J0: the root joint's rest position, from a zero-pose forward pass with this identity.
         with torch.no_grad():
             rest = reader.layer(
-                torch.zeros((1,) + poses.shape[1:], dtype=torch.float32),
+                torch.zeros((1, *poses.shape[1:]), dtype=torch.float32),
                 torch.from_numpy(identity[:1]).float(),
                 scale_params=torch.from_numpy(scale[:1]).float(),
                 transl=torch.zeros((1, 3), dtype=torch.float32),
@@ -316,10 +356,15 @@ def main() -> None:
                     apply_correctives=False,
                 )
             got = out["vertices"].detach().cpu().numpy().astype(np.float64)
-            want = np.einsum("tij,tvj->tvi", rotations[probe], vertices[probe]) + translations[probe, None, :]
+            want = (
+                np.einsum("tij,tvj->tvi", rotations[probe], vertices[probe])
+                + translations[probe, None, :]
+            )
             error = float(np.abs(got - want).max())
-            print(f"self-check on e{episode:02d}: max vertex error {error * 1000:.4f} mm "
-                  f"(J0={np.round(j0, 4)})")
+            print(
+                f"self-check on e{episode:02d}: max vertex error {error * 1000:.4f} mm "
+                f"(J0={np.round(j0, 4)})"
+            )
             if error > 1e-4:
                 raise SystemExit(f"write-back identity is wrong: {error * 1000:.4f} mm > 0.1 mm")
 
@@ -332,19 +377,25 @@ def main() -> None:
         )
         # How much the body actually moved, which is the thing the retargeter will see.
         shift = np.einsum("tij,tvj->tvi", rotations, vertices) + translations[:, None, :] - vertices
-        diagnostics["body_shift_cm_mean"] = round(float(np.linalg.norm(shift, axis=-1).mean() * 100), 4)
-        diagnostics["body_shift_cm_max"] = round(float(np.linalg.norm(shift, axis=-1).max() * 100), 4)
+        diagnostics["body_shift_cm_mean"] = round(
+            float(np.linalg.norm(shift, axis=-1).mean() * 100), 4
+        )
+        diagnostics["body_shift_cm_max"] = round(
+            float(np.linalg.norm(shift, axis=-1).max() * 100), 4
+        )
         diagnostics["object"] = row["object"]
         episodes[episode] = diagnostics
         # 18k vertices x ~900 frames per clip, and torch does not hand the memory back between
         # forward passes: without this the loop is killed around the fourth episode on this box.
         del motion, vertices, joints, rotations, translations, shift
         gc.collect()
-        print(f"e{episode:02d} {row['object'][:22]:22s} {diagnostics['status']:30s} "
-              f"stance={diagnostics['stance_frames']}/{diagnostics['frames']} "
-              f"corrected={diagnostics['corrected_frames']:4d} "
-              f"rot={diagnostics['correction_deg_mean']:5.2f} deg  "
-              f"body shift {diagnostics['body_shift_cm_mean']:5.2f} cm")
+        print(
+            f"e{episode:02d} {row['object'][:22]:22s} {diagnostics['status']:30s} "
+            f"stance={diagnostics['stance_frames']}/{diagnostics['frames']} "
+            f"corrected={diagnostics['corrected_frames']:4d} "
+            f"rot={diagnostics['correction_deg_mean']:5.2f} deg  "
+            f"body shift {diagnostics['body_shift_cm_mean']:5.2f} cm"
+        )
 
     summary = {
         "episodes": len(episodes),
@@ -353,29 +404,57 @@ def main() -> None:
         "stance_quantile": args.stance_quantile,
         "smooth_frames": args.smooth_frames,
         "max_root_deg": args.max_root_deg,
-        "mean_stance_fraction": round(float(np.mean(
-            [sum(v["stance_frames"]) / (2 * v["frames"]) for v in episodes.values()])), 4),
-        "mean_corrected_fraction": round(float(np.mean(
-            [v["corrected_frames"] / v["frames"] for v in episodes.values()])), 4),
-        "mean_correction_deg": round(float(np.mean(
-            [v["correction_deg_mean"] for v in episodes.values()])), 3),
-        "mean_body_shift_cm": round(float(np.mean(
-            [v["body_shift_cm_mean"] for v in episodes.values()])), 4),
-        "mean_stance_scatter_drop": round(float(np.mean(
-            [v["stance_scatter_drop"] for v in episodes.values()
-             if "stance_scatter_drop" in v])), 4) if any(
-            "stance_scatter_drop" in v for v in episodes.values()) else None,
+        "mean_stance_fraction": round(
+            float(
+                np.mean([sum(v["stance_frames"]) / (2 * v["frames"]) for v in episodes.values()])
+            ),
+            4,
+        ),
+        "mean_corrected_fraction": round(
+            float(np.mean([v["corrected_frames"] / v["frames"] for v in episodes.values()])), 4
+        ),
+        "mean_correction_deg": round(
+            float(np.mean([v["correction_deg_mean"] for v in episodes.values()])), 3
+        ),
+        "mean_body_shift_cm": round(
+            float(np.mean([v["body_shift_cm_mean"] for v in episodes.values()])), 4
+        ),
+        "mean_stance_scatter_drop": round(
+            float(
+                np.mean(
+                    [
+                        v["stance_scatter_drop"]
+                        for v in episodes.values()
+                        if "stance_scatter_drop" in v
+                    ]
+                )
+            ),
+            4,
+        )
+        if any("stance_scatter_drop" in v for v in episodes.values())
+        else None,
         #: R3 as the pre-registration phrased it asked for a *vertical* std, which is not
         #: measurable in SOMA's frame (no published gravity axis); this is the 3D substitute.
         "stance_scatter_drop_30pct_clips": sum(
-            1 for v in episodes.values() if v.get("stance_scatter_drop", 0) >= 0.30),
+            1 for v in episodes.values() if v.get("stance_scatter_drop", 0) >= 0.30
+        ),
     }
     print("\n" + json.dumps(summary, indent=2))
     if args.out:
         args.out.parent.mkdir(parents=True, exist_ok=True)
-        args.out.write_text(json.dumps(
-            {"what": "deployable foot-planting cleaner for the Tier 2 human root; no clean reference",
-             "summary": summary, "per_episode": episodes}, indent=2, sort_keys=True) + "\n")
+        args.out.write_text(
+            json.dumps(
+                {
+                    "what": "deployable foot-planting cleaner for the Tier 2 human root; "
+                    "no clean reference",
+                    "summary": summary,
+                    "per_episode": episodes,
+                },
+                indent=2,
+                sort_keys=True,
+            )
+            + "\n"
+        )
         print(f"wrote {args.out}")
 
 

@@ -1,0 +1,345 @@
+{
+  "episodes": [
+    {
+      "episode": 0,
+      "frames": 778,
+      "object": "tall_bar_stool",
+      "orientation_residual_max_deg": 0.0302,
+      "pass": true,
+      "relative_rotation_max_diff_deg": 0.02755,
+      "rigid_fit_residual_mm": 0.0,
+      "seconds": 172.8,
+      "sequence_id": "2026-06-04_14-16-23_tall_bar_stool_tip_up_04",
+      "status": "ok",
+      "tier": "tier2"
+    },
+    {
+      "episode": 1,
+      "frames": 747,
+      "object": "vacuum",
+      "orientation_residual_max_deg": 0.02762,
+      "pass": true,
+      "relative_rotation_max_diff_deg": 0.01536,
+      "rigid_fit_residual_mm": 0.0,
+      "sequence_id": "2026-05-18_17-06-21_vacuum_left_lean_02",
+      "status": "skipped",
+      "tier": "tier2"
+    },
+    {
+      "episode": 2,
+      "frames": 980,
+      "object": "blue_easter_basket",
+      "orientation_residual_max_deg": 0.03299,
+      "pass": true,
+      "relative_rotation_max_diff_deg": 0.02386,
+      "rigid_fit_residual_mm": 0.0,
+      "sequence_id": "2026-06-02_10-04-42_blue_easter_basket_place_10",
+      "status": "skipped",
+      "tier": "tier2"
+    },
+    {
+      "episode": 3,
+      "frames": 781,
+      "object": "contigo_coffee_mug",
+      "orientation_residual_max_deg": 0.03204,
+      "pass": true,
+      "relative_rotation_max_diff_deg": 0.03277,
+      "rigid_fit_residual_mm": 0.0,
+      "sequence_id": "2026-04-27_11-50-10_contigo_coffee_mug_handle_table_05",
+      "status": "skipped",
+      "tier": "tier2"
+    },
+    {
+      "episode": 4,
+      "frames": 803,
+      "object": "baseball_bat",
+      "orientation_residual_max_deg": 0.03182,
+      "pass": true,
+      "relative_rotation_max_diff_deg": 0.0256,
+      "rigid_fit_residual_mm": 0.0,
+      "sequence_id": "2026-04-24_11-40-52_baseball_bat_rotate_05",
+      "status": "skipped",
+      "tier": "tier2"
+    },
+    {
+      "episode": 5,
+      "frames": 1003,
+      "object": "big_black_box",
+      "orientation_residual_max_deg": 0.02882,
+      "pass": true,
+      "relative_rotation_max_diff_deg": 0.01957,
+      "rigid_fit_residual_mm": 0.0,
+      "sequence_id": "2026-03-18_19-36-56_g1_box_rotate_01",
+      "status": "skipped",
+      "tier": "tier2"
+    },
+    {
+      "episode": 6,
+      "frames": 546,
+      "object": "monitor",
+      "orientation_residual_max_deg": 0.0286,
+      "pass": true,
+      "relative_rotation_max_diff_deg": 0.01525,
+      "rigid_fit_residual_mm": 0.0,
+      "sequence_id": "2026-06-01_11-26-44_monitor_rotate_05",
+      "status": "skipped",
+      "tier": "tier2"
+    },
+    {
+      "episode": 7,
+      "frames": 896,
+      "object": "iron",
+      "orientation_residual_max_deg": 0.02409,
+      "pass": true,
+      "relative_rotation_max_diff_deg": 0.01445,
+      "rigid_fit_residual_mm": 0.0,
+      "sequence_id": "2026-05-29_15-20-43_iron_round_table_02",
+      "status": "skipped",
+      "tier": "tier2"
+    },
+    {
+      "episode": 8,
+      "frames": 708,
+      "object": "skinny_wood_chair",
+      "orientation_residual_max_deg": 0.03292,
+      "pass": true,
+      "relative_rotation_max_diff_deg": 0.03018,
+      "rigid_fit_residual_mm": 0.0,
+      "sequence_id": "2026-06-05_15-08-08_skinny_wood_chair_push_10",
+      "status": "skipped",
+      "tier": "tier2"
+    },
+    {
+      "episode": 9,
+      "frames": 870,
+      "object": "big_red_bowl",
+      "orientation_residual_max_deg": 0.03216,
+      "pass": true,
+      "relative_rotation_max_diff_deg": 0.01442,
+      "rigid_fit_residual_mm": 0.0,
+      "sequence_id": "2026-06-04_16-45-04_big_red_bowl_under_skinny_wood_chair_03",
+      "status": "skipped",
+      "tier": "tier2"
+    },
+    {
+      "episode": 10,
+      "frames": 794,
+      "object": "white_desk",
+      "orientation_residual_max_deg": 0.03261,
+      "pass": true,
+      "relative_rotation_max_diff_deg": 0.02711,
+      "rigid_fit_residual_mm": 0.0,
+      "sequence_id": "2026-05-01_11-36-40_white_desk_lower_to_ground_10",
+      "status": "skipped",
+      "tier": "tier2"
+    },
+    {
+      "episode": 11,
+      "frames": 900,
+      "object": "light_blue_book",
+      "orientation_residual_max_deg": 0.03098,
+      "pass": true,
+      "relative_rotation_max_diff_deg": 0.01884,
+      "rigid_fit_residual_mm": 0.0,
+      "seconds": 321.3,
+      "sequence_id": "2026-04-24_13-56-58_light_blue_book_pick_place_09",
+      "status": "ok",
+      "tier": "tier2"
+    },
+    {
+      "episode": 12,
+      "frames": 700,
+      "object": "black_platform",
+      "orientation_residual_max_deg": 0.03226,
+      "pass": true,
+      "relative_rotation_max_diff_deg": 0.02882,
+      "rigid_fit_residual_mm": 0.0,
+      "seconds": 254.6,
+      "sequence_id": "2026-04-25_17-20-04_black_platform_turn_05",
+      "status": "ok",
+      "tier": "tier2"
+    },
+    {
+      "episode": 13,
+      "frames": 922,
+      "object": "snack_box",
+      "orientation_residual_max_deg": 0.02821,
+      "pass": true,
+      "relative_rotation_max_diff_deg": 0.02599,
+      "rigid_fit_residual_mm": 0.0,
+      "seconds": 264.7,
+      "sequence_id": "2026-06-09_10-19-09_snack_box_desk_through_06",
+      "status": "ok",
+      "tier": "tier2"
+    },
+    {
+      "episode": 14,
+      "frames": 993,
+      "object": "round_table",
+      "orientation_residual_max_deg": 0.03143,
+      "pass": true,
+      "relative_rotation_max_diff_deg": 0.02872,
+      "rigid_fit_residual_mm": 0.0,
+      "seconds": 283.8,
+      "sequence_id": "2026-05-28_14-44-09_round_table_flip_08",
+      "status": "ok",
+      "tier": "tier2"
+    },
+    {
+      "episode": 15,
+      "frames": 715,
+      "object": "wet_floor_sign",
+      "orientation_residual_max_deg": 0.02748,
+      "pass": true,
+      "relative_rotation_max_diff_deg": 0.01347,
+      "rigid_fit_residual_mm": 0.0,
+      "seconds": 321.9,
+      "sequence_id": "2026-05-06_11-06-15_wet_floor_sign_pick_place_ground_08",
+      "status": "ok",
+      "tier": "tier2"
+    },
+    {
+      "episode": 16,
+      "frames": 477,
+      "object": "spray_bottle",
+      "orientation_residual_max_deg": 0.02741,
+      "pass": true,
+      "relative_rotation_max_diff_deg": 0.00787,
+      "rigid_fit_residual_mm": 0.0,
+      "seconds": 201.1,
+      "sequence_id": "2026-03-12_15-06-36_spray_bottle_left_desk_ground_02",
+      "status": "ok",
+      "tier": "tier2"
+    },
+    {
+      "episode": 17,
+      "frames": 440,
+      "object": "traffic_cone",
+      "orientation_residual_max_deg": 0.02834,
+      "pass": true,
+      "relative_rotation_max_diff_deg": 0.02013,
+      "rigid_fit_residual_mm": 0.0,
+      "seconds": 198.5,
+      "sequence_id": "2026-05-01_17-04-55_traffic_cone_ground_table_02",
+      "status": "ok",
+      "tier": "tier2"
+    },
+    {
+      "episode": 18,
+      "log": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/arms/table_root/logs/tier2_e18.log",
+      "object": "blue_trash_can",
+      "seconds": 401.9,
+      "sequence_id": "2026-05-06_10-00-19_blue_trash_can_drag_sideways_08",
+      "status": "validate_failed",
+      "tier": "tier2"
+    },
+    {
+      "episode": 19,
+      "frames": 886,
+      "object": "cane",
+      "orientation_residual_max_deg": 0.02668,
+      "pass": true,
+      "relative_rotation_max_diff_deg": 0.01253,
+      "rigid_fit_residual_mm": 0.0,
+      "seconds": 439.0,
+      "sequence_id": "2026-05-19_10-19-48_cane_swing_05",
+      "status": "ok",
+      "tier": "tier2"
+    },
+    {
+      "episode": 20,
+      "log": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/arms/table_root/logs/tier2_e20.log",
+      "object": "rice_cooker",
+      "sequence_id": "2026-06-08_16-57-34_rice_cooker_clockwise_04",
+      "status": "convert_failed",
+      "tier": "tier2"
+    },
+    {
+      "episode": 21,
+      "log": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/arms/table_root/logs/tier2_e21.log",
+      "object": "tall_bar_stool",
+      "sequence_id": "2026-04-29_11-53-57_tall_bar_stool_pull_08",
+      "status": "convert_failed",
+      "tier": "tier2"
+    },
+    {
+      "episode": 22,
+      "log": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/arms/table_root/logs/tier2_e22.log",
+      "object": "step_ladder",
+      "sequence_id": "2026-05-22_16-52-36_step_ladder_drag_03",
+      "status": "convert_failed",
+      "tier": "tier2"
+    },
+    {
+      "episode": 23,
+      "log": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/arms/table_root/logs/tier2_e23.log",
+      "object": "toy_stroller",
+      "sequence_id": "2026-06-03_15-08-03_toy_stroller_back_forth_ground_04",
+      "status": "convert_failed",
+      "tier": "tier2"
+    },
+    {
+      "episode": 24,
+      "log": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/arms/table_root/logs/tier2_e24.log",
+      "object": "watering_can",
+      "sequence_id": "2026-05-29_15-43-20_watering_can_pour_right_02",
+      "status": "convert_failed",
+      "tier": "tier2"
+    },
+    {
+      "episode": 25,
+      "log": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/arms/table_root/logs/tier2_e25.log",
+      "object": "cyan_water_bottle",
+      "sequence_id": "2026-03-20_11-59-57_cyan_water_bottle_rotate_01",
+      "status": "convert_failed",
+      "tier": "tier2"
+    },
+    {
+      "episode": 26,
+      "log": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/arms/table_root/logs/tier2_e26.log",
+      "object": "skateboard",
+      "sequence_id": "2026-06-05_16-05-08_skateboard_rotate_ground_10",
+      "status": "convert_failed",
+      "tier": "tier2"
+    },
+    {
+      "episode": 27,
+      "log": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/arms/table_root/logs/tier2_e27.log",
+      "object": "woven_basket",
+      "sequence_id": "2026-05-01_11-15-05_woven_basket_ground_desk_10",
+      "status": "convert_failed",
+      "tier": "tier2"
+    },
+    {
+      "episode": 28,
+      "log": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/arms/table_root/logs/tier2_e28.log",
+      "object": "squeegee",
+      "sequence_id": "2026-05-19_11-27-07_squeegee_sweep_away_from_you_03_",
+      "status": "convert_failed",
+      "tier": "tier2"
+    },
+    {
+      "episode": 29,
+      "log": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/arms/table_root/logs/tier2_e29.log",
+      "object": "rolling_luggage",
+      "sequence_id": "2026-06-05_18-27-40_rolling_luggage_left_foot_push_06",
+      "status": "convert_failed",
+      "tier": "tier2"
+    }
+  ],
+  "summary": {
+    "abort_reason": null,
+    "counts": {
+      "convert_failed": 10,
+      "ok": 9,
+      "skipped": 10,
+      "validate_failed": 1
+    },
+    "episodes_passed": 19,
+    "episodes_total": 30,
+    "free_disk_gb_after": 28.6,
+    "object_source": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/npz_table",
+    "worst_orientation_residual_deg": 0.03299,
+    "worst_rigid_fit_residual_mm": 0
+  }
+}

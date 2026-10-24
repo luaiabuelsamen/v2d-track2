@@ -80,12 +80,13 @@ def kabsch(source: np.ndarray, target: np.ndarray) -> tuple[np.ndarray, np.ndarr
 
 def rotate_poses(pose: np.ndarray, rotation: np.ndarray, offset: np.ndarray) -> np.ndarray:
     """Apply a rigid (rotation, offset) to (T,7) xyz+xyzw poses."""
-    from scipy.spatial.transform import Rotation  # noqa: PLC0415
+    from scipy.spatial.transform import Rotation
 
     out = np.empty_like(pose)
     out[:, :3] = pose[:, :3] @ rotation.T + offset
     out[:, 3:] = Rotation.from_matrix(
-        rotation @ Rotation.from_quat(pose[:, 3:]).as_matrix()).as_quat()
+        rotation @ Rotation.from_quat(pose[:, 3:]).as_matrix()
+    ).as_quat()
     return out
 
 
@@ -93,7 +94,8 @@ def released_input(dataset_root: Path, episode: int) -> tuple[np.ndarray, np.nda
     """(T,7) xyz+xyzw Tier 1 object pose and its visibility mask."""
     table = pq.read_table(
         dataset_root / "track_2" / TIER1 / "data" / "chunk-000" / f"episode_{episode:06d}.parquet",
-        columns=["observation.object.pose", "observation.object.visible"])
+        columns=["observation.object.pose", "observation.object.visible"],
+    )
     pose = np.asarray(table["observation.object.pose"].to_pylist(), dtype=np.float64)
     visible = np.asarray(table["observation.object.visible"].to_pylist(), dtype=bool)
     # released order is xyz + wxyz
@@ -105,25 +107,36 @@ def retargeted_object(motion_parquet: Path) -> np.ndarray:
     table = pq.read_table(motion_parquet, columns=["object_body_position", "object_body_wxyz"])
     position = np.asarray(table["object_body_position"].to_pylist()[0], dtype=np.float64)
     wxyz = np.asarray(table["object_body_wxyz"].to_pylist()[0], dtype=np.float64)
-    if position.ndim == 3:       # (T,1,3) single body
+    if position.ndim == 3:  # (T,1,3) single body
         position, wxyz = position[:, 0], wxyz[:, 0]
     return np.concatenate([position, wxyz[:, [1, 2, 3, 0]]], axis=1)
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--kit-root", type=Path, required=True, help="extracted v2d_submission_kit/")
+def main(argv: list[str] | None = None) -> None:
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    parser.add_argument(
+        "--kit-root", type=Path, required=True, help="extracted v2d_submission_kit/"
+    )
     parser.add_argument("--dataset-root", type=Path, required=True)
-    parser.add_argument("--motion-root", type=Path,
-                        help="retargeted tier1 motion tree; the kinematic path")
-    parser.add_argument("--rollout-root", type=Path,
-                        help="a real FlashCHORD export; the only submittable path")
-    parser.add_argument("--work-dir", type=Path, required=True, help="scratch for the staged parquets")
+    parser.add_argument(
+        "--motion-root", type=Path, help="retargeted tier1 motion tree; the kinematic path"
+    )
+    parser.add_argument(
+        "--rollout-root", type=Path, help="a real FlashCHORD export; the only submittable path"
+    )
+    parser.add_argument(
+        "--work-dir", type=Path, required=True, help="scratch for the staged parquets"
+    )
     parser.add_argument("--code-commit", default="", help="GitHub /commit/<sha> URL for provenance")
-    parser.add_argument("--dry-run", action="store_true",
-                        help="stamp the output NOT_FOR_SUBMISSION and proceed without provenance")
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="stamp the output NOT_FOR_SUBMISSION and proceed without provenance",
+    )
     parser.add_argument("-o", "--out", type=Path)
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     if (args.motion_root is None) == (args.rollout_root is None):
         raise SystemExit("pass exactly one of --motion-root (kinematic) or --rollout-root (real)")
@@ -133,13 +146,18 @@ def main() -> None:
             "  The retargeted object trajectory is a rigid transform of the released input to\n"
             "  0.0 mm, so a Tier 1 entry built from it is the scoring reference echoed back, and\n"
             "  the evaluator/checkpoint hashes the kit asks for do not exist for it.\n"
-            "  Use --dry-run to prove the packaging path, or --rollout-root for a real export.")
+            "  Use --dry-run to prove the packaging path, or --rollout-root for a real export."
+        )
 
     kit = args.kit_root
     sample = kit / "data" / "track_2_sample_submission.csv"
-    metadata = [json.loads(l) for l in
-                (args.dataset_root / "track_2" / TIER1 / "meta" / "episodes_metadata.jsonl").read_text().splitlines()
-                if l.strip()]
+    metadata = [
+        json.loads(line)
+        for line in (args.dataset_root / "track_2" / TIER1 / "meta" / "episodes_metadata.jsonl")
+        .read_text()
+        .splitlines()
+        if line.strip()
+    ]
     metadata.sort(key=lambda r: r["episode_index"])
 
     results_dir = args.work_dir / "results"
@@ -152,8 +170,14 @@ def main() -> None:
     else:
         for row in metadata:
             episode = int(row["episode_index"])
-            motion = (args.motion_root / "whole_body" / "soma"
-                      / f"sequence_id={row['sequence_id']}" / "robot_name=g1" / "data.parquet")
+            motion = (
+                args.motion_root
+                / "whole_body"
+                / "soma"
+                / f"sequence_id={row['sequence_id']}"
+                / "robot_name=g1"
+                / "data.parquet"
+            )
             if not motion.exists():
                 raise SystemExit(f"missing retargeted motion for e{episode:02d}: {motion}")
             achieved = retargeted_object(motion)
@@ -164,16 +188,28 @@ def main() -> None:
             # zero-filled, and a zero quaternion reads back as identity at the world origin.
             rotation, offset = kabsch(achieved[visible, :3], target[visible, :3])
             converted = rotate_poses(achieved, rotation, offset)
-            residual = float(np.linalg.norm(
-                converted[visible, :3] - target[visible, :3], axis=1).max())
-            conversions.append({"episode": episode, "frames": frames,
-                                "fit_residual_max_mm": round(residual * 1000, 6),
-                                "frames_invisible": int((~visible).sum())})
-            table = pa.table({name: converted[:, index].astype(np.float64)
-                              for index, name in enumerate(LEGACY_COLUMNS)}
-                             | {"frame_index": np.arange(frames, dtype=np.int64),
-                                "world_index": np.zeros(frames, dtype=np.int64),
-                                "object_slot": np.zeros(frames, dtype=np.int64)})
+            residual = float(
+                np.linalg.norm(converted[visible, :3] - target[visible, :3], axis=1).max()
+            )
+            conversions.append(
+                {
+                    "episode": episode,
+                    "frames": frames,
+                    "fit_residual_max_mm": round(residual * 1000, 6),
+                    "frames_invisible": int((~visible).sum()),
+                }
+            )
+            table = pa.table(
+                {
+                    name: converted[:, index].astype(np.float64)
+                    for index, name in enumerate(LEGACY_COLUMNS)
+                }
+                | {
+                    "frame_index": np.arange(frames, dtype=np.int64),
+                    "world_index": np.zeros(frames, dtype=np.int64),
+                    "object_slot": np.zeros(frames, dtype=np.int64),
+                }
+            )
             # Legacy layout on purpose: no evaluator reference, because there is no evaluator.
             # eval_code_sha256 is required by the packer and we have nothing true to put there,
             # so it carries the stamp rather than a plausible-looking hash. It is not 64 hex
@@ -184,38 +220,61 @@ def main() -> None:
             # submission must record one per episode; leaving it empty also trips a bug in the
             # packer's own error path (`row.split("_")[1]` on `track_2/e000000/...` raises
             # ValueError instead of printing the message).
-            table = table.replace_schema_metadata({
-                "episode_index": str(episode),
-                "eval_code_sha256": STAMP,
-                "checkpoint_sha256": STAMP,
-            })
+            table = table.replace_schema_metadata(
+                {
+                    "episode_index": str(episode),
+                    "eval_code_sha256": STAMP,
+                    "checkpoint_sha256": STAMP,
+                }
+            )
             pq.write_table(table, results_dir / f"episode_{episode:06d}.parquet")
         worst = max(c["fit_residual_max_mm"] for c in conversions)
-        print(f"staged {len(conversions)} episodes; worst frame-to-released residual {worst:.6f} mm")
+        print(
+            f"staged {len(conversions)} episodes; worst frame-to-released residual {worst:.6f} mm"
+        )
         if worst < 0.001:
-            print("  -> the retargeted object IS the released input to within a micrometre. "
-                  "This confirms why this path is not a submittable entry.")
+            print(
+                "  -> the retargeted object IS the released input to within a micrometre. "
+                "This confirms why this path is not a submittable entry."
+            )
 
     out_csv = args.work_dir / (f"track2_tier1_{STAMP}.csv" if args.dry_run else "track2_tier1.csv")
-    command = [sys.executable, str(kit / "tools" / "pack_submission.py"),
-               "--track", "track_2_tier1", "--results", str(results_dir),
-               "--dataset-root", str(args.dataset_root), "--sample", str(sample),
-               "--code-commit", args.code_commit or DRY_RUN_COMMIT,
-               "-o", str(out_csv)]
+    command = [
+        sys.executable,
+        str(kit / "tools" / "pack_submission.py"),
+        "--track",
+        "track_2_tier1",
+        "--results",
+        str(results_dir),
+        "--dataset-root",
+        str(args.dataset_root),
+        "--sample",
+        str(sample),
+        "--code-commit",
+        args.code_commit or DRY_RUN_COMMIT,
+        "-o",
+        str(out_csv),
+    ]
     if args.motion_root is not None:
         # The packer needs an eval_script_sha256 and will hash a script for us. Hashing the
         # kit's own released evaluator is honest only because the packer prints, and this
         # script records, that we did not run it.
         command += ["--eval-script", str(kit / "flash_chord" / "scripts" / "evaluate_policy.py")]
     print("\n$ " + " ".join(command))
-    packed = subprocess.run(command, cwd=str(kit), capture_output=True, text=True,
-                            env={"PATH": "/usr/bin:/bin", "PYTHONPATH": str(kit)})
+    packed = subprocess.run(
+        command,
+        cwd=str(kit),
+        capture_output=True,
+        text=True,
+        env={"PATH": "/usr/bin:/bin", "PYTHONPATH": str(kit)},
+    )
     print(packed.stdout[-4000:] or "(no stdout)")
     if packed.returncode != 0:
         print(packed.stderr[-4000:], file=sys.stderr)
         raise SystemExit(f"the kit's packer exited {packed.returncode}")
 
-    import pandas as pd  # noqa: PLC0415
+    import pandas as pd
+
     submitted = pd.read_csv(out_csv)
     expected = pd.read_csv(sample)
     rows_match = list(submitted["row_id"]) == list(expected["row_id"])
@@ -225,10 +284,25 @@ def main() -> None:
 
     score_json = args.work_dir / "local_score.json"
     score = subprocess.run(
-        [sys.executable, "-I", "scripts/score_track2.py", "--kit-root", str(kit),
-         "--dataset-root", str(args.dataset_root), "--tier", "tier1",
-         "--pred", f"csv:{out_csv}", "-o", str(score_json)],
-        capture_output=True, text=True, env={"PATH": "/usr/bin:/bin"})
+        [
+            sys.executable,
+            "-I",
+            "scripts/score_track2.py",
+            "--kit-root",
+            str(kit),
+            "--dataset-root",
+            str(args.dataset_root),
+            "--tier",
+            "tier1",
+            "--pred",
+            f"csv:{out_csv}",
+            "-o",
+            str(score_json),
+        ],
+        capture_output=True,
+        text=True,
+        env={"PATH": "/usr/bin:/bin"},
+    )
     print("\nlocal score of the packed CSV:")
     print(score.stdout or score.stderr[-2000:])
     scored = json.loads(score_json.read_text())["overall"] if score_json.exists() else None
@@ -238,16 +312,23 @@ def main() -> None:
         "submittable": bool(args.rollout_root is not None and not args.dry_run),
         "stamped": STAMP if args.dry_run else None,
         "source": "kinematic retarget" if args.motion_root else "flashchord rollout",
-        "csv": str(out_csv), "rows": int(len(submitted)), "row_ids_match_sample": rows_match,
+        "csv": str(out_csv),
+        "rows": len(submitted),
+        "row_ids_match_sample": rows_match,
         "packer": "kit tools/pack_submission.py",
         "frame_conversion": conversions,
         "local_score": scored,
-        "why_not_submittable": None if args.rollout_root else (
+        "why_not_submittable": None
+        if args.rollout_root
+        else (
             "the kinematic retarget reproduces the released input to 0.0 mm, so this CSV is the "
             "scoring reference echoed back; eval_code_sha256 carries the literal string "
             f"{STAMP!r} instead of a digest, so does checkpoint_sha256, and eval_script_sha256 "
-            "is the hash of the kit's released evaluator, which was never run"),
-        "provenance_gaps": None if args.rollout_root else {
+            "is the hash of the kit's released evaluator, which was never run"
+        ),
+        "provenance_gaps": None
+        if args.rollout_root
+        else {
             "eval_script_sha256": "hash of the kit's released evaluate_policy.py; NOT run here",
             "eval_code_sha256": STAMP,
             "checkpoint_sha256": STAMP + ": no policy was trained",

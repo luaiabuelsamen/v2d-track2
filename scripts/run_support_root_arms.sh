@@ -24,7 +24,7 @@ if [ -z "$SCRATCH" ]; then
 fi
 REPO="$SCRATCH/repo_src"
 SOMA="$REPO/robotic_grounding/source/robotic_grounding/robotic_grounding/assets/body_models/soma"
-PY="$PROJECT/.venv311/bin/python"
+V2D="$PROJECT/.venv311/bin/v2d"
 
 for spec in \
   "table:--object-npz $SCRATCH/npz_table" \
@@ -35,7 +35,7 @@ do
   base="$SCRATCH/arms/$arm"
   printf '\n===== arm %s (%s) =====\n' "$arm" "$flags"
   # shellcheck disable=SC2086  # $flags is a deliberate word list
-  env -u PYTHONPATH "$PY" -I "$PROJECT/scripts/retarget_all.py" \
+  env -u PYTHONPATH "$V2D" retarget \
     --dataset-root "$SCRATCH/data" --repo "$REPO" --soma-root "$SOMA" \
     --seq-root "$base/seq" --out-root "$base/motion" \
     --log-dir "$base/logs" --validation-dir "$base/validation" \
@@ -45,7 +45,7 @@ done
 
 printf '\n===== all arms done =====\n'
 for arm in table table_root root; do
-  "$PY" -I -c "
+  "$PROJECT/.venv311/bin/python" -c "
 import json
 d = json.load(open('$PROJECT/results/arm_$arm.json'))['summary']
 print(f\"$arm: {d['episodes_passed']}/{d['episodes_total']} passed, \"
