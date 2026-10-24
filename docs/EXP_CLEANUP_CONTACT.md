@@ -217,3 +217,52 @@ and both are upper bounds on a deployable support-contact cleaner, not forecasts
 inputs plus the released ground plane — the penetration-aware cleanup — and then measuring how
 much of the 0.646 it actually delivers. Any number quoted for the pipeline must come from that
 deployable cleaner, never from these arms.
+
+## Follow-up: what the *deployable* cleaner actually restores
+
+The caveat above demanded that any number quoted for the pipeline come from the deployable
+cleaner (`scripts/clean_support_contact.py`, which uses no clean reference), so its 30 clips were
+retargeted on CPU under the same conditions as the arms — 30/30 passing at 0.0 mm rigid-fit
+residual and 0.043° orientation residual (`results/arm_support_cleaned.json`). Contact coverage
+is `results/arm_support_cleaned_contact.json`.
+
+| reference | contact | vs Tier 2 | recovery vs `rot_clean` | share of the tilt oracle's gain |
+|---|---|---|---|---|
+| `tier1` | 0.5744 | +0.2043 | — | — |
+| `rot_clean` (oracle) | 0.4709 | +0.1008 | 1.000 | — |
+| `tilt_fixed` (oracle) | 0.4352 | +0.0651 | 0.646 | 1.000 |
+| **support-contact cleaned (deployable)** | **0.3841** | **+0.0141** | **0.140** | **0.217** |
+| `yaw_fixed` (oracle) | 0.3825 | +0.0124 | 0.123 | 0.190 |
+| `tier2` (as released) | 0.3701 | — | 0.000 | 0.000 |
+
+**The deployable cleaner does not restore the grasp signal.** +0.0141 mean contact is 14 % of the
+orientation-cleanup ceiling and barely above `yaw_fixed`, the arm pre-registered as the control
+that should *not* work. Per clip it is not even reliably positive: **15 up, 10 down, 5 untouched**
+(sign test p = 0.42), mean +0.0418 where it helps against −0.0206 where it hurts, and the amount
+of tilt it removes does not predict the gain (r = −0.03 over the 25 cleaned clips). On the 8
+worst-hit clips it recovers +0.0227 of a possible +0.14.
+
+Two checks say this is a real limit of the cleaner rather than a plumbing fault:
+
+- **The 5 clips it declined to touch** (e03, e06, e07, e20, e25 — no floor-level rest segment)
+  have contact change of *exactly* 0.0000. Nothing leaked between arms, and the measured effect
+  belongs entirely to the 25 clips it did modify.
+- **It captures the same fraction on both axes it moves**: 21.7 % of the tilt oracle's contact
+  gain and 18.0 % of its AUC gain (0.4247 → 0.4660 of 0.6541). One cleaner doing about a fifth of
+  the oracle's work, consistently, is a coherent picture — not a contact-specific failure.
+
+The mechanism is the obvious one: the cleaner only corrects frames where the object rests at
+floor level, 38 % of frames on average, and contact is scored during the *manipulated* frames it
+propagates into by Slerp with no support evidence of its own.
+
+**This confirms the pre-registered PARTIAL action rather than softening it.** The adopted
+justification for cleaning Tier 2 references is the scored-metric gain — AUC 0.4247 → 0.4660,
+SP-SR 0.9667 → 1.0000, MPPE 2.3605 → 2.3053 cm, no metric regressing — and explicitly **not** a
+training-signal benefit. The honest statement for the Brev gate is that it trains on references
+that score better, not on references with a measurably better grasp signal.
+
+The ceiling this leaves on the table is the actionable part: `tilt_fixed` reaches +0.0651 and
+`rot_clean` +0.1008, so a cleaner with a support hypothesis for non-resting frames — the 14
+table episodes have released `support_surface/` primitives that this cleaner ignores — has 4–7×
+the contact headroom of what is built. That, and the root-alignment cleaner P1 points to, are
+where the remaining contact loss lives.
