@@ -70,8 +70,14 @@ the nearest candidate and no more than `--support-penetration-cm` (10) below it;
 candidate's plane for the correction. Penetration is allowed because a tilt error is exactly what
 digs a corner through a surface — `traffic_cone` sits 2.3 cm under its table top and
 `woven_basket` 4-6 cm under its desk, which is the error being corrected, not a reason to refuse.
-The 10 cm bound is safe because candidate heights are **at least 46.9 cm apart** in every
-episode, so no floor segment can be mistaken for a table segment or vice versa.
+The 10 cm bound is safe because the **lowest table top in any episode sits 46.9 cm above the
+floor**, so no floor segment can be mistaken for a table segment or vice versa.
+
+> **Correction, made while committing the probe and before any arm ran.** This paragraph first
+> claimed candidate heights are "at least 46.9 cm apart in every episode", which is false: e25
+> ships two tops 0.36 cm apart. The statistic that carries the safety argument is the
+> floor-to-lowest-top gap, which is the 46.9 cm quoted above; two tops that close are the same
+> plane and confusing them is harmless. No prediction or threshold changes.
 
 The support normal for a table top is taken to be the **floor normal**. Both frames are
 gravity-aligned descriptions of one room and the primitive's own axis is the Z-up frame's up, so
