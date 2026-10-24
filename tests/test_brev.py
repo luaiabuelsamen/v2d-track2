@@ -12,7 +12,15 @@ from pathlib import Path
 
 import pytest
 
-from v2d.brev import MIN_VRAM_GB, eligible, lookup, parse_search, pick_cheapest
+from v2d.brev import (
+    MIN_VRAM_GB,
+    eligible,
+    is_dead,
+    is_shell_ready,
+    lookup,
+    parse_search,
+    pick_cheapest,
+)
 
 LIVE = Path(__file__).parent / "data" / "brev_search_2026-10-24.txt"
 
@@ -109,3 +117,46 @@ def test_floor_is_configurable_and_monotonic(offers):
 
 def test_a_price_column_with_a_dollar_sign_is_read_as_money(offers):
     assert all(offer.usd_per_hour > 0 for offer in offers)
+
+
+# ------------------------------------------------------------------ readiness
+
+# Verbatim rows observed while the 2026-10-24 probe was coming up and going down.
+DEPLOYING = (
+    " v2d-gate-1024-1414  DEPLOYING  BUILDING   NOT READY  6i30q50mr  massedcompute_A6000  A6000"
+)
+RUNNING_NOT_READY = (
+    " v2d-gate-1024-1414  RUNNING    COMPLETED  NOT READY  6i30q50mr  massedcompute_A6000  A6000"
+)
+RUNNING_READY = (
+    " v2d-gate-1024-1414  RUNNING    COMPLETED  READY      6i30q50mr  massedcompute_A6000  A6000"
+)
+DELETING = (
+    " v2d-gate-1024-1414  DELETING   COMPLETED  NOT READY  6i30q50mr  massedcompute_A6000  A6000"
+)
+
+
+def test_running_but_shell_not_ready_is_not_ready():
+    """The bug that wasted a probe: brev says RUNNING before SSH exists."""
+    assert not is_shell_ready(RUNNING_NOT_READY)
+
+
+def test_deploying_is_not_ready():
+    assert not is_shell_ready(DEPLOYING)
+
+
+def test_running_and_shell_ready_is_ready():
+    assert is_shell_ready(RUNNING_READY)
+
+
+def test_not_ready_is_not_matched_as_ready_by_substring():
+    """ "NOT READY" contains "READY", so the negative has to be checked first."""
+    assert "READY" in RUNNING_NOT_READY
+    assert not is_shell_ready(RUNNING_NOT_READY)
+
+
+def test_dead_states_are_recognised():
+    assert is_dead(DELETING)
+    assert is_dead(" x FAILED")
+    assert not is_dead(RUNNING_READY)
+    assert not is_dead(DEPLOYING)

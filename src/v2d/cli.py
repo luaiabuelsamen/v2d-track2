@@ -86,6 +86,15 @@ def _brev_pick(args: argparse.Namespace) -> int:
     return 0
 
 
+def _brev_ready(args: argparse.Namespace) -> int:
+    """Exit 0 if a `brev ls` row is ready for SSH (or, with --dead-check, is unrecoverable)."""
+    from .brev import is_dead, is_shell_ready
+
+    if args.dead_check:
+        return 0 if is_dead(args.row) else 1
+    return 0 if is_shell_ready(args.row) else 1
+
+
 def _gate_report(args: argparse.Namespace) -> int:
     """Log a finished Brev gate run to W&B and push its artefacts to the private HF repo."""
     from .observe.gate_report import report
@@ -149,6 +158,19 @@ def build_parser() -> argparse.ArgumentParser:
         help="also print the N cheapest eligible types to stderr",
     )
     pick.set_defaults(func=_brev_pick)
+
+    ready = sub.add_parser(
+        "brev-ready",
+        help="is a `brev ls` row ready for SSH?",
+        description=_brev_ready.__doc__,
+    )
+    ready.add_argument("--row", required=True, help="one line of `brev ls` output")
+    ready.add_argument(
+        "--dead-check",
+        action="store_true",
+        help="instead test whether the row is in an unrecoverable state",
+    )
+    ready.set_defaults(func=_brev_ready)
 
     gate = sub.add_parser(
         "gate-report",

@@ -128,3 +128,27 @@ def pick_cheapest(offers: list[Offer], min_vram_gb: float = MIN_VRAM_GB) -> Offe
 def lookup(offers: list[Offer], instance_type: str) -> Offer | None:
     """One named instance type, for validating an explicit `--type` against the live table."""
     return next((offer for offer in offers if offer.instance_type == instance_type), None)
+
+
+# ------------------------------------------------------------------ instance readiness
+#: Statuses from which an instance will never become usable, so waiting is pointless.
+DEAD_STATUSES: Final[tuple[str, ...]] = ("FAILED", "TERMINATED", "STOPPED", "DELETING", "DELETED")
+
+
+def is_shell_ready(row: str) -> bool:
+    """Is this `brev ls` row ready to accept SSH?
+
+    `STATUS=RUNNING` is not the question, and assuming it was cost a probe run: brev reports
+    RUNNING while the SHELL column still reads NOT READY, and ssh then fails with
+    `kex_exchange_identification: Connection closed by remote host`. The SHELL column is the one
+    that matters -- and because "NOT READY" contains "READY", it has to be excluded first.
+    """
+    upper = row.upper()
+    if "NOT READY" in upper:
+        return False
+    return "RUNNING" in upper and "READY" in upper
+
+
+def is_dead(row: str) -> bool:
+    """Has this instance reached a state it will not come back from?"""
+    return any(status in row.upper() for status in DEAD_STATUSES)

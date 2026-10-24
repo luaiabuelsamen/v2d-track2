@@ -224,12 +224,37 @@ CREATED=1
 WATCHDOG=$!
 trap 'kill $WATCHDOG 2>/dev/null; teardown' EXIT INT TERM
 
-say "Waiting for RUNNING"
-for _ in $(seq 1 60); do
-  brev ls 2>/dev/null | grep -q "$NAME.*RUNNING" && break
-  sleep 15
-done
+# STATUS=RUNNING is not the question, and assuming it was cost the first probe run: brev reports
+# RUNNING while the SHELL column still reads NOT READY, ssh then dies with
+# "kex_exchange_identification: Connection closed by remote host", and the run tears down having
+# measured nothing. Wait for the shell, then prove it with an actual ssh before sending the
+# payload. The readiness predicate lives in v2d.brev so it can be tested (tests/test_brev.py).
+say "Waiting for the shell to accept SSH"
 brev refresh >/dev/null 2>&1 || true
+READY=0
+WAITED=0
+for _ in $(seq 1 80); do          # 80 x 15 s = 20 minutes
+  ROW="$(brev ls 2>/dev/null | grep -E "^[[:space:]]*${NAME}[[:space:]]" || true)"
+  if [ -n "$ROW" ] && "$V2D_BIN" brev-ready --row "$ROW" --dead-check >/dev/null 2>&1; then
+    echo "!! the instance reached a state it will not return from:" >&2
+    echo "   $ROW" >&2
+    exit 4
+  fi
+  if [ -n "$ROW" ] && "$V2D_BIN" brev-ready --row "$ROW" >/dev/null 2>&1; then
+    brev refresh >/dev/null 2>&1 || true
+    if ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout=20 -o BatchMode=yes \
+           "$NAME" true >/dev/null 2>&1; then
+      READY=1; break
+    fi
+  fi
+  sleep 15
+  WAITED=$((WAITED + 15))
+done
+if [ "$READY" != 1 ]; then
+  echo "!! the instance never accepted SSH after ${WAITED}s; tearing down without running." >&2
+  exit 4
+fi
+say "SSH is up after ~${WAITED}s"
 
 REMOTE_PARQUET=""
 if [ -n "$G1_PARQUET" ]; then
