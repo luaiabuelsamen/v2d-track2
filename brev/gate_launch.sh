@@ -43,12 +43,16 @@ while [ $# -gt 0 ]; do
     # the guard by running the script reaches the brev CLI, which prompts to log in; the guard
     # is testable without going anywhere near an account.
     --check-provenance-only) CHECK_ONLY=1; shift ;;
+    # Keep the instance after this script exits, so a debugging session does not pay for
+    # provisioning (~6 min) and a Docker build (~6 min) on every script bug. Four attempts went
+    # that way. The watchdog still deletes it, and is detached so it outlives this process.
+    --dev-box) DEV_BOX=1; shift ;;
     --go) GO=1; shift ;;
     -h|--help) sed -n '2,20p' "$0"; exit 0 ;;
     *) echo "unknown argument: $1" >&2; exit 2 ;;
   esac
 done
-case "$PHASE" in probe|full) ;; *) echo "--phase must be probe or full" >&2; exit 2 ;; esac
+case "$PHASE" in probe|full|build) ;; *) echo "--phase must be build, probe or full" >&2; exit 2 ;; esac
 if [ "$PHASE" = full ] && [ -z "$G1_PARQUET" ]; then
   echo "--phase full needs --g1-parquet <retargeted G1 parquet for the gate clip>." >&2
   echo "Produce it with soma_to_g1.py first; the probe phase does not need it." >&2
@@ -155,7 +159,12 @@ fi
 
 B1_DESCRIPTION="none"
 [ -n "$EVAL_EP" ] && B1_DESCRIPTION="e$EVAL_EP at ${EVAL_WORLDS} worlds"
-if [ "$PHASE" = probe ]; then STEPS=10000896; EST_HOURS=0.7; else STEPS=349999104; EST_HOURS=6; fi
+case "$PHASE" in
+  # build: provisioning plus one Docker image build, measured at 229-336 s over four attempts.
+  build) STEPS=0;         EST_HOURS=0.4 ;;
+  probe) STEPS=10000896;  EST_HOURS=0.7 ;;
+  full)  STEPS=349999104; EST_HOURS=6   ;;
+esac
 EST_COST="$(awk -v h="$EST_HOURS" -v r="$HOURLY" 'BEGIN{printf "%.2f", h*r}')"
 # The watchdog is bounded by the money cap as well as by --max-hours, so a hung run cannot spend
 # past the cap even if this script dies and the estimate was wrong.
@@ -219,10 +228,20 @@ say "Creating $NAME ($INSTANCE_TYPE)"
 brev create "$NAME" --type "$INSTANCE_TYPE" || { echo "create failed" >&2; exit 1; }
 CREATED=1
 
-# Independent watchdog: deletes the instance even if this script is killed.
-( sleep "$WATCHDOG_SECONDS"; brev delete "$NAME" --yes >/dev/null 2>&1 ) &
-WATCHDOG=$!
-trap 'kill $WATCHDOG 2>/dev/null; teardown' EXIT INT TERM
+# Independent watchdog: deletes the instance even if this script is killed. In dev-box mode it
+# is fully detached, because it has to outlive this process -- it is the only thing standing
+# between a forgotten box and a day of A6000 billing.
+if [ "${DEV_BOX:-0}" = 1 ]; then
+  setsid nohup bash -c "sleep $WATCHDOG_SECONDS; brev delete '$NAME' --yes" \
+    >/dev/null 2>&1 < /dev/null &
+  echo "detached watchdog armed: deletes $NAME in ${WATCHDOG_HOURS} h"
+  # No teardown trap: the point of this mode is that the box survives.
+  trap - EXIT INT TERM
+else
+  ( sleep "$WATCHDOG_SECONDS"; brev delete "$NAME" --yes >/dev/null 2>&1 ) &
+  WATCHDOG=$!
+  trap 'kill $WATCHDOG 2>/dev/null; teardown' EXIT INT TERM
+fi
 
 # STATUS=RUNNING is not the question, and assuming it was cost the first probe run: brev reports
 # RUNNING while the SHELL column still reads NOT READY, ssh then dies with
@@ -301,6 +320,19 @@ ssh "${SSH_KEEPALIVE[@]}" "$NAME" 'cat ~/gate_results/on_instance.log 2>/dev/nul
 
 say "Copying results back"
 scp -r -o StrictHostKeyChecking=accept-new "$NAME":'~/gate_results/*' "$OUT_DIR/" 2>/dev/null || echo "no results copied; see the console log"
+
+if [ "${DEV_BOX:-0}" = 1 ]; then
+  cat <<DEV
+
+== Dev box is up and NOT scheduled for deletion by this script
+  ssh $NAME
+  container:  ssh $NAME "docker ps --filter name=flash_chord"
+  run a step: ssh $NAME "docker exec -i \$(docker ps -q --filter name=flash_chord | head -1) bash -lc 'CMD'"
+  watchdog:   deletes it in ${WATCHDOG_HOURS} h (~\$${MAX_USD} at \$${HOURLY}/h)
+  DELETE IT:  brev delete $NAME --yes && brev ls
+DEV
+  exit 0
+fi
 
 say "Done. Results in $OUT_DIR"
 ls -la "$OUT_DIR"

@@ -328,3 +328,64 @@ This is also the quantitative answer to why both object cleaners capture so litt
 oracle's contact gain. The oracle fixes the object's orientation while the hands stay wrong;
 most of the remaining contact loss is on the human side, and `object_clean` already measured that
 at **38 % of the total** (0.0777 of 0.2043). Nothing that touches only the object can reach it.
+
+---
+
+# Correction: the root cleaner was built on a false premise
+
+`interp` found a frame bug (their commit `c46d27a`, `results/body_floor_frame.json`) and it
+invalidates the reasoning behind the root cleaner. Verified independently here before accepting
+it: with the retargeter's own `diag(1,-1,-1)` applied, the lowest foot vertex sits **−1.70,
+−1.39 and −0.26 cm** from the released ground plane on episodes 0, 7 and 24. Without it, 260–271
+cm. `det = +1`, so it is a proper rotation — 180° about x — not a reflection.
+
+**So the body, the floor plane and the object do share a frame, and I said they did not.** Worse,
+I had the transform written down in my own converter's docstring — "`poses.npy` is consumed as
+`einsum("ij,tjk->tik", diag(1,-1,-1,1), poses)`" — and read the ~270 cm figure as evidence of an
+unreachable frame instead of as evidence of an unapplied flip I had already documented.
+
+Three things follow, and the first two are retractions:
+
+1. **The root cleaner's design rationale was wrong.** It was built on "stationary" because that
+   constraint is frame-independent and the ground plane was thought unreachable. The plane was
+   reachable the whole time.
+2. **The R3 amendment was wrong.** I declared R3 (stance-foot *vertical* std) unevaluable because
+   "there is no vertical to measure along". There is: the released plane normal, after the flip.
+   R3′ (3D scatter) was a reasonable substitute but it was not necessary.
+3. **The lesson survives, but its corollary does not.** "A cleaner needs an external reference,
+   not merely a self-consistency condition" still explains why the foot-planting cleaner failed.
+   What was wrong is the claim that *no* external reference was available for the body. One was,
+   which makes the failure **fixable rather than intrinsic**.
+
+## Re-running "with the flip" is literally a no-op, so this does something else
+
+The existing cleaner Kabsch-fits stance-foot vertices onto their own segment median. That is
+invariant under any rigid transform of the input, and `diag(1,-1,-1)` is a proper rotation, so
+applying it changes the output by exactly nothing. Checked rather than asserted, below.
+
+The substantive version is the one the failure analysis asks for: **anchor the feet to the floor
+plane** instead of to a statistic of the noisy data. A floor pins three of six degrees of
+freedom — height, and the two tilt angles — and leaves yaw and horizontal position free, which
+is an honest accounting of what a floor can tell you.
+
+## Pre-registration: the floor-anchored root cleaner
+
+Measured against the clean Tier 1 root, which is used for scoring only. Raw Tier 2 is **5.174°**
+of root rotation error and **1.087 cm** of translation error; the foot-planting cleaner made both
+worse, at 5.584° and 2.102 cm.
+
+| | Prediction | Threshold |
+|---|---|---|
+| F1 | anchoring to the floor removes the tilt part of the root error, leaving yaw | root rotation error ≤ **4.50°** (point prediction 3.0–4.0) |
+| F2 | and the vertical part of the translation error | root translation error ≤ **1.00 cm** (point prediction 0.7–0.9) |
+| F3 | and it helps on most clips, not just on average | rotation error improves on ≥ **20/30** |
+| F4 | do-no-harm: run on already-clean Tier 1 input it barely moves the root | induced rotation ≤ **2.0°** mean |
+
+**Decision.** If F1 and F2 both hold, the floor-anchored cleaner replaces foot-planting and goes
+to a contact arm. If either fails, the root is left alone and the 38 % of contact loss attributed
+to it stays unaddressed — reported, not papered over. F3 and F4 failing while F1 and F2 pass
+would mean a cleaner that helps on average by a mechanism I cannot localise, which is the same
+situation the object cleaner's gate just caught, and it would not ship.
+
+Yaw is explicitly **not** a target. A floor cannot constrain rotation about its own normal, so a
+residual of roughly the yaw component is the expected floor of this method, not a shortfall.

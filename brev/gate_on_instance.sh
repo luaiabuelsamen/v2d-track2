@@ -148,6 +148,12 @@ echo "container $(container_id) is up"
 run_in_container 'python -c "import flash_chord, jax; print(\"flash_chord ok\", jax.devices())"' \
   || echo "WARNING: could not import flash_chord/jax in the container"
 
+if [ "$PHASE" = build ]; then
+  say "Phase=build: the image is built and the container is up. Stopping here."
+  echo "Iterate with:  docker exec -i $(container_id) bash -lc '<command>'"
+  exit 0
+fi
+
 say "Resolve the composed config (free, no training)"
 run_in_container "cd /workspace && python scripts/train_flash_sac.py experiment=g1_recon_body_flash_sac --cfg job --resolve" \
   > "$OUT/composed_config.txt" 2>&1 || echo "WARNING: config resolve failed; see composed_config.txt"
