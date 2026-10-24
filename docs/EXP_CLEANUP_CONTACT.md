@@ -143,3 +143,77 @@ can never be an artefact of a retarget that silently diverged.
 CPU only, $0, no GPU (`~/projects/_ops/GPU_RELEASED` untouched), no Brev. 120 clips at ~3.5 min
 each with 2 workers ≈ 4 h wall clock. 2 workers is the ceiling on this 15.6 GB box; 3 lost 28
 clips to OOM kills.
+
+---
+
+# Results — 2026-10-24
+
+All four arms completed 30/30 clips at **0.0 mm** worst rigid-fit residual and ≤0.043° worst
+orientation residual, so the pre-registered validation bar is met and the numbers are readable.
+Three clips (tilt_fixed e14, rot_clean e00/e05) died silently during mesh loading on the first
+pass — the same OOM signature as before — and were re-run at one worker before anything was
+scored. Everything below is `results/cleanup_contact.json`.
+
+## Contact coverage
+
+| Arm | Contact | vs Tier 2 | recovery vs `rot_clean` | recovery vs `object_clean` |
+|---|---|---|---|---|
+| `tier1` (clean human + clean object) | 0.5744 | +0.2043 | — | — |
+| `object_clean` (noisy human, clean object) | 0.4967 | +0.1266 | 1.256 | 1.000 |
+| `rot_clean` (noisy human, clean orientation) | 0.4709 | +0.1008 | 1.000 | 0.796 |
+| **`tilt_fixed`** | **0.4352** | **+0.0651** | **0.646** | 0.514 |
+| `yaw_fixed` | 0.3825 | +0.0124 | 0.123 | 0.098 |
+| `tier2` (as released) | 0.3701 | — | 0.000 | 0.000 |
+
+## Prediction scorecard — 5 of 6 pass
+
+| | Prediction | Result | |
+|---|---|---|---|
+| P1 | ceiling below Tier 1, in 0.42–0.52 | `object_clean` = **0.4967** | **pass** |
+| P2 | tilt beats yaw: mean ≥ +0.03 **and** sign in ≥20/30 | mean **+0.0527** ✓, sign **19/30** ✗ | **fail** |
+| P3 | `recovery_rot(tilt_fixed)` ≥ 0.5 | **0.646** | **pass** |
+| P4 | `recovery_rot(yaw_fixed)` ≤ 0.25 | **0.123** | **pass** |
+| P5 | ≥5 of the 8 worst-hit clips beat the mean gain | **8 of 8** | **pass** |
+| P6 | tilt and yaw bracket the orientation ceiling | 0.370 < 0.383 < 0.435 < 0.471 | **pass** |
+
+**Verdict: PARTIAL**, by the rule fixed in advance. P2 failed by **one episode** on sign
+consistency while passing on magnitude, and the rule required both. The rule's three cases did
+not cleanly cover this outcome — P2 failing while P3 passes well above its bar — and the scorer
+took the conservative branch. I am not re-reading the rule to upgrade this to HOLDS; that is the
+move pre-registration exists to prevent.
+
+So: **the tilt cleanup is adopted for its scored-metric gain, and no training-signal benefit is
+claimed from this experiment.**
+
+## What the numbers say beyond the scorecard
+
+**Tilt is genuinely the recoverable component, not merely the larger one.** Per degree of
+orientation error removed, tilt restores **0.00412** contact and yaw **0.00109** — tilt is
+**3.8× more efficient per degree**, against an angle only 1.39× larger (15.80° vs 11.40°). That
+asymmetry is the real content of the result, and it is what the support-plane argument predicted.
+
+**A post-hoc explanation for the 11 sign flips was tested and rejected.** The obvious story —
+"yaw won on the clips where yaw is the bigger error" — holds at the group level (tilt/yaw error
+ratio 1.06 on yaw-won clips vs 1.64 on tilt-won clips, and 7 of 11 have yaw larger) but fails
+per clip: contact gain correlates with degrees removed at only **r = +0.107** for tilt and
+**+0.178** for the tilt-minus-yaw difference. What actually predicts a clip's gain is how much
+contact the full orientation cleanup can restore there at all (**r = +0.848** against
+`rot_clean - tier2`). Per-clip recovery is therefore governed by clip-specific geometry, not by
+angular magnitude — which is both why the sign flips on a third of the clips and why no per-clip
+reliability should be claimed. The honest unit of this result is the mean.
+
+**P1 is the finding with the longest reach.** `object_clean` sits at 0.4967 against Tier 1's
+0.5744, so **38 % of the contact loss (0.0777 of 0.2043) survives a perfect object-pose
+cleaner** and is attributable to Tier 2's rigid root perturbation of the human. A second cleaner
+that re-aligns the perturbed root is the larger remaining win, and it is a different piece of
+work from this one.
+
+## The caveat that governs what gets built
+
+`tilt_fixed` is an **oracle**: it is constructed from the clean reference. So is the AUC
+0.425 → 0.654 figure from the scoring ladder. **Neither is achievable by a submitted pipeline**,
+and both are upper bounds on a deployable support-contact cleaner, not forecasts of it. Adopting
+"the cleanup" therefore means building a cleaner that reaches for that bound using only Tier 2
+inputs plus the released ground plane — the penetration-aware cleanup — and then measuring how
+much of the 0.646 it actually delivers. Any number quoted for the pipeline must come from that
+deployable cleaner, never from these arms.
