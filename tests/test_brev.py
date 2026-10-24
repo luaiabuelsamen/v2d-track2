@@ -77,9 +77,34 @@ def test_eligible_is_ordered_cheapest_first(offers):
 def test_pick_is_the_cheapest_card_that_fits(offers):
     pick = pick_cheapest(offers)
     assert pick is not None
-    assert pick.instance_type == "massedcompute_A6000"
     assert pick.vram_per_gpu_gb == 48.0
     assert pick.usd_per_hour == pytest.approx(0.68)
+    # Among the three $0.68/h A6000s, the one with the most vCPUs. Observed on a 6-vCPU box:
+    # FlashCHORD's startup is single-threaded and CPU-bound, sitting at 101 % of one core with
+    # the GPU at 0 %, so vCPUs are worth a tie-break that costs nothing.
+    assert pick.instance_type == "massedcompute_A6000_plus"
+    assert pick.vcpus == 12
+
+
+def test_the_vcpu_tie_break_never_costs_money(offers):
+    """Price stays the primary key; vCPUs only order offers that already cost the same."""
+    ranked = eligible(offers)
+    assert ranked[0].usd_per_hour == min(offer.usd_per_hour for offer in ranked)
+    prices = [offer.usd_per_hour for offer in ranked]
+    assert prices == sorted(prices)
+
+
+def test_a_vcpu_floor_can_be_required(offers):
+    assert all(offer.vcpus >= 16 for offer in eligible(offers, min_vcpus=16))
+    assert len(eligible(offers, min_vcpus=16)) < len(eligible(offers))
+
+
+def test_vcpus_are_parsed_for_the_known_rows(offers):
+    """hyperstack_A6000 is cheaper AND has 28 vCPUs; it is simply not always available."""
+    plus = lookup(offers, "massedcompute_A6000_plus")
+    assert plus is not None and plus.vcpus == 12
+    base = lookup(offers, "massedcompute_A6000_base")
+    assert base is not None and base.vcpus == 6
 
 
 def test_multi_gpu_totals_do_not_satisfy_a_single_device_floor(offers):

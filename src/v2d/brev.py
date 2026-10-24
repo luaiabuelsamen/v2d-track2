@@ -43,15 +43,21 @@ class Offer:
     vram_per_gpu_gb: float
     total_vram_gb: float
     usd_per_hour: float
+    #: vCPUs matter more than the price difference suggests. The same A6000 ships with 6 vCPUs
+    #: from one provider and 28 from another, and FlashCHORD's startup is single-threaded and
+    #: CPU-bound (scene build, convex decomposition, Warp kernel compilation), with ONNX policy
+    #: inference on top. A 6-vCPU box was observed at 101 % of one core and 0 % GPU.
+    vcpus: int = 0
 
     def meets(self, min_vram_gb: float = MIN_VRAM_GB) -> bool:
         """Does a single GPU on this instance clear the VRAM floor?"""
         return self.vram_per_gpu_gb >= min_vram_gb
 
     def describe(self) -> str:
+        cpus = f", {self.vcpus} vCPU" if self.vcpus else ""
         return (
             f"{self.instance_type} ({self.gpu} x{self.count}, "
-            f"{self.vram_per_gpu_gb:g} GB/GPU, ${self.usd_per_hour:.2f}/h)"
+            f"{self.vram_per_gpu_gb:g} GB/GPU{cpus}, ${self.usd_per_hour:.2f}/h)"
         )
 
 
@@ -94,6 +100,7 @@ def parse_search(text: str) -> tuple[list[Offer], list[str]]:
         total = _number(cell.get("TOTAL_VRAM", ""))
         price = _number(cell.get("$/HR", ""))
         count = _number(cell.get("COUNT", "1"))
+        vcpus = _number(cell.get("VCPUS", "0"))
         if not cell.get("TYPE") or vram is None or price is None:
             skipped.append(line)
             continue
@@ -106,22 +113,32 @@ def parse_search(text: str) -> tuple[list[Offer], list[str]]:
                 vram_per_gpu_gb=vram,
                 total_vram_gb=total if total is not None else vram,
                 usd_per_hour=price,
+                vcpus=int(vcpus) if vcpus else 0,
             )
         )
     return offers, skipped
 
 
-def eligible(offers: list[Offer], min_vram_gb: float = MIN_VRAM_GB) -> list[Offer]:
-    """Offers clearing the VRAM floor, cheapest first."""
+def eligible(
+    offers: list[Offer], min_vram_gb: float = MIN_VRAM_GB, min_vcpus: int = 0
+) -> list[Offer]:
+    """Offers clearing the VRAM floor, cheapest first, then by most vCPUs at equal price.
+
+    Price stays the primary key, so this never spends more than it has to. The vCPU tie-break
+    costs nothing and matters: among the $0.68/h A6000s the vCPU count varies 6 to 12 for the
+    same money.
+    """
     return sorted(
-        (offer for offer in offers if offer.meets(min_vram_gb)),
-        key=lambda offer: (offer.usd_per_hour, offer.instance_type),
+        (offer for offer in offers if offer.meets(min_vram_gb) and offer.vcpus >= min_vcpus),
+        key=lambda offer: (offer.usd_per_hour, -offer.vcpus, offer.instance_type),
     )
 
 
-def pick_cheapest(offers: list[Offer], min_vram_gb: float = MIN_VRAM_GB) -> Offer | None:
+def pick_cheapest(
+    offers: list[Offer], min_vram_gb: float = MIN_VRAM_GB, min_vcpus: int = 0
+) -> Offer | None:
     """The cheapest offer clearing the floor, or None. Never a card below it, never a guess."""
-    ranked = eligible(offers, min_vram_gb)
+    ranked = eligible(offers, min_vram_gb, min_vcpus)
     return ranked[0] if ranked else None
 
 
