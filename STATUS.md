@@ -3,29 +3,30 @@ Goal: A valid Track 2 submission before the freeze (this keeps the $250 Brev cre
 Finish line: Tier 1 insurance submission accepted; Tier 2 submitted; results/ frozen; README + short tech report; every number traceable to a committed results file.
 Deadline: leaderboard freeze 2026-11-04 17:00 EST (internal cutoff 12:00 EST that day)
 Milestone: GO, and the first paid compute has run. Gate G1 passed long since (all 60 clips retargeted on CPU at 0.0 mm). **Brev is live**: three probe attempts, two real bugs found and fixed, the hardware confirmed, ~$0.22 spent of a $2 cap. The reference cleaner now has a **known-answer gate, and the original cleaner failed it** -- a gated variant that passes is built and scored. Code is one package with one CLI, ruff/format clean, 76 tests. Observability is live to W&B and a private Hugging Face repo.
-Last result: **B0 is measured: FlashCHORD trains the G1 at 22,977 env steps/s on a rented A6000, 100 % GPU,
-peak 40,156 MiB of 49,140.** That is **4.23 h per clip** at 350M steps and **126.9 GPU-hours for
-30 clips** -- $76 at $0.60/h or $86 at $0.68/h, which is ABOVE docs/SCOPING.md's 90-120 h and
-$54-72, so one pass costs a third of the credit. Peak memory also confirms the 46,000 MiB floor
-is load-bearing rather than cautious: a 24 GB card would OOM. Getting there took **eleven
-attempts and ten distinct bugs**, four of them found in seconds on a kept-alive dev box instead
-of 12-minute create-build-die cycles. Two would each have destroyed a full run on their own:
-git-lfs is absent from the Brev image so every mesh and ONNX policy is a ~130-byte pointer
-(training could never start, and the error named neither LFS nor the asset), and
-`scene.support=true` crashes the 16 of 30 clips that ship the empty support stage. Separately,
-**both root cleaners are now dead**: foot-planting costs contact significantly (-0.0153 paired,
-21 of 30 clips down, p = 0.0428) and the floor-anchored version is worse still (rotation
-5.17 -> 7.23 deg, translation 1.09 -> 12.21 cm), because the clean body's sole already sits
-7-14 deg off the released plane -- the floor pins foot height, not foot tilt.
+Last result: **B3 ran: three training arms on the gated-cleaned Tier 2 reference, e24, 10M steps, two seeds
+each.** Arm A (stock) 0.2015 AUC, arm B (+reference-noise injection) 0.2017, arm C (+bounded
+object-target correction) **0.2814**. C beats stock by +0.0799, six times the pre-registered
+0.014 margin -- and it is **not established**, because C's own seed spread is 0.1582, sixteen
+times the 0.0100 the margin was derived from, giving its two-seed mean a standard error (0.112)
+larger than the advantage itself. C_s42 scored 0.3605 and C_s43 0.2023; the second is
+indistinguishable from A and B. The evaluator's own metrics order the arms identically and every
+rollout has its full 748 frames with the frame check at 2e-06 cm, so it is a real effect with
+unquantified variance rather than an artefact. A and B differ by 0.0003 and are the same arm at
+this budget. **Also measured: this org runs at least 4 concurrent A6000s**, which turns a
+126.9 GPU-hour pass from ~127 h of wall clock into ~32 and is what makes a full pass fit before
+the freeze. **And a safety bug worth naming: `brev delete` has no --yes flag, so every watchdog
+I had armed was a silent no-op** -- the independent protection against runaway GPU billing never
+worked, and only the teardown path's fallback ever deleted anything. Fixed in all five call
+sites, both watchdogs now retry through rate limits.
 Blocked: nothing. Brev is logged in and B0 is approved; W&B and Hugging Face are logged in and detected. Needs Luai: (1) decide the gated-vs-ungated reference set, since that is a ranking call not a scientific one, (2) re-save the quality-gates / dev-confirm section of ~/projects/_ops/briefs/v2d_allhands.md -- it is not on disk, the file ends at the Rules bullets and nothing under _ops mentions it, so I followed the Rules section's three-gate requirement instead and did not guess at the rest.
-Next: B1 (one-interval floor) and B2 (short train on clean Tier 1 e24, must beat B1) are running on the same dev box. Then fold the ten fixes into a single clean gate run on a fresh box to prove they work from scratch, and decide the full-run budget against the measured 127 GPU-hours. The cleaner's facet rule remains the biggest open science item: require a dominant facet and abstain otherwise, which needs its own pre-registration.
-Updated: 2026-10-24 16:05
+Next: arm C is the only arm worth more compute, and it needs seeds rather than steps: at least four more at 10M to pin its variance before any ranking is claimed. Then the Tier 1 backup run, which needs Luai's separate approval. The full Tier 2 pass is now costed at 126.9 GPU-hours and $76-86, about a third of the credit, and fits in ~32 h of wall clock at 4 concurrent instances.
+Updated: 2026-10-24 18:15
 
 ## Rules
 No paid compute until Luai redeems the code and approves the specific run. No registration, submission, posting, pushing or email without his approval. Every Brev run deletes its instance on exit. Jetson: MemAvailable above 2.5 GB, 20 GB disk floor, check ~/projects/_ops/GPU_RELEASED before local GPU use.
 
 ## Paid compute used
-~$0.85 of $250 as of 16:05 PT: four probe attempts (~$0.35) plus a kept-alive dev box. Every
+~$2.7 of $250 as of 18:15 PT (4 probe attempts, a 3 h dev box, 3 quota probes): four probe attempts (~$0.35) plus a kept-alive dev box. Every
 instance deleted or watchdog-bounded; `brev ls` confirmed empty between runs. Measured full-run
 cost is 126.9 GPU-hours, $76-86 per 30-clip pass.
 
@@ -119,6 +120,9 @@ Kit (0.7 MB) and FAQ; Track 2 tier 1+2 parquets, meshes, ground planes, support 
 - 2026-10-06: scoping complete, conditional GO (docs/SCOPING.md).
 - 2026-10-07: Luai emailed v2d_challenge@nvidia.com about credits and the rules questions.
 - 2026-10-24: all 60 Tier-1/2 clips retargeted to G1 on CPU at $0; Tier 2 noise measured to cost 36 % of hand-object contact.
+- 2026-10-24: B3 on e24: arm C (+bounded target correction) means 0.2814 AUC against stock's 0.2015, but its own seed spread is 0.1582, so not established; needs more seeds.
+- 2026-10-24: org runs at least 4 concurrent A6000s, so a 30-clip pass is ~32 h wall clock.
+- 2026-10-24: `brev delete --yes` does not exist; every watchdog was a no-op until fixed. No instance was ever actually orphaned, but only by luck of the teardown fallback.
 - 2026-10-24: B0 MEASURED on an A6000: 22,977 env steps/s, 40,156 MiB peak, 4.23 h/clip, 126.9 GPU-hours for 30 clips ($76-86) -- above the scoping estimate.
 - 2026-10-24: ten Brev bugs found and fixed, four on a kept-alive dev box; git-lfs absent from the image (no training could ever start) and scene.support crashing 16 of 30 clips were the two that would each have destroyed a full run.
 - 2026-10-24: both root cleaners dead; the floor pins foot height, not foot tilt (clean sole sits 7-14 deg off the plane).
