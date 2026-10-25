@@ -98,23 +98,49 @@ run_cell() {
     done
     [ "$ok" = 1 ] || { echo "!! $NAME: reference never matched by md5; NOT training"; return 1; }
 
+    # Count the deletion authorities and check the earliest one. gate_launch.sh arms a DETACHED
+    # host-side watchdog, which is a second authority on top of my backstop -- and on 2026-10-24
+    # that is exactly what deleted the sweep box at 3 h with 8 of 10 runs done and nothing pulled,
+    # because I extended my backstop and never looked at the launcher's. Mine must fire LAST.
+    local earliest
+    earliest=$(ps -eo etimes,cmd 2>/dev/null | grep -F "brev delete '$NAME'" | grep -v grep \
+      | awk '{for(i=1;i<=NF;i++) if($i=="sleep"){print $(i+1)-$1; break}}' | sort -n | head -1)
+    if [ -n "$earliest" ]; then
+      echo "earliest deletion authority for $NAME fires in $((earliest/60)) min"
+      if [ "$earliest" -lt "$(awk -v h="$EST_HOURS" 'BEGIN{printf "%d", h*3600*1.1}')" ]; then
+        echo "!! $NAME: a watchdog fires in $((earliest/60)) min, under the ${EST_HOURS} h this cell needs"
+        echo "!! refusing to train; the box will be deleted rather than billed for a run that cannot finish"
+        ~/.local/bin/brev delete "$NAME" </dev/null >/dev/null 2>&1
+        return 1
+      fi
+    fi
+
     rsync -a --timeout=60 "$REPO/brev/run_ab350.sh" "$NAME:ab/" >/dev/null 2>&1
     ssh -n "$NAME" "setsid nohup bash ~/ab/run_ab350.sh $ARM $EP $SEQID $STEPS \
                       > ~/ab/cell.log 2>&1 < /dev/null & echo started" 2>/dev/null
 
+    local CELL_DIR="${ARM}_e$(printf '%02d' "$EP")"
+    mkdir -p "$OUT/$CELL_DIR"
+    # Pull every ~10 min rather than only at DONE. Each checkpoint's trajectory exists from the
+    # moment it is evaluated, and the sweep box proved that a run whose results are only collected
+    # at the end loses everything if the box goes away first.
     local limit=$(( MAX_HOURS * 60 * 2 ))
+    local tick=0
     for _ in $(seq 1 $limit); do
-      if ssh -n -o ConnectTimeout=20 "$NAME" \
-           "test -f ~/ab350_results/${ARM}_e$(printf '%02d' "$EP")/DONE" 2>/dev/null; then break; fi
+      if ssh -n -o ConnectTimeout=20 "$NAME" "test -f ~/ab350_results/$CELL_DIR/DONE" 2>/dev/null; then break; fi
+      tick=$((tick + 1))
+      if [ $((tick % 20)) = 0 ]; then
+        rsync -a --partial --timeout=120 "$NAME:ab350_results/$CELL_DIR/" "$OUT/$CELL_DIR/" >/dev/null 2>&1 \
+          && echo "interim pull at $((tick / 2)) min: $(find "$OUT/$CELL_DIR" -name objects.parquet | wc -l) trajectories"
+      fi
       sleep 30
     done
-    mkdir -p "$OUT/${ARM}_e$(printf '%02d' "$EP")"
     for attempt in 1 2 3; do
-      rsync -a -c --partial --timeout=180 "$NAME:ab350_results/${ARM}_e$(printf '%02d' "$EP")/" \
-        "$OUT/${ARM}_e$(printf '%02d' "$EP")/" >/dev/null 2>&1 && break
+      rsync -a -c --partial --timeout=180 "$NAME:ab350_results/$CELL_DIR/" \
+        "$OUT/$CELL_DIR/" >/dev/null 2>&1 && break
       sleep 10
     done
-    echo "pulled: $(find "$OUT/${ARM}_e$(printf '%02d' "$EP")" -name objects.parquet | wc -l) trajectories"
+    echo "pulled: $(find "$OUT/$CELL_DIR" -name objects.parquet | wc -l) trajectories"
     ~/.local/bin/brev delete "$NAME" </dev/null >/dev/null 2>&1 && echo "deleted $NAME" || echo "!! delete $NAME BY HAND"
     pkill -f "backstop_watchdog[.]sh $NAME " 2>/dev/null
     echo "=== $NAME finished ($(date -u +%H:%M:%S)) ==="

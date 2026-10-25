@@ -23,6 +23,14 @@
   },
   "bar": "docs/SWEEP_BAR.md, pre-registered before the runs",
   "deciding_statistic": "escape rate, AUC > 0.25; ship rule was escapes >= 3/4 on the new seeds AND one seed beating the best A/B run by > 0.05 AUC",
+  "def_arms_lost": {
+    "cause": "my error, and a specific one. gate_launch.sh arms a DETACHED host-side watchdog at box creation -- for that box, --max-hours 3. I later extended my own independent backstop from 05:26 to 06:20 to cover D/E/F, but never touched the launcher's, which was the earlier authority and fired first. I had checked for a watchdog ON THE BOX, found only the kernel's watchdogd, and concluded there was none; it runs on this host, not on the instance.",
+    "cost": "about 1.1 GPU-hours, roughly $0.77, and four runs that were descriptive by design.",
+    "fixes": "brev/launch_ab350.sh now counts every process holding a `brev delete <name>` timer, reports when the earliest fires, and refuses to start a cell whose earliest authority fires before the run can finish. It also pulls results every 10 minutes instead of only at DONE.",
+    "not_being_rerun": "D/E/F at two seeds cannot clear 0.05 whatever they show (Fisher 2/2 vs 0/4 = 0.067), so re-running them would buy a descriptive line for about $1.20 and 1.7 h. The budget is better spent on the 3-clip A/B. Flagged rather than quietly dropped.",
+    "what_happened": "the sweep box was deleted at about 04:55 UTC on 2026-10-25 with 8 of 10 runs finished and only the 4 arm C runs pulled. D/E/F runs 5-8 (D_s44, E_s44, F_s44 and probably D_s45) completed on the box and were lost with it, together with their kept policies.",
+    "what_was_not_lost": "arm C, the only arm whose escape rate could clear 0.05 at this allocation, was complete, pulled, scored and committed before the deletion. The verdict above does not change."
+  },
   "escape_rate": {
     "A_and_B": "0/4",
     "all_six_C_seeds": "3/6",
