@@ -50,13 +50,13 @@ stands as measured and unexplained. The consequence is firm regardless: seed and
 checkpoint selection for Tier 2 has to happen on our own synthetic noise, because the Tier 1
 reference is forbidden as supervision and the evaluator metric carries no usable signal
 (`results/sweep_c.json`).
-Blocked: nothing. Still open for Luai, but not blocking: re-save the quality-gates / dev-confirm section of ~/projects/_ops/briefs/v2d_allhands.md, which is not on disk; and decide whether the code_commit_url should also cover closer's packer wrapper, which lives in the unpushed v2d-submit repo and calls the kit's own tools/pack_submission.py.
+Blocked: nothing, and two things are explicitly NOT approved, so neither gets started on my initiative: the 30-clip Tier 2 pass, which waits on the 350M arm A result AND Luai's separate go, and pushing closer's packer wrapper to widen the code_commit_url. The quality-gates / dev-confirm section of the all-hands brief is closed for good -- Luai dropped it; the brief's Rules section and its three-gate requirement are what stand.
 Next: D/E/F are finishing on the sweep box and are descriptive at two seeds whatever they show; the
 350M arm A run on e24 is the only thing that can give a real success rate, since every run so far
 has SP-SR and MP-SR at exactly zero. **The 30-clip Tier 2 pass is not started and needs Luai's
 word** -- it is the expensive one. Spend so far on the standing budget: $3.91 of $30, two boxes
 running, the Tier 1 box deleted the moment its results were verified off it.
-Updated: 2026-10-24 21:50
+Updated: 2026-10-24 21:55
 
 ## Rules
 No paid compute until Luai redeems the code and approves the specific run. No registration, submission, posting, pushing or email without his approval. Every Brev run deletes its instance on exit. Jetson: MemAvailable above 2.5 GB, 20 GB disk floor, check ~/projects/_ops/GPU_RELEASED before local GPU use.

@@ -19,9 +19,14 @@ Updated 2026-10-24 15:00 PT.
    than its AUC +0.0176 buys. My pre-registration chose the validated mechanism; this is a
    ranking call, not a scientific one. Both sets are built; switching is one flag
    (`--gate-results`).
-2. **The quality-gates / dev-confirm section of `~/projects/_ops/briefs/v2d_allhands.md` is not on
-   disk.** The file ends at the Rules bullets and nothing under `_ops` mentions it. I followed the
-   Rules section's three-gate requirement and did not guess at the rest.
+2. ~~The quality-gates / dev-confirm section of `~/projects/_ops/briefs/v2d_allhands.md`.~~
+   **Closed 2026-10-24: Luai dropped that section. It is not coming, and nobody should chase it
+   again.** The Rules section's three-gate requirement stands and is what every cleaner has been
+   held to.
+3. **Approval for the 30-clip Tier 2 pass.** Not given. It waits on the 350M arm A result and then
+   on Luai's explicit go -- the result does not authorise the run.
+4. **Approval to push closer's packer wrapper** so the `code_commit_url` covers the packing step
+   too. Not given. The Tier 1 entry already scored without it, so this is tidiness, not a blocker.
 
 ## What the Brev attempts bought
 
