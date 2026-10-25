@@ -1,0 +1,438 @@
+{
+  "what": "Step 1 of Luai's order: NVIDIA's recipe unchanged, 350M steps, on the RAW released Tier 2 retarget, for the 3 pre-chosen clips. Pre-registered in docs/AB350_BAR.md before launch.",
+  "date": "2026-10-25",
+  "git_sha": "86594b7445f53a9827de37e0792f4b0168524b47",
+  "verdict": "TRIPPED",
+  "recipe": {
+    "experiment": "g1_recon_body_flash_sac",
+    "total_environment_steps": 349999104,
+    "save_interval_environment_steps": 49999872,
+    "reset_seed": 42,
+    "world_count_train": 2048,
+    "world_count_eval": 1,
+    "arm": "raw (released Tier 2 retarget, our stand-in for CHORD baseline)"
+  },
+  "stop_lines": {
+    "basis": "mean over the three clips, per docs/AB350_BAR.md",
+    "mean_add_auc_below": 0.187,
+    "mean_mppe_cm_above": 41.0,
+    "spider_sr_zero_on_all_three": true
+  },
+  "observed": {
+    "mean_add_auc": 0.042298,
+    "mean_mppe_cm": 55.2038,
+    "spider_sr_all_zero": false
+  },
+  "tripped": {
+    "mean_add_auc": {
+      "value": 0.042298,
+      "line": 0.187,
+      "tripped": true
+    },
+    "mean_mppe_cm": {
+      "value": 55.2038,
+      "line": 41.0,
+      "tripped": true
+    },
+    "spider_sr_zero_on_all_three": {
+      "value": false,
+      "tripped": false,
+      "note": "not tripped: e18 reaches spider_sr 1.0 at 350M"
+    }
+  },
+  "reference_board_average_chord_tier2": {
+    "add_auc": 0.374,
+    "spider_sr": 0.533,
+    "maniptrans_sr": 0.067,
+    "mppe_cm": 20.5
+  },
+  "cause": {
+    "summary": "scene.support was hardcoded false in every run script, so the table/support collision geometry was never added to the scene. The object falls at reset and the episode terminates on frame ~0 for any clip that rests on a surface.",
+    "evidence": [
+      "brev/run_ab350.sh:53, brev/run_full350.sh:48, brev/run_tier1_backup.sh:67 all pass scene.support=false",
+      "NVIDIA's configs/scene/train.yaml and eval.yaml default to support: true",
+      "e03 and e09 report bit-identical add_auc at all 7 checkpoints (constant-error signature): 0.005601792573623559 and 0.0047413793103448275",
+      "termination_cause_fraction object=1.0 and wrist=1.0 at every e03/e09 checkpoint",
+      "e03 support USDA declares 1 Cylinder, top at 0.7573 + 0.04/2 = 0.7773 m, matching the 77.7 cm object rest height measured from the reference",
+      "e18 (and e24) are floor clips whose released support USDA is the empty 125-byte stage, so support=false was already correct for them -- which is why they are the clips that learned"
+    ],
+    "scope": "14 of 30 Tier 2 clips ship support_surface primitives. The same bug explains the ~12 near-zero clips in the submitted Tier 1 entry.",
+    "fix": "per clip, scene.support=true iff that clip's support USDA declares primitives, the rule brev/gate_on_instance.sh support_flag_for already implemented"
+  },
+  "host_scores_final_checkpoint": {
+    "method": "v2d rollout-to-npz then v2d score --tier tier2, exactly as full350 was scored",
+    "e18": {
+      "episode": 18,
+      "arm": "raw",
+      "environment_steps": 349999104,
+      "reference_converted_against": "released tier2 input",
+      "reference_check_position_cm": 8e-06,
+      "reference_check_angle_deg": 8e-06,
+      "add_auc": 0.38257575757575757,
+      "spider_sr": 1.0,
+      "maniptrans_sr": 0.0,
+      "mppe_cm": 4.1661344856200815,
+      "frames": 858,
+      "note": "at or above the CHORD Tier 2 board average on AUC and far better on MPPE, from a floor clip that needed no support surface -- evidence the pipeline itself is sound"
+    },
+    "e24": {
+      "episode": 24,
+      "arm": "full350 (gated-cleaned reference)",
+      "environment_steps": 349999104,
+      "reference_converted_against": "gated-cleaned reference (npz_gated)",
+      "add_auc": 0.4500334224598931,
+      "spider_sr": 0.0,
+      "maniptrans_sr": 0.0,
+      "mppe_cm": 4.1646263124594975,
+      "frames": 748,
+      "note": "evaluator reports spider_sr 1.0 for this checkpoint while the host scorer reports 0.0. e18 agrees between the two (1.0 and 1.0), so the disagreement is specific to e24's conversion against the gated reference, not a general scorer fault. Recorded, not chased."
+    },
+    "e03": null,
+    "e09": null
+  },
+  "not_scored_on_host": {
+    "e03": "terminated on frame ~0, nothing to score",
+    "e09": "same"
+  },
+  "clips": {
+    "e03": {
+      "episode": 3,
+      "sequence_id": "2026-04-27_11-50-10_contigo_coffee_mug_handle_table_05",
+      "role": "table",
+      "support_usda": "track_2/tier_2_synthetic_noise/support_surface/2026-04-27_11-50-10_contigo_coffee_mug_handle_table_05_support.usda",
+      "support_usda_bytes": 570,
+      "support_primitive_count": 1,
+      "support_should_be": true,
+      "support_flag_used_in_this_run": false,
+      "train_seconds": 14684,
+      "frames": 781,
+      "constant_error_signature": true,
+      "distinct_auc_values_across_7_checkpoints": 1,
+      "final": {
+        "environment_steps": 349999104,
+        "add_auc": 0.005601792573623559,
+        "mppe_cm": 91.84176889214683,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0
+      },
+      "per_checkpoint": [
+        {
+          "environment_steps": 49999872,
+          "add_auc": 0.005601792573623559,
+          "mppe_cm": 91.83899689172374,
+          "spider_sr": 0.0,
+          "maniptrans_sr": 0.0,
+          "object_orientation_error_deg": 84.42401485784222,
+          "termination_cause_fraction": {
+            "object": 1.0,
+            "wrist": 1.0
+          },
+          "checkpoint_sha256": "7249630ea66223a6dde5eae2e0b18175b1e1014560d203b3bc3c2c3fcddfdf1c"
+        },
+        {
+          "environment_steps": 99999744,
+          "add_auc": 0.005601792573623559,
+          "mppe_cm": 91.83917486894299,
+          "spider_sr": 0.0,
+          "maniptrans_sr": 0.0,
+          "object_orientation_error_deg": 84.40731406628261,
+          "termination_cause_fraction": {
+            "object": 1.0,
+            "wrist": 1.0
+          },
+          "checkpoint_sha256": "3602ec2ad832be25020c35c027807d8e921b097a376cce43eb248cac8dba9638"
+        },
+        {
+          "environment_steps": 149999616,
+          "add_auc": 0.005601792573623559,
+          "mppe_cm": 91.84125539203104,
+          "spider_sr": 0.0,
+          "maniptrans_sr": 0.0,
+          "object_orientation_error_deg": 84.237894587729,
+          "termination_cause_fraction": {
+            "object": 1.0,
+            "wrist": 1.0
+          },
+          "checkpoint_sha256": "8a1c5a7b2402f1abf4f3c6b9f1ca7bbda77d3c2dd662a6a5bb972c926f0427e1"
+        },
+        {
+          "environment_steps": 199999488,
+          "add_auc": 0.005601792573623559,
+          "mppe_cm": 91.83982697694577,
+          "spider_sr": 0.0,
+          "maniptrans_sr": 0.0,
+          "object_orientation_error_deg": 84.36490640597113,
+          "termination_cause_fraction": {
+            "object": 1.0,
+            "wrist": 1.0
+          },
+          "checkpoint_sha256": "61127b66ec3d9c041f8f2e9fcbf623df0322891a826f0e399f76f43f96624563"
+        },
+        {
+          "environment_steps": 249999360,
+          "add_auc": 0.005601792573623559,
+          "mppe_cm": 91.83916150084754,
+          "spider_sr": 0.0,
+          "maniptrans_sr": 0.0,
+          "object_orientation_error_deg": 84.40491632130734,
+          "termination_cause_fraction": {
+            "object": 1.0,
+            "wrist": 1.0
+          },
+          "checkpoint_sha256": "90caea99971d09795282466d7ed8bb65da871821f4c4154ee3cc3f2e0f554d9c"
+        },
+        {
+          "environment_steps": 299999232,
+          "add_auc": 0.005601792573623559,
+          "mppe_cm": 91.84182271398798,
+          "spider_sr": 0.0,
+          "maniptrans_sr": 0.0,
+          "object_orientation_error_deg": 84.20087704171563,
+          "termination_cause_fraction": {
+            "object": 1.0,
+            "wrist": 1.0
+          },
+          "checkpoint_sha256": "45924f927f1a036d92cb071ee4a74dcf23e3a612135d2fb27abaaa188e42f3b1"
+        },
+        {
+          "environment_steps": 349999104,
+          "add_auc": 0.005601792573623559,
+          "mppe_cm": 91.84176889214683,
+          "spider_sr": 0.0,
+          "maniptrans_sr": 0.0,
+          "object_orientation_error_deg": 84.20001181590814,
+          "termination_cause_fraction": {
+            "object": 1.0,
+            "wrist": 1.0
+          },
+          "checkpoint_sha256": "f3e6df2da52da76ab7f69dd7fab37868abd9f45136f3e02a1442b2669d549573"
+        }
+      ]
+    },
+    "e09": {
+      "episode": 9,
+      "sequence_id": "2026-06-04_16-45-04_big_red_bowl_under_skinny_wood_chair_03",
+      "role": "two-handed (chair/bowl)",
+      "support_usda": "track_2/tier_2_synthetic_noise/support_surface/2026-06-04_16-45-04_big_red_bowl_under_skinny_wood_chair_03_support.usda",
+      "support_usda_bytes": 572,
+      "support_primitive_count": 1,
+      "support_should_be": true,
+      "support_flag_used_in_this_run": false,
+      "train_seconds": 14644,
+      "frames": 870,
+      "constant_error_signature": true,
+      "distinct_auc_values_across_7_checkpoints": 1,
+      "final": {
+        "environment_steps": 349999104,
+        "add_auc": 0.0047413793103448275,
+        "mppe_cm": 68.86035022785325,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0
+      },
+      "per_checkpoint": [
+        {
+          "environment_steps": 49999872,
+          "add_auc": 0.0047413793103448275,
+          "mppe_cm": 86.38015763971481,
+          "spider_sr": 0.0,
+          "maniptrans_sr": 0.0,
+          "object_orientation_error_deg": 71.91977584563163,
+          "termination_cause_fraction": {
+            "object": 1.0,
+            "wrist": 1.0
+          },
+          "checkpoint_sha256": "069ba8fb13411375b40722608a6a4b42b854bd383b6ca1d37455b6380978b802"
+        },
+        {
+          "environment_steps": 99999744,
+          "add_auc": 0.0047413793103448275,
+          "mppe_cm": 68.86033747138815,
+          "spider_sr": 0.0,
+          "maniptrans_sr": 0.0,
+          "object_orientation_error_deg": 80.32262493007231,
+          "termination_cause_fraction": {
+            "object": 1.0,
+            "wrist": 1.0
+          },
+          "checkpoint_sha256": "f9b46ebf8608565243cdfdc120cefa7f1196f891c48653ccdf2ead451d539e8a"
+        },
+        {
+          "environment_steps": 149999616,
+          "add_auc": 0.0047413793103448275,
+          "mppe_cm": 69.21271210980802,
+          "spider_sr": 0.0,
+          "maniptrans_sr": 0.0,
+          "object_orientation_error_deg": 79.89855950437291,
+          "termination_cause_fraction": {
+            "object": 1.0,
+            "wrist": 1.0
+          },
+          "checkpoint_sha256": "c4bda0985b1b09b682461fe048fb2590a2cec98043ba67ed5d111d21a84e0ea7"
+        },
+        {
+          "environment_steps": 199999488,
+          "add_auc": 0.0047413793103448275,
+          "mppe_cm": 68.86035410364232,
+          "spider_sr": 0.0,
+          "maniptrans_sr": 0.0,
+          "object_orientation_error_deg": 80.32241822523697,
+          "termination_cause_fraction": {
+            "object": 1.0,
+            "wrist": 1.0
+          },
+          "checkpoint_sha256": "b0153267f816d67adcaaadfb973b7d7d34f43ed882b0a9bcdd359ea78ac994d5"
+        },
+        {
+          "environment_steps": 249999360,
+          "add_auc": 0.0047413793103448275,
+          "mppe_cm": 68.86032763734856,
+          "spider_sr": 0.0,
+          "maniptrans_sr": 0.0,
+          "object_orientation_error_deg": 80.32227421547955,
+          "termination_cause_fraction": {
+            "object": 1.0,
+            "wrist": 1.0
+          },
+          "checkpoint_sha256": "da7b713c4499e2d715ba55d33928a40d70400e72551462aae2ea9619c951a254"
+        },
+        {
+          "environment_steps": 299999232,
+          "add_auc": 0.0047413793103448275,
+          "mppe_cm": 68.86033343210187,
+          "spider_sr": 0.0,
+          "maniptrans_sr": 0.0,
+          "object_orientation_error_deg": 80.32240737384724,
+          "termination_cause_fraction": {
+            "object": 1.0,
+            "wrist": 1.0
+          },
+          "checkpoint_sha256": "3fa7eaa17bb7c19c8aa37436ae5a36c61fb0e25c6fa131d66f8ece99a0fa4fda"
+        },
+        {
+          "environment_steps": 349999104,
+          "add_auc": 0.0047413793103448275,
+          "mppe_cm": 68.86035022785325,
+          "spider_sr": 0.0,
+          "maniptrans_sr": 0.0,
+          "object_orientation_error_deg": 80.32242063440576,
+          "termination_cause_fraction": {
+            "object": 1.0,
+            "wrist": 1.0
+          },
+          "checkpoint_sha256": "c5d332416f8620bffd6893a7c013bcfd0dbca02aa4e227b86be634b002915914"
+        }
+      ]
+    },
+    "e18": {
+      "episode": 18,
+      "sequence_id": "2026-05-06_10-00-19_blue_trash_can_drag_sideways_08",
+      "role": "floor",
+      "support_usda": "track_2/tier_2_synthetic_noise/support_surface/2026-05-06_10-00-19_blue_trash_can_drag_sideways_08_support.usda",
+      "support_usda_bytes": 125,
+      "support_primitive_count": 0,
+      "support_should_be": false,
+      "support_flag_used_in_this_run": false,
+      "train_seconds": 13388,
+      "frames": 858,
+      "constant_error_signature": false,
+      "distinct_auc_values_across_7_checkpoints": 6,
+      "final": {
+        "environment_steps": 349999104,
+        "add_auc": 0.11655011655011656,
+        "mppe_cm": 4.909374152934708,
+        "spider_sr": 1.0,
+        "maniptrans_sr": 0.0
+      },
+      "per_checkpoint": [
+        {
+          "environment_steps": 49999872,
+          "add_auc": 0.06097027972027971,
+          "mppe_cm": 53.55073233540424,
+          "spider_sr": 0.0,
+          "maniptrans_sr": 0.0,
+          "object_orientation_error_deg": 112.56963392364814,
+          "termination_cause_fraction": {
+            "object": 1.0,
+            "wrist": 1.0
+          },
+          "checkpoint_sha256": "3403f1f4efaeb0bda974f7c629e280115d18f07248dc568ab921a9825872f6ed"
+        },
+        {
+          "environment_steps": 99999744,
+          "add_auc": 0.055652680652680656,
+          "mppe_cm": 48.9806064505396,
+          "spider_sr": 0.0,
+          "maniptrans_sr": 0.0,
+          "object_orientation_error_deg": 85.60252243810733,
+          "termination_cause_fraction": {
+            "object": 1.0,
+            "wrist": 1.0
+          },
+          "checkpoint_sha256": "7fe6f2dd25cc5590d26ac230283cc204529332e0924332717308c034dd62a55d"
+        },
+        {
+          "environment_steps": 149999616,
+          "add_auc": 0.059731934731934735,
+          "mppe_cm": 43.00320481416811,
+          "spider_sr": 0.0,
+          "maniptrans_sr": 0.0,
+          "object_orientation_error_deg": 31.021810225918202,
+          "termination_cause_fraction": {
+            "object": 1.0,
+            "wrist": 1.0
+          },
+          "checkpoint_sha256": "2347abacc46b6a8d5e4c86fb3aace4b72ce96b4821ee3dcabbfa6a2aa1d07b99"
+        },
+        {
+          "environment_steps": 199999488,
+          "add_auc": 0.059731934731934735,
+          "mppe_cm": 24.515868516120634,
+          "spider_sr": 0.0,
+          "maniptrans_sr": 0.0,
+          "object_orientation_error_deg": 83.10945530156134,
+          "termination_cause_fraction": {
+            "object": 1.0,
+            "wrist": 1.0
+          },
+          "checkpoint_sha256": "3abb27093ca90b011865b2246492ab611f9d0acf7558840521e16d839a12e938"
+        },
+        {
+          "environment_steps": 249999360,
+          "add_auc": 0.09578962703962704,
+          "mppe_cm": 18.948529991081855,
+          "spider_sr": 0.0,
+          "maniptrans_sr": 0.0,
+          "object_orientation_error_deg": 48.140662498875784,
+          "termination_cause_fraction": {
+            "object": 1.0,
+            "wrist": 1.0
+          },
+          "checkpoint_sha256": "fd848b7c245f275d68c782150e6c07c10392a89275f793874ff1da57d1187b0c"
+        },
+        {
+          "environment_steps": 299999232,
+          "add_auc": 0.1115967365967366,
+          "mppe_cm": 23.015125526067585,
+          "spider_sr": 0.0,
+          "maniptrans_sr": 0.0,
+          "object_orientation_error_deg": 59.710696905591426,
+          "termination_cause_fraction": {
+            "object": 1.0,
+            "wrist": 1.0
+          },
+          "checkpoint_sha256": "5378f3eaf929e7e0ada08d07e765cdefdcd99c0149aeb8235f360674f4377ee2"
+        },
+        {
+          "environment_steps": 349999104,
+          "add_auc": 0.11655011655011656,
+          "mppe_cm": 4.909374152934708,
+          "spider_sr": 1.0,
+          "maniptrans_sr": 0.0,
+          "object_orientation_error_deg": 24.960359596195445,
+          "termination_cause_fraction": {},
+          "checkpoint_sha256": "3093bd04607cf9f115c3f97ce52bac259e12be4c9e7c4bdc10aec60d3a76aaba"
+        }
+      ]
+    }
+  }
+}

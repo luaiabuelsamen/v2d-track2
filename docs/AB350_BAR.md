@@ -158,3 +158,53 @@ and due to add about $2.4 before they are deleted, so ~$6.3 at launch and ~$23.7
 leaves roughly $4 of margin**, which is thin: one re-provision cycle per box is about $2. If
 anything overruns I would rather drop the e9 pair and report a 2-clip A/B than cross $30, and I
 will ask before doing either.
+
+---
+
+## Addendum, 2026-10-25: step 1 TRIPPED, and why
+
+The three RAW full-length cells ran to 349,999,104 steps and were evaluated at all seven
+checkpoints. Against the lines pre-registered above, on the mean over the three clips:
+
+| line | value | observed | tripped |
+|---|---|---|---|
+| mean ADD-AUC below | 0.187 | **0.0423** | **yes** |
+| mean MPPE above | 41 cm | **55.20 cm** | **yes** |
+| SP-SR zero on all three | — | e18 reaches 1.0 | no |
+
+Per clip, at the final checkpoint (evaluator):
+
+| clip | role | AUC | MPPE | SP-SR | distinct AUC values over 7 checkpoints |
+|---|---|---|---|---|---|
+| e03 | table | 0.0056 | 91.84 cm | 0.0000 | **1** |
+| e09 | two-handed | 0.0047 | 68.86 cm | 0.0000 | **1** |
+| e18 | floor | 0.1166 | 4.91 cm | 1.0000 | 6 |
+
+**Cause: `scene.support` was hardcoded `false` in every run script.** `brev/run_ab350.sh:53`,
+`brev/run_full350.sh:48` and `brev/run_tier1_backup.sh:67` all passed `scene.support=false`, while
+NVIDIA's `configs/scene/train.yaml` and `eval.yaml` default to `support: true` and the dataset ships
+a `support_surface/<seq>_support.usda` per clip. Without the table in the scene the object falls at
+reset and the episode terminates on frame ~0: `termination_cause_fraction` is `object=1.0, wrist=1.0`
+at every e03 and e09 checkpoint, and their AUC is *bit-identical* across all seven checkpoints
+(0.005601792573623559 and 0.0047413793103448275) — the constant-error signature. e03's support USDA
+declares one Cylinder whose top sits at 0.7573 + 0.04/2 = **0.7773 m**, matching the 77.7 cm object
+rest height measured from the reference.
+
+e18 and e24 are floor clips whose released support USDA is the empty 125-byte stage, so
+`support=false` was already the correct flag for them. That is precisely why they are the two clips
+that learned, and it is the control that isolates the bug: **e18's final checkpoint host-scores
+ADD-AUC 0.3826, SP-SR 1.0, MPPE 4.17 cm**, at or above the CHORD Tier 2 board average on AUC and far
+better on MPPE. The pipeline is sound; the scene was missing a table.
+
+14 of the 30 Tier 2 clips ship support primitives. The same bug explains the ~12 near-zero clips in
+the Tier 1 entry already submitted.
+
+Because the trip is explained by a scene-construction bug rather than by the reference arms, step 1
+is **not** evidence about RAW vs CLEAN. The fix is the per-clip rule `brev/gate_on_instance.sh`
+already carried in `support_flag_for`, and e03 and e09 are relaunched with it; e18 is not relaunched,
+since its flag was already correct and its result stands.
+
+One observation recorded without being chased: at e24's 300M and 350M checkpoints the evaluator
+reports SP-SR 1.0 while the host scorer reports 0.0. e18 agrees between the two (1.0 and 1.0), so the
+disagreement is specific to e24's conversion against the gated-cleaned reference, not a general fault
+of either scorer.
