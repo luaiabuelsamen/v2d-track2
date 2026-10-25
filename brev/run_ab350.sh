@@ -44,13 +44,20 @@ if [ "${DRY_RUN:-0}" != 1 ] && ! run "test -f '$PARQUET'"; then
 fi
 run "md5sum '$PARQUET'" | tr -d '\r' | tee "$OUT/reference.md5"
 
+# scene.support is a per-clip property of the data, not a global preference. Hardcoding it false
+# cost us this very experiment once already; see brev/support_flag.sh.
+# shellcheck source=brev/support_flag.sh
+. "$(dirname "${BASH_SOURCE[0]}")/support_flag.sh"
+SUPPORT="$(support_flag_or_die "$PARQUET" "arm $ARM e$EP")" || exit 1
+echo "$SUPPORT" | tee -a "$OUT/summary.txt"
+
 say "Train arm $ARM, e$EP, seed 42, $STEPS steps (checkpoint every $SAVE_EVERY)"
 START=$(date +%s)
 run "cd /workspace && WANDB_MODE=disabled python scripts/train_flash_sac.py \
   experiment=g1_recon_body_flash_sac \"task.parquet='${PARQUET}'\" \
   training.total_environment_steps=${STEPS} \
   training.checkpoint.save_interval_environment_steps=${SAVE_EVERY} \
-  scene.support=false logging.mode=disabled \
+  $SUPPORT logging.mode=disabled \
   reset.seed=42 output_dir=$RUN_DIR" 2>&1 | tee "$OUT/train.log" | tail -20
 ELAPSED=$(( $(date +%s) - START ))
 echo "train seconds=$ELAPSED" | tee -a "$OUT/summary.txt"

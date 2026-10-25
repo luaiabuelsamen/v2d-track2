@@ -40,6 +40,9 @@ run() {
   docker exec -i "$CID" bash -lc "$1" < /dev/null
 }
 
+# shellcheck source=brev/support_flag.sh
+. "$(dirname "${BASH_SOURCE[0]}")/support_flag.sh"
+
 TOTAL=$(wc -l < "$MAP")
 INDEX=0
 while read -r EPISODE SEQUENCE <&3; do
@@ -59,12 +62,15 @@ while read -r EPISODE SEQUENCE <&3; do
     echo "$TAG MISSING REFERENCE $PARQUET" | tee -a "$OUT/summary.txt"
     continue
   fi
+  SUPPORT="$(support_flag_or_die "$PARQUET" "$TAG")" || {
+    echo "$TAG SUPPORT UNRESOLVED -- skipped" | tee -a "$OUT/summary.txt"; continue; }
+  echo "$TAG $SUPPORT" | tee -a "$OUT/summary.txt"
   START=$(date +%s)
   run "cd /workspace && WANDB_MODE=disabled python scripts/train_flash_sac.py \
     experiment=g1_recon_body_flash_sac \"task.parquet='${PARQUET}'\" \
     training.total_environment_steps=${STEPS} \
     training.checkpoint.save_interval_environment_steps=${STEPS} \
-    scene.support=false logging.mode=disabled \
+    $SUPPORT logging.mode=disabled \
     reset.seed=42 output_dir=$RUN_DIR" 2>&1 | tee "$OUT/train_${TAG}.log" | tail -6
   echo "$TAG train seconds=$(( $(date +%s) - START ))" | tee -a "$OUT/summary.txt"
 

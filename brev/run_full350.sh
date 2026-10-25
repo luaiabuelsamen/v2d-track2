@@ -39,13 +39,18 @@ if [ "${DRY_RUN:-0}" != 1 ] && ! run "test -f '$PARQUET'"; then
   echo "FATAL: reference not visible in the container at $PARQUET" >&2; exit 1
 fi
 
+# shellcheck source=brev/support_flag.sh
+. "$(dirname "${BASH_SOURCE[0]}")/support_flag.sh"
+SUPPORT="$(support_flag_or_die "$PARQUET" "full350")" || exit 1
+echo "$SUPPORT" | tee -a "$OUT/summary.txt"
+
 say "Train arm A, seed 42, $STEPS steps (checkpoint every $SAVE_EVERY)"
 START=$(date +%s)
 run "cd /workspace && WANDB_MODE=disabled python scripts/train_flash_sac.py \
   experiment=g1_recon_body_flash_sac \"task.parquet='${PARQUET}'\" \
   training.total_environment_steps=${STEPS} \
   training.checkpoint.save_interval_environment_steps=${SAVE_EVERY} \
-  scene.support=false logging.mode=disabled \
+  $SUPPORT logging.mode=disabled \
   reset.seed=42 output_dir=$RUN_DIR" 2>&1 | tee "$OUT/train.log" | tail -30
 ELAPSED=$(( $(date +%s) - START ))
 echo "train seconds=$ELAPSED" | tee -a "$OUT/summary.txt"
