@@ -1,0 +1,19 @@
+{
+  "auc_note": "AUC vertices rebuilt from released .glb with v2dlb/vertices.py (500 pts, seed 0); the host samples the simulation mesh, so AUC can differ in ~the 4th decimal",
+  "episodes_scored": [
+    24
+  ],
+  "frames": 748,
+  "frames_outside_scored_grid": 0,
+  "grid": "sample",
+  "invisible_frames_filled": 0,
+  "overall": {
+    "add_auc": 0.20345922459893045,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 19.67640994181405,
+    "spider_sr": 0.0
+  },
+  "pred": "npz:/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/npz_b3_B_s42",
+  "scorer": "submission kit metric_code/track_2 (sha256-checked against KIT_MANIFEST.json)",
+  "tier": "tier2"
+}

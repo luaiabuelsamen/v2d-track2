@@ -1,0 +1,78 @@
+{
+  "arms": {
+    "A": {
+      "description": "stock",
+      "evaluator_auc": [
+        0.1891,
+        0.1905
+      ],
+      "frames": 748,
+      "host_auc": {
+        "mean": 0.2015,
+        "s42": 0.2013,
+        "s43": 0.2016,
+        "spread": 0.0003
+      },
+      "host_mppe_cm": {
+        "mean": 18.761,
+        "s42": 18.794,
+        "s43": 18.728,
+        "spread": 0.066
+      }
+    },
+    "B": {
+      "description": "+ reference-noise injection",
+      "evaluator_auc": [
+        0.206,
+        0.187
+      ],
+      "frames": 748,
+      "host_auc": {
+        "mean": 0.2017,
+        "s42": 0.2035,
+        "s43": 0.2,
+        "spread": 0.0035
+      },
+      "host_mppe_cm": {
+        "mean": 18.706,
+        "s42": 19.676,
+        "s43": 17.737,
+        "spread": 1.939
+      }
+    },
+    "C": {
+      "description": "+ bounded object-target correction",
+      "evaluator_auc": [
+        0.3196,
+        0.2457
+      ],
+      "frames": 748,
+      "host_auc": {
+        "mean": 0.2814,
+        "s42": 0.3605,
+        "s43": 0.2023,
+        "spread": 0.1582
+      },
+      "host_mppe_cm": {
+        "mean": 12.396,
+        "s42": 9.472,
+        "s43": 15.319,
+        "spread": 5.847
+      }
+    }
+  },
+  "pre_registered_margin": {
+    "auc": 0.014,
+    "source": "docs/B3_MARGIN.md, from two B2 seeds"
+  },
+  "scoring": "host metric_code/track_2 against the clean Tier 1 reference, episode 24, rollout frame-converted against the gated reference the arms trained on",
+  "verdict": {
+    "C_minus_A_auc": 0.0799,
+    "but": "arm C's own seed-to-seed AUC spread is 0.1582, which is 16x the 0.0100 spread the margin was derived from. The standard error of C's two-seed mean is about 0.112, LARGER than the 0.080 advantage itself, so the margin's homoscedasticity assumption does not hold for C and the advantage is not established.",
+    "clears_the_pre_registered_margin": true,
+    "cross_check": "The evaluator's own metrics order the arms identically (C 0.3196/0.2457 against A 0.1891/0.1905 and B 0.2060/0.1870), so this is not a scoring artefact, and all six rollouts carry the full 748 frames with the frame check passing at 2e-06 cm.",
+    "recommendation": "Arm C is the only arm worth more compute, and it needs seeds rather than steps: at least four more at 10M to pin its variance before any ranking is claimed. A and B are separated by 0.0003 AUC and are the same arm as far as this budget can tell.",
+    "what_actually_happened": "C_s42 scored 0.3605 and C_s43 scored 0.2023. The second is indistinguishable from A and B, so C's mean advantage rests almost entirely on one seed."
+  },
+  "what": "B3 on e24: three training arms on the gated-cleaned Tier 2 reference, 10M steps, 2 seeds"
+}
