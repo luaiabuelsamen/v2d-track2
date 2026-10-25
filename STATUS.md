@@ -4,16 +4,20 @@
 
 1. **Kaggle rules not accepted on the 4 Tier 1 competitions**: open each of
    `kaggle.com/c/v2d-challenge-track2-tier1-auc/rules`, `-tier1-sp-sr/rules`, `-tier1-mp-sr/rules`,
-   `-tier1-mppe/rules` and click accept — Kaggle has no API for this, and `--check-entry` reported
-   all four not accepted on 2026-10-24 (`tier2-auc` is already accepted, so the flow works).
-2. **No `code_commit_url`**: create a GitHub remote, push the commit that produced the CSV, and if
-   the repo is private invite `Nvidia-V2D-Challenge` — every submitted row must carry an openable
-   `/commit/<sha>` URL and this repo has no remote, so no such URL exists yet.
+   `-tier1-mppe/rules` and click accept — Kaggle has no API for this, and both `--check-entry` and
+   the uploader's own preflight still reported all four unaccepted at 21:30 on 2026-10-24.
+2. ~~No `code_commit_url`~~ **CLEARED 2026-10-24**: `origin` is
+   `github.com/luaiabuelsamen/v2d-track2` (private, `Nvidia-V2D-Challenge` invited), main pushed at
+   `517ad99`. The entry is re-packed against that commit and is **`submittable: true` with no audit
+   findings**; `brev/` and `src/v2d/` are byte-identical from `4444c1e` to `517ad99`, so the URL
+   names exactly the code that produced the rollouts.
 
-Everything else for the Tier 1 entry is done or in flight: the packer, the grid check and the
-local scorer are proven, so the upload is one command once both are cleared. Note the uploader
-sends one CSV to all four competitions of a tier and each upload counts against every one of
-their quotas even when it fails to score, so nothing unvalidated gets sent.
+The CSV is built, validated three ways and waiting: 30 episodes, 22,989 rows, 11,831,600 B,
+sha256 `e41271d4478d07a7...`, AUC 0.1343 / MPPE 74.198 cm. The uploader's own
+offline dry run calls the file valid and then stops on the rules. Upload is a single command the
+moment item 1 is done. Note the uploader sends one CSV to all four competitions of a tier and each
+upload counts against every one of their quotas even when it fails to score, so nothing unvalidated
+gets sent.
 Goal: A valid Track 2 submission before the freeze (this keeps the $250 Brev credit), then the best Tier 2 rank-sum we can reach in 11 days, and a frozen released measurement whatever the rank.
 Finish line: Tier 1 insurance submission accepted; Tier 2 submitted; results/ frozen; README + short tech report; every number traceable to a committed results file.
 Deadline: leaderboard freeze 2026-11-04 17:00 EST (internal cutoff 12:00 EST that day)
@@ -47,7 +51,7 @@ Next: D/E/F are finishing on the sweep box and are descriptive at two seeds what
 has SP-SR and MP-SR at exactly zero. **The 30-clip Tier 2 pass is not started and needs Luai's
 word** -- it is the expensive one. Spend so far on the standing budget: $3.91 of $30, two boxes
 running, the Tier 1 box deleted the moment its results were verified off it.
-Updated: 2026-10-24 21:10
+Updated: 2026-10-24 21:35
 
 ## Rules
 No paid compute until Luai redeems the code and approves the specific run. No registration, submission, posting, pushing or email without his approval. Every Brev run deletes its instance on exit. Jetson: MemAvailable above 2.5 GB, 20 GB disk floor, check ~/projects/_ops/GPU_RELEASED before local GPU use.

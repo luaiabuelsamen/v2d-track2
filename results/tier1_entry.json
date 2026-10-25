@@ -1,7 +1,11 @@
 {
+  "blocked_on": "Kaggle rules on all four Tier 1 competitions: --check-entry still reports none of them accepted as of 2026-10-24 21:30. Nothing else stands in the way.",
+  "code_commit_url": "https://github.com/luaiabuelsamen/v2d-track2/commit/517ad99cd5840659108314fc4620ce6383ceb09c",
+  "commit_covers": "brev/ and src/v2d/ are byte-identical between 4444c1e, which committed the Tier 1 launcher, and 517ad99, so the pushed commit holds exactly the code that trained, evaluated and exported all 30 rollouts. The CSV conversion step itself ran from closer's v2d-submit wrapper, which is NOT in this repo; that wrapper calls the kit's own tools/pack_submission.py, so every number in the CSV comes from either this commit or the host's own packer.",
   "crosscheck": "the kit recomputes every episode's AUC from the packed trajectory and compares it with the evaluator's own metrics JSON: 8 of 30 episodes differ, all at the 4th decimal (largest seen 0.313738 vs 0.313374), which is float32 round-trip through the CSV and not a frame or convention error -- the two aggregates agree to 4 decimals on AUC and MPPE",
-  "csv_bytes": 11946545,
-  "csv_sha256": "7f41eb3b1f861ad534fcc60b40963f025e11b2359ae111098b054f5cfaffa35e",
+  "csv": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/tier1_final/track2_tier1.csv",
+  "csv_bytes": 11831600,
+  "csv_sha256": "e41271d4478d07a74e27cfd487da772e0a4c101bff46346c503ed3263dc756fa",
   "episodes": 30,
   "evaluator_mean": {
     "add_auc": 0.1343029482728792,
@@ -9,7 +13,7 @@
     "mppe_cm": 74.1980879739699,
     "spider_sr": 0.0
   },
-  "git_sha": "f45770987077d846334e149f4a6626b2f6e680bc",
+  "git_sha": "517ad99cd5840659108314fc4620ce6383ceb09c",
   "kit_packer": "pass",
   "kit_validator": "pass",
   "local_score": {
@@ -18,9 +22,7 @@
     "mppe_cm": 74.1979544999383,
     "spider_sr": 0.0
   },
-  "not_submittable_because": [
-    "placeholder owner 'not-for-submission': https://github.com/NOT-FOR-SUBMISSION/v2d-dry-run/commit/0000000000000000000000000000000000000000"
-  ],
+  "not_submittable_because": [],
   "per_episode": [
     {
       "add_auc": 0.3782133676092545,
@@ -325,9 +327,17 @@
   ],
   "reproduce": "v2d pack --tier tier1 --kit-root $KIT --dataset-root $DATA --rollout-root ROLLOUTS --work-dir OUT --code-commit $COMMIT_URL   (run here with --dry-run, which substitutes a placeholder commit URL and so reports submittable=false)",
   "rows": 22989,
-  "submittable": false,
+  "submittable": true,
   "tier": "tier1",
   "training_budget_steps_per_clip": 409600,
+  "validation": {
+    "audit_findings": [],
+    "kit_packer": "pass",
+    "kit_validator": "pass",
+    "poses_identical_to_the_dry_run_pack": "yes -- code_commit_url is the only column that differs",
+    "uploader_dry_run": "the CSV itself passes (22,989 rows over 30 episodes, looks valid); preflight then stops on the unaccepted Tier 1 rules",
+    "v2d_check_submission": "submittable, validator pass, no findings"
+  },
   "what": "Tier 1 fallback entry, packed from 30 real FlashCHORD rollouts and scored locally",
   "why": "a valid Track 2 submission is what keeps the $250 Brev credit; this is the insurance entry"
 }
