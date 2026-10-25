@@ -121,10 +121,35 @@ run_cell() {
       fi
     fi
 
-    rsync -a --timeout=60 "$REPO/brev/run_ab350.sh" "$NAME:ab/" >/dev/null 2>&1
+    # Ship the runner AND every file it sources. Shipping run_ab350.sh alone is what killed the
+    # 2026-10-25 relaunch: the runner sources support_flag.sh, the box did not have it, both cells
+    # died on line 50 inside a second, and the boxes then idled for 80 min. The list is derived
+    # from the runner itself so adding a new `source` line cannot silently repeat this.
+    local -a HELPERS=()
+    while read -r helper; do
+      [ -n "$helper" ] && HELPERS+=("$REPO/brev/$helper")
+    done < <(grep -oE '\$\(dirname "\$\{BASH_SOURCE\[0\]\}"\)/[A-Za-z0-9_.-]+' "$REPO/brev/run_ab350.sh" \
+             | sed 's#.*/##' | sort -u)
+    for helper in "${HELPERS[@]}"; do
+      [ -f "$helper" ] || { echo "!! $NAME: run_ab350.sh sources $(basename "$helper"), which does not exist"; return 1; }
+    done
+    rsync -a --timeout=60 "$REPO/brev/run_ab350.sh" "${HELPERS[@]}" "$NAME:ab/" >/dev/null 2>&1 \
+      || { echo "!! $NAME: could not ship the runner and its helpers"; return 1; }
+    # Prove they landed, by name, before starting anything.
+    local shipped want
+    want=$(( 1 + ${#HELPERS[@]} ))
+    shipped=$(ssh -n -o ConnectTimeout=20 "$NAME" "cd ~/ab 2>/dev/null && ls -1 \
+      $(printf '%s ' run_ab350.sh $(for h in "${HELPERS[@]}"; do basename "$h"; done)) 2>/dev/null | wc -l" 2>/dev/null)
+    if [ "${shipped:-0}" != "$want" ]; then
+      echo "!! $NAME: only ${shipped:-0} of $want runner files are on the box; NOT training"
+      ~/.local/bin/brev delete "$NAME" </dev/null >/dev/null 2>&1
+      return 1
+    fi
+    echo "shipped $want runner files: run_ab350.sh $(for h in "${HELPERS[@]}"; do basename "$h"; done | tr '\n' ' ')"
     ssh -n "$NAME" "setsid nohup bash ~/ab/run_ab350.sh $ARM $EP $SEQID $STEPS \
                       > ~/ab/cell.log 2>&1 < /dev/null & echo started" 2>/dev/null
 
+    local CELL_START; CELL_START=$(date +%s)
     local CELL_DIR="${ARM}_e$(printf '%02d' "$EP")"
     # Move any previous run's results aside before pulling this run's, and stamp the directory with
     # this run's id. A relaunch of the same cell writes to the same local path, so without this the
@@ -143,12 +168,46 @@ run_cell() {
     # at the end loses everything if the box goes away first.
     local limit=$(( MAX_HOURS * 60 * 2 ))
     local tick=0
+    # "interim pull: 0 trajectories" is not a heartbeat. On 2026-10-25 this loop logged it every
+    # 10 min for 80 min while the runner had already exited and the GPU sat at 0%. Two liveness
+    # probes now run every 2 min, and either one ends the cell loudly:
+    #   - the runner process is gone and there is no DONE file  -> it exited early;
+    #   - the box-side train.log has not grown in 10 min while the runner is still up -> hung.
+    # train.log is the right file to watch, not cell.log: the runner pipes training through
+    # `tee train.log | tail -20`, so cell.log legitimately stays silent for the whole run.
+    local last_size=-1 last_growth; last_growth=$(date +%s)
+    local DEAD=""
     for _ in $(seq 1 $limit); do
       if ssh -n -o ConnectTimeout=20 "$NAME" "test -f ~/ab350_results/$CELL_DIR/DONE" 2>/dev/null; then break; fi
       tick=$((tick + 1))
+
+      if [ $((tick % 4)) = 0 ]; then
+        local probe size alive now
+        probe="$(ssh -n -o ConnectTimeout=20 "$NAME" "printf '%s %s' \
+          \"\$(stat -c %s ~/ab350_results/$CELL_DIR/train.log 2>/dev/null || echo 0)\" \
+          \"\$(pgrep -cf 'ab/run_ab350[.]sh' 2>/dev/null || echo 0)\"" 2>/dev/null)"
+        size="${probe%% *}"; alive="${probe##* }"
+        now=$(date +%s)
+        case "$size" in ''|*[!0-9]*) size=-1 ;; esac
+        case "$alive" in ''|*[!0-9]*) alive=1 ;; esac
+        if [ "$size" -gt "$last_size" ]; then last_size=$size; last_growth=$now; fi
+
+        if [ "$alive" = 0 ]; then
+          echo "!! $NAME: run_ab350.sh is NOT running and there is no DONE file -- it exited early"
+          echo "!! last 15 lines of ~/ab/cell.log:"
+          ssh -n -o ConnectTimeout=20 "$NAME" "tail -15 ~/ab/cell.log" 2>/dev/null | sed 's/^/!!   /'
+          DEAD="runner exited early"; break
+        fi
+        if [ $(( now - last_growth )) -gt 600 ]; then
+          echo "!! $NAME: train.log has not grown in $(( (now - last_growth) / 60 )) min while the runner is up -- hung"
+          ssh -n -o ConnectTimeout=20 "$NAME" "nvidia-smi --query-gpu=utilization.gpu,memory.used --format=csv,noheader" 2>/dev/null | sed 's/^/!!   gpu: /'
+          DEAD="train.log stalled"; break
+        fi
+      fi
+
       if [ $((tick % 20)) = 0 ]; then
         rsync -a --partial --timeout=120 "$NAME:ab350_results/$CELL_DIR/" "$OUT/$CELL_DIR/" >/dev/null 2>&1 \
-          && echo "interim pull at $((tick / 2)) min: $(find "$OUT/$CELL_DIR" -name objects.parquet | wc -l) trajectories"
+          && echo "interim pull at $((tick / 2)) min: $(find "$OUT/$CELL_DIR" -name objects.parquet | wc -l) trajectories, train.log $last_size B"
       fi
       sleep 30
     done
@@ -160,6 +219,13 @@ run_cell() {
     echo "pulled: $(find "$OUT/$CELL_DIR" -name objects.parquet | wc -l) trajectories"
     ~/.local/bin/brev delete "$NAME" </dev/null >/dev/null 2>&1 && echo "deleted $NAME" || echo "!! delete $NAME BY HAND"
     pkill -f "backstop_watchdog[.]sh $NAME " 2>/dev/null
+    # Stop this box's clock in the ledger the moment it is deleted. brev ls cannot tell us about a
+    # deleted box, so a cell that ends without this line silently drops out of the spend total.
+    printf '%s %s\n' "$NAME" "$(( ( $(date +%s) - CELL_START + 59 ) / 60 ))" >> "$S/spend_closed.txt"
+    if [ -n "$DEAD" ]; then
+      echo "=== $NAME FAILED: $DEAD ($(date -u +%H:%M:%S)) ==="
+      return 1
+    fi
     echo "=== $NAME finished ($(date -u +%H:%M:%S)) ==="
   } >> "$LOG" 2>&1
 }

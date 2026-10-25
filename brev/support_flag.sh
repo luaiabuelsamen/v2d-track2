@@ -54,15 +54,33 @@ def mirrored(motion_file):
     return None
 
 
-how = "upstream _discover_support_surface"
-try:
-    from robotic_grounding.tasks.scene_utils.scene_config import _discover_support_surface
-    resolved = _discover_support_surface(parquet)
+# flash_chord is the authority: it is what the trainer imports, and its
+# support_usda_for_parquet derives the same stage_dir. robotic_grounding carries an equivalent
+# _discover_support_surface but is not installed in the training container, so it is only a
+# second choice. The mirrored logic is the last resort.
+resolved = None
+how = None
+for label, loader in (
+    ("flash_chord.assets.registry.support_usda_for_parquet",
+     lambda: __import__("flash_chord.assets.registry", fromlist=["x"]).support_usda_for_parquet),
+    ("robotic_grounding ._discover_support_surface",
+     lambda: __import__("robotic_grounding.tasks.scene_utils.scene_config",
+                        fromlist=["x"])._discover_support_surface),
+):
+    try:
+        resolver = loader()
+    except Exception as error:  # noqa: BLE001 - not installed here; try the next one
+        print(f"note: {label} unavailable ({type(error).__name__}: {error})", file=sys.stderr)
+        continue
+    resolved = resolver(parquet)
+    resolved = str(resolved) if resolved else None
+    how = label
     check = mirrored(parquet)
-    if resolved != check:
-        print(f"WARNING: our mirrored path logic disagrees with the resolver: {check!r}", file=sys.stderr)
-except Exception as error:  # noqa: BLE001 - any import problem falls back, loudly
-    how = f"mirrored path logic ({type(error).__name__}: {error})"
+    if (resolved or None) != (check or None):
+        print(f"WARNING: mirrored path logic says {check!r}, {label} says {resolved!r}", file=sys.stderr)
+    break
+if how is None:
+    how = "mirrored path logic (no resolver importable)"
     resolved = mirrored(parquet)
 
 print(f"how={how}", file=sys.stderr)
