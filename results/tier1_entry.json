@@ -1,0 +1,333 @@
+{
+  "crosscheck": "the kit recomputes every episode's AUC from the packed trajectory and compares it with the evaluator's own metrics JSON: 8 of 30 episodes differ, all at the 4th decimal (largest seen 0.313738 vs 0.313374), which is float32 round-trip through the CSV and not a frame or convention error -- the two aggregates agree to 4 decimals on AUC and MPPE",
+  "csv_bytes": 11946545,
+  "csv_sha256": "7f41eb3b1f861ad534fcc60b40963f025e11b2359ae111098b054f5cfaffa35e",
+  "episodes": 30,
+  "evaluator_mean": {
+    "add_auc": 0.1343029482728792,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 74.1980879739699,
+    "spider_sr": 0.0
+  },
+  "git_sha": "f45770987077d846334e149f4a6626b2f6e680bc",
+  "kit_packer": "pass",
+  "kit_validator": "pass",
+  "local_score": {
+    "add_auc": 0.13434706677529462,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 74.1979544999383,
+    "spider_sr": 0.0
+  },
+  "not_submittable_because": [
+    "placeholder owner 'not-for-submission': https://github.com/NOT-FOR-SUBMISSION/v2d-dry-run/commit/0000000000000000000000000000000000000000"
+  ],
+  "per_episode": [
+    {
+      "add_auc": 0.3782133676092545,
+      "checkpoint_sha256": "d25b6603790b892e4eab8494a291c8e4faed57e315be3f3f065ad32e41cd4ac8",
+      "environment_steps": 409600,
+      "episode": 0,
+      "maniptrans_sr": 0.0,
+      "mppe_cm": 41.38164971971921,
+      "object_orientation_error_deg": 39.795050953103406,
+      "spider_sr": 0.0
+    },
+    {
+      "add_auc": 0.015060240963855422,
+      "checkpoint_sha256": "2e88fd4a76b4084e0cb8d2e2f5c409c7e7b81762c148f7ae11bf38078d519e52",
+      "environment_steps": 409600,
+      "episode": 1,
+      "maniptrans_sr": 0.0,
+      "mppe_cm": 101.5718438622672,
+      "object_orientation_error_deg": 110.31827053555844,
+      "spider_sr": 0.0
+    },
+    {
+      "add_auc": 0.004336734693877551,
+      "checkpoint_sha256": "75d1bf94cd86e5dd6e0264295ebc1676b2fe86da112ec79ef52a3902faeb603b",
+      "environment_steps": 409600,
+      "episode": 2,
+      "maniptrans_sr": 0.0,
+      "mppe_cm": 78.94387559305996,
+      "object_orientation_error_deg": 38.5877708028934,
+      "spider_sr": 0.0
+    },
+    {
+      "add_auc": 0.005441741357234315,
+      "checkpoint_sha256": "380c425758738edc4e35f6fd59ee06a036729cff68a8c87c7f47cb28be8f0f43",
+      "environment_steps": 409600,
+      "episode": 3,
+      "maniptrans_sr": 0.0,
+      "mppe_cm": 92.58362212864992,
+      "object_orientation_error_deg": 98.34577410437154,
+      "spider_sr": 0.0
+    },
+    {
+      "add_auc": 0.13037048567870485,
+      "checkpoint_sha256": "d81745a9f923ac590c5513e7da56b9e6081633875ab070565ada0b4771e3a5f1",
+      "environment_steps": 409600,
+      "episode": 4,
+      "maniptrans_sr": 0.0,
+      "mppe_cm": 112.18900226796065,
+      "object_orientation_error_deg": 116.1885442766509,
+      "spider_sr": 0.0
+    },
+    {
+      "add_auc": 0.1653788634097707,
+      "checkpoint_sha256": "51610de35d460f6de4b3878c65d9b969eb7bded9650edda1c9a787a2aa4aefbf",
+      "environment_steps": 409600,
+      "episode": 5,
+      "maniptrans_sr": 0.0,
+      "mppe_cm": 126.78911104537048,
+      "object_orientation_error_deg": 117.46563451762881,
+      "spider_sr": 0.0
+    },
+    {
+      "add_auc": 0.007783882783882784,
+      "checkpoint_sha256": "a7f1a3418e258b553ed9bd2385a00ad6c2de42be50ee38deabc5ea780a0a821f",
+      "environment_steps": 409600,
+      "episode": 6,
+      "maniptrans_sr": 0.0,
+      "mppe_cm": 86.56499650844248,
+      "object_orientation_error_deg": 76.87297174877521,
+      "spider_sr": 0.0
+    },
+    {
+      "add_auc": 0.004743303571428571,
+      "checkpoint_sha256": "678545232802e9ed2edbd31c195548fc0f6b82a26086df5b00cf058ffb721696",
+      "environment_steps": 409600,
+      "episode": 7,
+      "maniptrans_sr": 0.0,
+      "mppe_cm": 80.27285104541525,
+      "object_orientation_error_deg": 23.506877822532722,
+      "spider_sr": 0.0
+    },
+    {
+      "add_auc": 0.15448446327683615,
+      "checkpoint_sha256": "1be8a72e5e0de650faa2fd4e9a71213dfdb41e1427bf3b37261acf330c9738ca",
+      "environment_steps": 409600,
+      "episode": 8,
+      "maniptrans_sr": 0.0,
+      "mppe_cm": 32.60888077081621,
+      "object_orientation_error_deg": 55.3737594850176,
+      "spider_sr": 0.0
+    },
+    {
+      "add_auc": 0.0047413793103448275,
+      "checkpoint_sha256": "c6173ea05dd77c79210e15b3ce91fa5cb7fcaf3bfd7177bd832357181dea6ef4",
+      "environment_steps": 409600,
+      "episode": 9,
+      "maniptrans_sr": 0.0,
+      "mppe_cm": 132.32593589010045,
+      "object_orientation_error_deg": 68.9338683275057,
+      "spider_sr": 0.0
+    },
+    {
+      "add_auc": 0.25661209068010077,
+      "checkpoint_sha256": "68d6005a02e3944e7f6d1584fe88a5b2553988f2e65b19405d9458cd736b1b98",
+      "environment_steps": 409600,
+      "episode": 10,
+      "maniptrans_sr": 0.0,
+      "mppe_cm": 51.011302178487426,
+      "object_orientation_error_deg": 46.10678354502362,
+      "spider_sr": 0.0
+    },
+    {
+      "add_auc": 0.0047169811320754715,
+      "checkpoint_sha256": "d1ee5177078e239d47a873a2dd127cf23c0783505ee8e1b328d3b899c520e114",
+      "environment_steps": 409600,
+      "episode": 11,
+      "maniptrans_sr": 0.0,
+      "mppe_cm": 87.3547903904973,
+      "object_orientation_error_deg": 97.15177943490674,
+      "spider_sr": 0.0
+    },
+    {
+      "add_auc": 0.3097321428571429,
+      "checkpoint_sha256": "3082ac3aa1f3a3ce3742dc1545f816024b2719fc1d64190bf0d80f857e0b296d",
+      "environment_steps": 409600,
+      "episode": 12,
+      "maniptrans_sr": 0.0,
+      "mppe_cm": 22.9261508736713,
+      "object_orientation_error_deg": 76.59054376998111,
+      "spider_sr": 0.0
+    },
+    {
+      "add_auc": 0.013150759219088936,
+      "checkpoint_sha256": "838f269d1ee6b098a482d73afe47c58fed10b02656b3c3251da14eded3bf397a",
+      "environment_steps": 409600,
+      "episode": 13,
+      "maniptrans_sr": 0.0,
+      "mppe_cm": 56.93395582963669,
+      "object_orientation_error_deg": 23.62220976808311,
+      "spider_sr": 0.0
+    },
+    {
+      "add_auc": 0.10076787512588117,
+      "checkpoint_sha256": "64851456c602dffb12d1525d3a840e8d73c392a82487e473bbdbf16998b20f85",
+      "environment_steps": 409600,
+      "episode": 14,
+      "maniptrans_sr": 0.0,
+      "mppe_cm": 109.32548848014673,
+      "object_orientation_error_deg": 95.32144100636742,
+      "spider_sr": 0.0
+    },
+    {
+      "add_auc": 0.2375874125874126,
+      "checkpoint_sha256": "c0d958a1e7c76a453b684fa7f79f2035aeb2c91edd810e6dba33141179f4b2ba",
+      "environment_steps": 409600,
+      "episode": 15,
+      "maniptrans_sr": 0.0,
+      "mppe_cm": 63.95447779577047,
+      "object_orientation_error_deg": 78.199575510041,
+      "spider_sr": 0.0
+    },
+    {
+      "add_auc": 0.008909853249475892,
+      "checkpoint_sha256": "abfef31d931112873807d4272548747724242865ffb822cb1d8858c7158f7b8c",
+      "environment_steps": 409600,
+      "episode": 16,
+      "maniptrans_sr": 0.0,
+      "mppe_cm": 75.78015192218345,
+      "object_orientation_error_deg": 81.4965929597261,
+      "spider_sr": 0.0
+    },
+    {
+      "add_auc": 0.2842329545454545,
+      "checkpoint_sha256": "42961a97633e3ebd13f0140e3392872bdfc3d2fe0d3d1a8083b9d0aca6a25aa3",
+      "environment_steps": 409600,
+      "episode": 17,
+      "maniptrans_sr": 0.0,
+      "mppe_cm": 92.09731958959426,
+      "object_orientation_error_deg": 102.98918119154736,
+      "spider_sr": 0.0
+    },
+    {
+      "add_auc": 0.313738344988345,
+      "checkpoint_sha256": "65d1d4e1f7f230cf367fddabb9a316af56af2ac886b1a681b252be45a72326fc",
+      "environment_steps": 409600,
+      "episode": 18,
+      "maniptrans_sr": 0.0,
+      "mppe_cm": 65.83774841956107,
+      "object_orientation_error_deg": 63.86812712433076,
+      "spider_sr": 0.0
+    },
+    {
+      "add_auc": 0.14115406320541762,
+      "checkpoint_sha256": "4113106b2526e7589b0bf57aaad4e6ac7f29a8b7dea06d0dcb6dc3797168bec0",
+      "environment_steps": 409600,
+      "episode": 19,
+      "maniptrans_sr": 0.0,
+      "mppe_cm": 57.8340294899873,
+      "object_orientation_error_deg": 71.32468097067743,
+      "spider_sr": 0.0
+    },
+    {
+      "add_auc": 0.007685352622061483,
+      "checkpoint_sha256": "f47d7ef4fc4a09f7f3e7269fc55b2dc285125ef9393774bad799c07012cd6ee6",
+      "environment_steps": 409600,
+      "episode": 20,
+      "maniptrans_sr": 0.0,
+      "mppe_cm": 78.10590253175522,
+      "object_orientation_error_deg": 49.31271681124836,
+      "spider_sr": 0.0
+    },
+    {
+      "add_auc": 0.18805309734513276,
+      "checkpoint_sha256": "58898caf7d658095c93272467c4e4fde1cc6df8e4eccfa2ee3173855af2d6b53",
+      "environment_steps": 409600,
+      "episode": 21,
+      "maniptrans_sr": 0.0,
+      "mppe_cm": 55.008287963488144,
+      "object_orientation_error_deg": 41.7725930966338,
+      "spider_sr": 0.0
+    },
+    {
+      "add_auc": 0.29328929068150206,
+      "checkpoint_sha256": "90b8880b2b7b0549de514adc39233c8d3d17a768a68998d674e02a55a80d235d",
+      "environment_steps": 409600,
+      "episode": 22,
+      "maniptrans_sr": 0.0,
+      "mppe_cm": 71.7314066011972,
+      "object_orientation_error_deg": 69.34986924991712,
+      "spider_sr": 0.0
+    },
+    {
+      "add_auc": 0.1431686046511628,
+      "checkpoint_sha256": "6187f55f74d4512a0a60f8b01c674285014d356ce854daf51c544819ca413fba",
+      "environment_steps": 409600,
+      "episode": 23,
+      "maniptrans_sr": 0.0,
+      "mppe_cm": 79.21195522509754,
+      "object_orientation_error_deg": 88.21573703570385,
+      "spider_sr": 0.0
+    },
+    {
+      "add_auc": 0.12416443850267381,
+      "checkpoint_sha256": "31d87f2a7345a1fb457bd1279960992d9c25fb6a66c8a6cab161a15d34470ae7",
+      "environment_steps": 409600,
+      "episode": 24,
+      "maniptrans_sr": 0.0,
+      "mppe_cm": 23.746545901466167,
+      "object_orientation_error_deg": 113.32846103794361,
+      "spider_sr": 0.0
+    },
+    {
+      "add_auc": 0.004947613504074505,
+      "checkpoint_sha256": "21431b713712f7ba6f3d482cce5ceb4b1db179b2f679b3bdb0a4de3296cd96f6",
+      "environment_steps": 409600,
+      "episode": 25,
+      "maniptrans_sr": 0.0,
+      "mppe_cm": 115.7737290973704,
+      "object_orientation_error_deg": 92.62784125669513,
+      "spider_sr": 0.0
+    },
+    {
+      "add_auc": 0.22823243647234678,
+      "checkpoint_sha256": "8cb64afad07fb397e074de7c4b0620d56113f95ca1e6670b3e7058598d5d91aa",
+      "environment_steps": 409600,
+      "episode": 26,
+      "maniptrans_sr": 0.0,
+      "mppe_cm": 23.82280293038222,
+      "object_orientation_error_deg": 51.22999557362797,
+      "spider_sr": 0.0
+    },
+    {
+      "add_auc": 0.26991150442477874,
+      "checkpoint_sha256": "45abc265ad59eda6f9e18c70b997db2ffbd3c762fed286c13c3896539151f3ae",
+      "environment_steps": 409600,
+      "episode": 27,
+      "maniptrans_sr": 0.0,
+      "mppe_cm": 86.25062833894417,
+      "object_orientation_error_deg": 49.32374222360245,
+      "spider_sr": 0.0
+    },
+    {
+      "add_auc": 0.004175101214574898,
+      "checkpoint_sha256": "d098f01db84c0270d77796b013398f1e925dcd1375e62e494c76dde722f79a43",
+      "environment_steps": 409600,
+      "episode": 28,
+      "maniptrans_sr": 0.0,
+      "mppe_cm": 88.53005126774964,
+      "object_orientation_error_deg": 121.68893508181712,
+      "spider_sr": 0.0
+    },
+    {
+      "add_auc": 0.22430406852248394,
+      "checkpoint_sha256": "9c9e5341c16b05d842f27c3e58407172670c433be80881ffb45f8f2aedf5c693",
+      "environment_steps": 409600,
+      "episode": 29,
+      "maniptrans_sr": 0.0,
+      "mppe_cm": 35.47414556030864,
+      "object_orientation_error_deg": 25.49953256605902,
+      "spider_sr": 0.0
+    }
+  ],
+  "reproduce": "v2d pack --tier tier1 --kit-root $KIT --dataset-root $DATA --rollout-root ROLLOUTS --work-dir OUT --code-commit $COMMIT_URL   (run here with --dry-run, which substitutes a placeholder commit URL and so reports submittable=false)",
+  "rows": 22989,
+  "submittable": false,
+  "tier": "tier1",
+  "training_budget_steps_per_clip": 409600,
+  "what": "Tier 1 fallback entry, packed from 30 real FlashCHORD rollouts and scored locally",
+  "why": "a valid Track 2 submission is what keeps the $250 Brev credit; this is the insurance entry"
+}

@@ -1,0 +1,88 @@
+{
+  "ab_baseline_host_auc": [
+    0.2013,
+    0.2016,
+    0.2035,
+    0.2
+  ],
+  "arm_C_host_auc": {
+    "max": 0.39229612299465244,
+    "mean": 0.2666219696969697,
+    "min": 0.18206885026737968,
+    "sd": 0.08211876894035183,
+    "values": [
+      0.3605,
+      0.2023,
+      0.39229612299465244,
+      0.26345254010695185,
+      0.18206885026737968,
+      0.1991143048128342
+    ]
+  },
+  "bar": "docs/SWEEP_BAR.md, pre-registered before the runs",
+  "deciding_statistic": "escape rate, AUC > 0.25; ship rule was escapes >= 3/4 on the new seeds AND one seed beating the best A/B run by > 0.05 AUC",
+  "escape_rate": {
+    "A_and_B": "0/4",
+    "all_six_C_seeds": "3/6",
+    "fisher_one_sided_all_vs_AB": 0.16666666666666666,
+    "fisher_one_sided_new_vs_AB": 0.21428571428571427,
+    "new_seeds_44_47": "2/4"
+  },
+  "seeds": {
+    "C_s42": {
+      "evaluator_auc": 0.3196,
+      "from": "B3",
+      "host_auc": 0.3605
+    },
+    "C_s43": {
+      "evaluator_auc": 0.2457,
+      "from": "B3",
+      "host_auc": 0.2023
+    },
+    "C_s44": {
+      "evaluator_auc": 0.19991545243696734,
+      "evaluator_mppe_cm": 18.18370412349632,
+      "from": "this sweep",
+      "host_auc": 0.39229612299465244,
+      "host_mppe_cm": 9.054285004610348
+    },
+    "C_s45": {
+      "evaluator_auc": 0.15938969984411555,
+      "evaluator_mppe_cm": 18.675034545353384,
+      "from": "this sweep",
+      "host_auc": 0.26345254010695185,
+      "host_mppe_cm": 11.12825021180333
+    },
+    "C_s46": {
+      "evaluator_auc": 0.23130769780612884,
+      "evaluator_mppe_cm": 16.771668564827586,
+      "from": "this sweep",
+      "host_auc": 0.18206885026737968,
+      "host_mppe_cm": 24.265207617306746
+    },
+    "C_s47": {
+      "evaluator_auc": 0.2605123060909822,
+      "evaluator_mppe_cm": 14.64399920422825,
+      "from": "this sweep",
+      "host_auc": 0.1991143048128342,
+      "host_mppe_cm": 18.65893668069415
+    }
+  },
+  "selection_signal": {
+    "caveat": "n=6 for the correlation and n=4 for the confirmation seeds; both are small, and this is reported as measured rather than as established.",
+    "consequence": "seed and checkpoint selection for Tier 2 has to happen on our own synthetic noise, which is what the brief's dev/confirm split already required. There is no legitimate shortcut through either the evaluator metric or the Tier 1 reference.",
+    "evaluator_vs_host_spearman": {
+      "all_six_seeds": -0.1428571428571428,
+      "four_new_seeds": -0.6000000000000001
+    },
+    "finding": "no. The evaluator's own AUC, computed against the corrupted Tier 2 input the policy was given, does not track the clean-reference score across C's seeds: Spearman -0.60 on the four new seeds and -0.14 over all six. That is the sign the arm's mechanism predicts -- a policy that follows the corrupted target looks good to the evaluator and bad against the truth, and bounded correction deliberately leaves the corrupted target -- but at n=6 it is not significant either way, so the honest statement is that the evaluator metric carries no usable selection signal here.",
+    "question": "can seeds be chosen without touching the clean Tier 1 reference, which the brief forbids as supervision?"
+  },
+  "verdict": {
+    "kept_for_the_record": "arm A stays the reference recipe for the full pass. C is not discarded, it is unproven.",
+    "ships": false,
+    "the_arm_is_bimodal_both_ways": "C_s46 scored 0.1821, BELOW every A and B run, and its MPPE 24.3 cm is worse than A's 18.8 cm. The correction does not only add upside; it can also cost.",
+    "why": "the pre-registered rule needed >= 3/4 escapes on the confirmation seeds and got 2/4 (Fisher one-sided 0.214). Over all six seeds the rate is 3/6 at Fisher 0.167. C's mean AUC 0.2666 is above the A/B cluster at 0.2016, but its own SD is 0.0821 against the cluster's 0.0013, so the mean is not the statistic that decides this and the escape rate did not clear the bar."
+  },
+  "what": "arm C (bounded object-target correction) at four more seeds on e24, 10M steps, gated-cleaned Tier 2 reference"
+}

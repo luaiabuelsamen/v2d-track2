@@ -18,24 +18,34 @@ Goal: A valid Track 2 submission before the freeze (this keeps the $250 Brev cre
 Finish line: Tier 1 insurance submission accepted; Tier 2 submitted; results/ frozen; README + short tech report; every number traceable to a committed results file.
 Deadline: leaderboard freeze 2026-11-04 17:00 EST (internal cutoff 12:00 EST that day)
 Milestone: GO, and the first paid compute has run. Gate G1 passed long since (all 60 clips retargeted on CPU at 0.0 mm). **Brev is live**: three probe attempts, two real bugs found and fixed, the hardware confirmed, ~$0.22 spent of a $2 cap. The reference cleaner now has a **known-answer gate, and the original cleaner failed it** -- a gated variant that passes is built and scored. Code is one package with one CLI, ruff/format clean, 76 tests. Observability is live to W&B and a private Hugging Face repo.
-Last result: **B3 ran: three training arms on the gated-cleaned Tier 2 reference, e24, 10M steps, two seeds
-each.** Arm A (stock) 0.2015 AUC, arm B (+reference-noise injection) 0.2017, arm C (+bounded
-object-target correction) **0.2814**. C beats stock by +0.0799, six times the pre-registered
-0.014 margin -- and it is **not established**, because C's own seed spread is 0.1582, sixteen
-times the 0.0100 the margin was derived from, giving its two-seed mean a standard error (0.112)
-larger than the advantage itself. C_s42 scored 0.3605 and C_s43 0.2023; the second is
-indistinguishable from A and B. The evaluator's own metrics order the arms identically and every
-rollout has its full 748 frames with the frame check at 2e-06 cm, so it is a real effect with
-unquantified variance rather than an artefact. A and B differ by 0.0003 and are the same arm at
-this budget. **Also measured: this org runs at least 4 concurrent A6000s**, which turns a
-126.9 GPU-hour pass from ~127 h of wall clock into ~32 and is what makes a full pass fit before
-the freeze. **And a safety bug worth naming: `brev delete` has no --yes flag, so every watchdog
-I had armed was a silent no-op** -- the independent protection against runaway GPU billing never
-worked, and only the teardown path's fallback ever deleted anything. Fixed in all five call
-sites, both watchdogs now retry through rate limits.
-Blocked: nothing. Brev is logged in and B0 is approved; W&B and Hugging Face are logged in and detected. Needs Luai: (1) decide the gated-vs-ungated reference set, since that is a ranking call not a scientific one, (2) re-save the quality-gates / dev-confirm section of ~/projects/_ops/briefs/v2d_allhands.md -- it is not on disk, the file ends at the Rules bullets and nothing under _ops mentions it, so I followed the Rules section's three-gate requirement instead and did not guess at the rest.
-Next: arm C is the only arm worth more compute, and it needs seeds rather than steps: at least four more at 10M to pin its variance before any ranking is claimed. Then the Tier 1 backup run, which needs Luai's separate approval. The full Tier 2 pass is now costed at 126.9 GPU-hours and $76-86, about a third of the credit, and fits in ~32 h of wall clock at 4 concurrent instances.
-Updated: 2026-10-24 18:15
+Last result: **the Tier 1 fallback entry exists and is scored, and arm C failed its own
+pre-registered bar.** Thirty short-budget policies (409,600 steps each) trained and evaluated on
+one A6000 in under two hours, all 30 rollouts came back byte-verified, and the kit's own packer
+and validator both pass on them: 30 episodes, 22,989 rows, **AUC 0.1343, SP-SR 0.0000, MP-SR
+0.0000, MPPE 74.198 cm** (`results/tier1_entry.json`). The kit recomputes each episode's AUC from
+the packed CSV and agrees with the evaluator's own metrics JSON to the fourth decimal, so the
+export and the frame conversion are right; the entry is weak because it is 409,600 steps per clip,
+not because anything is broken. It is one command from upload and that command is blocked on the
+two items at the top of this file. **Arm C does not ship.** Four confirmation seeds gave an escape
+rate of 2/4 against the pre-registered >=3/4 (`docs/SWEEP_BAR.md`), Fisher one-sided 0.214; over
+all six C seeds it is 3/6 at 0.167. C's mean AUC 0.2666 does sit above the A/B cluster's 0.2016,
+but its SD is 0.0821 against the cluster's 0.0013, which is exactly why the bar was written on the
+escape rate and not the mean. **C_s46 scored 0.1821, below every A and B run**, so the correction
+is bimodal in both directions rather than a free option. **And a finding that costs us a shortcut:
+the evaluator's own AUC does not track the clean-reference score across C's seeds** -- Spearman
+-0.60 on the four new seeds, -0.14 over six. A policy that follows the corrupted Tier 2 target
+looks good to the evaluator and bad against the truth, which is the sign the mechanism predicts,
+though at n=6 it is not significant either way. The consequence is firm regardless: seed and
+checkpoint selection for Tier 2 has to happen on our own synthetic noise, because the Tier 1
+reference is forbidden as supervision and the evaluator metric carries no usable signal
+(`results/sweep_c.json`).
+Blocked: the two items at the top of this file, both Luai's alone -- Kaggle rules on the four Tier 1 competitions, and a GitHub remote to give the CSV a `code_commit_url`. Also still open from before: re-save the quality-gates / dev-confirm section of ~/projects/_ops/briefs/v2d_allhands.md, which is not on disk.
+Next: D/E/F are finishing on the sweep box and are descriptive at two seeds whatever they show; the
+350M arm A run on e24 is the only thing that can give a real success rate, since every run so far
+has SP-SR and MP-SR at exactly zero. **The 30-clip Tier 2 pass is not started and needs Luai's
+word** -- it is the expensive one. Spend so far on the standing budget: $3.91 of $30, two boxes
+running, the Tier 1 box deleted the moment its results were verified off it.
+Updated: 2026-10-24 21:10
 
 ## Rules
 No paid compute until Luai redeems the code and approves the specific run. No registration, submission, posting, pushing or email without his approval. Every Brev run deletes its instance on exit. Jetson: MemAvailable above 2.5 GB, 20 GB disk floor, check ~/projects/_ops/GPU_RELEASED before local GPU use.
