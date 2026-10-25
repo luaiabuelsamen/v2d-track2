@@ -43,6 +43,47 @@ Axes the three differ on: support (floor / table / raised-rest-then-floor), hand
 one / both), object scale (trash can / mug / bowl), correction size (13.8° / 22.2° / 7.6°),
 length (858 / 781 / 870 frames).
 
+## Step 1: the verified baseline, and what counts as "far off"
+
+Written before the three RAW cells were created. Step 1 is NVIDIA's recipe unchanged, 349,999,104
+steps, on the released Tier 2 retarget, for e18 / e3 / e9. No method change of ours is in it. Its
+job is to prove our pipeline reproduces something recognisable before any arm is compared.
+
+Reference point: the CHORD baseline's **Tier 2 board average** -- AUC 0.374, SP-SR 0.533,
+MP-SR 0.067, MPPE 20.5 cm.
+
+Two things make a strict match the wrong expectation, and both are stated now rather than after
+the numbers land:
+
+- that average is over all **30** clips and we are running **3**, and per-clip spread on this
+  dataset is enormous -- our Tier 1 entry ranged 0.004 to 0.378 AUC across clips at a fixed budget;
+- our RAW arm is a **stand-in** for the baseline, not the baseline: it is our retarget of the
+  released Tier 2 trajectory, scored on the host scorer against the clean reference.
+
+So the comparison is on the **mean over the three clips**, and the stop-and-debug lines are set
+wide enough that only a broken pipeline trips them:
+
+| | stop and debug if |
+|---|---|
+| mean AUC | **< 0.187** (half the baseline average) |
+| mean MPPE | **> 41 cm** (double the baseline average) |
+| SP-SR | **0.0000 on all three clips** -- investigate even if AUC and MPPE look fine |
+
+Why those lines. The Tier 1 entry at 1/850th of this budget scored AUC 0.134 and MPPE 74.2 cm. A
+pipeline with a wrong frame, wrong assets or the wrong reference would land near those numbers or
+worse, not near 0.374 and 20.5. Half and double the board average sit comfortably between the two
+regimes. The SP-SR line is separate because the baseline gets 0.533 there while every run we have
+done at every budget has returned exactly 0.0000, so three more zeroes at full budget would mean
+either the success metric needs something we are not doing or the recipe needs more than we think
+-- and I would rather find that out here than infer it from a cleaner comparison.
+
+**A single clip below a line is not a stop signal**; the mean is. One clip at 0.05 against two at
+0.45 is clip variance, which is why the test is pre-committed to the mean.
+
+If step 1 passes, step 2 is the compressed curriculum (~50M steps, VOC faded inside the budget) on
+the same three clips, accepted only if it **ranks the clips the same way** the full runs do. If
+step 1 trips a line, nothing proceeds until the pipeline is understood.
+
 ## What the arms actually differ by (measured after the references were built, before any cell ran)
 
 The gated cleaner tilts a resting object onto its support; it does not move it. Measured on the six

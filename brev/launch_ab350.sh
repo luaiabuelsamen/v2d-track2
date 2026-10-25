@@ -19,6 +19,7 @@ MAX_HOURS=7                 # ~4.8 h of work; the in-box watchdog must not fire 
 BACKSTOP_HOURS=7.5          # my own, independent of anything gate_launch.sh does
 STEPS=349999104
 CLIPS="3 9 18"
+ARMS="raw clean"      # step 1 is the RAW baseline alone; CLEAN is held until it verifies
 while [ $# -gt 0 ]; do
   case "$1" in
     --go) GO=1; shift ;;
@@ -26,6 +27,7 @@ while [ $# -gt 0 ]; do
     --type) TYPE="$2"; shift 2 ;;
     --steps) STEPS="$2"; shift 2 ;;
     --clips) CLIPS="$2"; shift 2 ;;
+    --arms) ARMS="$2"; shift 2 ;;
     *) echo "unknown argument: $1" >&2; exit 2 ;;
   esac
 done
@@ -41,11 +43,11 @@ declare -A SEQ=(
 )
 
 CELLS=()
-for EP in $CLIPS; do for ARM in raw clean; do CELLS+=("$ARM:$EP"); done; done
+for EP in $CLIPS; do for ARM in $ARMS; do CELLS+=("$ARM:$EP"); done; done
 
 # Refuse to start on references that are not staged and verified. The arm IS the parquet, so an
 # unstaged or half-copied reference does not fail loudly, it trains the wrong arm.
-for ARM in raw clean; do
+for ARM in $ARMS; do
   [ -s "$S/ab_stage_${ARM}.md5" ] || { echo "FATAL: $S/ab_stage_${ARM}.md5 missing; run stage_ab_refs.sh" >&2; exit 2; }
   for EP in $CLIPS; do
     P="$S/ab_stage_${ARM}/whole_body/soma/sequence_id=${SEQ[$EP]}/robot_name=g1/data.parquet"
@@ -62,7 +64,8 @@ cat <<PLAN
    steps/cell   : $STEPS   (checkpoint every 49999872)
    est per cell : ${EST_HOURS} h  -> projected total \$${TOTAL_USD}
    watchdogs    : in-box ${MAX_HOURS} h, my backstop ${BACKSTOP_HOURS} h, per box
-   references   : $(wc -l < "$S/ab_stage_raw.md5") raw files, $(wc -l < "$S/ab_stage_clean.md5") clean files, md5-verified after transfer
+   arms         : $ARMS
+   references   : $(for a in $ARMS; do printf "%s=%s " "$a" "$(wc -l < "$S/ab_stage_${a}.md5")"; done)files, md5-verified after transfer
    decision rule: docs/AB350_BAR.md  (not editable after this runs)
 PLAN
 [ "$GO" = 1 ] || { echo "
