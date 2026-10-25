@@ -35,6 +35,9 @@ done
 S="${V2D_SCRATCH:-/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad}"
 REPO=/home/jetson3/projects/v2d-challenge
 OUT=$S/ab350
+# One id per launcher invocation, stamped into each cell directory so a reader can tell this run's
+# results from a previous run's at the same path.
+RUN_ID="ab350-$(date -u +%Y%m%dT%H%M%SZ)-$$"
 mkdir -p "$OUT"
 declare -A SEQ=(
   [3]=2026-04-27_11-50-10_contigo_coffee_mug_handle_table_05
@@ -123,7 +126,18 @@ run_cell() {
                       > ~/ab/cell.log 2>&1 < /dev/null & echo started" 2>/dev/null
 
     local CELL_DIR="${ARM}_e$(printf '%02d' "$EP")"
+    # Move any previous run's results aside before pulling this run's, and stamp the directory with
+    # this run's id. A relaunch of the same cell writes to the same local path, so without this the
+    # old metrics.json sits there looking exactly like a fresh result -- which on 2026-10-25 made a
+    # verifier read the broken run's 50M AUC and delete both new boxes three minutes after they
+    # were created. A result file must never be older than the run it is attributed to.
+    if [ -d "$OUT/$CELL_DIR" ] && [ -n "$(ls -A "$OUT/$CELL_DIR" 2>/dev/null)" ]; then
+      local stamp; stamp="$(date -u +%Y%m%dT%H%M%SZ)"
+      mv "$OUT/$CELL_DIR" "$OUT/${CELL_DIR}.superseded.$stamp"
+      echo "moved a previous $CELL_DIR aside as ${CELL_DIR}.superseded.$stamp"
+    fi
     mkdir -p "$OUT/$CELL_DIR"
+    printf '%s %s %s\n' "$RUN_ID" "$NAME" "$(date -u +%FT%TZ)" > "$OUT/$CELL_DIR/RUN_ID"
     # Pull every ~10 min rather than only at DONE. Each checkpoint's trajectory exists from the
     # moment it is evaluated, and the sweep box proved that a run whose results are only collected
     # at the end loses everything if the box goes away first.
