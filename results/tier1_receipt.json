@@ -1,0 +1,43 @@
+{
+  "track": "track_2_tier1",
+  "file": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/tier1_final/track2_tier1.csv",
+  "message": "Tier 1 insurance entry: 30 per-sequence FlashCHORD policies, 409,600 env steps each, code 517ad99",
+  "submissions": {
+    "add_auc": {
+      "slug": "v2d-challenge-track2-tier1-auc",
+      "state": "COMPLETE",
+      "file": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/tier1_final/track2_tier1.csv",
+      "message": "Successfully submitted to Track 2 - Robotic Grounding (Tier 1: multi-view input) - AUC",
+      "ref": 57617131,
+      "public_score": "0.13434",
+      "error": ""
+    },
+    "spider_sr": {
+      "slug": "v2d-challenge-track2-tier1-sp-sr",
+      "state": "COMPLETE",
+      "file": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/tier1_final/track2_tier1.csv",
+      "message": "Successfully submitted to Track 2 - Robotic Grounding (Tier 1: multi-view input) - SP-SR",
+      "ref": 57617135,
+      "public_score": "0.00000",
+      "error": ""
+    },
+    "maniptrans_sr": {
+      "slug": "v2d-challenge-track2-tier1-mp-sr",
+      "state": "COMPLETE",
+      "file": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/tier1_final/track2_tier1.csv",
+      "message": "Successfully submitted to Track 2 - Robotic Grounding (Tier 1: multi-view input) - MP-SR",
+      "ref": 57617139,
+      "public_score": "0.00000",
+      "error": ""
+    },
+    "mppe_cm": {
+      "slug": "v2d-challenge-track2-tier1-mppe",
+      "state": "COMPLETE",
+      "file": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/tier1_final/track2_tier1.csv",
+      "message": "Successfully submitted to Track 2 - Robotic Grounding (Tier 1: multi-view input) - MPPE (cm)",
+      "ref": 57617142,
+      "public_score": "74.19795",
+      "error": ""
+    }
+  }
+}

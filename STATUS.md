@@ -1,27 +1,32 @@
 # STATUS — v2d (NVIDIA V2D Challenge, Track 2)
 
-## Blocked — needs Luai, nobody else can do either
+## Submitted — the credit condition is met
 
-1. **Kaggle rules not accepted on the 4 Tier 1 competitions**: open each of
-   `kaggle.com/c/v2d-challenge-track2-tier1-auc/rules`, `-tier1-sp-sr/rules`, `-tier1-mp-sr/rules`,
-   `-tier1-mppe/rules` and click accept — Kaggle has no API for this, and both `--check-entry` and
-   the uploader's own preflight still reported all four unaccepted at 21:30 on 2026-10-24.
-2. ~~No `code_commit_url`~~ **CLEARED 2026-10-24**: `origin` is
-   `github.com/luaiabuelsamen/v2d-track2` (private, `Nvidia-V2D-Challenge` invited), main pushed at
-   `517ad99`. The entry is re-packed against that commit and is **`submittable: true` with no audit
-   findings**; `brev/` and `src/v2d/` are byte-identical from `4444c1e` to `517ad99`, so the URL
-   names exactly the code that produced the rollouts.
+**The Tier 1 entry is on all four Tier 1 leaderboards and scored, 2026-10-24, eleven days before
+the freeze.** One upload, four competitions, every one COMPLETE:
 
-The CSV is built, validated three ways and waiting: 30 episodes, 22,989 rows, 11,831,600 B,
-sha256 `e41271d4478d07a7...`, AUC 0.1343 / MPPE 74.198 cm. The uploader's own
-offline dry run calls the file valid and then stops on the rules. Upload is a single command the
-moment item 1 is done. Note the uploader sends one CSV to all four competitions of a tier and each
-upload counts against every one of their quotas even when it fails to score, so nothing unvalidated
-gets sent.
+| leaderboard | submission | public score | our local score |
+|---|---|---|---|
+| `tier1-auc` | 57617131 | 0.13434 | 0.13434706 |
+| `tier1-sp-sr` | 57617135 | 0.00000 | 0.0 |
+| `tier1-mp-sr` | 57617139 | 0.00000 | 0.0 |
+| `tier1-mppe` | 57617142 | 74.19795 | 74.1979545 |
+
+Both blockers are cleared: `origin` is `github.com/luaiabuelsamen/v2d-track2` (private,
+`Nvidia-V2D-Challenge` invited) with main pushed at `517ad99`, and Luai accepted the four rule
+sets. CSV sha256 `e41271d4…`, 22,989 rows over 30 episodes, four of five daily submissions still
+left on each competition.
+
+**The leaderboard reproduces all four local numbers to five decimals.** That is the result worth
+keeping from today: from here a local score *is* a leaderboard score, so Tier 2 choices can be
+made on the host scorer without spending an upload to find out. It is also not a competitive
+entry -- 409,600 env steps per clip is about 1/850th of the full recipe, both success rates are
+exactly zero -- and that is fine, because it is insurance.
+
 Goal: A valid Track 2 submission before the freeze (this keeps the $250 Brev credit), then the best Tier 2 rank-sum we can reach in 11 days, and a frozen released measurement whatever the rank.
 Finish line: Tier 1 insurance submission accepted; Tier 2 submitted; results/ frozen; README + short tech report; every number traceable to a committed results file.
 Deadline: leaderboard freeze 2026-11-04 17:00 EST (internal cutoff 12:00 EST that day)
-Milestone: GO, and the first paid compute has run. Gate G1 passed long since (all 60 clips retargeted on CPU at 0.0 mm). **Brev is live**: three probe attempts, two real bugs found and fixed, the hardware confirmed, ~$0.22 spent of a $2 cap. The reference cleaner now has a **known-answer gate, and the original cleaner failed it** -- a gated variant that passes is built and scored. Code is one package with one CLI, ruff/format clean, 76 tests. Observability is live to W&B and a private Hugging Face repo.
+Milestone: **a valid Track 2 submission is in and scored, so the $250 Brev credit is secured.** Gate G1 passed long since (all 60 clips retargeted on CPU at 0.0 mm). **Brev is live**: three probe attempts, two real bugs found and fixed, the hardware confirmed, ~$0.22 spent of a $2 cap. The reference cleaner now has a **known-answer gate, and the original cleaner failed it** -- a gated variant that passes is built and scored. Code is one package with one CLI, ruff/format clean, 76 tests. Observability is live to W&B and a private Hugging Face repo.
 Last result: **the Tier 1 fallback entry exists and is scored, and arm C failed its own
 pre-registered bar.** Thirty short-budget policies (409,600 steps each) trained and evaluated on
 one A6000 in under two hours, all 30 rollouts came back byte-verified, and the kit's own packer
@@ -45,13 +50,13 @@ stands as measured and unexplained. The consequence is firm regardless: seed and
 checkpoint selection for Tier 2 has to happen on our own synthetic noise, because the Tier 1
 reference is forbidden as supervision and the evaluator metric carries no usable signal
 (`results/sweep_c.json`).
-Blocked: the two items at the top of this file, both Luai's alone -- Kaggle rules on the four Tier 1 competitions, and a GitHub remote to give the CSV a `code_commit_url`. Also still open from before: re-save the quality-gates / dev-confirm section of ~/projects/_ops/briefs/v2d_allhands.md, which is not on disk.
+Blocked: nothing. Still open for Luai, but not blocking: re-save the quality-gates / dev-confirm section of ~/projects/_ops/briefs/v2d_allhands.md, which is not on disk; and decide whether the code_commit_url should also cover closer's packer wrapper, which lives in the unpushed v2d-submit repo and calls the kit's own tools/pack_submission.py.
 Next: D/E/F are finishing on the sweep box and are descriptive at two seeds whatever they show; the
 350M arm A run on e24 is the only thing that can give a real success rate, since every run so far
 has SP-SR and MP-SR at exactly zero. **The 30-clip Tier 2 pass is not started and needs Luai's
 word** -- it is the expensive one. Spend so far on the standing budget: $3.91 of $30, two boxes
 running, the Tier 1 box deleted the moment its results were verified off it.
-Updated: 2026-10-24 21:35
+Updated: 2026-10-24 21:50
 
 ## Rules
 No paid compute until Luai redeems the code and approves the specific run. No registration, submission, posting, pushing or email without his approval. Every Brev run deletes its instance on exit. Jetson: MemAvailable above 2.5 GB, 20 GB disk floor, check ~/projects/_ops/GPU_RELEASED before local GPU use.

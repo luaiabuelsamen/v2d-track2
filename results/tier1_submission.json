@@ -1,0 +1,57 @@
+{
+  "code_commit_url": "https://github.com/luaiabuelsamen/v2d-track2/commit/517ad99cd5840659108314fc4620ce6383ceb09c",
+  "csv_sha256": "e41271d4478d07a74e27cfd487da772e0a4c101bff46346c503ed3263dc756fa",
+  "public_vs_local": {
+    "add_auc": {
+      "agrees_to": "5 decimals",
+      "local": 0.13434706677529462,
+      "public": "0.13434"
+    },
+    "maniptrans_sr": {
+      "agrees_to": "5 decimals",
+      "local": 0.0,
+      "public": "0.00000"
+    },
+    "mppe_cm": {
+      "agrees_to": "5 decimals",
+      "local": 74.1979544999383,
+      "public": "74.19795"
+    },
+    "spider_sr": {
+      "agrees_to": "5 decimals",
+      "local": 0.0,
+      "public": "0.00000"
+    }
+  },
+  "quota_before": "5 submissions left today on each of the four",
+  "submissions": {
+    "add_auc": {
+      "public_score": "0.13434",
+      "ref": 57617131,
+      "slug": "v2d-challenge-track2-tier1-auc",
+      "state": "COMPLETE"
+    },
+    "maniptrans_sr": {
+      "public_score": "0.00000",
+      "ref": 57617139,
+      "slug": "v2d-challenge-track2-tier1-mp-sr",
+      "state": "COMPLETE"
+    },
+    "mppe_cm": {
+      "public_score": "74.19795",
+      "ref": 57617142,
+      "slug": "v2d-challenge-track2-tier1-mppe",
+      "state": "COMPLETE"
+    },
+    "spider_sr": {
+      "public_score": "0.00000",
+      "ref": 57617135,
+      "slug": "v2d-challenge-track2-tier1-sp-sr",
+      "state": "COMPLETE"
+    }
+  },
+  "what": "the Tier 1 insurance entry, submitted to all four Tier 1 leaderboards and scored",
+  "what_it_is_not": "a competitive entry. 409,600 env steps per clip is roughly 1/850th of the full recipe, SP-SR and MP-SR are exactly zero, and MPPE 74.198 cm is far off. It is insurance, and the Tier 2 work is where the rank comes from.",
+  "when": "2026-10-24, one upload, four competitions",
+  "why_it_matters": "this is the valid Track 2 submission the $250 Brev credit was conditional on, and it is in before the 2026-11-04 freeze with eleven days to spare. It also closes the loop on the local scorer: the leaderboard reproduces every one of our four local numbers to five decimals, so from here a local score is a leaderboard score and we no longer have to spend an upload to find out."
+}
