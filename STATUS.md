@@ -1,4 +1,19 @@
 # STATUS — v2d (NVIDIA V2D Challenge, Track 2)
+
+## Blocked — needs Luai, nobody else can do either
+
+1. **Kaggle rules not accepted on the 4 Tier 1 competitions**: open each of
+   `kaggle.com/c/v2d-challenge-track2-tier1-auc/rules`, `-tier1-sp-sr/rules`, `-tier1-mp-sr/rules`,
+   `-tier1-mppe/rules` and click accept — Kaggle has no API for this, and `--check-entry` reported
+   all four not accepted on 2026-10-24 (`tier2-auc` is already accepted, so the flow works).
+2. **No `code_commit_url`**: create a GitHub remote, push the commit that produced the CSV, and if
+   the repo is private invite `Nvidia-V2D-Challenge` — every submitted row must carry an openable
+   `/commit/<sha>` URL and this repo has no remote, so no such URL exists yet.
+
+Everything else for the Tier 1 entry is done or in flight: the packer, the grid check and the
+local scorer are proven, so the upload is one command once both are cleared. Note the uploader
+sends one CSV to all four competitions of a tier and each upload counts against every one of
+their quotas even when it fails to score, so nothing unvalidated gets sent.
 Goal: A valid Track 2 submission before the freeze (this keeps the $250 Brev credit), then the best Tier 2 rank-sum we can reach in 11 days, and a frozen released measurement whatever the rank.
 Finish line: Tier 1 insurance submission accepted; Tier 2 submitted; results/ frozen; README + short tech report; every number traceable to a committed results file.
 Deadline: leaderboard freeze 2026-11-04 17:00 EST (internal cutoff 12:00 EST that day)
