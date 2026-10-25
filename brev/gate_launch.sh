@@ -198,7 +198,7 @@ cat <<PLAN
   brev create "$NAME" --type "$INSTANCE_TYPE"
   brev refresh && ssh "$NAME" 'bash -s' < brev/gate_on_instance.sh $PHASE $STEPS [g1-parquet]
   scp "$NAME":~/gate_results/* $OUT_DIR/
-  brev delete "$NAME" --yes
+  brev delete "$NAME"
 PLAN
 
 if [ "$GO" != 1 ]; then
@@ -214,7 +214,7 @@ teardown() {
   local rc=$?
   if [ "$CREATED" = 1 ]; then
     say "Deleting $NAME"
-    brev delete "$NAME" --yes 2>/dev/null || brev delete "$NAME" 2>/dev/null || {
+    brev delete "$NAME" 2>/dev/null || {
       echo "!! COULD NOT DELETE. Run this yourself, now:" >&2
       echo "     brev delete $NAME" >&2
       echo "   then confirm with: brev ls" >&2
@@ -228,17 +228,24 @@ say "Creating $NAME ($INSTANCE_TYPE)"
 brev create "$NAME" --type "$INSTANCE_TYPE" || { echo "create failed" >&2; exit 1; }
 CREATED=1
 
-# Independent watchdog: deletes the instance even if this script is killed. In dev-box mode it
+# Independent watchdog: deletes the instance even if this script is killed.
+#
+# `brev delete` takes names POSITIONALLY and has no --yes flag. Passing one makes the CLI exit
+# with "unknown flag: --yes" having deleted nothing, so every watchdog here was a silent no-op
+# until this was found -- the teardown's `|| brev delete "$NAME"` fallback had been masking it.
+# It also retries, because hammering the API earns "rate limit exceeded" and the call just fails. In dev-box mode it
 # is fully detached, because it has to outlive this process -- it is the only thing standing
 # between a forgotten box and a day of A6000 billing.
 if [ "${DEV_BOX:-0}" = 1 ]; then
-  setsid nohup bash -c "sleep $WATCHDOG_SECONDS; brev delete '$NAME' --yes" \
+  setsid nohup bash -c "sleep $WATCHDOG_SECONDS; \
+    for _ in 1 2 3 4 5; do brev delete '$NAME' </dev/null >/dev/null 2>&1 && break; sleep 60; done" \
     >/dev/null 2>&1 < /dev/null &
   echo "detached watchdog armed: deletes $NAME in ${WATCHDOG_HOURS} h"
   # No teardown trap: the point of this mode is that the box survives.
   trap - EXIT INT TERM
 else
-  ( sleep "$WATCHDOG_SECONDS"; brev delete "$NAME" --yes >/dev/null 2>&1 ) &
+  ( sleep "$WATCHDOG_SECONDS"
+    for _ in 1 2 3 4 5; do brev delete "$NAME" </dev/null >/dev/null 2>&1 && break; sleep 60; done ) &
   WATCHDOG=$!
   trap 'kill $WATCHDOG 2>/dev/null; teardown' EXIT INT TERM
 fi
@@ -358,7 +365,7 @@ if [ "${DEV_BOX:-0}" = 1 ]; then
   container:  ssh $NAME "docker ps --filter name=flash_chord"
   run a step: ssh $NAME "docker exec -i \$(docker ps -q --filter name=flash_chord | head -1) bash -lc 'CMD'"
   watchdog:   deletes it in ${WATCHDOG_HOURS} h (~\$${MAX_USD} at \$${HOURLY}/h)
-  DELETE IT:  brev delete $NAME --yes && brev ls
+  DELETE IT:  brev delete $NAME && brev ls
 DEV
   exit 0
 fi
