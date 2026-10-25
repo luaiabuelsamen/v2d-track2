@@ -1,0 +1,29 @@
+{
+  "answer": "yes, at least 4",
+  "cleanup": "all three probe instances deleted; `brev ls` shows only the dev box",
+  "cost": "about 0.4 GPU-hours across the three probes, ~$0.27 at $0.68/h",
+  "incident": "Found while cleaning up that `brev delete` has no --yes flag, so every watchdog armed with it was a silent no-op. See the fix in brev/gate_launch.sh.",
+  "instance_type": "massedcompute_A6000",
+  "method": "There is no quota command in the brev CLI (checked `brev --help` and `brev org`), so this is empirical: create one additional A6000 at a time alongside the running dev box and stop at the first refusal. A quota refusal fails the create call immediately rather than provisioning, so an instance reaching DEPLOYING means the create was accepted.",
+  "observed": [
+    {
+      "concurrent": 2,
+      "instance": "v2d-quota-1-164807",
+      "result": "accepted, reached RUNNING"
+    },
+    {
+      "concurrent": 3,
+      "instance": "v2d-quota-2-165310",
+      "result": "accepted, reached RUNNING"
+    },
+    {
+      "concurrent": 4,
+      "instance": "v2d-quota-3-165814",
+      "result": "accepted, reached DEPLOYING"
+    }
+  ],
+  "question": "can this org run 4 A6000s at once",
+  "upper_bound_untested": "Stopped at 4 because that was the question; 5 or more was not tried, so this is a lower bound rather than the quota itself.",
+  "what": "Brev concurrency quota for org luai_abuelsamen-908567-hq7n, measured",
+  "what_this_unblocks": "The 30-clip pass is 126.9 GPU-hours at 4.23 h per clip. With 4 concurrent instances that is about 32 hours of wall clock instead of 127, which is what makes a full pass fit inside the days remaining before the 2026-11-04 freeze."
+}
