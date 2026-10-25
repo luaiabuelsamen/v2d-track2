@@ -251,8 +251,27 @@ else
 fi
 
 say "Creating $NAME ($INSTANCE_TYPE)"
-brev create "$NAME" --type "$INSTANCE_TYPE" || { echo "create failed" >&2; exit 1; }
-CREATED=1
+# `brev create` exit status is not trustworthy: it printed "Warning: Only created 0/1
+# instances" / "create failed" and exited non-zero for two boxes that `brev ls` showed moments
+# later as RUNNING / BUILD COMPLETED / SHELL READY. Taking it at its word stranded both of them
+# -- created, billing, with the launcher gone before it armed its own watchdog. So the decision
+# is made from `brev ls`, which reports what exists, and the create is allowed to "fail" when
+# the name is already there. That also makes re-running this script re-attach to its own box
+# instead of demanding a fresh one.
+brev create "$NAME" --type "$INSTANCE_TYPE" || echo "create reported failure; checking whether the instance exists anyway" >&2
+CREATED=0
+for attempt in 1 2 3 4 5; do
+  if brev ls 2>/dev/null | awk '{print $1}' | grep -qx "$NAME"; then
+    CREATED=1
+    echo "$NAME exists per brev ls (attempt $attempt)"
+    break
+  fi
+  sleep 10
+done
+if [ "$CREATED" != 1 ]; then
+  echo "create failed and $NAME is absent from 5 brev ls calls over 50 s" >&2
+  exit 1
+fi
 
 
 # STATUS=RUNNING is not the question, and assuming it was cost the first probe run: brev reports
