@@ -14,6 +14,12 @@ correct rollout it comes out at 0.0000 cm.
 
 Only world 0 is taken. Under `reset_mode=explicit` every world resets to the same frame and runs
 a deterministic policy, so the cohort is redundant and the challenge submits one world.
+
+**If the policy trained on a CLEANED reference, pass it with `--reference-npz`.** A cleaned
+reference differs from the released tier input by a per-frame correction, not by one rigid
+transform, so converting against the released input fits a transform that is right at frame 0
+and drifts after it. The reference check catches this -- it is what it is for -- and the kit's
+packer has the same escape hatch in `--frame-references`.
 """
 
 from __future__ import annotations
@@ -103,6 +109,13 @@ def main(argv: list[str] | None = None) -> None:
         choices=sorted(TIER_DIRS),
         help="the tier whose input the evaluator rolled out against",
     )
+    parser.add_argument(
+        "--reference-npz",
+        type=Path,
+        help="the CLEANED reference the policy actually trained on (episode_NNNNNN.npz in "
+        "released_track2_world). Needed when the policy did not train on the raw released tier "
+        "input: otherwise the conversion fits frame 0 and drifts after it.",
+    )
     parser.add_argument("--world", type=int, default=0)
     parser.add_argument("--npz-out", type=Path, required=True)
     parser.add_argument("-o", "--out", type=Path, help="also write a JSON record")
@@ -118,7 +131,18 @@ def main(argv: list[str] | None = None) -> None:
 
     achieved = _poses(table, "achieved", keep, order)
     evaluator_reference = _poses(table, "reference", keep, order)
-    released = released_pose(args.dataset_root, args.tier, args.episode)[frames]
+    if args.reference_npz is not None:
+        with np.load(args.reference_npz / f"episode_{args.episode:06d}.npz") as archive:
+            if str(archive["coordinate_frame"]) != "released_track2_world":
+                raise SystemExit(
+                    f"{args.reference_npz}: coordinate_frame must be released_track2_world"
+                )
+            target = np.asarray(archive["pose_xyzw"], dtype=np.float64).reshape(-1, 7)
+        released = target[frames]
+        reference_source = str(args.reference_npz)
+    else:
+        released = released_pose(args.dataset_root, args.tier, args.episode)[frames]
+        reference_source = f"released {args.tier} input"
 
     converted, position_residual, angle_residual = convert(achieved, evaluator_reference, released)
     within = position_residual <= POSITION_TOLERANCE_M and angle_residual <= ANGLE_TOLERANCE_RAD
@@ -137,6 +161,7 @@ def main(argv: list[str] | None = None) -> None:
         "trajectory": str(args.trajectory),
         "episode": args.episode,
         "tier_rolled_out_against": args.tier,
+        "reference_converted_against": reference_source,
         "world": args.world,
         "frames": len(frames),
         "schema": metadata.get("flash_chord.schema"),
