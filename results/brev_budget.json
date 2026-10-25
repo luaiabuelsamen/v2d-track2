@@ -1,0 +1,33 @@
+{
+  "already_spent_before_this": 2.7,
+  "authorised_usd": 30.0,
+  "expected_total_usd": 8.86,
+  "headroom_at_worst_case_usd": 18.46,
+  "jobs": {
+    "cdef_sweep": {
+      "est_hours": 2.08,
+      "goal": "arms C/D/E/F on e24, 4 seeds C and 2 each D/E/F = 10 runs",
+      "runs": 10,
+      "watchdog_hours": 3,
+      "worst_case_usd": 2.04
+    },
+    "full_350m": {
+      "est_hours": 4.48,
+      "goal": "one full-length 350M-step arm A policy on e24, gated reference",
+      "steps": 349999104,
+      "watchdog_hours": 6,
+      "worst_case_usd": 4.08
+    },
+    "tier1_backup": {
+      "est_hours": 2.5,
+      "est_minutes_per_clip": 4.5,
+      "goal": "short-budget policy for each of 30 Tier 1 clips, then pack and submit",
+      "steps_per_clip": 409600,
+      "watchdog_hours": 4,
+      "worst_case_usd": 2.72
+    }
+  },
+  "rate_usd_per_hour": 0.68,
+  "what": "Brev budget ledger for the $30 standing authorisation",
+  "worst_case_total_usd": 11.54
+}

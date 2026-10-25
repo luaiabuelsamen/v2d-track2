@@ -224,10 +224,10 @@ teardown() {
 }
 trap teardown EXIT INT TERM
 
-say "Creating $NAME ($INSTANCE_TYPE)"
-brev create "$NAME" --type "$INSTANCE_TYPE" || { echo "create failed" >&2; exit 1; }
-CREATED=1
-
+# Armed BEFORE the box exists, deliberately. `brev create` blocks until the instance is ready,
+# about six minutes, and arming after it left that whole window uncovered: kill the launcher
+# during the build and the box bills until someone notices. Deleting by name needs no instance,
+# so arming early costs nothing -- if create fails, the delete simply finds nothing to do.
 # Independent watchdog: deletes the instance even if this script is killed.
 #
 # `brev delete` takes names POSITIONALLY and has no --yes flag. Passing one makes the CLI exit
@@ -249,6 +249,11 @@ else
   WATCHDOG=$!
   trap 'kill $WATCHDOG 2>/dev/null; teardown' EXIT INT TERM
 fi
+
+say "Creating $NAME ($INSTANCE_TYPE)"
+brev create "$NAME" --type "$INSTANCE_TYPE" || { echo "create failed" >&2; exit 1; }
+CREATED=1
+
 
 # STATUS=RUNNING is not the question, and assuming it was cost the first probe run: brev reports
 # RUNNING while the SHELL column still reads NOT READY, ssh then dies with
