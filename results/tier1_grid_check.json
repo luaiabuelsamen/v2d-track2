@@ -1,0 +1,37 @@
+{
+  "all_worlds_valid": true,
+  "duplicate_rows": false,
+  "episode": 0,
+  "frames_extra": 0,
+  "frames_missing": 0,
+  "provenance_hashes_genuine": {
+    "checkpoint_sha256": "d25b6603790b892e4eab8494a291c8e4faed57e315be3f3f065ad32e41cd4ac8",
+    "eval_code_sha256": "b1b3ebe3ae4629d1687a83f420149e3f6fdfc154d70acad55c12fc8fa69811a1",
+    "eval_script_sha256": "160d24f5fbeb70ccd569ca4192056f1892b2a9f2999066db9d8279461648fdf1"
+  },
+  "reference_xyzw_present": true,
+  "sample_submission_wants": {
+    "frames": "0..777",
+    "rows": 778,
+    "slots": [
+      0
+    ],
+    "worlds": [
+      0
+    ]
+  },
+  "schema_version": "flash_chord_object_trajectories_v1",
+  "submitted": {
+    "frames": "0..777",
+    "rows": 778,
+    "slots": [
+      0
+    ],
+    "worlds": [
+      0
+    ]
+  },
+  "verdict": "the grid conventions agree; no organiser question needed for Tier 1",
+  "what": "does a real FlashCHORD rollout line up with the kit's scored grid for Tier 1",
+  "why_it_mattered": "pack_submission.py warns that the evaluator numbers rows by reference_frame = step + start_frame, which is contiguous, while the released reference drops frames where an object is not visible. If the two disagree the entry is unpackable and the kit says to resolve it with the organisers rather than work around it."
+}
