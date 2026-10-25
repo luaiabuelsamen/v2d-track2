@@ -1,0 +1,75 @@
+{
+  "arms_differ_by": {
+    "e03": {
+      "frames": 781,
+      "object_position_delta_cm": {
+        "max": 0.0,
+        "mean": 0.0
+      },
+      "object_rotation_delta_deg": {
+        "max": 31.826285628721322,
+        "mean": 24.438472861603323
+      },
+      "robot_joint_delta_rad": 0.0,
+      "robot_root_position_delta_cm": 0.0,
+      "sequence": "2026-04-27_11-50-10_contigo_coffee_mug_handle_table_05"
+    },
+    "e09": {
+      "frames": 870,
+      "object_position_delta_cm": {
+        "max": 0.0,
+        "mean": 0.0
+      },
+      "object_rotation_delta_deg": {
+        "max": 15.34600921144025,
+        "mean": 5.678654664027464
+      },
+      "robot_joint_delta_rad": 0.0,
+      "robot_root_position_delta_cm": 0.0,
+      "sequence": "2026-06-04_16-45-04_big_red_bowl_under_skinny_wood_chair_03"
+    },
+    "e18": {
+      "frames": 858,
+      "object_position_delta_cm": {
+        "max": 0.589221715927124,
+        "mean": 0.5892172038971961
+      },
+      "object_rotation_delta_deg": {
+        "max": 20.604673055071945,
+        "mean": 14.228022697204935
+      },
+      "robot_joint_delta_rad": 0.0,
+      "robot_root_position_delta_cm": 0.0,
+      "sequence": "2026-05-06_10-00-19_blue_trash_can_drag_sideways_08"
+    }
+  },
+  "bar": "docs/AB350_BAR.md",
+  "git_sha": "f6a06759707f9087f045da3dad74369c2effb4bf",
+  "retarget": {
+    "clean": {
+      "episodes_passed": 3,
+      "object_source": "npz_gated (gated support-contact cleaner)",
+      "worst_orientation_residual_deg": 0.03278,
+      "worst_rigid_fit_residual_mm": 0
+    },
+    "note": "each arm is validated against the very trajectory it was retargeted from, so a 0.0 mm residual on both is the proof that RAW carries the released input and CLEAN carries the cleaned one.",
+    "raw": {
+      "episodes_passed": 3,
+      "object_source": "released Tier 2",
+      "worst_orientation_residual_deg": 0.0404,
+      "worst_rigid_fit_residual_mm": 0
+    }
+  },
+  "staged": {
+    "clean": {
+      "files": 15,
+      "md5_manifest": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/ab_stage_clean.md5"
+    },
+    "raw": {
+      "files": 15,
+      "md5_manifest": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/ab_stage_raw.md5"
+    }
+  },
+  "what": "the six A/B references, built and verified, and how far the two arms actually differ",
+  "what_this_A_B_actually_tests": "an ORIENTATION correction, almost entirely. The gated cleaner tilts a resting object onto its support; it does not move it. Object position is bit-identical between the arms on e3 and e9 and differs by a constant 0.589 cm on e18 (the floor clip, where the correction also removes penetration), while object rotation differs by up to 31.8 deg, 15.3 deg and 20.6 deg. Robot root and joint trajectories are bit-identical on all three, because the body comes from the human capture rather than from the object. So the six cells differ in one channel and the comparison is clean -- but AUC and MPPE both read object pose through mesh vertices, so a rotation-only change moves both metrics, and nothing here is a no-op."
+}

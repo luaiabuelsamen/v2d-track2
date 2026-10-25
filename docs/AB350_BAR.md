@@ -43,6 +43,26 @@ Axes the three differ on: support (floor / table / raised-rest-then-floor), hand
 one / both), object scale (trash can / mug / bowl), correction size (13.8° / 22.2° / 7.6°),
 length (858 / 781 / 870 frames).
 
+## What the arms actually differ by (measured after the references were built, before any cell ran)
+
+The gated cleaner tilts a resting object onto its support; it does not move it. Measured on the six
+staged references:
+
+| clip | object position delta | object rotation delta (max / mean) | robot root | robot joints |
+|---|---|---|---|---|
+| e18 | constant 0.589 cm | 20.6° / 14.2° | 0.000 cm | 0.0000 rad |
+| e3  | 0.000 cm | 31.8° / 24.4° | 0.000 cm | 0.0000 rad |
+| e9  | 0.000 cm | 15.3° / 5.7° | 0.000 cm | 0.0000 rad |
+
+So this is an **orientation** A/B almost entirely -- and the body motion is bit-identical between
+the arms on all three clips, because it comes from the human capture rather than from the object.
+That is a clean single-channel comparison, and it is not a no-op: AUC and MPPE both read object pose
+through mesh vertices, so a rotation-only change moves both. e18's position delta is a constant
+offset, which is the floor clip's penetration removal.
+
+It does bound the claim. If CLEAN wins, what won is tilt correction on resting segments, not
+"cleaning" in general; the position channel is untested by this experiment.
+
 ## The gate
 
 Luai's rule, binding. The 30-clip pass is **proposed** only if all three hold:
