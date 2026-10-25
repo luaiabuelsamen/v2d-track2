@@ -29,13 +29,15 @@ not because anything is broken. It is one command from upload and that command i
 two items at the top of this file. **Arm C does not ship.** Four confirmation seeds gave an escape
 rate of 2/4 against the pre-registered >=3/4 (`docs/SWEEP_BAR.md`), Fisher one-sided 0.214; over
 all six C seeds it is 3/6 at 0.167. C's mean AUC 0.2666 does sit above the A/B cluster's 0.2016,
-but its SD is 0.0821 against the cluster's 0.0013, which is exactly why the bar was written on the
+but its SD is 0.0821 against the cluster's 0.0013 (both population; C's sample SD is
+0.0900), which is exactly why the bar was written on the
 escape rate and not the mean. **C_s46 scored 0.1821, below every A and B run**, so the correction
 is bimodal in both directions rather than a free option. **And a finding that costs us a shortcut:
 the evaluator's own AUC does not track the clean-reference score across C's seeds** -- Spearman
--0.60 on the four new seeds, -0.14 over six. A policy that follows the corrupted Tier 2 target
-looks good to the evaluator and bad against the truth, which is the sign the mechanism predicts,
-though at n=6 it is not significant either way. The consequence is firm regardless: seed and
+-0.60 on the four new seeds, -0.14 over six. At n=6 that is not significant either way, and
+nothing in the arm's stated mechanism predicts the sign -- vamp corrected me on that, since
+amendment 3 predicts how often a run escapes, not which reference an escaped run tracks -- so it
+stands as measured and unexplained. The consequence is firm regardless: seed and
 checkpoint selection for Tier 2 has to happen on our own synthetic noise, because the Tier 1
 reference is forbidden as supervision and the evaluator metric carries no usable signal
 (`results/sweep_c.json`).

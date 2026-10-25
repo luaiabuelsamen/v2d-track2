@@ -9,7 +9,9 @@
     "max": 0.39229612299465244,
     "mean": 0.2666219696969697,
     "min": 0.18206885026737968,
-    "sd": 0.08211876894035183,
+    "sd_note": "sd_population is the one quoted in the verdict and in STATUS.md; the sample SD is 0.0900. The conclusion is the same either way, and the comparison with the A/B cluster's 0.0013 (also population) is like for like. vamp flagged the ambiguity on 2026-10-24.",
+    "sd_population": 0.08211876894035183,
+    "sd_sample": 0.08995660428637062,
     "values": [
       0.3605,
       0.2023,
@@ -75,7 +77,8 @@
       "all_six_seeds": -0.1428571428571428,
       "four_new_seeds": -0.6000000000000001
     },
-    "finding": "no. The evaluator's own AUC, computed against the corrupted Tier 2 input the policy was given, does not track the clean-reference score across C's seeds: Spearman -0.60 on the four new seeds and -0.14 over all six. That is the sign the arm's mechanism predicts -- a policy that follows the corrupted target looks good to the evaluator and bad against the truth, and bounded correction deliberately leaves the corrupted target -- but at n=6 it is not significant either way, so the honest statement is that the evaluator metric carries no usable selection signal here.",
+    "finding": "no. The evaluator's own AUC, computed against the corrupted Tier 2 input the policy was given, does not track the clean-reference score across C's seeds: Spearman -0.60 on the four new seeds and -0.14 over all six. At n=6 that is not significant either way, so the honest statement is that the evaluator metric carries no usable selection signal here.",
+    "not_explained": "I first wrote that the sign was what arm C's mechanism predicts. vamp corrected that and is right: ws/residual amendment 3 has C relaxing VOC inside the bound, which predicts how OFTEN a run escapes, not that an escaped run tracks the clean reference better than it tracks its own training target. Nothing in the arm's stated mechanism predicts this sign. It is recorded as measured and unexplained.",
     "question": "can seeds be chosen without touching the clean Tier 1 reference, which the brief forbids as supervision?"
   },
   "verdict": {
