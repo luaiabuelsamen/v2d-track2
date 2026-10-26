@@ -27,6 +27,21 @@ Goal: A valid Track 2 submission before the freeze (this keeps the $250 Brev cre
 Finish line: Tier 1 insurance submission accepted; Tier 2 submitted; results/ frozen; README + short tech report; every number traceable to a committed results file.
 Deadline: leaderboard freeze 2026-11-04 17:00 EST (internal cutoff 12:00 EST that day)
 Milestone: **a valid Track 2 submission is in and scored, so the $250 Brev credit is secured.** Gate G1 passed long since (all 60 clips retargeted on CPU at 0.0 mm). **Brev is live**: three probe attempts, two real bugs found and fixed, the hardware confirmed, ~$0.22 spent of a $2 cap. The reference cleaner now has a **known-answer gate, and the original cleaner failed it** -- a gated variant that passes is built and scored. Code is one package with one CLI, ruff/format clean, 76 tests. Observability is live to W&B and a private Hugging Face repo.
+Last result (2026-10-26): **step 1 re-measured with the support fix -- the AUC line is crossed,
+the pipeline is not.** RAW e03 and e09 were relaunched with the per-clip `scene.support` rule and ran
+the full 349,999,104 steps. The 3-clip RAW mean AUC is **0.1345** against the 0.187 stop line, while
+mean MPPE is 33.20 cm (line 41 cm, was 55.20 cm broken) and SP-SR is no longer zero on all three.
+The AUC line was written to catch a broken pipeline and is not read as one: the object starts on its
+support surface and is tracked to ~1 cm over the opening 50 frames, error first passes 10 cm at frame
+44-376 of clips 781 and 870 frames long, each cell now shows 7 distinct AUC values across 7
+checkpoints (the broken run showed 1), and e09's final checkpoint holds and places the bowl for the
+whole clip (SP-SR 1.0, no termination, MPPE 5.13 cm). The remaining failures are mid-episode drops --
+a policy problem, not plumbing. Host scores at 350M: e03 AUC 0.0602 / MPPE 89.78 cm, e09 AUC 0.2409 /
+MPPE 5.31 cm, against e18 0.3826 / 4.17 cm and e24 0.4500 / 4.16 cm
+(`results/ab350_raw_baseline.json`, addendum in `docs/AB350_BAR.md`). **The 30-clip Tier 2 run stays
+NOT approved**, and no CLEAN arm has been run, so nothing here compares RAW against CLEAN.
+**Spend: $21.13 of the $30 standing budget, nothing left running** (`brev ls` empty).
+
 Last result: **the Tier 1 fallback entry exists and is scored, and arm C failed its own
 pre-registered bar.** Thirty short-budget policies (409,600 steps each) trained and evaluated on
 one A6000 in under two hours, all 30 rollouts came back byte-verified, and the kit's own packer

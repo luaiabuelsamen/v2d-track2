@@ -208,3 +208,64 @@ One observation recorded without being chased: at e24's 300M and 350M checkpoint
 reports SP-SR 1.0 while the host scorer reports 0.0. e18 agrees between the two (1.0 and 1.0), so the
 disagreement is specific to e24's conversion against the gated-cleaned reference, not a general fault
 of either scorer.
+
+---
+
+## Addendum, 2026-10-26: step 1 re-measured with the support fix — the AUC line is crossed, the pipeline is not broken
+
+RAW e03 and RAW e09 were relaunched with the per-clip rule (`brev/support_flag.sh`), both passing
+`scene.support=true` and resolving a real support USDA; e18 was not relaunched, since its flag was
+already correct. Both cells ran the full 349,999,104 steps and were evaluated at all seven
+checkpoints. Full record, including every checkpoint and the superseded numbers, in
+`results/ab350_raw_baseline.json`.
+
+Against the lines pre-registered above, on the mean over the three clips:
+
+| line | value | observed | tripped |
+|---|---|---|---|
+| mean ADD-AUC below | 0.187 | **0.1345** | **yes** |
+| mean MPPE above | 41 cm | 33.20 cm | no (was 55.20 cm) |
+| SP-SR zero on all three | — | e09 and e18 both reach 1.0 | no |
+
+Per clip, at the final checkpoint:
+
+| clip | role | support | evaluator AUC | evaluator MPPE | evaluator SP-SR | host AUC | host MPPE | host SP-SR | distinct AUC over 7 ckpts |
+|---|---|---|---|---|---|---|---|---|---|
+| e03 | table | yes | 0.0611 | 89.56 cm | 0.0 | 0.0602 | 89.78 cm | 0.0 | **7** |
+| e09 | two-handed | yes | 0.2259 | 5.13 cm | 1.0 | 0.2409 | 5.31 cm | 0.0 | **7** |
+| e18 | floor | no | 0.1166 | 4.91 cm | 1.0 | 0.3826 | 4.17 cm | 1.0 | 6 |
+| e24 | floor (full350, gated-cleaned) | no | 0.4125 | 4.64 cm | 1.0 | 0.4500 | 4.16 cm | 0.0 | — |
+
+**The 3-clip RAW mean AUC is 0.135 against the 0.187 line. That line was written to catch a broken
+pipeline. It did not catch one this time, and is not read as one.** What the trajectories show is a
+working pipeline whose remaining failures are mid-episode drops — a policy problem:
+
+- The object starts on its support surface at the reference height and is tracked to about **1 cm**
+  over the opening 50 frames (mean 0.94–1.69 cm on 13 of the 14 checkpoints; e03 at 249M is the one
+  exception at 4.44 cm). Reset, scene and reference agree.
+- Error first exceeds the evaluator's 10 cm object threshold at frame **44–376**, well inside clips
+  of 781 and 870 frames. e03's first drop (achieved *z* below 0.15 m while the reference stays above
+  it) lands at frame 67–516 depending on the checkpoint; the mug starts on the table at *z* 0.892 m
+  and ends on the floor at *z* 0.038 m while the reference keeps it at *z* ≥ 0.876 m throughout.
+- Each cell now shows **7 distinct AUC values across 7 checkpoints**. The broken run showed 1.
+- e09's final checkpoint holds and places the bowl for the whole clip: SP-SR 1.0,
+  `termination_cause_fraction` all 0.0, MPPE 5.13 cm, position error never over 10 cm.
+- Both runners passed `scene.support=true`; `flash_chord/scene/setup.py:62` raises
+  `FileNotFoundError` when support is enabled and no asset resolves, so getting past scene build is
+  itself proof the surface was loaded.
+
+Read `first_drop_frame` next to the other columns, never alone. On e09 it is `None` at 100M and 150M
+for the opposite of a good reason — the bowl is never lowered at all (achieved *z* ends at 0.534 m
+against a reference 0.044 m), a failure to place rather than a drop — and 250M's frame 655 is the
+policy leading the reference down during the place, not a failure.
+
+**The 30-clip Tier 2 run stays NOT approved.** The decision rule above proposes it only if CLEAN
+beats RAW on mean AUC and MPPE across the three clips; the CLEAN arm has not been run, so the rule
+cannot be evaluated, and it needs Luai's explicit go in any case.
+
+Nothing here compares RAW against CLEAN. RAW is only now measured honestly.
+
+The e24 SP-SR disagreement noted above also appears on e09: the evaluator says 1.0, the host scorer
+0.0, on a clip whose MPPE is ~5 cm either way. e18 agrees between the two. Recorded, not chased.
+
+Spend to date: **$21.13 of the $30 standing budget**, nothing left running.

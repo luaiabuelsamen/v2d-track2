@@ -1,8 +1,8 @@
 {
-  "what": "Step 1 of Luai's order: NVIDIA's recipe unchanged, 350M steps, on the RAW released Tier 2 retarget, for the 3 pre-chosen clips. Pre-registered in docs/AB350_BAR.md before launch.",
+  "what": "Step 1 of Luai's order: NVIDIA's recipe unchanged, 350M steps, on the RAW released Tier 2 retarget, for the 3 pre-chosen clips. Pre-registered in docs/AB350_BAR.md before launch. e03 and e09 are the fixed relaunch (per-clip scene.support read from the data); e18 is the original run, which needed no support surface and so was never affected by the bug.",
   "date": "2026-10-25",
-  "git_sha": "86594b7445f53a9827de37e0792f4b0168524b47",
-  "verdict": "TRIPPED",
+  "git_sha": "0c1458c7fc5685b415dc21591e75e5a0e9c6742d",
+  "verdict": "AUC line crossed, pipeline NOT broken. 1 of 3 lines trips: mean AUC 0.134 against the 0.187 line. The MPPE and SP-SR lines clear.",
   "recipe": {
     "experiment": "g1_recon_body_flash_sac",
     "total_environment_steps": 349999104,
@@ -19,25 +19,28 @@
     "spider_sr_zero_on_all_three": true
   },
   "observed": {
-    "mean_add_auc": 0.042298,
-    "mean_mppe_cm": 55.2038,
+    "basis": "evaluator metrics at the 350M checkpoint, mean over e03, e09, e18",
+    "mean_add_auc": 0.134491,
+    "mean_add_auc_as_quoted_in_the_step1_verdict": 0.135,
+    "mean_mppe_cm": 33.1995,
     "spider_sr_all_zero": false
   },
   "tripped": {
     "mean_add_auc": {
-      "value": 0.042298,
+      "value": 0.134491,
       "line": 0.187,
       "tripped": true
     },
     "mean_mppe_cm": {
-      "value": 55.2038,
+      "value": 33.1995,
       "line": 41.0,
-      "tripped": true
+      "tripped": false,
+      "note": "no longer tripped: 33.2 cm against a 41 cm line, down from 55.2 cm on the broken run"
     },
     "spider_sr_zero_on_all_three": {
       "value": false,
       "tripped": false,
-      "note": "not tripped: e18 reaches spider_sr 1.0 at 350M"
+      "note": "not tripped: e09 and e18 both reach spider_sr 1.0 at 350M"
     }
   },
   "reference_board_average_chord_tier2": {
@@ -87,12 +90,32 @@
       "frames": 748,
       "note": "evaluator reports spider_sr 1.0 for this checkpoint while the host scorer reports 0.0. e18 agrees between the two (1.0 and 1.0), so the disagreement is specific to e24's conversion against the gated reference, not a general scorer fault. Recorded, not chased."
     },
-    "e03": null,
-    "e09": null
-  },
-  "not_scored_on_host": {
-    "e03": "terminated on frame ~0, nothing to score",
-    "e09": "same"
+    "e03": {
+      "episode": 3,
+      "arm": "raw",
+      "environment_steps": 349999104,
+      "reference_converted_against": "released tier2 input",
+      "reference_check_position_cm": 1e-05,
+      "reference_check_angle_deg": 4e-06,
+      "add_auc": 0.06017925736235595,
+      "spider_sr": 0.0,
+      "maniptrans_sr": 0.0,
+      "mppe_cm": 89.78379212544795,
+      "frames": 781
+    },
+    "e09": {
+      "episode": 9,
+      "arm": "raw",
+      "environment_steps": 349999104,
+      "reference_converted_against": "released tier2 input",
+      "reference_check_position_cm": 1e-05,
+      "reference_check_angle_deg": 5e-06,
+      "add_auc": 0.2408764367816092,
+      "spider_sr": 0.0,
+      "maniptrans_sr": 0.0,
+      "mppe_cm": 5.309364916503392,
+      "frames": 870
+    }
   },
   "clips": {
     "e03": {
@@ -103,111 +126,184 @@
       "support_usda_bytes": 570,
       "support_primitive_count": 1,
       "support_should_be": true,
-      "support_flag_used_in_this_run": false,
-      "train_seconds": 14684,
+      "support_flag_used_in_this_run": true,
+      "train_seconds": 13461,
       "frames": 781,
-      "constant_error_signature": true,
-      "distinct_auc_values_across_7_checkpoints": 1,
+      "constant_error_signature": false,
+      "distinct_auc_values_across_7_checkpoints": 7,
       "final": {
         "environment_steps": 349999104,
-        "add_auc": 0.005601792573623559,
-        "mppe_cm": 91.84176889214683,
+        "add_auc": 0.0610595390524968,
+        "mppe_cm": 89.55681448368419,
         "spider_sr": 0.0,
         "maniptrans_sr": 0.0
       },
       "per_checkpoint": [
         {
           "environment_steps": 49999872,
-          "add_auc": 0.005601792573623559,
-          "mppe_cm": 91.83899689172374,
+          "add_auc": 0.06994238156209986,
+          "mppe_cm": 86.5205600602984,
           "spider_sr": 0.0,
           "maniptrans_sr": 0.0,
-          "object_orientation_error_deg": 84.42401485784222,
+          "object_orientation_error_deg": 129.72409780705655,
+          "object_position_error_m": 0.8628426603503008,
           "termination_cause_fraction": {
             "object": 1.0,
             "wrist": 1.0
           },
-          "checkpoint_sha256": "7249630ea66223a6dde5eae2e0b18175b1e1014560d203b3bc3c2c3fcddfdf1c"
+          "reference_tracking_success_rate": 0.0,
+          "first_drop_frame": 90,
+          "checkpoint_sha256": "ca46980e650ae03d4a5e8abc2bd091e7e92d4348a4c455e4e09cd4dfb3da1a69",
+          "achieved_z_first_m": 0.8917,
+          "reference_z_first_m": 0.8941,
+          "achieved_z_last_m": 0.0375,
+          "reference_z_last_m": 0.8843,
+          "reference_z_min_m": 0.8758,
+          "mean_position_error_first_50_frames_cm": 1.23,
+          "first_frame_over_10cm": 67
         },
         {
           "environment_steps": 99999744,
-          "add_auc": 0.005601792573623559,
-          "mppe_cm": 91.83917486894299,
+          "add_auc": 0.31802176696542894,
+          "mppe_cm": 38.84925309322239,
           "spider_sr": 0.0,
           "maniptrans_sr": 0.0,
-          "object_orientation_error_deg": 84.40731406628261,
+          "object_orientation_error_deg": 77.12230619419275,
+          "object_position_error_m": 0.3845534359293805,
           "termination_cause_fraction": {
             "object": 1.0,
             "wrist": 1.0
           },
-          "checkpoint_sha256": "3602ec2ad832be25020c35c027807d8e921b097a376cce43eb248cac8dba9638"
+          "reference_tracking_success_rate": 0.0,
+          "first_drop_frame": 516,
+          "checkpoint_sha256": "fe51794c67c90b364ebd311392c8b12e1dceab56fc4fa6f39e1ca92b70e86b60",
+          "achieved_z_first_m": 0.8917,
+          "reference_z_first_m": 0.8941,
+          "achieved_z_last_m": 0.0391,
+          "reference_z_last_m": 0.8843,
+          "reference_z_min_m": 0.8758,
+          "mean_position_error_first_50_frames_cm": 1.06,
+          "first_frame_over_10cm": 141
         },
         {
           "environment_steps": 149999616,
-          "add_auc": 0.005601792573623559,
-          "mppe_cm": 91.84125539203104,
+          "add_auc": 0.1081145966709347,
+          "mppe_cm": 81.09379177353372,
           "spider_sr": 0.0,
           "maniptrans_sr": 0.0,
-          "object_orientation_error_deg": 84.237894587729,
+          "object_orientation_error_deg": 106.3124524319585,
+          "object_position_error_m": 0.809042455181942,
           "termination_cause_fraction": {
             "object": 1.0,
             "wrist": 1.0
           },
-          "checkpoint_sha256": "8a1c5a7b2402f1abf4f3c6b9f1ca7bbda77d3c2dd662a6a5bb972c926f0427e1"
+          "reference_tracking_success_rate": 0.0,
+          "first_drop_frame": 126,
+          "checkpoint_sha256": "046432ca7d878872da83613756d1b1781f83f28322deebf9f2f3d09ac04956e9",
+          "achieved_z_first_m": 0.8917,
+          "reference_z_first_m": 0.8941,
+          "achieved_z_last_m": 0.0375,
+          "reference_z_last_m": 0.8843,
+          "reference_z_min_m": 0.8758,
+          "mean_position_error_first_50_frames_cm": 1.38,
+          "first_frame_over_10cm": 103
         },
         {
           "environment_steps": 199999488,
-          "add_auc": 0.005601792573623559,
-          "mppe_cm": 91.83982697694577,
+          "add_auc": 0.11147567221510883,
+          "mppe_cm": 83.56744541616233,
           "spider_sr": 0.0,
           "maniptrans_sr": 0.0,
-          "object_orientation_error_deg": 84.36490640597113,
+          "object_orientation_error_deg": 71.03512498729167,
+          "object_position_error_m": 0.834728387077125,
           "termination_cause_fraction": {
             "object": 1.0,
             "wrist": 1.0
           },
-          "checkpoint_sha256": "61127b66ec3d9c041f8f2e9fcbf623df0322891a826f0e399f76f43f96624563"
+          "reference_tracking_success_rate": 0.0,
+          "first_drop_frame": 127,
+          "checkpoint_sha256": "a7fae6704e6b0a62b9863c003ed0839c357a73d4fc16689b0756ed143d3376e6",
+          "achieved_z_first_m": 0.8917,
+          "reference_z_first_m": 0.8941,
+          "achieved_z_last_m": 0.0391,
+          "reference_z_last_m": 0.8843,
+          "reference_z_min_m": 0.8758,
+          "mean_position_error_first_50_frames_cm": 1.21,
+          "first_frame_over_10cm": 104
         },
         {
           "environment_steps": 249999360,
-          "add_auc": 0.005601792573623559,
-          "mppe_cm": 91.83916150084754,
+          "add_auc": 0.038012163892445584,
+          "mppe_cm": 87.4191947429348,
           "spider_sr": 0.0,
           "maniptrans_sr": 0.0,
-          "object_orientation_error_deg": 84.40491632130734,
+          "object_orientation_error_deg": 131.5962167001331,
+          "object_position_error_m": 0.871672273162829,
           "termination_cause_fraction": {
             "object": 1.0,
             "wrist": 1.0
           },
-          "checkpoint_sha256": "90caea99971d09795282466d7ed8bb65da871821f4c4154ee3cc3f2e0f554d9c"
+          "reference_tracking_success_rate": 0.0,
+          "first_drop_frame": 67,
+          "checkpoint_sha256": "1f4292966b129f7096709b1d788cc23ecf2d1d565d22421e439ca24d49fb352f",
+          "achieved_z_first_m": 0.8917,
+          "reference_z_first_m": 0.8941,
+          "achieved_z_last_m": 0.0391,
+          "reference_z_last_m": 0.8843,
+          "reference_z_min_m": 0.8758,
+          "mean_position_error_first_50_frames_cm": 4.44,
+          "first_frame_over_10cm": 44
         },
         {
           "environment_steps": 299999232,
-          "add_auc": 0.005601792573623559,
-          "mppe_cm": 91.84182271398798,
+          "add_auc": 0.16013124199743917,
+          "mppe_cm": 55.83249201439816,
           "spider_sr": 0.0,
           "maniptrans_sr": 0.0,
-          "object_orientation_error_deg": 84.20087704171563,
+          "object_orientation_error_deg": 76.91283811980634,
+          "object_position_error_m": 0.5556514295491801,
           "termination_cause_fraction": {
             "object": 1.0,
             "wrist": 1.0
           },
-          "checkpoint_sha256": "45924f927f1a036d92cb071ee4a74dcf23e3a612135d2fb27abaaa188e42f3b1"
+          "reference_tracking_success_rate": 0.0,
+          "first_drop_frame": 389,
+          "checkpoint_sha256": "4b6f0d4ef581bce51129618bbbebeda38d2438ea982c3eae12bb45b31e80bcf5",
+          "achieved_z_first_m": 0.8917,
+          "reference_z_first_m": 0.8941,
+          "achieved_z_last_m": 0.0375,
+          "reference_z_last_m": 0.8843,
+          "reference_z_min_m": 0.8758,
+          "mean_position_error_first_50_frames_cm": 1.29,
+          "first_frame_over_10cm": 154
         },
         {
           "environment_steps": 349999104,
-          "add_auc": 0.005601792573623559,
-          "mppe_cm": 91.84176889214683,
+          "add_auc": 0.0610595390524968,
+          "mppe_cm": 89.55681448368419,
           "spider_sr": 0.0,
           "maniptrans_sr": 0.0,
-          "object_orientation_error_deg": 84.20001181590814,
+          "object_orientation_error_deg": 77.87601212267553,
+          "object_position_error_m": 0.8946298556076522,
           "termination_cause_fraction": {
             "object": 1.0,
             "wrist": 1.0
           },
-          "checkpoint_sha256": "f3e6df2da52da76ab7f69dd7fab37868abd9f45136f3e02a1442b2669d549573"
+          "reference_tracking_success_rate": 0.0,
+          "first_drop_frame": 83,
+          "checkpoint_sha256": "7ec08e70b4ef94a8baac2521dd84d66114b675ff944da2e217aa6b5b8c24b973",
+          "achieved_z_first_m": 0.8917,
+          "reference_z_first_m": 0.8941,
+          "achieved_z_last_m": 0.0375,
+          "reference_z_last_m": 0.8843,
+          "reference_z_min_m": 0.8758,
+          "mean_position_error_first_50_frames_cm": 1.69,
+          "first_frame_over_10cm": 61
         }
-      ]
+      ],
+      "support_flag_passed": "scene.support=true",
+      "support_usda_resolved_in_container": "/v2d/assets/ab_raw/whole_body/reconstructed_stage/2026-04-27_11-50-10_contigo_coffee_mug_handle_table_05_support.usda",
+      "failure_mode": "mid-episode drop. The mug starts on the table at z 0.892 m and is tracked closely for the first tens of frames at every checkpoint, then is dropped and ends on the floor at z 0.038 m. The reference keeps it on the table (z >= 0.876 m) for the whole clip, so the drop frame is unambiguous."
     },
     "e09": {
       "episode": 9,
@@ -217,111 +313,184 @@
       "support_usda_bytes": 572,
       "support_primitive_count": 1,
       "support_should_be": true,
-      "support_flag_used_in_this_run": false,
-      "train_seconds": 14644,
+      "support_flag_used_in_this_run": true,
+      "train_seconds": 13769,
       "frames": 870,
-      "constant_error_signature": true,
-      "distinct_auc_values_across_7_checkpoints": 1,
+      "constant_error_signature": false,
+      "distinct_auc_values_across_7_checkpoints": 7,
       "final": {
         "environment_steps": 349999104,
-        "add_auc": 0.0047413793103448275,
-        "mppe_cm": 68.86035022785325,
-        "spider_sr": 0.0,
+        "add_auc": 0.22586206896551728,
+        "mppe_cm": 5.132339256303895,
+        "spider_sr": 1.0,
         "maniptrans_sr": 0.0
       },
       "per_checkpoint": [
         {
           "environment_steps": 49999872,
-          "add_auc": 0.0047413793103448275,
-          "mppe_cm": 86.38015763971481,
+          "add_auc": 0.1781609195402299,
+          "mppe_cm": 63.83056045528037,
           "spider_sr": 0.0,
           "maniptrans_sr": 0.0,
-          "object_orientation_error_deg": 71.91977584563163,
+          "object_orientation_error_deg": 74.29536515910421,
+          "object_position_error_m": 0.6362036735762537,
           "termination_cause_fraction": {
             "object": 1.0,
             "wrist": 1.0
           },
-          "checkpoint_sha256": "069ba8fb13411375b40722608a6a4b42b854bd383b6ca1d37455b6380978b802"
+          "reference_tracking_success_rate": 0.0,
+          "first_drop_frame": 269,
+          "checkpoint_sha256": "d92f88d5d41316b2191e4187aa5f41562a568ab68688666ca65c5afd6f69cfe4",
+          "achieved_z_first_m": 0.5347,
+          "reference_z_first_m": 0.5354,
+          "achieved_z_last_m": 0.065,
+          "reference_z_last_m": 0.0437,
+          "reference_z_min_m": 0.0343,
+          "mean_position_error_first_50_frames_cm": 0.99,
+          "first_frame_over_10cm": 222
         },
         {
           "environment_steps": 99999744,
-          "add_auc": 0.0047413793103448275,
-          "mppe_cm": 68.86033747138815,
+          "add_auc": 0.16982758620689653,
+          "mppe_cm": 51.3819243547529,
           "spider_sr": 0.0,
           "maniptrans_sr": 0.0,
-          "object_orientation_error_deg": 80.32262493007231,
+          "object_orientation_error_deg": 68.29478223175941,
+          "object_position_error_m": 0.5116552454194968,
           "termination_cause_fraction": {
             "object": 1.0,
             "wrist": 1.0
           },
-          "checkpoint_sha256": "f9b46ebf8608565243cdfdc120cefa7f1196f891c48653ccdf2ead451d539e8a"
+          "reference_tracking_success_rate": 0.0,
+          "first_drop_frame": null,
+          "checkpoint_sha256": "9aff1239c5aa197bd3745ea92d47847e5e79b735023be40c16bd80d87985ddde",
+          "achieved_z_first_m": 0.5344,
+          "reference_z_first_m": 0.5354,
+          "achieved_z_last_m": 0.5336,
+          "reference_z_last_m": 0.0437,
+          "reference_z_min_m": 0.0343,
+          "mean_position_error_first_50_frames_cm": 1.34,
+          "first_frame_over_10cm": 207
         },
         {
           "environment_steps": 149999616,
-          "add_auc": 0.0047413793103448275,
-          "mppe_cm": 69.21271210980802,
+          "add_auc": 0.16544540229885057,
+          "mppe_cm": 49.70201298707021,
           "spider_sr": 0.0,
           "maniptrans_sr": 0.0,
-          "object_orientation_error_deg": 79.89855950437291,
+          "object_orientation_error_deg": 80.33878229323813,
+          "object_position_error_m": 0.49389023532911536,
           "termination_cause_fraction": {
             "object": 1.0,
             "wrist": 1.0
           },
-          "checkpoint_sha256": "c4bda0985b1b09b682461fe048fb2590a2cec98043ba67ed5d111d21a84e0ea7"
+          "reference_tracking_success_rate": 0.0,
+          "first_drop_frame": null,
+          "checkpoint_sha256": "11e9c155c588a07d600adc6c0d6de4e6fb052c2d3c6059ce8769adf480cc54c1",
+          "achieved_z_first_m": 0.5347,
+          "reference_z_first_m": 0.5354,
+          "achieved_z_last_m": 0.5336,
+          "reference_z_last_m": 0.0437,
+          "reference_z_min_m": 0.0343,
+          "mean_position_error_first_50_frames_cm": 0.95,
+          "first_frame_over_10cm": 203
         },
         {
           "environment_steps": 199999488,
-          "add_auc": 0.0047413793103448275,
-          "mppe_cm": 68.86035410364232,
+          "add_auc": 0.13168103448275864,
+          "mppe_cm": 56.6453177518997,
           "spider_sr": 0.0,
           "maniptrans_sr": 0.0,
-          "object_orientation_error_deg": 80.32241822523697,
+          "object_orientation_error_deg": 72.29015693120007,
+          "object_position_error_m": 0.5621672377233128,
           "termination_cause_fraction": {
             "object": 1.0,
             "wrist": 1.0
           },
-          "checkpoint_sha256": "b0153267f816d67adcaaadfb973b7d7d34f43ed882b0a9bcdd359ea78ac994d5"
+          "reference_tracking_success_rate": 0.0,
+          "first_drop_frame": 438,
+          "checkpoint_sha256": "ddd3f5d2a75ee5a94082c86d10c4e6b38f336ca2d62135da6d1cb2b522334a52",
+          "achieved_z_first_m": 0.5346,
+          "reference_z_first_m": 0.5354,
+          "achieved_z_last_m": 0.065,
+          "reference_z_last_m": 0.0437,
+          "reference_z_min_m": 0.0343,
+          "mean_position_error_first_50_frames_cm": 1.22,
+          "first_frame_over_10cm": 376
         },
         {
           "environment_steps": 249999360,
-          "add_auc": 0.0047413793103448275,
-          "mppe_cm": 68.86032763734856,
-          "spider_sr": 0.0,
+          "add_auc": 0.23872126436781607,
+          "mppe_cm": 5.522468351867755,
+          "spider_sr": 1.0,
           "maniptrans_sr": 0.0,
-          "object_orientation_error_deg": 80.32227421547955,
+          "object_orientation_error_deg": 43.80835667397776,
+          "object_position_error_m": 0.048922807679757596,
           "termination_cause_fraction": {
-            "object": 1.0,
-            "wrist": 1.0
+            "object": 0.0,
+            "wrist": 0.0
           },
-          "checkpoint_sha256": "da7b713c4499e2d715ba55d33928a40d70400e72551462aae2ea9619c951a254"
+          "reference_tracking_success_rate": 1.0,
+          "first_drop_frame": 655,
+          "checkpoint_sha256": "d0d2af17b03ab5d144b2f51572e9425a497f0cbd7b6cb8802224931056cfcfcd",
+          "achieved_z_first_m": 0.5347,
+          "reference_z_first_m": 0.5354,
+          "achieved_z_last_m": 0.065,
+          "reference_z_last_m": 0.0437,
+          "reference_z_min_m": 0.0343,
+          "mean_position_error_first_50_frames_cm": 1.0,
+          "first_frame_over_10cm": null
         },
         {
           "environment_steps": 299999232,
-          "add_auc": 0.0047413793103448275,
-          "mppe_cm": 68.86033343210187,
+          "add_auc": 0.15732758620689655,
+          "mppe_cm": 76.86510737723738,
           "spider_sr": 0.0,
           "maniptrans_sr": 0.0,
-          "object_orientation_error_deg": 80.32240737384724,
+          "object_orientation_error_deg": 132.86137143497652,
+          "object_position_error_m": 0.7658368665944038,
           "termination_cause_fraction": {
             "object": 1.0,
             "wrist": 1.0
           },
-          "checkpoint_sha256": "3fa7eaa17bb7c19c8aa37436ae5a36c61fb0e25c6fa131d66f8ece99a0fa4fda"
+          "reference_tracking_success_rate": 0.0,
+          "first_drop_frame": 238,
+          "checkpoint_sha256": "59a75d8ef20f4bc5e16f54ff905d9fec93ab6585a4bddc6554a5a55ebe172071",
+          "achieved_z_first_m": 0.5346,
+          "reference_z_first_m": 0.5354,
+          "achieved_z_last_m": 0.0695,
+          "reference_z_last_m": 0.0437,
+          "reference_z_min_m": 0.0343,
+          "mean_position_error_first_50_frames_cm": 0.94,
+          "first_frame_over_10cm": 212
         },
         {
           "environment_steps": 349999104,
-          "add_auc": 0.0047413793103448275,
-          "mppe_cm": 68.86035022785325,
-          "spider_sr": 0.0,
+          "add_auc": 0.22586206896551728,
+          "mppe_cm": 5.132339256303895,
+          "spider_sr": 1.0,
           "maniptrans_sr": 0.0,
-          "object_orientation_error_deg": 80.32242063440576,
+          "object_orientation_error_deg": 44.80564176895841,
+          "object_position_error_m": 0.042355202443753126,
           "termination_cause_fraction": {
-            "object": 1.0,
-            "wrist": 1.0
+            "object": 0.0,
+            "wrist": 0.0
           },
-          "checkpoint_sha256": "c5d332416f8620bffd6893a7c013bcfd0dbca02aa4e227b86be634b002915914"
+          "reference_tracking_success_rate": 1.0,
+          "first_drop_frame": null,
+          "checkpoint_sha256": "5a81f89eb5d99113407815f15c185f33af8d701d783b7c4390a597eb64eca586",
+          "achieved_z_first_m": 0.5346,
+          "reference_z_first_m": 0.5354,
+          "achieved_z_last_m": 0.065,
+          "reference_z_last_m": 0.0437,
+          "reference_z_min_m": 0.0343,
+          "mean_position_error_first_50_frames_cm": 1.02,
+          "first_frame_over_10cm": null
         }
-      ]
+      ],
+      "support_flag_passed": "scene.support=true",
+      "support_usda_resolved_in_container": "/v2d/assets/ab_raw/whole_body/reconstructed_stage/2026-06-04_16-45-04_big_red_bowl_under_skinny_wood_chair_03_support.usda",
+      "failure_mode": "two outcomes, and first_drop_frame must be read next to the other columns. At 250M and 350M the bowl is placed and the episode never terminates (spider_sr 1.0, termination_cause_fraction all 0.0, MPPE 5.1-5.5 cm, position error never exceeding 10 cm); 250M's first_drop_frame 655 is the policy leading the reference down during the place, not a failure. At 50M/200M/300M the bowl is dropped mid-episode. At 100M and 150M first_drop_frame is None for the opposite reason: the bowl is never lowered at all (achieved z ends at 0.534 m while the reference ends at 0.044 m), so it never crosses the 0.15 m line downward -- a failure to place, not a drop."
     },
     "e18": {
       "episode": 18,
@@ -434,5 +603,499 @@
         }
       ]
     }
+  },
+  "history": {
+    "broken_run_2026-10-25": {
+      "what": "The same recipe with scene.support hardcoded false, so the 14 clips that need a table were trained and evaluated without one. Superseded by the relaunch below; kept because it is the evidence for the bug, not a measurement of RAW.",
+      "git_sha": "86594b7445f53a9827de37e0792f4b0168524b47",
+      "verdict": "TRIPPED",
+      "stop_lines": {
+        "basis": "mean over the three clips, per docs/AB350_BAR.md",
+        "mean_add_auc_below": 0.187,
+        "mean_mppe_cm_above": 41.0,
+        "spider_sr_zero_on_all_three": true
+      },
+      "observed": {
+        "mean_add_auc": 0.042298,
+        "mean_mppe_cm": 55.2038,
+        "spider_sr_all_zero": false
+      },
+      "tripped": {
+        "mean_add_auc": {
+          "value": 0.042298,
+          "line": 0.187,
+          "tripped": true
+        },
+        "mean_mppe_cm": {
+          "value": 55.2038,
+          "line": 41.0,
+          "tripped": true
+        },
+        "spider_sr_zero_on_all_three": {
+          "value": false,
+          "tripped": false,
+          "note": "not tripped: e18 reaches spider_sr 1.0 at 350M"
+        }
+      },
+      "cause": {
+        "summary": "scene.support was hardcoded false in every run script, so the table/support collision geometry was never added to the scene. The object falls at reset and the episode terminates on frame ~0 for any clip that rests on a surface.",
+        "evidence": [
+          "brev/run_ab350.sh:53, brev/run_full350.sh:48, brev/run_tier1_backup.sh:67 all pass scene.support=false",
+          "NVIDIA's configs/scene/train.yaml and eval.yaml default to support: true",
+          "e03 and e09 report bit-identical add_auc at all 7 checkpoints (constant-error signature): 0.005601792573623559 and 0.0047413793103448275",
+          "termination_cause_fraction object=1.0 and wrist=1.0 at every e03/e09 checkpoint",
+          "e03 support USDA declares 1 Cylinder, top at 0.7573 + 0.04/2 = 0.7773 m, matching the 77.7 cm object rest height measured from the reference",
+          "e18 (and e24) are floor clips whose released support USDA is the empty 125-byte stage, so support=false was already correct for them -- which is why they are the clips that learned"
+        ],
+        "scope": "14 of 30 Tier 2 clips ship support_surface primitives. The same bug explains the ~12 near-zero clips in the submitted Tier 1 entry.",
+        "fix": "per clip, scene.support=true iff that clip's support USDA declares primitives, the rule brev/gate_on_instance.sh support_flag_for already implemented"
+      },
+      "clips": {
+        "e03": {
+          "episode": 3,
+          "sequence_id": "2026-04-27_11-50-10_contigo_coffee_mug_handle_table_05",
+          "role": "table",
+          "support_usda": "track_2/tier_2_synthetic_noise/support_surface/2026-04-27_11-50-10_contigo_coffee_mug_handle_table_05_support.usda",
+          "support_usda_bytes": 570,
+          "support_primitive_count": 1,
+          "support_should_be": true,
+          "support_flag_used_in_this_run": true,
+          "train_seconds": 13461,
+          "frames": 781,
+          "constant_error_signature": false,
+          "distinct_auc_values_across_7_checkpoints": 7,
+          "final": {
+            "environment_steps": 349999104,
+            "add_auc": 0.0610595390524968,
+            "mppe_cm": 89.55681448368419,
+            "spider_sr": 0.0,
+            "maniptrans_sr": 0.0
+          },
+          "per_checkpoint": [
+            {
+              "environment_steps": 49999872,
+              "add_auc": 0.06994238156209986,
+              "mppe_cm": 86.5205600602984,
+              "spider_sr": 0.0,
+              "maniptrans_sr": 0.0,
+              "object_orientation_error_deg": 129.72409780705655,
+              "object_position_error_m": 0.8628426603503008,
+              "termination_cause_fraction": {
+                "object": 1.0,
+                "wrist": 1.0
+              },
+              "reference_tracking_success_rate": 0.0,
+              "first_drop_frame": 90,
+              "checkpoint_sha256": "ca46980e650ae03d4a5e8abc2bd091e7e92d4348a4c455e4e09cd4dfb3da1a69",
+              "achieved_z_first_m": 0.8917,
+              "reference_z_first_m": 0.8941,
+              "achieved_z_last_m": 0.0375,
+              "reference_z_last_m": 0.8843,
+              "reference_z_min_m": 0.8758
+            },
+            {
+              "environment_steps": 99999744,
+              "add_auc": 0.31802176696542894,
+              "mppe_cm": 38.84925309322239,
+              "spider_sr": 0.0,
+              "maniptrans_sr": 0.0,
+              "object_orientation_error_deg": 77.12230619419275,
+              "object_position_error_m": 0.3845534359293805,
+              "termination_cause_fraction": {
+                "object": 1.0,
+                "wrist": 1.0
+              },
+              "reference_tracking_success_rate": 0.0,
+              "first_drop_frame": 516,
+              "checkpoint_sha256": "fe51794c67c90b364ebd311392c8b12e1dceab56fc4fa6f39e1ca92b70e86b60",
+              "achieved_z_first_m": 0.8917,
+              "reference_z_first_m": 0.8941,
+              "achieved_z_last_m": 0.0391,
+              "reference_z_last_m": 0.8843,
+              "reference_z_min_m": 0.8758
+            },
+            {
+              "environment_steps": 149999616,
+              "add_auc": 0.1081145966709347,
+              "mppe_cm": 81.09379177353372,
+              "spider_sr": 0.0,
+              "maniptrans_sr": 0.0,
+              "object_orientation_error_deg": 106.3124524319585,
+              "object_position_error_m": 0.809042455181942,
+              "termination_cause_fraction": {
+                "object": 1.0,
+                "wrist": 1.0
+              },
+              "reference_tracking_success_rate": 0.0,
+              "first_drop_frame": 126,
+              "checkpoint_sha256": "046432ca7d878872da83613756d1b1781f83f28322deebf9f2f3d09ac04956e9",
+              "achieved_z_first_m": 0.8917,
+              "reference_z_first_m": 0.8941,
+              "achieved_z_last_m": 0.0375,
+              "reference_z_last_m": 0.8843,
+              "reference_z_min_m": 0.8758
+            },
+            {
+              "environment_steps": 199999488,
+              "add_auc": 0.11147567221510883,
+              "mppe_cm": 83.56744541616233,
+              "spider_sr": 0.0,
+              "maniptrans_sr": 0.0,
+              "object_orientation_error_deg": 71.03512498729167,
+              "object_position_error_m": 0.834728387077125,
+              "termination_cause_fraction": {
+                "object": 1.0,
+                "wrist": 1.0
+              },
+              "reference_tracking_success_rate": 0.0,
+              "first_drop_frame": 127,
+              "checkpoint_sha256": "a7fae6704e6b0a62b9863c003ed0839c357a73d4fc16689b0756ed143d3376e6",
+              "achieved_z_first_m": 0.8917,
+              "reference_z_first_m": 0.8941,
+              "achieved_z_last_m": 0.0391,
+              "reference_z_last_m": 0.8843,
+              "reference_z_min_m": 0.8758
+            },
+            {
+              "environment_steps": 249999360,
+              "add_auc": 0.038012163892445584,
+              "mppe_cm": 87.4191947429348,
+              "spider_sr": 0.0,
+              "maniptrans_sr": 0.0,
+              "object_orientation_error_deg": 131.5962167001331,
+              "object_position_error_m": 0.871672273162829,
+              "termination_cause_fraction": {
+                "object": 1.0,
+                "wrist": 1.0
+              },
+              "reference_tracking_success_rate": 0.0,
+              "first_drop_frame": 67,
+              "checkpoint_sha256": "1f4292966b129f7096709b1d788cc23ecf2d1d565d22421e439ca24d49fb352f",
+              "achieved_z_first_m": 0.8917,
+              "reference_z_first_m": 0.8941,
+              "achieved_z_last_m": 0.0391,
+              "reference_z_last_m": 0.8843,
+              "reference_z_min_m": 0.8758
+            },
+            {
+              "environment_steps": 299999232,
+              "add_auc": 0.16013124199743917,
+              "mppe_cm": 55.83249201439816,
+              "spider_sr": 0.0,
+              "maniptrans_sr": 0.0,
+              "object_orientation_error_deg": 76.91283811980634,
+              "object_position_error_m": 0.5556514295491801,
+              "termination_cause_fraction": {
+                "object": 1.0,
+                "wrist": 1.0
+              },
+              "reference_tracking_success_rate": 0.0,
+              "first_drop_frame": 389,
+              "checkpoint_sha256": "4b6f0d4ef581bce51129618bbbebeda38d2438ea982c3eae12bb45b31e80bcf5",
+              "achieved_z_first_m": 0.8917,
+              "reference_z_first_m": 0.8941,
+              "achieved_z_last_m": 0.0375,
+              "reference_z_last_m": 0.8843,
+              "reference_z_min_m": 0.8758
+            },
+            {
+              "environment_steps": 349999104,
+              "add_auc": 0.0610595390524968,
+              "mppe_cm": 89.55681448368419,
+              "spider_sr": 0.0,
+              "maniptrans_sr": 0.0,
+              "object_orientation_error_deg": 77.87601212267553,
+              "object_position_error_m": 0.8946298556076522,
+              "termination_cause_fraction": {
+                "object": 1.0,
+                "wrist": 1.0
+              },
+              "reference_tracking_success_rate": 0.0,
+              "first_drop_frame": 83,
+              "checkpoint_sha256": "7ec08e70b4ef94a8baac2521dd84d66114b675ff944da2e217aa6b5b8c24b973",
+              "achieved_z_first_m": 0.8917,
+              "reference_z_first_m": 0.8941,
+              "achieved_z_last_m": 0.0375,
+              "reference_z_last_m": 0.8843,
+              "reference_z_min_m": 0.8758
+            }
+          ],
+          "support_flag_passed": "scene.support=true",
+          "support_usda_resolved_in_container": "/v2d/assets/ab_raw/whole_body/reconstructed_stage/2026-04-27_11-50-10_contigo_coffee_mug_handle_table_05_support.usda",
+          "failure_mode": "mid-episode drop. The mug starts on the table at z 0.892 m and is tracked closely for the first tens of frames at every checkpoint, then is dropped and ends on the floor at z 0.038 m. The reference keeps it on the table (z >= 0.876 m) for the whole clip, so the drop frame is unambiguous."
+        },
+        "e09": {
+          "episode": 9,
+          "sequence_id": "2026-06-04_16-45-04_big_red_bowl_under_skinny_wood_chair_03",
+          "role": "two-handed (chair/bowl)",
+          "support_usda": "track_2/tier_2_synthetic_noise/support_surface/2026-06-04_16-45-04_big_red_bowl_under_skinny_wood_chair_03_support.usda",
+          "support_usda_bytes": 572,
+          "support_primitive_count": 1,
+          "support_should_be": true,
+          "support_flag_used_in_this_run": true,
+          "train_seconds": 13769,
+          "frames": 870,
+          "constant_error_signature": false,
+          "distinct_auc_values_across_7_checkpoints": 7,
+          "final": {
+            "environment_steps": 349999104,
+            "add_auc": 0.22586206896551728,
+            "mppe_cm": 5.132339256303895,
+            "spider_sr": 1.0,
+            "maniptrans_sr": 0.0
+          },
+          "per_checkpoint": [
+            {
+              "environment_steps": 49999872,
+              "add_auc": 0.1781609195402299,
+              "mppe_cm": 63.83056045528037,
+              "spider_sr": 0.0,
+              "maniptrans_sr": 0.0,
+              "object_orientation_error_deg": 74.29536515910421,
+              "object_position_error_m": 0.6362036735762537,
+              "termination_cause_fraction": {
+                "object": 1.0,
+                "wrist": 1.0
+              },
+              "reference_tracking_success_rate": 0.0,
+              "first_drop_frame": 269,
+              "checkpoint_sha256": "d92f88d5d41316b2191e4187aa5f41562a568ab68688666ca65c5afd6f69cfe4",
+              "achieved_z_first_m": 0.5347,
+              "reference_z_first_m": 0.5354,
+              "achieved_z_last_m": 0.065,
+              "reference_z_last_m": 0.0437,
+              "reference_z_min_m": 0.0343
+            },
+            {
+              "environment_steps": 99999744,
+              "add_auc": 0.16982758620689653,
+              "mppe_cm": 51.3819243547529,
+              "spider_sr": 0.0,
+              "maniptrans_sr": 0.0,
+              "object_orientation_error_deg": 68.29478223175941,
+              "object_position_error_m": 0.5116552454194968,
+              "termination_cause_fraction": {
+                "object": 1.0,
+                "wrist": 1.0
+              },
+              "reference_tracking_success_rate": 0.0,
+              "first_drop_frame": null,
+              "checkpoint_sha256": "9aff1239c5aa197bd3745ea92d47847e5e79b735023be40c16bd80d87985ddde",
+              "achieved_z_first_m": 0.5344,
+              "reference_z_first_m": 0.5354,
+              "achieved_z_last_m": 0.5336,
+              "reference_z_last_m": 0.0437,
+              "reference_z_min_m": 0.0343
+            },
+            {
+              "environment_steps": 149999616,
+              "add_auc": 0.16544540229885057,
+              "mppe_cm": 49.70201298707021,
+              "spider_sr": 0.0,
+              "maniptrans_sr": 0.0,
+              "object_orientation_error_deg": 80.33878229323813,
+              "object_position_error_m": 0.49389023532911536,
+              "termination_cause_fraction": {
+                "object": 1.0,
+                "wrist": 1.0
+              },
+              "reference_tracking_success_rate": 0.0,
+              "first_drop_frame": null,
+              "checkpoint_sha256": "11e9c155c588a07d600adc6c0d6de4e6fb052c2d3c6059ce8769adf480cc54c1",
+              "achieved_z_first_m": 0.5347,
+              "reference_z_first_m": 0.5354,
+              "achieved_z_last_m": 0.5336,
+              "reference_z_last_m": 0.0437,
+              "reference_z_min_m": 0.0343
+            },
+            {
+              "environment_steps": 199999488,
+              "add_auc": 0.13168103448275864,
+              "mppe_cm": 56.6453177518997,
+              "spider_sr": 0.0,
+              "maniptrans_sr": 0.0,
+              "object_orientation_error_deg": 72.29015693120007,
+              "object_position_error_m": 0.5621672377233128,
+              "termination_cause_fraction": {
+                "object": 1.0,
+                "wrist": 1.0
+              },
+              "reference_tracking_success_rate": 0.0,
+              "first_drop_frame": 438,
+              "checkpoint_sha256": "ddd3f5d2a75ee5a94082c86d10c4e6b38f336ca2d62135da6d1cb2b522334a52",
+              "achieved_z_first_m": 0.5346,
+              "reference_z_first_m": 0.5354,
+              "achieved_z_last_m": 0.065,
+              "reference_z_last_m": 0.0437,
+              "reference_z_min_m": 0.0343
+            },
+            {
+              "environment_steps": 249999360,
+              "add_auc": 0.23872126436781607,
+              "mppe_cm": 5.522468351867755,
+              "spider_sr": 1.0,
+              "maniptrans_sr": 0.0,
+              "object_orientation_error_deg": 43.80835667397776,
+              "object_position_error_m": 0.048922807679757596,
+              "termination_cause_fraction": {
+                "object": 0.0,
+                "wrist": 0.0
+              },
+              "reference_tracking_success_rate": 1.0,
+              "first_drop_frame": 655,
+              "checkpoint_sha256": "d0d2af17b03ab5d144b2f51572e9425a497f0cbd7b6cb8802224931056cfcfcd",
+              "achieved_z_first_m": 0.5347,
+              "reference_z_first_m": 0.5354,
+              "achieved_z_last_m": 0.065,
+              "reference_z_last_m": 0.0437,
+              "reference_z_min_m": 0.0343
+            },
+            {
+              "environment_steps": 299999232,
+              "add_auc": 0.15732758620689655,
+              "mppe_cm": 76.86510737723738,
+              "spider_sr": 0.0,
+              "maniptrans_sr": 0.0,
+              "object_orientation_error_deg": 132.86137143497652,
+              "object_position_error_m": 0.7658368665944038,
+              "termination_cause_fraction": {
+                "object": 1.0,
+                "wrist": 1.0
+              },
+              "reference_tracking_success_rate": 0.0,
+              "first_drop_frame": 238,
+              "checkpoint_sha256": "59a75d8ef20f4bc5e16f54ff905d9fec93ab6585a4bddc6554a5a55ebe172071",
+              "achieved_z_first_m": 0.5346,
+              "reference_z_first_m": 0.5354,
+              "achieved_z_last_m": 0.0695,
+              "reference_z_last_m": 0.0437,
+              "reference_z_min_m": 0.0343
+            },
+            {
+              "environment_steps": 349999104,
+              "add_auc": 0.22586206896551728,
+              "mppe_cm": 5.132339256303895,
+              "spider_sr": 1.0,
+              "maniptrans_sr": 0.0,
+              "object_orientation_error_deg": 44.80564176895841,
+              "object_position_error_m": 0.042355202443753126,
+              "termination_cause_fraction": {
+                "object": 0.0,
+                "wrist": 0.0
+              },
+              "reference_tracking_success_rate": 1.0,
+              "first_drop_frame": null,
+              "checkpoint_sha256": "5a81f89eb5d99113407815f15c185f33af8d701d783b7c4390a597eb64eca586",
+              "achieved_z_first_m": 0.5346,
+              "reference_z_first_m": 0.5354,
+              "achieved_z_last_m": 0.065,
+              "reference_z_last_m": 0.0437,
+              "reference_z_min_m": 0.0343
+            }
+          ],
+          "support_flag_passed": "scene.support=true",
+          "support_usda_resolved_in_container": "/v2d/assets/ab_raw/whole_body/reconstructed_stage/2026-06-04_16-45-04_big_red_bowl_under_skinny_wood_chair_03_support.usda",
+          "failure_mode": "two outcomes. At 250M and 350M the bowl is held for the whole clip and placed (spider_sr 1.0, no termination, MPPE ~5 cm). At 50M/200M/300M it is dropped mid-episode. At 100M and 150M first_drop_frame is None for the opposite reason: the bowl is never lowered at all (achieved z ends at 0.534 m while the reference ends at 0.044 m), so it never crosses the 0.15 m line downward -- a failure to place, not a drop. Read first_drop_frame together with achieved_z_last_m, never alone."
+        }
+      },
+      "not_scored_on_host": {
+        "e03": "terminated on frame ~0, nothing to score",
+        "e09": "same"
+      }
+    }
+  },
+  "updated": "2026-10-26",
+  "interpretation": {
+    "statement": "The 3-clip RAW mean AUC is 0.135 against the 0.187 stop line. That line was written to catch a broken pipeline, and the trajectories show a working pipeline with mid-episode drops. The line is therefore NOT read as broken.",
+    "evidence": [
+      "The object starts on its support surface at the reference height and is tracked to about 1 cm over the opening 50 frames (mean 0.94-1.69 cm on 13 of the 14 checkpoints; e03 at 249M is the one exception at 4.44 cm), so reset, scene and reference agree.",
+      "Failures are drops at a frame well inside the clip -- first_frame_over_10cm is 44-376 across the 14 checkpoints, and e03's first_drop_frame runs 67-516 -- not terminations on frame ~0.",
+      "e03 shows 7 distinct AUC values across 7 checkpoints; the broken run showed 1.",
+      "e09's final checkpoint holds and places the bowl for the whole clip: spider_sr 1.0, termination_cause_fraction all 0.0, MPPE 5.13 cm.",
+      "Both cells passed scene.support=true and resolved a real support USDA, which flash_chord/scene/setup.py:62 would have raised FileNotFoundError on had it not."
+    ],
+    "what_this_does_not_say": "Nothing here compares RAW against CLEAN. RAW is only now measured honestly; the CLEAN arm has not been run."
+  },
+  "thirty_clip_run": {
+    "approved": false,
+    "status": "NOT approved",
+    "why": "The decision rule in docs/AB350_BAR.md proposes it only if CLEAN beats RAW on mean AUC and MPPE across the 3 clips. The CLEAN arm has not been run, so the rule cannot be evaluated. Needs Luai's explicit go regardless."
+  },
+  "four_clip_table": {
+    "what": "350M final checkpoint, evaluator and host scorer side by side. e24 is the full350 run on the gated-cleaned reference and is not part of the 3-clip RAW mean.",
+    "rows": [
+      {
+        "clip": "e03",
+        "episode": 3,
+        "role": "table",
+        "arm": "raw",
+        "reference": "released tier2 input",
+        "support_surface": true,
+        "frames": 781,
+        "evaluator_add_auc": 0.0610595390524968,
+        "evaluator_mppe_cm": 89.55681448368419,
+        "evaluator_spider_sr": 0.0,
+        "host_add_auc": 0.06017925736235595,
+        "host_mppe_cm": 89.78379212544795,
+        "host_spider_sr": 0.0,
+        "host_maniptrans_sr": 0.0
+      },
+      {
+        "clip": "e09",
+        "episode": 9,
+        "role": "two-handed",
+        "arm": "raw",
+        "reference": "released tier2 input",
+        "support_surface": true,
+        "frames": 870,
+        "evaluator_add_auc": 0.22586206896551728,
+        "evaluator_mppe_cm": 5.132339256303895,
+        "evaluator_spider_sr": 1.0,
+        "host_add_auc": 0.2408764367816092,
+        "host_mppe_cm": 5.309364916503392,
+        "host_spider_sr": 0.0,
+        "host_maniptrans_sr": 0.0
+      },
+      {
+        "clip": "e18",
+        "episode": 18,
+        "role": "floor",
+        "arm": "raw",
+        "reference": "released tier2 input",
+        "support_surface": false,
+        "frames": 858,
+        "evaluator_add_auc": 0.11655011655011656,
+        "evaluator_mppe_cm": 4.909374152934708,
+        "evaluator_spider_sr": 1.0,
+        "host_add_auc": 0.38257575757575757,
+        "host_mppe_cm": 4.1661344856200815,
+        "host_spider_sr": 1.0,
+        "host_maniptrans_sr": 0.0
+      },
+      {
+        "clip": "e24",
+        "episode": 24,
+        "role": "floor",
+        "arm": "full350 (gated-cleaned)",
+        "reference": "gated-cleaned reference",
+        "support_surface": false,
+        "frames": 748,
+        "evaluator_add_auc": 0.4125167112299465,
+        "evaluator_mppe_cm": 4.6380461602403775,
+        "evaluator_spider_sr": 1.0,
+        "host_add_auc": 0.4500334224598931,
+        "host_mppe_cm": 4.1646263124594975,
+        "host_spider_sr": 0.0,
+        "host_maniptrans_sr": 0.0
+      }
+    ],
+    "spider_sr_evaluator_vs_host": "e18 agrees (1.0 / 1.0). e09 and e24 disagree: the evaluator says 1.0, the host scorer 0.0, on clips whose MPPE is ~5 cm either way. Recorded, not chased."
+  },
+  "spend": {
+    "budget_usd": 30,
+    "used_usd": 21.13,
+    "left_usd": 8.87,
+    "basis": "box uptime at $0.68/h, from scratchpad/spend_closed.txt; nothing left RUNNING",
+    "outside_this_budget_usd": 2.7
   }
 }
