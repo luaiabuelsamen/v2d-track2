@@ -31,6 +31,9 @@ where = ["src"]
 line-length = 100
 target-version = "py311"
 src = ["src", "tests"]
+# Verbatim copies of NVIDIA's flash_chord source, kept byte-identical so the patch test proves the
+# patch applies to the real upstream text. Reformatting them would defeat the point of the test.
+extend-exclude = ["tests/data/upstream"]
 
 [tool.ruff.lint]
 select = [
@@ -53,6 +56,9 @@ ignore = [
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["E501"]
+# This script's string literals ARE flash_chord source lines; they have to match the installed
+# file exactly, so they cannot be rewrapped to fit our own line length.
+"brev/patch_object_orientation.py" = ["E501"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -105,6 +105,10 @@ FORWARDED: dict[str, tuple[str, str]] = {
     "retarget-qa": ("v2d.retarget.qa", "aggregate the retargeter's own diagnostics"),
     "score": ("v2d.score.track2", "score a prediction with the kit's metric code"),
     "probe-supports": ("v2d.probe.support_root", "what Tier 2 corrupts; are the primitives usable"),
+    "noise-channels": (
+        "v2d.analyze.noise_channels",
+        "which channels Tier 2 corrupts, how hard, and which ones the metric reads",
+    ),
     "prereg-cleanup": ("v2d.score.prereg_cleanup", "apply docs/EXP_CLEANUP_CONTACT.md's rule"),
     "prereg-support-root": (
         "v2d.score.prereg_support_root",

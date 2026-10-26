@@ -1,0 +1,157 @@
+"""Prove the object-orientation patch applies to the real upstream text, before a box runs it.
+
+flash_chord is not installed on the Jetson -- it ships inside the training image -- so without
+this the patch could only be tested by paying for a box and waiting ~13 min for the image build.
+`tests/data/upstream/` holds verbatim copies of the three files it edits.
+"""
+
+from __future__ import annotations
+
+import ast
+import importlib.util
+import shutil
+from pathlib import Path
+
+import pytest
+
+UPSTREAM = Path(__file__).parent / "data/upstream"
+
+
+def _load_patcher():
+    """brev/ holds the box-side scripts and is not an importable package, so load by path."""
+    path = Path(__file__).parents[1] / "brev/patch_object_orientation.py"
+    spec = importlib.util.spec_from_file_location("patch_object_orientation", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.main
+
+
+main = _load_patcher()
+
+
+@pytest.fixture
+def tree(tmp_path: Path) -> Path:
+    """A flash_chord source tree laid out the way the patcher expects to find it."""
+    root = tmp_path / "flash_chord"
+    (root / "objectives").mkdir(parents=True)
+    (root / "configs/objective").mkdir(parents=True)
+    (root / "configs/curriculum").mkdir(parents=True)
+    shutil.copy(UPSTREAM / "objectives_recon_body.py", root / "objectives/recon_body.py")
+    shutil.copy(UPSTREAM / "configs_objective_recon_body.yaml",
+                root / "configs/objective/recon_body.yaml")
+    shutil.copy(UPSTREAM / "configs_curriculum_recon_body_flash_sac.yaml",
+                root / "configs/curriculum/recon_body_flash_sac.yaml")
+    return root
+
+
+def objective(tree: Path) -> str:
+    return (tree / "objectives/recon_body.py").read_text()
+
+
+def test_patch_applies_and_leaves_valid_python(tree: Path):
+    assert main([str(tree)]) == 0
+    ast.parse(objective(tree))
+
+
+def test_term_is_appended_so_existing_indices_are_untouched(tree: Path):
+    main([str(tree)])
+    text = objective(tree)
+    assert "_RECON_BODY_OBJECTIVE_TERM_COUNT = wp.constant(13)" in text
+    # The stock terms keep their indices; the new one takes 12.
+    assert "terms[term_base + 11] = force_closure[world]" in text
+    assert "terms[term_base + 12] = wp.exp(" in text
+    names = text.split("RECON_BODY_OBJECTIVE_TERM_NAMES = (")[1].split(")")[0]
+    ordered = [n.strip().strip('",') for n in names.strip().splitlines() if n.strip()]
+    assert ordered[11] == "force_closure"
+    assert ordered[12] == "object_orientation"
+    assert len(ordered) == 13
+
+
+def test_weights_tuple_order_matches_the_term_order(tree: Path):
+    main([str(tree)])
+    text = objective(tree)
+    block = text.split("    def weights(self)")[1].split("    def build(")[0]
+    weights = [line.strip().rstrip(",") for line in block.splitlines()
+               if line.strip().startswith("self.") and line.strip().endswith(",")]
+    assert weights[-1] == "self.object_orientation_weight"
+    assert weights[-2] == "self.force_closure_weight"
+
+
+def test_kernel_receives_the_reference_quaternion_and_the_new_std(tree: Path):
+    main([str(tree)])
+    text = objective(tree)
+    assert "    object_target_quat_w: wp.array(dtype=wp.quat),\n" in text
+    assert "    object_orientation_std: float,\n" in text
+    # And both are actually passed at launch, in signature order.
+    launch = text.split("            compose_recon_body_objective,")[1]
+    assert launch.index("self.command.body_target_pos_w") < launch.index(
+        "self.command.body_target_quat_w")
+    assert launch.index("self.config.palm_orientation_std") < launch.index(
+        "self.config.object_orientation_std")
+
+
+def test_the_term_mirrors_palm_orientation(tree: Path):
+    """Same geodesic angle, same exp(-e^2/s^2), its own std -- not a different formula."""
+    main([str(tree)])
+    text = objective(tree)
+    assert "object_orientation_error = quat_geodesic_angle(" in text
+    assert "object_target_quat_w[world]" in text
+    assert "-(object_orientation_error * object_orientation_error)" in text
+    assert "/ (object_orientation_std * object_orientation_std)" in text
+
+
+def test_curriculum_names_the_new_weight(tree: Path):
+    """set_weights() compares key SETS, so a curriculum short by one raises mid-run."""
+    main([str(tree)])
+    curriculum = (tree / "configs/curriculum/recon_body_flash_sac.yaml").read_text()
+    assert "object_orientation: 1.0" in curriculum
+    objective_yaml = (tree / "configs/objective/recon_body.yaml").read_text()
+    assert "object_orientation_weight: 1.0" in objective_yaml
+    assert "object_orientation_std: 0.4" in objective_yaml
+
+
+def test_values_are_the_house_calibration(tree: Path):
+    """Weight 1.0 and std 0.4 are copied from palm_orientation, not invented."""
+    main([str(tree)])
+    text = objective(tree)
+    assert "    object_orientation_weight: float = 1.0\n" in text
+    assert "    object_orientation_std: float = 0.4\n" in text
+    assert "    palm_orientation_weight: float = 1.0\n" in text
+    assert "    palm_orientation_std: float = 0.4\n" in text
+
+
+def test_is_idempotent(tree: Path):
+    main([str(tree)])
+    once = objective(tree)
+    main([str(tree)])
+    assert objective(tree) == once
+
+
+def test_check_mode_writes_nothing(tree: Path):
+    before = objective(tree)
+    assert main([str(tree), "--check"]) == 0
+    assert objective(tree) == before
+
+
+def test_refuses_a_tree_it_does_not_recognise(tree: Path):
+    """A changed upstream must stop the run, not apply somewhere unintended."""
+    path = tree / "objectives/recon_body.py"
+    path.write_text(path.read_text().replace(
+        "_RECON_BODY_OBJECTIVE_TERM_COUNT = wp.constant(12)", "# removed by this test"))
+    with pytest.raises(SystemExit) as caught:
+        main([str(tree)])
+    assert "anchor occurs 0 times" in str(caught.value)
+    # And nothing was written: the term name edit must not have landed either.
+    assert "object_orientation" not in path.read_text()
+
+
+def test_a_failure_anywhere_writes_nothing_anywhere(tree: Path):
+    """The objective must not be left patched when the curriculum cannot be."""
+    curriculum = tree / "configs/curriculum/recon_body_flash_sac.yaml"
+    # Two weight blocks instead of one aliased block: the anchor is no longer unique.
+    curriculum.write_text(curriculum.read_text() + "\n      force_closure: 5.0\n")
+    with pytest.raises(SystemExit) as caught:
+        main([str(tree)])
+    assert "anchor occurs 2 times" in str(caught.value)
+    assert "object_orientation" not in objective(tree)
+    assert "object_orientation_weight" not in (tree / "configs/objective/recon_body.yaml").read_text()
