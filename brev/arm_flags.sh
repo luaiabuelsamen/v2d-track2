@@ -136,8 +136,14 @@ arm_flags_apply() {
       echo "arm flags: $label | would apply $(basename "$script") $args" >&2
       continue
     fi
-    docker cp "$script" "$CID:/tmp/$(basename "$script")" >/dev/null 2>&1 || {
-      echo "FATAL: $label -- could not copy $(basename "$script") into container $CID" >&2
+    # Through stdin, NOT `docker cp`. The training container is created with the creating ssh
+    # session's agent socket bind-mounted (/tmp/ssh-XXXX/agent.NNN). Once that session ends the
+    # socket is gone, and every `docker cp` into the container fails for good with
+    # "mount ... /ssh-agent, flags: 0x5000: not a directory" -- it worked for the first clip of
+    # each box on 2026-10-26 and then failed for every clip after, with the runner aborting
+    # before training. Writing the file over an exec'd cat touches no mounts.
+    docker exec -i "$CID" bash -lc "cat > /tmp/$(basename "$script")" < "$script" 2>/dev/null || {
+      echo "FATAL: $label -- could not write $(basename "$script") into container $CID" >&2
       return 1
     }
     report="$(run "python /tmp/$(basename "$script") /workspace/src/flash_chord $args" 2>&1)" || {

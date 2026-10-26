@@ -183,6 +183,52 @@ def test_refuses_a_tree_it_does_not_recognise(tree: Path):
     assert "object_orientation" not in path.read_text()
 
 
+# Verbatim shape of the curricula the container ships alongside the ReconBody ones: a different
+# objective whose force_closure is an interpolation. Selecting curricula by the word
+# "force_closure" made the patch refuse on these, and because it is atomic nothing was patched at
+# all -- which stopped all eight boxes of the 2026-10-26 relaunch from training.
+FOREIGN_CURRICULUM = """_target_: flash_chord.configuration.make_fixed_curriculum
+thresholds: [2000, 3500]
+stages:
+  - _target_: flash_chord.configuration.make_curriculum_stage
+    voc_scale: 1.0
+    objective_weights: &base_weights
+      object_keypoints: 0.0
+      hand_keypoints: 0.25
+      contact_wrench_support: 10.0
+      force_closure: ${objective.force_closure.weight}
+"""
+
+
+def test_a_curriculum_for_another_objective_is_left_alone(tree: Path):
+    """It must be skipped, said out loud, and must not stop the patch applying elsewhere."""
+    foreign = tree / "configs/curriculum/reference.yaml"
+    foreign.write_text(FOREIGN_CURRICULUM)
+    assert main([str(tree)]) == 0
+    # Untouched: adding object_orientation to another objective's key set would break set_weights
+    # for THAT curriculum the moment it was used.
+    assert foreign.read_text() == FOREIGN_CURRICULUM
+    # And the ReconBody one did get patched.
+    curriculum = (tree / "configs/curriculum/recon_body_flash_sac.yaml").read_text()
+    assert "object_orientation: 1.0" in curriculum
+
+
+def test_every_reconbody_curriculum_is_patched_not_just_the_recipe_we_run(tree: Path):
+    """The container ships recon_body_ppo.yaml too; a stage short one key raises mid-run."""
+    other = tree / "configs/curriculum/recon_body_ppo.yaml"
+    other.write_text((tree / "configs/curriculum/recon_body_flash_sac.yaml").read_text())
+    assert main([str(tree)]) == 0
+    assert "object_orientation: 1.0" in other.read_text()
+
+
+def test_a_tree_with_no_reconbody_curriculum_at_all_is_refused(tree: Path):
+    recipe = tree / "configs/curriculum/recon_body_flash_sac.yaml"
+    recipe.write_text(FOREIGN_CURRICULUM)
+    with pytest.raises(SystemExit) as caught:
+        main([str(tree)])
+    assert "no curriculum config carries the ReconBody weight block" in str(caught.value)
+
+
 def test_a_failure_anywhere_writes_nothing_anywhere(tree: Path):
     """The objective must not be left patched when the curriculum cannot be."""
     curriculum = tree / "configs/curriculum/recon_body_flash_sac.yaml"

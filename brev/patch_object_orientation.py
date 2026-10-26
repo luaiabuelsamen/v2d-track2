@@ -223,13 +223,28 @@ def main(argv: list[str] | None = None) -> int:
     ]
     # Every curriculum that names the ReconBody weights, not just the one recipe we run: a stage
     # whose key set is short by one raises at the moment it is entered, hours into a run.
-    curricula = sorted(
-        p for p in (args.root / "configs/curriculum").glob("*.yaml")
-        if "force_closure:" in p.read_text()
-    )
+    #
+    # Selected by the ReconBody weight block itself, NOT by the word force_closure. The container
+    # ships four curricula naming force_closure and only two are ReconBody: reference.yaml and
+    # tracking_250m_mixed_reset.yaml are different objectives entirely (object_keypoints,
+    # hand_keypoints, contact_wrench_support) whose force_closure is an interpolation,
+    # `${objective.force_closure.weight}`. Selecting on the word made the patch refuse on those
+    # files, and because it is atomic, nothing was patched at all -- which stopped every box of
+    # the 2026-10-26 relaunch from training and cost seven clip claims. Adding
+    # object_orientation to another objective's key set would be wrong anyway: set_weights()
+    # compares key sets, so it would break THAT curriculum the moment it was used.
+    curriculum_dir = args.root / "configs/curriculum"
+    curricula, foreign = [], []
+    for path in sorted(curriculum_dir.glob("*.yaml")):
+        text = path.read_text()
+        if CURRICULUM_EDIT[0] in text or MARKER in text:
+            curricula.append(path)
+        elif "force_closure:" in text:
+            foreign.append(path)
     if not curricula:
         raise SystemExit(
-            "FATAL: no curriculum config names the ReconBody weights; patch is incomplete"
+            "FATAL: no curriculum config carries the ReconBody weight block "
+            f"({CURRICULUM_EDIT[0].strip()!r}); patch is incomplete"
         )
     targets.extend((path, (CURRICULUM_EDIT,)) for path in curricula)
 
@@ -250,6 +265,11 @@ def main(argv: list[str] | None = None) -> int:
         report = [m.replace("patched:", "would patch:") for m in report]
 
     print("\n".join(report))
+    for path in foreign:
+        print(
+            f"left alone: {path} -- names force_closure but not the ReconBody weight block, "
+            "so it is a different objective"
+        )
     print(
         f"object-orientation term: weight 1.0, std {args.std:g} rad "
         f"({args.std * 180.0 / 3.141592653589793:.1f} deg), term index 12 of 13"

@@ -282,3 +282,19 @@ def test_the_runner_and_launcher_agree_on_the_cell_name():
     assert 'SLUG="$(arm_flags_slug "$ARM_FLAGS")"' in runner
     assert 'SLUG="$(arm_flags_slug "$ARM_FLAGS")"' in launcher
     assert "ARM_FLAGS='$ARM_FLAGS'" in launcher
+
+
+def test_arm_flags_writes_patches_through_stdin_not_docker_cp():
+    """`docker cp` is unusable on our boxes for the life of the container.
+
+    The training container is created with the creating ssh session's agent socket bind-mounted;
+    once that session ends, every `docker cp` into it fails with
+    "mount ... /ssh-agent, flags: 0x5000: not a directory". On 2026-10-26 that let the first clip
+    of each box patch successfully and made every clip after it abort before training. There is no
+    way to reproduce a container here, so this guards the mechanism itself.
+    """
+    text = (Path(__file__).parents[1] / "brev/arm_flags.sh").read_text()
+    # Comments are allowed to name it -- the one above the fix explains why it cannot be used.
+    code = [line for line in text.splitlines() if not line.lstrip().startswith("#")]
+    assert not [line for line in code if "docker cp" in line]
+    assert any('docker exec -i "$CID" bash -lc "cat > /tmp/' in line for line in code)
