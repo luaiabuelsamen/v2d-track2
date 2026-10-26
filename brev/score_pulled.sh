@@ -17,6 +17,9 @@ S="${V2D_SCRATCH:-/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508
 PY="env -u PYTHONPATH ./.venv311/bin/python -I"
 run_v2d() { $PY -c "import sys; sys.argv=['v2d']+sys.argv[1:]; from v2d.cli import main; main()" "$@"; }
 
+SELF="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")"
+ARGV=("$@")
+
 RESULTS=""
 DATA="$S/data"
 KIT="$S/kit_extract/v2d_submission_kit"
@@ -36,6 +39,23 @@ done
 [ -n "$RESULTS" ] || { echo "FATAL: --results DIR" >&2; exit 2; }
 [ -d "$KIT" ] || { echo "FATAL: no kit at $KIT" >&2; exit 2; }
 PROVENANCE="${PROVENANCE:-$(dirname "$RESULTS")/t2_combined/provenance.json}"
+
+# One pass at a time. Eight boxes finish clips within minutes of each other, and on 2026-10-26 two
+# passes ran together: both saw no score.json for the same checkpoint, both converted into the same
+# $CDIR/npz, and the first to finish deleted it under the other -- which is the FileNotFoundError on
+# episode_000011.npz that left e11's selected checkpoint unscored. A pass is minutes, so waiting is
+# cheap; running twice is not, on a Jetson that is allowed two CPU-heavy workers.
+LOCK="$RESULTS/.score_pulled.lock"
+if [ -z "${V2D_SCORE_PASS_LOCKED:-}" ] && command -v flock >/dev/null 2>&1; then
+  export V2D_SCORE_PASS_LOCKED=1
+  flock -w "${V2D_SCORE_LOCK_WAIT:-3600}" "$LOCK" bash "$SELF" "${ARGV[@]+${ARGV[@]}}"
+  rc=$?
+  # flock exits 1 when it gives up waiting; the pass itself exits 0 or 2 (its FATALs), so 1 here
+  # means the lock, and the next pull calls this again -- every step of it is idempotent.
+  [ "$rc" = 1 ] && echo "!! another scoring pass held $LOCK for ${V2D_SCORE_LOCK_WAIT:-3600}s;" \
+    "skipping this one, the next pull will catch up" >&2
+  exit $rc
+fi
 
 # The reference a rollout is converted against must be the reference it trained on. For a cleaned
 # source that is not the released input, and rollout-to-npz's own frame check catches the mistake
@@ -86,21 +106,23 @@ for CLIP in "$RESULTS"/e[0-9][0-9]; do
   for TRAJ in "$CLIP"/policy_*/objects.parquet; do
     CDIR="$(dirname "$TRAJ")"
     [ -s "$CDIR/score.json" ] && continue
+    NPZ_DIR="$CDIR/npz.$$"
     if ! run_v2d rollout-to-npz "$TRAJ" --dataset-root "$CONVERT_ROOT" --episode "$EP" --tier tier2 \
-         "${REF[@]+${REF[@]}}" --npz-out "$CDIR/npz" -o "$CDIR/rollout_record.json" \
+         "${REF[@]+${REF[@]}}" --npz-out "$NPZ_DIR" -o "$CDIR/rollout_record.json" \
          > "$CDIR/rollout.log" 2>&1; then
       echo "$TAG $(basename "$CDIR"): rollout-to-npz FAILED"; tail -3 "$CDIR/rollout.log" | sed 's/^/    /'
+      rm -rf "$NPZ_DIR"
       continue
     fi
     if ! run_v2d score --kit-root "$KIT" --dataset-root "$DATA" --tier tier2 \
-         --pred "npz:$CDIR/npz" --episodes "$EP" -o "$CDIR/score.json" \
+         --pred "npz:$NPZ_DIR" --episodes "$EP" -o "$CDIR/score.json" \
          > "$CDIR/score.log" 2>&1; then
       echo "$TAG $(basename "$CDIR"): score FAILED"; tail -3 "$CDIR/score.log" | sed 's/^/    /'
-      rm -f "$CDIR/score.json"
+      rm -f "$CDIR/score.json"; rm -rf "$NPZ_DIR"
       continue
     fi
     # The npz is 7 per clip and only the score is kept; the trajectory it came from is already here.
-    rm -rf "$CDIR/npz"
+    rm -rf "$NPZ_DIR"
   done
 done
 

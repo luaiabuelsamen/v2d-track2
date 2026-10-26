@@ -186,3 +186,72 @@ def test_the_replacement_budget_is_a_flag_and_bounds_the_total(tmp_path: Path):
     # The cap is BOXES + MAX_REPLACEMENTS, and the plan must still refuse to create anything.
     assert "plan only. Nothing created." in done.stdout
     assert "unknown argument" not in done.stderr
+
+
+# --- the scoring pass is not re-entrant -------------------------------------------------------
+# On 2026-10-26 two boxes finished clips two minutes apart, both scoring passes ran, both saw no
+# score.json for the same checkpoint, both converted into the same policy_*/npz, and the first to
+# finish deleted it under the other: "FileNotFoundError: episode_000011.npz". e11's selected
+# checkpoint came out unscored while its trajectory was perfectly good.
+SCORER = REPO / "brev/score_pulled.sh"
+
+
+def _env() -> dict[str, str]:
+    """The venv's own environment; PYTHONPATH leaks the repo into the scorer's `python -I`."""
+    import os
+
+    return {k: v for k, v in os.environ.items() if k != "PYTHONPATH"}
+
+
+def test_the_scoring_pass_takes_a_lock_and_waits_for_it(tmp_path: Path):
+    """A second pass must wait, not barge in: waiting costs minutes, racing costs the score."""
+    results = tmp_path / "results"
+    results.mkdir()
+    lock = results / ".score_pulled.lock"
+    lock.touch()
+    held_by_someone_else = subprocess.Popen(["flock", str(lock), "sleep", "30"])
+    try:
+        done = subprocess.run(
+            [
+                "bash", str(SCORER),
+                "--results", str(results),
+                "--kit-root", str(tmp_path),       # exists, so the pass gets as far as the lock
+                "--provenance", str(tmp_path / "absent.json"),
+            ],
+            capture_output=True, text=True, timeout=60,
+            env={**_env(), "V2D_SCORE_LOCK_WAIT": "1"},
+        )
+    finally:
+        held_by_someone_else.kill()
+        held_by_someone_else.wait()
+    assert done.returncode == 1, done.stdout + done.stderr
+    assert "another scoring pass held" in done.stderr
+    # And nothing was scored behind the other pass's back.
+    assert not (results / "run_record.json").exists()
+
+
+def test_with_the_lock_free_the_pass_runs(tmp_path: Path):
+    """The lock must not be a new way for the pass to do nothing."""
+    results = tmp_path / "results"
+    results.mkdir()
+    done = subprocess.run(
+        [
+            "bash", str(SCORER),
+            "--results", str(results),
+            "--kit-root", str(tmp_path),
+            "--provenance", str(tmp_path / "absent.json"),
+        ],
+        capture_output=True, text=True, timeout=300, env=_env(),
+    )
+    assert done.returncode == 0, done.stdout + done.stderr
+    assert (results / "run_record.json").is_file()
+    assert json.loads((results / "run_record.json").read_text())["clips"] == {}
+
+
+def test_each_pass_converts_into_its_own_npz_directory():
+    """Belt and braces: even unlocked, one pass's cleanup must not delete another's conversion."""
+    text = SCORER.read_text()
+    assert 'NPZ_DIR="$CDIR/npz.$$"' in text
+    assert '--npz-out "$NPZ_DIR"' in text
+    assert '--npz-out "$CDIR/npz"' not in text
+    assert 'rm -rf "$CDIR/npz"' not in text
