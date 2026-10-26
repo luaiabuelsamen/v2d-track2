@@ -112,6 +112,10 @@ released episode                      30 clips, Tier 1 (clean) + Tier 2 (corrupt
   │
   ├─ brev/gate_launch.sh              G1 motion ──▶ FlashCHORD policy on a rented A6000
   │     --phase full                    refuses an uncleaned reference unless forced
+  │     ARM_FLAGS=...                   one-variable recipe arms; see brev/arm_flags.sh
+  │
+  ├─ v2d pick-checkpoint               7 saved checkpoints ──▶ one per episode
+  │     --cell e03=DIR                   on the noisy input reference alone, no ground truth
   │
   └─ v2d pack-tier1                   rollout ──▶ submission CSV (22,989 rows)
         --dry-run                       refuses to pack an entry from the kinematic retarget
@@ -142,6 +146,7 @@ Then, with `$DATA` pointing at the released dataset and `$KIT` at the extracted 
 | contact coverage | `v2d contact --arms-root ARMS --baseline-logs LOGS` |
 | the root cleaner's failure | `v2d clean-root --seq-root SEQ --repo REPO --soma-root SOMA` |
 | the Tier 1 package | `v2d pack-tier1 --kit-root $KIT --dataset-root $DATA --motion-root MOTION --dry-run` |
+| which checkpoint to submit per episode | `v2d pick-checkpoint --cell e03=CELL --cell e09=CELL -o results/checkpoint_selection.json` |
 
 `v2d --help` lists everything. Each command writes its JSON record under `results/`.
 

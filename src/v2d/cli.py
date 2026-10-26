@@ -109,6 +109,10 @@ FORWARDED: dict[str, tuple[str, str]] = {
         "v2d.analyze.noise_channels",
         "which channels Tier 2 corrupts, how hard, and which ones the metric reads",
     ),
+    "pick-checkpoint": (
+        "v2d.select.checkpoints",
+        "choose one checkpoint per episode without reading any ground truth",
+    ),
     "prereg-cleanup": ("v2d.score.prereg_cleanup", "apply docs/EXP_CLEANUP_CONTACT.md's rule"),
     "prereg-support-root": (
         "v2d.score.prereg_support_root",
