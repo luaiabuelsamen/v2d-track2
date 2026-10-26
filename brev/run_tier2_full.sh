@@ -1,20 +1,29 @@
 #!/usr/bin/env bash
-# Track 1: the full-budget stock Tier 2 run, several clips per box, strictly sequential.
+# The full-budget 30-clip Tier 2 run, several clips per box, strictly sequential.
 #
 # Packing clips onto a box is a cost decision, not a scientific one: provisioning plus the image
 # build is ~13 min of billed time that 30 separate boxes would pay 30 times. The clips run one at a
 # time so each gets the whole card and the timing stays comparable with the AB350 cells.
 #
-# Everything about a clip is identical to brev/run_ab350.sh -- stock recipe, seed 42, 349,999,104
-# steps, a checkpoint every 49,999,872, every checkpoint evaluated at world_count=1, and
-# scene.support read from that clip's own data. The only difference is the loop and the asset root.
+# Everything about a clip is identical to brev/run_ab350.sh -- seed 42, 349,999,104 steps, a
+# checkpoint every 49,999,872, every checkpoint evaluated at world_count=1, and scene.support read
+# from that clip's own data. Three things are parameters, because the combined-recipe run changes
+# them and nothing else:
+#
+#   ARM_FLAGS    recipe changes, applied once per box before the first clip (brev/arm_flags.sh).
+#   ASSET_ROOT   where the references are mounted in the container.
+#   RESULTS_DIR  where the per-clip results go, so one box can hold two runs without mixing them.
+#
+# The flags are applied ONCE per box, not per clip: the patches are idempotent, but a patch that
+# fails has to fail before the first 4.4 h of training, not between clips two and three.
 set -uo pipefail
 
 MAP="${1:?episode map: lines of '<episode> <sequence_id>'}"
 STEPS="${2:-349999104}"
 SAVE_EVERY="${3:-49999872}"        # 2048 * 24414
-ASSETS=/v2d/assets/t2_raw
-OUT="$HOME/t2_results"
+ASSETS="${ASSET_ROOT:-/v2d/assets/t2_raw}"
+OUT="${RESULTS_DIR:-$HOME/t2_results}"
+ARM_FLAGS="${ARM_FLAGS:-}"
 
 for n in "$STEPS" "$SAVE_EVERY"; do
   (( n % 2048 == 0 )) || { echo "$n is not a multiple of world_count 2048" >&2; exit 2; }
@@ -36,6 +45,16 @@ run() {
 
 # shellcheck source=brev/support_flag.sh
 . "$(dirname "${BASH_SOURCE[0]}")/support_flag.sh"
+# shellcheck source=brev/arm_flags.sh
+. "$(dirname "${BASH_SOURCE[0]}")/arm_flags.sh"
+
+# Patch the container for this box's recipe before anything is trained, and record what the box
+# actually carries next to its results. A box whose patches did not apply must not train at all.
+ARM_OVERRIDES="$(arm_flags_apply "$ARM_FLAGS" "box $(hostname)")" || exit 1
+printf '%s\n' "${ARM_FLAGS:-(stock)}" > "$OUT/arm_flags.txt"
+echo "arm_flags=${ARM_FLAGS:-(stock)} overrides=${ARM_OVERRIDES:-(none)} \
+object_orientation_std=${V2D_OBJECT_ORIENTATION_STD:-(patch default)} assets=$ASSETS" \
+  | tee -a "$OUT/summary.txt"
 
 TOTAL=$(grep -c '[^[:space:]]' "$MAP")
 INDEX=0
@@ -69,7 +88,7 @@ while read -r EP SEQ <&3; do
     experiment=g1_recon_body_flash_sac \"task.parquet='${PARQUET}'\" \
     training.total_environment_steps=${STEPS} \
     training.checkpoint.save_interval_environment_steps=${SAVE_EVERY} \
-    $SUPPORT logging.mode=disabled \
+    $SUPPORT $ARM_OVERRIDES logging.mode=disabled \
     reset.seed=42 output_dir=$RUN_DIR" 2>&1 | tee "$CLIP/train.log" | tail -20
   echo "$TAG train seconds=$(( $(date +%s) - START ))" | tee -a "$CLIP/summary.txt"
 

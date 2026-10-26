@@ -27,6 +27,18 @@ Goal: A valid Track 2 submission before the freeze (this keeps the $250 Brev cre
 Finish line: Tier 1 insurance submission accepted; Tier 2 submitted; results/ frozen; README + short tech report; every number traceable to a committed results file.
 Deadline: leaderboard freeze 2026-11-04 17:00 EST (internal cutoff 12:00 EST that day)
 Milestone: **a valid Track 2 submission is in and scored, so the $250 Brev credit is secured.** Gate G1 passed long since (all 60 clips retargeted on CPU at 0.0 mm). **Brev is live**: three probe attempts, two real bugs found and fixed, the hardware confirmed, ~$0.22 spent of a $2 cap. The reference cleaner now has a **known-answer gate, and the original cleaner failed it** -- a gated variant that passes is built and scored. Code is one package with one CLI, ruff/format clean, 76 tests. Observability is live to W&B and a private Hugging Face repo.
+Ready, not launched (2026-10-26): **the 30-clip Tier 2 run with the combined recipe is
+prepared end to end** -- `docs/T2_COMBINED_RUN.md`, one command,
+`brev/launch_t2_combined.sh --go`. Staging verified on all 30 clips (0 problems, 14/30 resolve to a
+supported scene, md5 manifest, per-clip provenance). The host scoring path reproduces e18's
+recorded kit AUC **0.382576** and MPPE **4.166134 cm** exactly, from pull to z-drop selection.
+Expected spend **$105.67** of the $230 authorized ($0.00 committed); first comparable results
+~5.4 h after go, all 30 clips ~21 h. **Blocked on two handovers:** tetool's bridge-cleaned
+references (path in `~/projects/_ops/briefs/clean_refs_path.txt`) and interp's finger-target
+retarget, which must be solved on top of tetool's object poses. Without them the run goes on the
+released-input retarget, which is the registered fallback. z-drop is the submission rule and is now
+`v2d pick-checkpoint`'s default.
+
 Last result (2026-10-26): **step 1 re-measured with the support fix -- the AUC line is crossed,
 the pipeline is not.** RAW e03 and e09 were relaunched with the per-clip `scene.support` rule and ran
 the full 349,999,104 steps. The 3-clip RAW mean AUC is **0.1345** against the 0.187 stop line, while
