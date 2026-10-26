@@ -74,12 +74,19 @@ if [ "${#NPZ_ARGS[@]}" = 0 ]; then
   while read -r flag item; do
     [ -n "${item:-}" ] && NPZ_ARGS+=("$flag" "$item")
   done < <(env -u PYTHONPATH ./.venv311/bin/python -I -c "
-import json
+import json, sys
 stage = json.load(open('$STAGE/provenance.json'))
 for label, path in sorted(stage.get('npz_by_source', {}).items()):
     print(f'--npz {label}={path}')
 for label, path in sorted(stage.get('ref_dataset_by_source', {}).items()):
     print(f'--ref-dataset {label}={path}')
+# Per-clip roots travel in the stage's provenance, which score_pulled.sh reads directly; printed
+# here only so a launch that scores against two different roots says so out loud.
+per_clip = stage.get('ref_dataset_by_clip', {})
+if per_clip:
+    import collections
+    for root, tags in sorted(collections.Counter(per_clip.values()).items()):
+        print(f'# {tags} clips convert against {root}', file=sys.stderr)
 " 2>/dev/null)
   [ "${#NPZ_ARGS[@]}" -gt 0 ] && echo "scoring references from the stage: ${NPZ_ARGS[*]}"
 fi

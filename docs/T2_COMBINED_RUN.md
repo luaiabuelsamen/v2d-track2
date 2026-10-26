@@ -14,8 +14,8 @@ the only choice made inside it is which checkpoint each clip submits, by a rule 
 | `scene.support` | per clip, from that clip's own USDA | `brev/support_flag.sh`; 14 of 30 have primitives |
 | START | `immediate_first_frame_probability` 0.25 from 209,999,872 and 0.50 from 288,749,568, plus `reset.reset_voc_scale=0.0` | `brev/patch_start_curriculum.py` + `brev/arm_flags.sh` |
 | ORI | 13th reward term on the object quaternion, weight 1.0, **std 0.3 rad** | `brev/patch_object_orientation.py --std 0.3` |
-| FING | finger targets, from interp's retarget | **blocked**, see below |
-| CLEAN | bridge-cleaned object poses, from tetool | **blocked**, see below |
+| FING | finger targets, from interp's retarget | **landed 08:02 UTC**, 30/30 clips, 150/150 md5 verified |
+| CLEAN | bridge-cleaned object poses, from tetool | **landed**, retargeted here 30/30, 97/97 md5 verified |
 
 START and ORI are code; both patches refuse to apply to an upstream they do not recognise, are
 idempotent, and are applied once per box before the first clip, so a box that cannot carry the
@@ -26,19 +26,38 @@ Nothing is merged column-wise. The retargeter solves the whole body against the 
 so finger joints from a raw-object solve would put the fingers where the *noisy* object was. A clip
 comes from exactly one solve and `provenance.json` records which.
 
-## What is blocked, and exactly what unblocks it
+## What landed, and what the stage proved about it
+
+Both references are in. The stage takes all 30 clips from interp's finger tree, which was solved on
+top of our retarget of tetool's `bridge_v1`:
+
+| checked | result |
+|---|---|
+| finger tree md5 | 150/150 files match the handover's own list |
+| what the finger solve changed | exactly the 14 Dex3 joints (`left/right_hand_{index,middle,thumb}_*`), on every clip; no other column, no other joint |
+| which object trajectory each clip carries | 29 clips reproduce the cleaned retarget **exactly** (delta 0.0 m); e01 reproduces the released one, which is correct — the cleaner flagged e01, so interp solved its fingers on the released poses |
+| support | 14/30 resolve to a supported scene, unchanged |
+
+That last row is why the convert root is now recorded **per clip** and not per source. One tree
+carries two references, so `v2d match-object-reference` measures which one each clip holds and
+`provenance.json` gets a `ref_dataset_by_clip` map that `brev/score_pulled.sh` reads first: 29 clips
+convert against `bridge_v1`, e01 against the release. Keying it by source would have scored e01
+against a reference its policy never tracked, which is the silent kind of wrong — on B3 the same
+mistake moved MPPE by 0.36 cm and only `rollout-to-npz`'s frame check caught it. A clip whose object
+trajectory matches **no** declared source is fatal: that is the "fingers solved against the noisy
+object" failure the handover warns about, and its kit score would mean nothing.
+
+## What was blocked, and exactly what unblocked it
 
 | arm | needs | where it is read from | if it never lands |
 |---|---|---|---|
 | CLEAN | one retargeted G1 tree of bridge-cleaned clips, plus the object npz they were retargeted from (the kit score has to be converted against the same reference the policy trained on) | path in `~/projects/_ops/briefs/clean_refs_path.txt`; clips it flags listed there or passed as `--skip clean=…` | that clip falls through to the released-input retarget |
 | FING | one retargeted G1 tree with non-zero finger joints, solved **on top of CLEAN's object poses** so the two compose | path in `~/projects/_ops/briefs/` | the run goes without finger targets |
 
-Neither file exists yet (checked 2026-10-26 06:20 UTC). If tetool hands over an npz only, it is one
-command on this Jetson first, ~4 h on two CPU workers:
-
-```bash
-v2d retarget --dataset-root $DATA --object-npz <their npz dir> --tiers tier2   # -> a G1 tree
-```
+Both landed on 2026-10-26: `clean_refs_path.txt` as a drop-in `--dataset-root` (retargeted here in
+~70 min on two CPU workers, worst rigid-fit residual 0.0 mm / orientation 0.042°, handed back to
+interp at `~/projects/_ops/briefs/clean_retarget_path.txt`), and `finger_refs_path.txt` at 08:02 UTC
+as a retargeted tree built on that retarget.
 
 All 14 finger joints are identically **0** in both released tiers, so FING is the one arm whose
 channel is currently absent rather than noisy — which is why it is worth a slot at all.

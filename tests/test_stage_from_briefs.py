@@ -157,3 +157,73 @@ def test_a_retargeted_tree_is_used_as_handed_over(tmp_path: Path):
     assert f"fing -> {tree}" in done.stdout
     # No retarget is implied for this shape, so nothing is said about scoring against a root.
     assert "scored against" not in done.stdout
+
+
+def object_clip(tree: Path, sequence: str, offset: float) -> None:
+    """A clip with a real object trajectory, which the per-clip reference match reads."""
+    import numpy as np
+    import pyarrow as pa
+    import pyarrow.parquet as pq
+
+    frames = np.arange(6, dtype=np.float64)
+    position = np.stack([frames * 0.01 + offset, frames * 0.0, frames * 0.0], axis=1)
+    clip = tree / f"whole_body/soma/sequence_id={sequence}/robot_name=g1"
+    clip.mkdir(parents=True, exist_ok=True)
+    (clip.parent / "object").mkdir(exist_ok=True)
+    pq.write_table(
+        pa.table({
+            "object_root_position": [position.tolist()],
+            "object_root_axis_angle": [np.zeros((6, 3)).tolist()],
+            "object_body_position": [position[:, None, :].tolist()],
+            "object_body_wxyz": [np.tile([1.0, 0.0, 0.0, 0.0], (6, 1))[:, None, :].tolist()],
+        }),
+        clip / "data.parquet",
+    )
+
+
+def test_a_finger_tree_inherits_its_reference_per_clip(tmp_path: Path):
+    """One tree, two references: cleaned object poses except on the clip the cleaner flagged.
+
+    Keying the convert root by source would score that clip against a reference its policy never
+    tracked, and nothing downstream would say so.
+    """
+    tree = dataset_root(tmp_path, "bridge_v1", fall_back_to_raw=[1])
+    briefs(
+        tmp_path,
+        finger_refs_path=f"{tmp_path / 'interp_fingers'}\n",
+        clean_refs_path=f"{tree}\n",
+    )
+    for episode, sequence in EPISODES:
+        # The finger tree copies clean's object poses, except on episode 1 where it copies raw's.
+        object_clip(tmp_path / "t2_clean/tier2", sequence, 0.0 if episode != 1 else 6.0)
+        object_clip(tmp_path / "t2_raw/tier2", sequence, 9.0 if episode != 1 else 4.0)
+        object_clip(tmp_path / "interp_fingers", sequence, 0.0 if episode != 1 else 4.0)
+    done = stage(tmp_path)
+    # The stage goes on to fail on these object-only parquets (no mesh paths, no support USDA);
+    # what is under test is the match and the per-clip map it writes.
+    assert "matching the fing tree's object trajectories" in done.stdout
+    assert "2 clips carry the clean object trajectory" in done.stdout
+    assert "1 clips carry the raw object trajectory" in done.stdout
+    provenance = json.loads((tmp_path / "out/provenance.json").read_text())
+    assert provenance["ref_dataset_by_clip"] == {"e00": str(tree), "e02": str(tree)}
+    assert provenance["object_trajectory_matched_by"] == {"fing": {"clean": 2, "raw": 1}}
+    # e01 is absent on purpose: absent means the released root, which is the scorer's default.
+    assert set(provenance["clips"]) == {"e00", "e01", "e02"}
+
+
+def test_a_finger_tree_solved_on_an_unknown_trajectory_stops_the_stage(tmp_path: Path):
+    """The failure the handover warns about: fingers solved against the noisy object."""
+    tree = dataset_root(tmp_path, "bridge_v1")
+    briefs(
+        tmp_path,
+        finger_refs_path=f"{tmp_path / 'interp_fingers'}\n",
+        clean_refs_path=f"{tree}\n",
+    )
+    for episode, sequence in EPISODES:
+        object_clip(tmp_path / "t2_clean/tier2", sequence, 0.0)
+        object_clip(tmp_path / "t2_raw/tier2", sequence, 9.0)
+        object_clip(tmp_path / "interp_fingers", sequence, 0.0 if episode else 3.0)
+    done = stage(tmp_path)
+    assert done.returncode == 2
+    assert "matches none of the sources: [0]" in done.stderr
+    assert not (tmp_path / "out").exists()

@@ -49,6 +49,16 @@ print(clips.get('$1', {}).get('source', 'raw'))
 "
 }
 
+clip_ref_dataset() {
+  # Empty means "the released root", which is this script's default.
+  [ -f "$PROVENANCE" ] || return 0
+  $PY -c "
+import json
+stage = json.load(open('$PROVENANCE'))
+print(stage.get('ref_dataset_by_clip', {}).get('$1', ''))
+"
+}
+
 for CLIP in "$RESULTS"/e[0-9][0-9]; do
   [ -d "$CLIP" ] || continue
   TAG="$(basename "$CLIP")"
@@ -68,6 +78,11 @@ for CLIP in "$RESULTS"/e[0-9][0-9]; do
   CONVERT_ROOT="$DATA"
   [ -n "${NPZ[$LABEL]:-}" ] && REF=(--reference-npz "${NPZ[$LABEL]}")
   [ -n "${REF_DATASET[$LABEL]:-}" ] && CONVERT_ROOT="${REF_DATASET[$LABEL]}"
+  # The stage's per-clip map wins: a single tree can carry two references (interp's finger tree
+  # carries the cleaned object trajectory on 29 clips and the released one on the clip the cleaner
+  # flagged), and the clip is what the convert root is a property of.
+  CLIP_ROOT="$(clip_ref_dataset "$TAG")"
+  [ -n "$CLIP_ROOT" ] && CONVERT_ROOT="$CLIP_ROOT"
   for TRAJ in "$CLIP"/policy_*/objects.parquet; do
     CDIR="$(dirname "$TRAJ")"
     [ -s "$CDIR/score.json" ] && continue

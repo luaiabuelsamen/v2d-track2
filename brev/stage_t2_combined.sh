@@ -48,6 +48,7 @@ while [ $# -gt 0 ]; do
     --source)
       LABELS+=("${2%%=*}"); ROOT["${2%%=*}"]="${2#*=}"; shift 2 ;;
     --npz) NPZ["${2%%=*}"]="${2#*=}"; shift 2 ;;
+    --ref-dataset) REF_DATASET["${2%%=*}"]="${2#*=}"; shift 2 ;;
     --skip) SKIP["${2%%=*}"]=",${2#*=}," ; shift 2 ;;
     *) echo "unknown argument: $1" >&2; exit 2 ;;
   esac
@@ -143,6 +144,38 @@ for LABEL in "${LABELS[@]}"; do
   [ -d "${ROOT[$LABEL]}" ] || { echo "FATAL: source $LABEL is not a directory: ${ROOT[$LABEL]}" >&2; FAIL=1; }
 done
 [ "$FAIL" = 0 ] || exit 2
+
+# One tree can carry more than one reference. interp's finger tree is the case: the 14 finger
+# columns were solved on top of the cleaned retarget for 29 clips and on top of the released one
+# for the clip the cleaner flagged, so the root its rollouts convert against is a property of the
+# clip, not of the source. The handover says so in prose; this measures it, because converting
+# against the wrong reference is silent (it moved MPPE by 0.36 cm on B3 and only rollout-to-npz's
+# own frame check caught it). A clip matching no source is fatal: that is the "fingers solved
+# against the noisy object" failure, and its kit score would be meaningless.
+declare -A MATCHED=()
+HAVE_REF=0
+for LABEL in "${LABELS[@]}"; do
+  [ -n "${REF_DATASET[$LABEL]:-}" ] && HAVE_REF=1
+done
+if [ "$HAVE_REF" = 1 ]; then
+  for LABEL in "${LABELS[@]}"; do
+    # `raw` is the released retarget, i.e. the default convert root: it matches itself.
+    [ -n "${REF_DATASET[$LABEL]:-}" ] && continue
+    [ "$LABEL" = raw ] && continue
+    AGAINST=()
+    for OTHER in "${LABELS[@]}"; do
+      [ "$OTHER" = "$LABEL" ] && continue
+      AGAINST+=(--against "$OTHER=${ROOT[$OTHER]}")
+      [ -n "${REF_DATASET[$OTHER]:-}" ] && AGAINST+=(--ref "$OTHER=${REF_DATASET[$OTHER]}")
+    done
+    [ "${#AGAINST[@]}" -gt 0 ] || continue
+    echo "matching the $LABEL tree's object trajectories against the other sources:"
+    MATCH_OUT="$S/matched_${LABEL}.json"
+    run_v2d match-object-reference "${ROOT[$LABEL]}" --map "$MAP" "${AGAINST[@]}" -o "$MATCH_OUT" \
+      || exit 2
+    MATCHED["$LABEL"]="$MATCH_OUT"
+  done
+fi
 
 DST="$OUT/whole_body/soma"
 STAGE_DIR="$OUT/whole_body/reconstructed_stage"
@@ -256,11 +289,13 @@ RC=$?
 ( cd "$OUT" && find . -type f | sort | xargs md5sum ) > "$OUT.md5"
 NPZ_MAP=""
 REF_MAP=""
+MATCH_MAP=""
 for LABEL in "${LABELS[@]}"; do
   [ -n "${NPZ[$LABEL]:-}" ] && NPZ_MAP="$NPZ_MAP$LABEL=${NPZ[$LABEL]} "
   [ -n "${REF_DATASET[$LABEL]:-}" ] && REF_MAP="$REF_MAP$LABEL=${REF_DATASET[$LABEL]} "
+  [ -n "${MATCHED[$LABEL]:-}" ] && MATCH_MAP="$MATCH_MAP$LABEL=${MATCHED[$LABEL]} "
 done
-NPZ_MAP="$NPZ_MAP" REF_MAP="$REF_MAP" $PY - "$OUT" "$MOUNT" <<'PYEOF'
+NPZ_MAP="$NPZ_MAP" REF_MAP="$REF_MAP" MATCH_MAP="$MATCH_MAP" $PY - "$OUT" "$MOUNT" <<'PYEOF'
 import json
 import os
 import pathlib
@@ -269,6 +304,34 @@ import sys
 
 out = pathlib.Path(sys.argv[1])
 rows = [line.split(maxsplit=3) for line in (out / "sources.txt").read_text().splitlines() if line]
+
+
+def pairs(name):
+    return dict(item.split("=", 1) for item in os.environ.get(name, "").split() if "=" in item)
+
+
+by_source = pairs("REF_MAP")
+# A source whose clips were classified one by one: the clip inherits the reference of whichever
+# source's object trajectory it reproduces exactly.
+matched = {label: json.loads(pathlib.Path(path).read_text())
+           for label, path in pairs("MATCH_MAP").items()}
+
+
+def ref_dataset_for(episode, label):
+    """The root this clip's rollouts convert against, or None for the release."""
+    if label in by_source:
+        return by_source[label]
+    report = matched.get(label)
+    if report is None:
+        return None
+    return (report["per_episode"].get(str(int(episode))) or {}).get("ref_dataset")
+
+
+per_clip = {
+    f"e{int(episode):02d}": ref_dataset_for(episode, label)
+    for episode, _sequence, label, _path in rows
+}
+per_clip = {tag: root for tag, root in per_clip.items() if root}
 sha = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True,
                      check=False).stdout.strip()
 (out / "provenance.json").write_text(json.dumps({
@@ -277,14 +340,16 @@ sha = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=Tru
     "container_mount": f"/v2d/assets/{sys.argv[2]}",
     # Which reference each source's rollouts must be kit-scored against. The launcher reads this
     # rather than being told again on the command line.
-    "npz_by_source": dict(
-        item.split("=", 1) for item in os.environ.get("NPZ_MAP", "").split() if "=" in item
-    ),
+    "npz_by_source": pairs("NPZ_MAP"),
     # A source that arrived as a dataset root: its rollouts convert against this root, because the
     # reference the policy tracked is the cleaned pose in it, not the released one.
-    "ref_dataset_by_source": dict(
-        item.split("=", 1) for item in os.environ.get("REF_MAP", "").split() if "=" in item
-    ),
+    "ref_dataset_by_source": by_source,
+    # Per clip, and authoritative over the per-source map: one tree can carry two references.
+    # Absent means the released root. score_pulled.sh reads this first.
+    "ref_dataset_by_clip": per_clip,
+    "object_trajectory_matched_by": {
+        label: report["by_label"] for label, report in matched.items()
+    },
     "clips": {
         f"e{int(episode):02d}": {
             "episode": int(episode),

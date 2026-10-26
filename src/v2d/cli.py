@@ -109,6 +109,10 @@ FORWARDED: dict[str, tuple[str, str]] = {
         "v2d.analyze.noise_channels",
         "which channels Tier 2 corrupts, how hard, and which ones the metric reads",
     ),
+    "match-object-reference": (
+        "v2d.stage.object_reference",
+        "which source's object trajectory each clip of a retargeted tree carries",
+    ),
     "pick-checkpoint": (
         "v2d.select.checkpoints",
         "choose one checkpoint per episode without reading any ground truth",
