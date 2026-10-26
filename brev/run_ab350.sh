@@ -17,9 +17,21 @@ STEPS="${4:-349999104}"
 SAVE_EVERY="${5:-49999872}"      # 2048 * 24414
 
 case "$ARM" in raw|clean) ;; *) echo "arm must be raw or clean, not '$ARM'" >&2; exit 2 ;; esac
+
+# The arm name still means the parquet. Recipe changes travel separately, in ARM_FLAGS, so one
+# runner covers every arm and nothing about a cell is implied by its name. Validated here, before
+# anything is provisioned or trained, because an unknown flag at hour four costs a cell.
+# shellcheck source=brev/arm_flags.sh
+. "$(dirname "${BASH_SOURCE[0]}")/arm_flags.sh"
+ARM_FLAGS="${ARM_FLAGS:-}"
+SLUG="$(arm_flags_slug "$ARM_FLAGS")" || exit 2
+# The slug is empty for the stock recipe, so stock cells keep the paths they have always had, and a
+# flagged cell cannot overwrite the stock cell it is being measured against.
+CELL="${ARM}_e$(printf '%02d' "$EP")${SLUG}"
+
 PARQUET="/v2d/assets/ab_${ARM}/whole_body/soma/sequence_id=${SEQ}/robot_name=g1/data.parquet"
-OUT="$HOME/ab350_results/${ARM}_e$(printf '%02d' "$EP")"
-RUN_DIR="outputs/ab350_${ARM}_e$(printf '%02d' "$EP")"
+OUT="$HOME/ab350_results/${CELL}"
+RUN_DIR="outputs/ab350_${CELL}"
 
 for n in "$STEPS" "$SAVE_EVERY"; do
   (( n % 2048 == 0 )) || { echo "$n is not a multiple of world_count 2048" >&2; exit 2; }
@@ -51,13 +63,20 @@ run "md5sum '$PARQUET'" | tr -d '\r' | tee "$OUT/reference.md5"
 SUPPORT="$(support_flag_or_die "$PARQUET" "arm $ARM e$EP")" || exit 1
 echo "$SUPPORT" | tee -a "$OUT/summary.txt"
 
-say "Train arm $ARM, e$EP, seed 42, $STEPS steps (checkpoint every $SAVE_EVERY)"
+# Patch the container's flash_chord for every flag this arm carries, and collect the hydra
+# overrides that go with them. Fatal if any patch is missing or refuses: better no cell than a cell
+# whose recipe nobody can name afterwards.
+ARM_OVERRIDES="$(arm_flags_apply "$ARM_FLAGS" "arm $ARM e$EP")" || exit 1
+printf '%s\n' "${ARM_FLAGS:-(stock)}" > "$OUT/arm_flags.txt"
+echo "arm_flags=${ARM_FLAGS:-(stock)} overrides=${ARM_OVERRIDES:-(none)}" | tee -a "$OUT/summary.txt"
+
+say "Train arm $ARM${SLUG} e$EP, seed 42, $STEPS steps (checkpoint every $SAVE_EVERY)"
 START=$(date +%s)
 run "cd /workspace && WANDB_MODE=disabled python scripts/train_flash_sac.py \
   experiment=g1_recon_body_flash_sac \"task.parquet='${PARQUET}'\" \
   training.total_environment_steps=${STEPS} \
   training.checkpoint.save_interval_environment_steps=${SAVE_EVERY} \
-  $SUPPORT logging.mode=disabled \
+  $SUPPORT $ARM_OVERRIDES logging.mode=disabled \
   reset.seed=42 output_dir=$RUN_DIR" 2>&1 | tee "$OUT/train.log" | tail -20
 ELAPSED=$(( $(date +%s) - START ))
 echo "train seconds=$ELAPSED" | tee -a "$OUT/summary.txt"

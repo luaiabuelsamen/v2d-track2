@@ -20,9 +20,11 @@ BACKSTOP_HOURS=7.5          # my own, independent of anything gate_launch.sh doe
 STEPS=349999104
 CLIPS="3 9 18"
 ARMS="raw clean"      # step 1 is the RAW baseline alone; CLEAN is held until it verifies
+ARM_FLAGS=""          # recipe changes, comma-separated; see brev/arm_flags.sh. Empty = stock.
 while [ $# -gt 0 ]; do
   case "$1" in
     --go) GO=1; shift ;;
+    --arm-flags) ARM_FLAGS="$2"; shift 2 ;;
     --max-concurrent) MAX_CONCURRENT="$2"; shift 2 ;;
     --type) TYPE="$2"; shift 2 ;;
     --steps) STEPS="$2"; shift 2 ;;
@@ -34,6 +36,11 @@ done
 
 S="${V2D_SCRATCH:-/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad}"
 REPO=/home/jetson3/projects/v2d-challenge
+# The same helper the runner uses, so the launcher and the box agree on what a flag set is called
+# and which files it needs. An unknown flag fails here, before a single box is created.
+# shellcheck source=brev/arm_flags.sh
+. "$REPO/brev/arm_flags.sh"
+SLUG="$(arm_flags_slug "$ARM_FLAGS")" || exit 2
 OUT=$S/ab350
 # One id per launcher invocation, stamped into each cell directory so a reader can tell this run's
 # results from a previous run's at the same path.
@@ -68,6 +75,7 @@ cat <<PLAN
    est per cell : ${EST_HOURS} h  -> projected total \$${TOTAL_USD}
    watchdogs    : in-box ${MAX_HOURS} h, my backstop ${BACKSTOP_HOURS} h, per box
    arms         : $ARMS
+   arm flags    : ${ARM_FLAGS:-(stock recipe)}$([ -n "$SLUG" ] && echo "  -> cell suffix $SLUG")
    references   : $(for a in $ARMS; do printf "%s=%s " "$a" "$(wc -l < "$S/ab_stage_${a}.md5")"; done)files, md5-verified after transfer
    decision rule: docs/AB350_BAR.md  (not editable after this runs)
 PLAN
@@ -76,7 +84,7 @@ Read-only. Re-run with --go to create instances."; exit 0; }
 
 run_cell() {
   local ARM="${1%%:*}" EP="${1##*:}"
-  local NAME="v2d-ab-${ARM}-e$(printf '%02d' "$EP")"
+  local NAME="v2d-ab-${ARM}-e$(printf '%02d' "$EP")${SLUG}"
   local LOG="$OUT/${NAME}.log"
   local SEQID="${SEQ[$EP]}"
   {
@@ -130,6 +138,11 @@ run_cell() {
       [ -n "$helper" ] && HELPERS+=("$REPO/brev/$helper")
     done < <(grep -oE '\$\(dirname "\$\{BASH_SOURCE\[0\]\}"\)/[A-Za-z0-9_.-]+' "$REPO/brev/run_ab350.sh" \
              | sed 's#.*/##' | sort -u)
+    # Plus the patch script behind each arm flag. arm_flags.sh is sourced by name above, but the
+    # patches it runs are resolved at run time, so they have to be asked for rather than grepped.
+    while read -r patch; do
+      [ -n "$patch" ] && HELPERS+=("$REPO/brev/$patch")
+    done < <(arm_flags_files "$ARM_FLAGS")
     for helper in "${HELPERS[@]}"; do
       [ -f "$helper" ] || { echo "!! $NAME: run_ab350.sh sources $(basename "$helper"), which does not exist"; return 1; }
     done
@@ -146,11 +159,11 @@ run_cell() {
       return 1
     fi
     echo "shipped $want runner files: run_ab350.sh $(for h in "${HELPERS[@]}"; do basename "$h"; done | tr '\n' ' ')"
-    ssh -n "$NAME" "setsid nohup bash ~/ab/run_ab350.sh $ARM $EP $SEQID $STEPS \
+    ssh -n "$NAME" "setsid nohup env ARM_FLAGS='$ARM_FLAGS' bash ~/ab/run_ab350.sh $ARM $EP $SEQID $STEPS \
                       > ~/ab/cell.log 2>&1 < /dev/null & echo started" 2>/dev/null
 
     local CELL_START; CELL_START=$(date +%s)
-    local CELL_DIR="${ARM}_e$(printf '%02d' "$EP")"
+    local CELL_DIR="${ARM}_e$(printf '%02d' "$EP")${SLUG}"
     # Move any previous run's results aside before pulling this run's, and stamp the directory with
     # this run's id. A relaunch of the same cell writes to the same local path, so without this the
     # old metrics.json sits there looking exactly like a fresh result -- which on 2026-10-25 made a
