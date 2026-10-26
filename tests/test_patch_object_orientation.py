@@ -23,10 +23,11 @@ def _load_patcher():
     spec = importlib.util.spec_from_file_location("patch_object_orientation", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
-    return module.main
+    return module
 
 
-main = _load_patcher()
+patcher = _load_patcher()
+main = patcher.main
 
 
 @pytest.fixture
@@ -107,17 +108,54 @@ def test_curriculum_names_the_new_weight(tree: Path):
     assert "object_orientation: 1.0" in curriculum
     objective_yaml = (tree / "configs/objective/recon_body.yaml").read_text()
     assert "object_orientation_weight: 1.0" in objective_yaml
-    assert "object_orientation_std: 0.4" in objective_yaml
+    assert "object_orientation_std: 0.3" in objective_yaml
 
 
-def test_values_are_the_house_calibration(tree: Path):
-    """Weight 1.0 and std 0.4 are copied from palm_orientation, not invented."""
+def test_the_default_std_is_0_3_and_the_weight_is_the_house_calibration(tree: Path):
+    """Weight 1.0 is copied from palm_orientation; the std is tighter, on purpose."""
+    assert patcher.DEFAULT_STD == 0.3
     main([str(tree)])
     text = objective(tree)
     assert "    object_orientation_weight: float = 1.0\n" in text
-    assert "    object_orientation_std: float = 0.4\n" in text
+    assert "    object_orientation_std: float = 0.3\n" in text
+    # palm_orientation is left exactly as upstream has it: this is a one-variable change.
     assert "    palm_orientation_weight: float = 1.0\n" in text
     assert "    palm_orientation_std: float = 0.4\n" in text
+
+
+def test_std_is_a_parameter_and_reaches_both_files(tree: Path):
+    assert main([str(tree), "--std", "0.45"]) == 0
+    assert "    object_orientation_std: float = 0.45\n" in objective(tree)
+    assert "object_orientation_std: 0.45" in (
+        tree / "configs/objective/recon_body.yaml"
+    ).read_text()
+    # The std shapes the term; it must not have leaked into the weight.
+    assert "    object_orientation_weight: float = 1.0\n" in objective(tree)
+
+
+def test_a_tree_already_patched_at_another_std_is_refused(tree: Path):
+    """Idempotence would otherwise keep the first std and report the second as applied."""
+    main([str(tree), "--std", "0.3"])
+    with pytest.raises(SystemExit) as caught:
+        main([str(tree), "--std", "0.4"])
+    assert "already carries object_orientation_std 0.3" in str(caught.value)
+    assert "    object_orientation_std: float = 0.3\n" in objective(tree)
+
+
+def test_a_tree_already_patched_at_the_same_std_is_a_no_op(tree: Path):
+    main([str(tree), "--std", "0.45"])
+    once = objective(tree)
+    assert main([str(tree), "--std", "0.45"]) == 0
+    assert objective(tree) == once
+
+
+@pytest.mark.parametrize("bad", ["0", "-0.3", "nan", "inf"])
+def test_a_std_that_cannot_shape_anything_is_refused(tree: Path, bad: str):
+    before = objective(tree)
+    with pytest.raises(SystemExit) as caught:
+        main([str(tree), "--std", bad])
+    assert "finite and positive" in str(caught.value)
+    assert objective(tree) == before
 
 
 def test_is_idempotent(tree: Path):

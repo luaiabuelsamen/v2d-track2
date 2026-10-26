@@ -48,10 +48,15 @@ progress, palm-position, palm-orientation, force-closure. The object is shaped b
 done as a config override — the arm is a 13th term in our fork, mirroring the existing
 `palm_orientation` term on the tracked object quaternion against the reference.
 
-Value: **weight 1.0, std 0.4**, copied from `palm_orientation_weight: 1.0` /
-`palm_orientation_std: 0.4` — and `pelvis_orientation` is 1.0 / 0.4 as well, so 1.0 / 0.4 is the
-house calibration for an orientation term in this objective. Copying it keeps the arm a single
-addition rather than a retuning of the recipe.
+Value: **weight 1.0, std 0.3 rad** (`brev/patch_object_orientation.py --std`, default 0.3). The
+weight is copied from `palm_orientation_weight: 1.0` — `pelvis_orientation` is 1.0 as well, so 1.0
+is the house calibration for an orientation term here, and copying it keeps the arm a single
+addition rather than a retuning of the recipe. The std is **not** copied: `palm_orientation_std` is
+0.4, but the object's angle is scored and the palm's is not. Both values are flat across the
+63–96° our checkpoints actually sit at, so the choice only changes the slope inside the 0–20° band
+where ADD-AUC is won, and 0.3 (half reward at 14.3°) doubles it. The evaluator's own orientation
+gate is 1.5 rad, far too loose to read a value off, so the std is a parameter rather than a
+derivation.
 
 Why this term and not a bigger position weight: on the three clips that already hold the object,
 MPPE is 4.2–5.3 cm while the object **orientation** error is 25.0°, 38.5° and 44.8°. Position is

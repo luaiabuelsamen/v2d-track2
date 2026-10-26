@@ -7,8 +7,15 @@ object's angle. On the clips that already hold the object we measure 4.2-5.3 cm 
 against 25-45 degrees of orientation error, so the part that is scored is the part that is never
 rewarded. This adds the missing term, mirroring the existing `palm_orientation` term exactly: the
 same double-cover-aware geodesic angle and the same `exp(-theta^2 / std^2)` shaping, with its own
-std. Weight 1.0 and std 0.4 are copied from `palm_orientation` (and `pelvis_orientation`), which is
-the house calibration for an orientation term in this objective.
+std. Weight 1.0 is copied from `palm_orientation` (and `pelvis_orientation`), the house calibration
+for an orientation term in this objective.
+
+The std is `--std`, defaulting to 0.3 rad (17.2 deg), i.e. half reward at 14.3 deg. That is tighter
+than `palm_orientation`'s 0.4 for one reason: the object's angle is scored and the palm's is not.
+Both values are flat across the 64-96 deg our checkpoints actually sit at, so the choice only
+changes the slope inside the 0-20 deg band where ADD-AUC is won, and 0.3 doubles it. It is a
+parameter because it is the one number in the term that is a guess -- the evaluator's own
+orientation gate is 1.5 rad, which is far too loose to read a value off.
 
 The term is APPENDED at index 12 so every existing term keeps its index: a reordering would
 silently permute the weight vector. The curriculum config has to be patched too, because
@@ -27,92 +34,125 @@ from __future__ import annotations
 
 import argparse
 import ast
+import re
 import sys
 from pathlib import Path
 
 MARKER = "object_orientation"
 
-OBJECTIVE_EDITS: tuple[tuple[str, str], ...] = (
-    # (1) the term name, appended so the existing indices are untouched
-    (
-        '    "palm_orientation",\n    "force_closure",\n)\n',
-        '    "palm_orientation",\n    "force_closure",\n    "object_orientation",\n)\n',
-    ),
-    # (2) the term count the kernel strides by
-    (
-        "_RECON_BODY_OBJECTIVE_TERM_COUNT = wp.constant(12)",
-        "_RECON_BODY_OBJECTIVE_TERM_COUNT = wp.constant(13)",
-    ),
-    # (3) the config: a weight and a std of its own
-    (
-        "    force_closure_weight: float = 5.0\n",
-        "    force_closure_weight: float = 5.0\n    object_orientation_weight: float = 1.0\n",
-    ),
-    (
-        "    palm_orientation_std: float = 0.4\n",
-        "    palm_orientation_std: float = 0.4\n    object_orientation_std: float = 0.4\n",
-    ),
-    # (4) validation: finite, and positive like every other shaping std
-    (
-        "            self.palm_orientation_std,\n            self.force_closure_min_support,",
-        "            self.palm_orientation_std,\n            self.object_orientation_std,"
-        "\n            self.force_closure_min_support,",
-    ),
-    (
-        "                self.palm_orientation_std,\n            )\n        ):",
-        "                self.palm_orientation_std,\n                self.object_orientation_std,"
-        "\n            )\n        ):",
-    ),
-    # (5) the weights tuple, in term order, so index 12 is the new weight
-    (
-        "            self.force_closure_weight,\n        )",
-        "            self.force_closure_weight,\n            self.object_orientation_weight,\n        )",
-    ),
-    # (6) the kernel needs the reference object quaternion and the new std
-    (
-        "    object_target_pos_w: wp.array(dtype=wp.vec3),\n",
-        "    object_target_pos_w: wp.array(dtype=wp.vec3),\n"
-        "    object_target_quat_w: wp.array(dtype=wp.quat),\n",
-    ),
-    (
-        "    palm_orientation_std: float,\n",
-        "    palm_orientation_std: float,\n    object_orientation_std: float,\n",
-    ),
-    # (7) the term itself, at index 12
-    (
-        "    terms[term_base + 11] = force_closure[world]\n",
-        "    terms[term_base + 11] = force_closure[world]\n"
-        "\n"
-        "    # Our addition. The twelve stock terms track the object by position only, so a "
-        "policy\n"
-        "    # can hold the object in the right place at the wrong angle and lose ADD-AUC for "
-        "free.\n"
-        "    # Mirrors palm_orientation: same double-cover-aware geodesic angle, same "
-        "exp(-e^2/s^2).\n"
-        "    object_orientation = wp.normalize(wp.transform_get_rotation(body_q[body_base + "
-        "object_body_id]))\n"
-        "    object_orientation_error = quat_geodesic_angle(object_orientation, "
-        "object_target_quat_w[world])\n"
-        "    terms[term_base + 12] = wp.exp(\n"
-        "        -(object_orientation_error * object_orientation_error)\n"
-        "        / (object_orientation_std * object_orientation_std)\n"
-        "    )\n",
-    ),
-    # (8) pass both at launch, in signature order
-    (
-        "                self.command.body_target_pos_w,\n",
-        "                self.command.body_target_pos_w,\n                self.command.body_target_quat_w,\n",
-    ),
-    (
-        "                self.config.palm_orientation_std,\n",
-        "                self.config.palm_orientation_std,\n                self.config.object_orientation_std,\n",
-    ),
-)
+# 0.3 rad = 17.2 deg; see the module docstring for why it is not palm_orientation's 0.4.
+DEFAULT_STD = 0.3
 
-OBJECTIVE_YAML_EDITS: tuple[tuple[str, str], ...] = (
-    ("object_position_weight: 1.0\n", "object_position_weight: 1.0\nobject_orientation_weight: 1.0\n"),
-    ("palm_orientation_std: 0.4\n", "palm_orientation_std: 0.4\nobject_orientation_std: 0.4\n"),
-)
+
+def objective_edits(std: float) -> tuple[tuple[str, str], ...]:
+    """The edits to `objectives/recon_body.py`, for one choice of std."""
+    return (
+        # (1) the term name, appended so the existing indices are untouched
+        (
+            '    "palm_orientation",\n    "force_closure",\n)\n',
+            '    "palm_orientation",\n    "force_closure",\n    "object_orientation",\n)\n',
+        ),
+        # (2) the term count the kernel strides by
+        (
+            "_RECON_BODY_OBJECTIVE_TERM_COUNT = wp.constant(12)",
+            "_RECON_BODY_OBJECTIVE_TERM_COUNT = wp.constant(13)",
+        ),
+        # (3) the config: a weight and a std of its own
+        (
+            "    force_closure_weight: float = 5.0\n",
+            "    force_closure_weight: float = 5.0\n    object_orientation_weight: float = 1.0\n",
+        ),
+        (
+            "    palm_orientation_std: float = 0.4\n",
+            "    palm_orientation_std: float = 0.4\n"
+            f"    object_orientation_std: float = {std:g}\n",
+        ),
+        # (4) validation: finite, and positive like every other shaping std
+        (
+            "            self.palm_orientation_std,\n            self.force_closure_min_support,",
+            "            self.palm_orientation_std,\n            self.object_orientation_std,"
+            "\n            self.force_closure_min_support,",
+        ),
+        (
+            "                self.palm_orientation_std,\n            )\n        ):",
+            "                self.palm_orientation_std,\n                self.object_orientation_std,"
+            "\n            )\n        ):",
+        ),
+        # (5) the weights tuple, in term order, so index 12 is the new weight
+        (
+            "            self.force_closure_weight,\n        )",
+            "            self.force_closure_weight,\n            self.object_orientation_weight,\n        )",
+        ),
+        # (6) the kernel needs the reference object quaternion and the new std
+        (
+            "    object_target_pos_w: wp.array(dtype=wp.vec3),\n",
+            "    object_target_pos_w: wp.array(dtype=wp.vec3),\n"
+            "    object_target_quat_w: wp.array(dtype=wp.quat),\n",
+        ),
+        (
+            "    palm_orientation_std: float,\n",
+            "    palm_orientation_std: float,\n    object_orientation_std: float,\n",
+        ),
+        # (7) the term itself, at index 12
+        (
+            "    terms[term_base + 11] = force_closure[world]\n",
+            "    terms[term_base + 11] = force_closure[world]\n"
+            "\n"
+            "    # Our addition. The twelve stock terms track the object by position only, so a "
+            "policy\n"
+            "    # can hold the object in the right place at the wrong angle and lose ADD-AUC for "
+            "free.\n"
+            "    # Mirrors palm_orientation: same double-cover-aware geodesic angle, same "
+            "exp(-e^2/s^2).\n"
+            "    object_orientation = wp.normalize(wp.transform_get_rotation(body_q[body_base + "
+            "object_body_id]))\n"
+            "    object_orientation_error = quat_geodesic_angle(object_orientation, "
+            "object_target_quat_w[world])\n"
+            "    terms[term_base + 12] = wp.exp(\n"
+            "        -(object_orientation_error * object_orientation_error)\n"
+            "        / (object_orientation_std * object_orientation_std)\n"
+            "    )\n",
+        ),
+        # (8) pass both at launch, in signature order
+        (
+            "                self.command.body_target_pos_w,\n",
+            "                self.command.body_target_pos_w,\n                self.command.body_target_quat_w,\n",
+        ),
+        (
+            "                self.config.palm_orientation_std,\n",
+            "                self.config.palm_orientation_std,\n"
+            "                self.config.object_orientation_std,\n",
+        ),
+    )
+
+
+def objective_yaml_edits(std: float) -> tuple[tuple[str, str], ...]:
+    """The edits to `configs/objective/recon_body.yaml`, for one choice of std."""
+    return (
+        (
+            "object_position_weight: 1.0\n",
+            "object_position_weight: 1.0\nobject_orientation_weight: 1.0\n",
+        ),
+        (
+            "palm_orientation_std: 0.4\n",
+            f"palm_orientation_std: 0.4\nobject_orientation_std: {std:g}\n",
+        ),
+    )
+
+
+STD_IN_YAML = re.compile(r"^object_orientation_std:\s*([0-9.eE+-]+)\s*$", re.MULTILINE)
+
+
+def existing_std(path: Path) -> float | None:
+    """The std a tree already carries, or None if it is not patched yet.
+
+    A box patched at one std and then asked for another would otherwise keep the first and report
+    success, and the arm on the record would be the wrong one.
+    """
+    if not path.is_file():
+        return None
+    found = STD_IN_YAML.search(path.read_text())
+    return float(found.group(1)) if found else None
 
 # set_weights() compares key SETS, so every curriculum stage that names the weights must name this
 # one too. Patching the anchor block covers the aliased stages with it.
@@ -150,12 +190,36 @@ def plan_file(path: Path, edits: tuple[tuple[str, str], ...]) -> tuple[str, str 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("root", type=Path, help="flash_chord source root, e.g. /workspace/src/flash_chord")
-    parser.add_argument("--check", action="store_true", help="report what would change, write nothing")
+    parser.add_argument(
+        "--check", action="store_true", help="report what would change, write nothing"
+    )
+    parser.add_argument(
+        "--std",
+        type=float,
+        default=DEFAULT_STD,
+        help=f"shaping std in radians for the new term (default {DEFAULT_STD:g})",
+    )
     args = parser.parse_args(argv)
 
+    if not (args.std > 0.0) or args.std != args.std or args.std == float("inf"):
+        raise SystemExit(f"FATAL: --std must be finite and positive, got {args.std!r}")
+
+    objective_yaml = args.root / "configs/objective/recon_body.yaml"
+    carried = existing_std(objective_yaml)
+    if carried is not None and abs(carried - args.std) > 1e-12:
+        raise SystemExit(
+            f"FATAL: {objective_yaml} already carries object_orientation_std {carried:g}, but "
+            f"{args.std:g} was asked for.\n"
+            "  The patch is idempotent, so it would leave the first value in place and report "
+            "success,\n"
+            "  and the arm on the record would not be the arm that trained. Rebuild the container "
+            "or\n"
+            f"  pass --std {carried:g}."
+        )
+
     targets: list[tuple[Path, tuple[tuple[str, str], ...]]] = [
-        (args.root / "objectives/recon_body.py", OBJECTIVE_EDITS),
-        (args.root / "configs/objective/recon_body.yaml", OBJECTIVE_YAML_EDITS),
+        (args.root / "objectives/recon_body.py", objective_edits(args.std)),
+        (objective_yaml, objective_yaml_edits(args.std)),
     ]
     # Every curriculum that names the ReconBody weights, not just the one recipe we run: a stage
     # whose key set is short by one raises at the moment it is entered, hours into a run.
@@ -186,7 +250,10 @@ def main(argv: list[str] | None = None) -> int:
         report = [m.replace("patched:", "would patch:") for m in report]
 
     print("\n".join(report))
-    print("object-orientation term: weight 1.0, std 0.4 rad, term index 12 of 13")
+    print(
+        f"object-orientation term: weight 1.0, std {args.std:g} rad "
+        f"({args.std * 180.0 / 3.141592653589793:.1f} deg), term index 12 of 13"
+    )
     return 0
 
 
