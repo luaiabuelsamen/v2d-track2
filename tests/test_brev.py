@@ -20,6 +20,7 @@ from v2d.brev import (
     lookup,
     parse_search,
     pick_cheapest,
+    status_of,
 )
 
 LIVE = Path(__file__).parent / "data" / "brev_search_2026-10-24.txt"
@@ -185,3 +186,30 @@ def test_dead_states_are_recognised():
     assert is_dead(" x FAILED")
     assert not is_dead(RUNNING_READY)
     assert not is_dead(DEPLOYING)
+
+
+# The row brev printed for the box that failed on 2026-10-26. BUILD is EMPTY, so every column
+# after it shifts left -- which is why the status is read by position and not by offset.
+FAILURE_ROW = " v2d-t2-b08  FAILURE               NOT READY  hwuicymq  massedcompute_A6000_plus  A6000"
+
+
+def test_the_word_brev_prints_for_a_failed_box_is_dead():
+    """FAILURE, not FAILED. Missing it cost a 20 min SSH wait and an unreplaced box."""
+    assert is_dead(FAILURE_ROW)
+    assert not is_shell_ready(FAILURE_ROW)
+
+
+def test_an_empty_build_column_does_not_shift_the_status_read():
+    assert status_of(FAILURE_ROW) == "FAILURE"
+    assert status_of(" v2d-t2-b06  RUNNING  COMPLETED  READY  9a5gj9ep7  massedcompute_A6000_plus") == "RUNNING"
+
+
+def test_a_dead_word_outside_the_status_column_is_not_a_dead_instance():
+    """The substring form would retire a healthy box over its own name or machine type."""
+    assert not is_dead(" box-stopped  RUNNING  COMPLETED  READY  id  type  A6000")
+    assert not is_dead(" b01  DEPLOYING  BUILDING  NOT READY  id  deleted_pool_a6000  A6000")
+
+
+def test_a_row_too_short_to_have_a_status_falls_back_to_the_substring_form():
+    assert is_dead("FAILURE")
+    assert not is_dead("")

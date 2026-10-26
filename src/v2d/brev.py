@@ -149,7 +149,17 @@ def lookup(offers: list[Offer], instance_type: str) -> Offer | None:
 
 # ------------------------------------------------------------------ instance readiness
 #: Statuses from which an instance will never become usable, so waiting is pointless.
-DEAD_STATUSES: Final[tuple[str, ...]] = ("FAILED", "TERMINATED", "STOPPED", "DELETING", "DELETED")
+#: "FAILURE" is the word brev actually prints -- `v2d-t2-b08  FAILURE  (empty BUILD)  NOT READY` --
+#: and this tuple carried only "FAILED", so the 2026-10-26 30-clip launch waited the full 20 min
+#: SSH timeout on a dead box and then launched no replacement, leaving 2 clips unclaimable.
+DEAD_STATUSES: Final[tuple[str, ...]] = (
+    "FAILED",
+    "FAILURE",
+    "TERMINATED",
+    "STOPPED",
+    "DELETING",
+    "DELETED",
+)
 
 
 def is_shell_ready(row: str) -> bool:
@@ -166,6 +176,23 @@ def is_shell_ready(row: str) -> bool:
     return "RUNNING" in upper and "READY" in upper
 
 
+def status_of(row: str) -> str:
+    """The STATUS column of a `brev ls` row.
+
+    Read by POSITION, not by substring: STATUS is always the second field, immediately after the
+    name, whereas BUILD is empty on a failed row -- so every column after it shifts left and
+    `awk '{print $3}'` hands back the first word of SHELL. Position 2 is the one field that does
+    not move.
+    """
+    fields = row.split()
+    return fields[1].upper() if len(fields) >= 2 else ""
+
+
 def is_dead(row: str) -> bool:
     """Has this instance reached a state it will not come back from?"""
+    status = status_of(row)
+    if status:
+        # Match the column, so an instance named "box-stopped" or a machine type containing one of
+        # these words is not mistaken for a dead instance.
+        return status in DEAD_STATUSES or status.startswith("FAIL")
     return any(status in row.upper() for status in DEAD_STATUSES)

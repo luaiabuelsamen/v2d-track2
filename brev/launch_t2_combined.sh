@@ -17,6 +17,7 @@ set -uo pipefail
 cd /home/jetson3/projects/v2d-challenge
 
 GO=0
+ONLY_BOX=0                    # --add-box N: one replacement box joining a run already in flight
 BOXES=8
 MAX_CLIPS_PER_BOX=4
 TYPE=massedcompute_A6000_plus
@@ -36,6 +37,7 @@ NPZ_ARGS=()
 while [ $# -gt 0 ]; do
   case "$1" in
     --go) GO=1; shift ;;
+    --add-box) ONLY_BOX="$2"; shift 2 ;;
     --boxes) BOXES="$2"; shift 2 ;;
     --clips-per-box) MAX_CLIPS_PER_BOX="$2"; shift 2 ;;
     --type) TYPE="$2"; shift 2 ;;
@@ -102,6 +104,13 @@ print('\n'.join(lines))
 # The queue: the four clips with a stock record first, then the rest in map order.
 mkdir -p "$OUT" "$RESULTS" "$OUT/claims"
 QUEUE="$OUT/queue.txt"
+if [ "$ONLY_BOX" != 0 ]; then
+  # A replacement box joins the queue and the claims of the run already in flight. The queue is
+  # NOT rewritten: claim_next reads it on every claim, so truncating it under the running boxes
+  # could show one of them a short file and retire it early with clips left.
+  [ -s "$QUEUE" ] || { echo "FATAL: --add-box needs the queue of a run in flight: $QUEUE" >&2; exit 2; }
+  CLIPS=$(grep -c '[^[:space:]]' "$QUEUE")
+else
 : > "$QUEUE"
 for EP in $FIRST; do
   # A --first episode the map does not have would be dropped silently, and the ordering that is
@@ -116,6 +125,7 @@ awk -v first="$(echo "$FIRST" | tr ' ' ',')" '
 CLIPS=$(grep -c '[^[:space:]]' "$QUEUE")
 [ "$CLIPS" = "$(grep -c '[^[:space:]]' "$MAP")" ] \
   || { echo "FATAL: queue has $CLIPS clips, the map has $(grep -c '[^[:space:]]' "$MAP")" >&2; exit 2; }
+fi
 
 CAPACITY=$(( BOXES * MAX_CLIPS_PER_BOX ))
 HOURS_PER_BOX="$(awk -v c="$MAX_CLIPS_PER_BOX" -v h="$EST_HOURS_PER_CLIP" -v b="$BRINGUP_HOURS" \
@@ -146,7 +156,16 @@ if [ "$GO" != 1 ]; then
   exit 0
 fi
 
-budget_ok_for_hours "$TOTAL_HOURS" "the whole $CLIPS-clip run" || exit 3
+if [ "$ONLY_BOX" != 0 ]; then
+  UNCLAIMED=$(comm -23 <(awk '{printf "e%02d\n", $1}' "$QUEUE" | sort) \
+                       <(ls "$OUT/claims" 2>/dev/null | sort) | tr '\n' ' ')
+  echo "== adding v2d-t2-b$(printf '%02d' "$ONLY_BOX") to the run in $OUT"
+  echo "   unclaimed now  : ${UNCLAIMED:-none}"
+  echo "   it will take   : up to $MAX_CLIPS_PER_BOX clips, ~$HOURS_PER_BOX h, \$$(awk -v h="$HOURS_PER_BOX" -v r="$RATE_USD_PER_HOUR" 'BEGIN{printf "%.2f", h*r}')"
+  budget_ok_for_hours "$HOURS_PER_BOX" "one replacement box" || exit 3
+else
+  budget_ok_for_hours "$TOTAL_HOURS" "the whole $CLIPS-clip run" || exit 3
+fi
 
 # claim_next -- the next unclaimed clip, atomically. mkdir is the lock; all boxes claim locally.
 claim_next() {
@@ -318,6 +337,14 @@ run_box() {
     echo "=== $NAME done: $done_clips clips, $mins min, \$$(awk -v m="$mins" -v r="$RATE_USD_PER_HOUR" 'BEGIN{printf "%.2f", m/60*r}')"
   } >> "$LOG" 2>&1
 }
+
+if [ "$ONLY_BOX" != 0 ]; then
+  echo "adding one box; log in $OUT/v2d-t2-b$(printf '%02d' "$ONLY_BOX").log"
+  run_box "$ONLY_BOX" &
+  wait
+  echo "== replacement box done"
+  exit 0
+fi
 
 echo "launching up to $BOXES boxes; per-box logs in $OUT/v2d-t2-b*.log"
 for i in $(seq 1 "$BOXES"); do

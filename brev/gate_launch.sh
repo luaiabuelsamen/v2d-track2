@@ -110,8 +110,16 @@ command -v brev >/dev/null || {
 }
 
 say "Brev account"
-if ! brev ls >/dev/null 2>&1; then
-  echo "Not logged in (or no org). Run 'brev login' and redeem the credit code first." >&2
+# Retried, because one non-zero exit is not proof of being logged out. On 2026-10-26, with seven
+# bring-up loops each polling `brev ls` every 15 s, a single transient failure here was read as
+# "not logged in" and the replacement box died instantly without being created.
+LOGGED_IN=0
+for attempt in 1 2 3 4; do
+  if brev ls >/dev/null 2>&1; then LOGGED_IN=1; break; fi
+  [ "$attempt" -lt 4 ] && { echo "   'brev ls' failed (attempt $attempt of 4); retrying in 10 s"; sleep 10; }
+done
+if [ "$LOGGED_IN" != 1 ]; then
+  echo "Not logged in (or no org), after 4 attempts. Run 'brev login' and redeem the credit code first." >&2
   [ "$GO" = 1 ] && exit 1
 fi
 brev ls 2>/dev/null | head -20 || true
