@@ -287,6 +287,15 @@ fi
 # "kex_exchange_identification: Connection closed by remote host", and the run tears down having
 # measured nothing. Wait for the shell, then prove it with an actual ssh before sending the
 # payload. The readiness predicate lives in v2d.brev so it can be tested (tests/test_brev.py).
+# "Tearing down" used to be only a message: on 2026-10-26 v2d-t2-b03 was abandoned here and then
+# sat DEPLOYING for another 28 min, billing, because nothing deleted it and its run_box had
+# already returned. A box this function gives up on is a box nobody will ever use.
+tear_down() {
+  echo "   deleting $NAME so it stops billing" >&2
+  ~/.local/bin/brev delete "$NAME" </dev/null >/dev/null 2>&1 \
+    || echo "!! could not delete $NAME -- DELETE IT BY HAND" >&2
+}
+
 say "Waiting for the shell to accept SSH"
 brev refresh >/dev/null 2>&1 || true
 READY=0
@@ -296,6 +305,7 @@ for _ in $(seq 1 80); do          # 80 x 15 s = 20 minutes
   if [ -n "$ROW" ] && "$V2D_BIN" brev-ready --row "$ROW" --dead-check >/dev/null 2>&1; then
     echo "!! the instance reached a state it will not return from:" >&2
     echo "   $ROW" >&2
+    tear_down
     exit 4
   fi
   if [ -n "$ROW" ] && "$V2D_BIN" brev-ready --row "$ROW" >/dev/null 2>&1; then
@@ -310,6 +320,7 @@ for _ in $(seq 1 80); do          # 80 x 15 s = 20 minutes
 done
 if [ "$READY" != 1 ]; then
   echo "!! the instance never accepted SSH after ${WAITED}s; tearing down without running." >&2
+  tear_down
   exit 4
 fi
 say "SSH is up after ~${WAITED}s"
