@@ -68,6 +68,22 @@ arm_flags_normalise "$ARM_FLAGS" > /dev/null || exit 2
 [ -f "$STAGE/provenance.json" ] || { echo "FATAL: $STAGE has no provenance.json" >&2; exit 2; }
 MOUNT="$(basename "$STAGE")"
 
+# The reference each source must be kit-scored against comes from the stage itself, so the launch
+# command carries no path and the two cannot drift apart. An explicit --npz still wins.
+if [ "${#NPZ_ARGS[@]}" = 0 ]; then
+  while read -r flag item; do
+    [ -n "${item:-}" ] && NPZ_ARGS+=("$flag" "$item")
+  done < <(env -u PYTHONPATH ./.venv311/bin/python -I -c "
+import json
+stage = json.load(open('$STAGE/provenance.json'))
+for label, path in sorted(stage.get('npz_by_source', {}).items()):
+    print(f'--npz {label}={path}')
+for label, path in sorted(stage.get('ref_dataset_by_source', {}).items()):
+    print(f'--ref-dataset {label}={path}')
+" 2>/dev/null)
+  [ "${#NPZ_ARGS[@]}" -gt 0 ] && echo "scoring references from the stage: ${NPZ_ARGS[*]}"
+fi
+
 # The queue: the four clips with a stock record first, then the rest in map order.
 mkdir -p "$OUT" "$RESULTS" "$OUT/claims"
 QUEUE="$OUT/queue.txt"
@@ -105,6 +121,8 @@ cat <<PLAN
    per box        : ~$HOURS_PER_BOX h of work against a ${MAX_HOURS} h authority
    expected spend : \$$TOTAL_USD   (worst case if every box runs its full authority: \$$WORST_USD)
    scoring        : kit-score every checkpoint on pull, then z-drop selection per clip
+   bar            : kit AUC > 0.36635 on e03 e09 e18 e24, no extra clip without a drop-free
+                    checkpoint (docs/T2_COMBINED_RUN.md). A shipping run, not an attribution run.
 PLAN
 
 if [ "$GO" != 1 ]; then

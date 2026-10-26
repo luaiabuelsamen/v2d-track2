@@ -32,19 +32,106 @@ run_v2d() { $PY -c "import sys; sys.argv=['v2d']+sys.argv[1:]; from v2d.cli impo
 MAP="$S/tier2_episode_map.txt"
 MOUNT=t2_combined
 OUT=""
+BRIEFS="${V2D_BRIEFS:-$HOME/projects/_ops/briefs}"
+FROM_BRIEFS=0
+ALLOW_PARTIAL=0
 LABELS=()
-declare -A ROOT=() SKIP=()
+declare -A ROOT=() SKIP=() NPZ=() REF_DATASET=()
 while [ $# -gt 0 ]; do
   case "$1" in
     --map) MAP="$2"; shift 2 ;;
     --mount) MOUNT="$2"; shift 2 ;;
     --out) OUT="$2"; shift 2 ;;
+    --from-briefs) FROM_BRIEFS=1; shift ;;
+    --allow-partial) ALLOW_PARTIAL=1; shift ;;
+    --briefs) BRIEFS="$2"; shift 2 ;;
     --source)
       LABELS+=("${2%%=*}"); ROOT["${2%%=*}"]="${2#*=}"; shift 2 ;;
+    --npz) NPZ["${2%%=*}"]="${2#*=}"; shift 2 ;;
     --skip) SKIP["${2%%=*}"]=",${2#*=}," ; shift 2 ;;
     *) echo "unknown argument: $1" >&2; exit 2 ;;
   esac
 done
+
+# --from-briefs: take the handover paths from the briefs directory rather than the command line, so
+# that the launch command is one line with no path in it to mistype, and so that the same command
+# stages whatever has landed. A file that is not there is a source that is skipped; its clips fall
+# through to the next source. Each file holds one line:
+#
+#     <tree root> [<npz dir> [<flagged episodes, comma-separated>]]
+#
+# The npz is needed because a kit score has to be converted against the same reference the policy
+# trained on; for a source that is not the released input, scoring without it fails
+# rollout-to-npz's own frame check (on B3 it moved MPPE by 0.36 cm before it was caught).
+if [ "$FROM_BRIEFS" = 1 ]; then
+  for pair in fing:finger_refs_path.txt clean:clean_refs_path.txt; do
+    LABEL="${pair%%:*}"; FILE="$BRIEFS/${pair#*:}"
+    if [ ! -s "$FILE" ]; then
+      echo "briefs: no $(basename "$FILE") -- skipping the $LABEL source"
+      continue
+    fi
+    read -r TREE NPZ_DIR FLAGGED _ < <(grep -v '^[[:space:]]*#' "$FILE" | grep . | head -1)
+    [ -n "${TREE:-}" ] || { echo "FATAL: $FILE names no path" >&2; exit 2; }
+
+    # A handover comes in one of two shapes and they are told apart by what is in them, not by
+    # what we hoped for. tetool's bridge_v1 is the second kind: a drop-in --dataset-root in which
+    # only observation.object.pose differs from the release.
+    if [ -d "$TREE/whole_body/soma" ]; then
+      ROOT["$LABEL"]="$TREE"
+    elif [ -d "$TREE/track_2" ]; then
+      # A dataset root has to be retargeted before a policy can train on it, and the rollouts then
+      # have to be kit-scored against that same root, because the reference the policy tracked is
+      # the cleaned pose, not the released one.
+      REF_DATASET["$LABEL"]="$TREE"
+      ROOT["$LABEL"]="$S/t2_${LABEL}/tier2"
+      if [ ! -d "${ROOT[$LABEL]}" ]; then
+        {
+          echo "FATAL: $FILE names a dataset root, whose retarget is not on disk yet:"
+          echo "       ${ROOT[$LABEL]}"
+          echo "       Retarget it first (~70 min on two CPU workers), then stage:"
+          echo "       v2d retarget --dataset-root $TREE --repo \$S/repo_src \\"
+          echo "         --soma-root \$SOMA --seq-root \$S/t2_seq_${LABEL} \\"
+          echo "         --out-root \$S/t2_${LABEL} --log-dir \$S/t2_log_${LABEL} \\"
+          echo "         --validation-dir \$S/t2_val_${LABEL} --tiers tier2 --workers 2"
+        } >&2
+        exit 2
+      fi
+      # A retarget still in flight is the dangerous case: staging now would quietly take raw for
+      # every clip that is not finished yet and nothing downstream would say so. Count them.
+      HAVE="$(find "${ROOT[$LABEL]}" -name data.parquet 2>/dev/null | wc -l)"
+      WANT="$(grep -c '[^[:space:]]' "$MAP")"
+      if [ "$HAVE" -lt "$WANT" ] && [ "$ALLOW_PARTIAL" != 1 ]; then
+        {
+          echo "FATAL: the $LABEL retarget has $HAVE of $WANT clips -- it is still running."
+          echo "       Staging now would silently fall back to raw for the other $((WANT - HAVE))."
+          echo "       Wait for $S/t2_${LABEL}/ALL_DONE, or pass --allow-partial to accept the mix."
+        } >&2
+        exit 2
+      fi
+      # The source's own machine-readable verdict on which clips it should not be used for. The
+      # prose in the brief is for people; this is what the stage acts on.
+      CEILING="$TREE/ceiling_per_clip.json"
+      if [ -s "$CEILING" ]; then
+        FLAGGED_BY_SOURCE="$($PY -c "
+import json
+flagged = json.load(open('$CEILING')).get('fall_back_to_raw') or []
+print(','.join(str(int(e)) for e in flagged))
+" 2>/dev/null)"
+        [ -n "${FLAGGED_BY_SOURCE:-}" ] && FLAGGED="${FLAGGED:+$FLAGGED,}$FLAGGED_BY_SOURCE"
+      fi
+    else
+      echo "FATAL: $TREE (from $FILE) is neither a retargeted tree (whole_body/soma) nor a dataset root (track_2)" >&2
+      exit 2
+    fi
+
+    LABELS+=("$LABEL")
+    [ -n "${NPZ_DIR:-}" ] && NPZ["$LABEL"]="$NPZ_DIR"
+    [ -n "${FLAGGED:-}" ] && SKIP["$LABEL"]=",${FLAGGED},"
+    echo "briefs: $LABEL -> ${ROOT[$LABEL]}${REF_DATASET[$LABEL]:+  (scored against $TREE)}${NPZ_DIR:+  npz $NPZ_DIR}${FLAGGED:+  falls back to raw on $FLAGGED}"
+  done
+  # The released-input retarget is always last: it is the fallback, never the preference.
+  LABELS+=(raw); ROOT[raw]="$S/t2_raw/tier2"
+fi
 OUT="${OUT:-$S/$MOUNT}"
 [ "${#LABELS[@]}" -gt 0 ] || { echo "FATAL: at least one --source LABEL=ROOT" >&2; exit 2; }
 [ -f "$MAP" ] || { echo "FATAL: no episode map at $MAP" >&2; exit 2; }
@@ -167,8 +254,15 @@ PYEOF
 RC=$?
 
 ( cd "$OUT" && find . -type f | sort | xargs md5sum ) > "$OUT.md5"
-$PY - "$OUT" "$MOUNT" <<'PYEOF'
+NPZ_MAP=""
+REF_MAP=""
+for LABEL in "${LABELS[@]}"; do
+  [ -n "${NPZ[$LABEL]:-}" ] && NPZ_MAP="$NPZ_MAP$LABEL=${NPZ[$LABEL]} "
+  [ -n "${REF_DATASET[$LABEL]:-}" ] && REF_MAP="$REF_MAP$LABEL=${REF_DATASET[$LABEL]} "
+done
+NPZ_MAP="$NPZ_MAP" REF_MAP="$REF_MAP" $PY - "$OUT" "$MOUNT" <<'PYEOF'
 import json
+import os
 import pathlib
 import subprocess
 import sys
@@ -181,6 +275,16 @@ sha = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=Tru
     "what": "the staged Tier 2 references for one full-budget run",
     "git_sha": sha,
     "container_mount": f"/v2d/assets/{sys.argv[2]}",
+    # Which reference each source's rollouts must be kit-scored against. The launcher reads this
+    # rather than being told again on the command line.
+    "npz_by_source": dict(
+        item.split("=", 1) for item in os.environ.get("NPZ_MAP", "").split() if "=" in item
+    ),
+    # A source that arrived as a dataset root: its rollouts convert against this root, because the
+    # reference the policy tracked is the cleaned pose in it, not the released one.
+    "ref_dataset_by_source": dict(
+        item.split("=", 1) for item in os.environ.get("REF_MAP", "").split() if "=" in item
+    ),
     "clips": {
         f"e{int(episode):02d}": {
             "episode": int(episode),

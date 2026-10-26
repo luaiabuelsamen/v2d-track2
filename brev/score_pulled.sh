@@ -21,7 +21,7 @@ RESULTS=""
 DATA="$S/data"
 KIT="$S/kit_extract/v2d_submission_kit"
 PROVENANCE=""
-declare -A NPZ=()
+declare -A NPZ=() REF_DATASET=()
 while [ $# -gt 0 ]; do
   case "$1" in
     --results) RESULTS="$2"; shift 2 ;;
@@ -29,6 +29,7 @@ while [ $# -gt 0 ]; do
     --kit-root) KIT="$2"; shift 2 ;;
     --provenance) PROVENANCE="$2"; shift 2 ;;
     --npz) NPZ["${2%%=*}"]="${2#*=}"; shift 2 ;;
+    --ref-dataset) REF_DATASET["${2%%=*}"]="${2#*=}"; shift 2 ;;
     *) echo "unknown argument: $1" >&2; exit 2 ;;
   esac
 done
@@ -59,13 +60,18 @@ for CLIP in "$RESULTS"/e[0-9][0-9]; do
     || { echo "$TAG: selection FAILED"; continue; }
 
   # (2) then score every checkpoint, for the record and for the registered bar.
+  # Convert against the reference the policy actually tracked, and score against the release.
+  # Those are two different roots for a cleaned source, and getting it wrong is not loud: on B3 it
+  # moved MPPE by 0.36 cm and was only caught by rollout-to-npz's own frame check.
   LABEL="$(source_of "$TAG")"
   REF=()
+  CONVERT_ROOT="$DATA"
   [ -n "${NPZ[$LABEL]:-}" ] && REF=(--reference-npz "${NPZ[$LABEL]}")
+  [ -n "${REF_DATASET[$LABEL]:-}" ] && CONVERT_ROOT="${REF_DATASET[$LABEL]}"
   for TRAJ in "$CLIP"/policy_*/objects.parquet; do
     CDIR="$(dirname "$TRAJ")"
     [ -s "$CDIR/score.json" ] && continue
-    if ! run_v2d rollout-to-npz "$TRAJ" --dataset-root "$DATA" --episode "$EP" --tier tier2 \
+    if ! run_v2d rollout-to-npz "$TRAJ" --dataset-root "$CONVERT_ROOT" --episode "$EP" --tier tier2 \
          "${REF[@]+${REF[@]}}" --npz-out "$CDIR/npz" -o "$CDIR/rollout_record.json" \
          > "$CDIR/rollout.log" 2>&1; then
       echo "$TAG $(basename "$CDIR"): rollout-to-npz FAILED"; tail -3 "$CDIR/rollout.log" | sed 's/^/    /'

@@ -46,14 +46,25 @@ channel is currently absent rather than noisy — which is why it is worth a slo
 ## The run
 
 ```bash
-# 1. assemble the references, highest-priority source first (~30 s, verified by md5 and by the
-#    trainer's own support resolver)
-brev/stage_t2_combined.sh --source fing=<interp tree> --source clean=<tetool tree> \
-                          --source raw=$S/t2_raw/tier2 --skip clean=<clips tetool flags>
+# 1. assemble the references (~30 s, verified by md5 and by the trainer's own support resolver).
+#    --from-briefs reads the handover paths itself, so no path is typed and none can be mistyped.
+brev/stage_t2_combined.sh --from-briefs
 
-# 2. the run itself
-brev/launch_t2_combined.sh --go --npz clean=<tetool npz dir>
+# 2. the run itself. The npz each source must be scored against comes from the stage's
+#    provenance.json, so there is nothing to keep in sync by hand.
+brev/launch_t2_combined.sh --go
 ```
+
+`--from-briefs` reads `~/projects/_ops/briefs/`, in priority order:
+
+| file | what it names | shape |
+|---|---|---|
+| `finger_refs_path.txt` | interp's finger-target tree | `<tree root>` and optionally `<npz dir>` and `<flagged episodes, comma-separated>` |
+| `clean_refs_path.txt` | tetool's bridge-cleaned tree | same three fields |
+
+A file that is absent is a source that is skipped, so the same command stages whatever has landed
+and falls through to the released-input retarget for the rest. Each stage prints which source every
+clip came from and records it per clip in `provenance.json`.
 
 Without `--go` it prints the plan and creates nothing. Run today against the raw-only stage
 (30 clips, 0 problems, 14/30 supported scenes) the plan is:
@@ -91,16 +102,34 @@ scorer compares against the Tier 1 clean truth, so a kit score is ground truth; 
 afterwards nobody could tell whether the choice had been made on the answer. A test plants scores
 that would reverse the pick and proves they change nothing.
 
-## What it will be compared against
+## A shipping run, not an attribution run
 
-The four-clip stock record, z-drop-selected, from `results/checkpoint_selection.json`:
-**mean kit AUC 0.36635, mean MPPE 13.04 cm, 1 of 4 clips with no drop-free checkpoint** (the same
-picks in evaluator terms are 0.274525 and 13.32 cm). The combined recipe is four changes at once,
-so this run cannot attribute a gain to any one of them — it is the submission attempt, and the
-per-arm attribution is what the held grid was for.
+**Luai chose this knowingly.** The combined recipe changes four things at once, so whatever comes
+back, this run cannot say which of START, ORI, FING or CLEAN earned it. It is the submission
+attempt: one seed, every clip, the best recipe we can assemble, inside the remaining budget and the
+nine days to the freeze. Per-arm attribution is what the four-clip grid was for, and the grid was
+dropped in favour of shipping. If the run comes back below the bar, the honest next question is
+which arm hurt, and answering it costs another full-budget run per arm — that is the price of this
+choice, accepted up front.
 
-Beware the units: **0.2745 is the evaluator's AUC, 0.36635 is the kit's**, for the identical four
-checkpoints. The kit scorer is what the board uses, so any bar must be written in kit AUC.
+## The bar
+
+The four-clip stock record, z-drop-selected, **kit scorer**, from
+`results/checkpoint_selection.json` and `docs/AB4_DESIGN.md`:
+
+| | stock, four clips, z-drop-selected |
+|---|---|
+| mean **kit** AUC | **0.36635** |
+| mean kit MPPE | 13.04 cm |
+| clips with no drop-free checkpoint | 1 of 4 |
+
+The bar is **kit AUC against the kit-scored stock selection, 0.36635**, on e03/e09/e18/e24 — the
+four clips that have a stock record — plus no increase in the number of clips with no drop-free
+checkpoint. The kit scorer is what the board uses, which is why the bar lives there.
+
+The evaluator's AUC for the identical four checkpoints is 0.274525. It is on the record for
+continuity with the per-checkpoint tables, and it is **not** the bar: using 0.2745 as a kit-AUC
+threshold would adopt a recipe well below stock.
 
 ## Safety
 
