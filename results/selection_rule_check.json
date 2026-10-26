@@ -1,0 +1,195 @@
+{
+  "what": "kit AUC of four checkpoint-selection rules on the clips scored so far",
+  "results_dir": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t2_combined_run/results",
+  "clips": [
+    "e04",
+    "e05",
+    "e06",
+    "e08",
+    "e10",
+    "e11"
+  ],
+  "clips_skipped_not_fully_scored": [],
+  "mean_kit_add_auc": {
+    "z_drop_registered": 0.329261,
+    "latest_drop_free": 0.361463,
+    "final_checkpoint": 0.361463,
+    "oracle_reads_truth": 0.38786
+  },
+  "reads_ground_truth": {
+    "z_drop_registered": false,
+    "latest_drop_free": false,
+    "final_checkpoint": false,
+    "oracle_reads_truth": true
+  },
+  "prior_measurement": {
+    "what": "the same comparison on the four stock clips, from v2d.select.checkpoints",
+    "z_drop_registered": 0.36635,
+    "final_checkpoint": 0.28342
+  },
+  "status": "z-drop stays the registered submission rule; the alternatives are reported, not adopted. Both read no ground truth, so a switch is legal: a decision, not a fix.",
+  "per_clip": {
+    "e04": {
+      "episode": 4,
+      "kit_add_auc_by_checkpoint": {
+        "49999872": 0.121108,
+        "99999744": 0.129748,
+        "149999616": 0.129748,
+        "199999488": 0.129748,
+        "249999360": 0.158001,
+        "299999232": 0.147572,
+        "349999104": 0.147182
+      },
+      "dropped_by_checkpoint": {
+        "49999872": true,
+        "99999744": true,
+        "149999616": true,
+        "199999488": true,
+        "249999360": true,
+        "299999232": true,
+        "349999104": true
+      },
+      "picks": {
+        "z_drop_registered": 349999104,
+        "latest_drop_free": 349999104,
+        "final_checkpoint": 349999104,
+        "oracle_reads_truth": 249999360
+      }
+    },
+    "e05": {
+      "episode": 5,
+      "kit_add_auc_by_checkpoint": {
+        "49999872": 0.266014,
+        "99999744": 0.1665,
+        "149999616": 0.1665,
+        "199999488": 0.12151,
+        "249999360": 0.371947,
+        "299999232": 0.378614,
+        "349999104": 0.385095
+      },
+      "dropped_by_checkpoint": {
+        "49999872": false,
+        "99999744": false,
+        "149999616": false,
+        "199999488": false,
+        "249999360": false,
+        "299999232": false,
+        "349999104": false
+      },
+      "picks": {
+        "z_drop_registered": 49999872,
+        "latest_drop_free": 349999104,
+        "final_checkpoint": 349999104,
+        "oracle_reads_truth": 349999104
+      }
+    },
+    "e06": {
+      "episode": 6,
+      "kit_add_auc_by_checkpoint": {
+        "49999872": 0.353823,
+        "99999744": 0.546818,
+        "149999616": 0.367331,
+        "199999488": 0.472985,
+        "249999360": 0.386218,
+        "299999232": 0.42342,
+        "349999104": 0.570398
+      },
+      "dropped_by_checkpoint": {
+        "49999872": false,
+        "99999744": false,
+        "149999616": false,
+        "199999488": false,
+        "249999360": false,
+        "299999232": false,
+        "349999104": false
+      },
+      "picks": {
+        "z_drop_registered": 199999488,
+        "latest_drop_free": 349999104,
+        "final_checkpoint": 349999104,
+        "oracle_reads_truth": 349999104
+      }
+    },
+    "e08": {
+      "episode": 8,
+      "kit_add_auc_by_checkpoint": {
+        "49999872": 0.510681,
+        "99999744": 0.511917,
+        "149999616": 0.136564,
+        "199999488": 0.562853,
+        "249999360": 0.479078,
+        "299999232": 0.476607,
+        "349999104": 0.44315
+      },
+      "dropped_by_checkpoint": {
+        "49999872": false,
+        "99999744": false,
+        "149999616": false,
+        "199999488": false,
+        "249999360": false,
+        "299999232": false,
+        "349999104": false
+      },
+      "picks": {
+        "z_drop_registered": 349999104,
+        "latest_drop_free": 349999104,
+        "final_checkpoint": 349999104,
+        "oracle_reads_truth": 199999488
+      }
+    },
+    "e10": {
+      "episode": 10,
+      "kit_add_auc_by_checkpoint": {
+        "49999872": 0.209619,
+        "99999744": 0.117837,
+        "149999616": 0.242443,
+        "199999488": 0.242601,
+        "249999360": 0.314704,
+        "299999232": 0.3125,
+        "349999104": 0.286839
+      },
+      "dropped_by_checkpoint": {
+        "49999872": false,
+        "99999744": false,
+        "149999616": false,
+        "199999488": false,
+        "249999360": false,
+        "299999232": false,
+        "349999104": false
+      },
+      "picks": {
+        "z_drop_registered": 249999360,
+        "latest_drop_free": 349999104,
+        "final_checkpoint": 349999104,
+        "oracle_reads_truth": 249999360
+      }
+    },
+    "e11": {
+      "episode": 11,
+      "kit_add_auc_by_checkpoint": {
+        "49999872": 0.0625,
+        "99999744": 0.087708,
+        "149999616": 0.074931,
+        "199999488": 0.079375,
+        "249999360": 0.133681,
+        "299999232": 0.331528,
+        "349999104": 0.336111
+      },
+      "dropped_by_checkpoint": {
+        "49999872": true,
+        "99999744": false,
+        "149999616": false,
+        "199999488": true,
+        "249999360": true,
+        "299999232": false,
+        "349999104": false
+      },
+      "picks": {
+        "z_drop_registered": 299999232,
+        "latest_drop_free": 349999104,
+        "final_checkpoint": 349999104,
+        "oracle_reads_truth": 349999104
+      }
+    }
+  }
+}

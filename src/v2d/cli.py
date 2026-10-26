@@ -117,6 +117,10 @@ FORWARDED: dict[str, tuple[str, str]] = {
         "v2d.select.checkpoints",
         "choose one checkpoint per episode without reading any ground truth",
     ),
+    "compare-selection-rules": (
+        "v2d.select.rules",
+        "what the registered checkpoint rule costs against the alternatives",
+    ),
     "prereg-cleanup": ("v2d.score.prereg_cleanup", "apply docs/EXP_CLEANUP_CONTACT.md's rule"),
     "prereg-support-root": (
         "v2d.score.prereg_support_root",
