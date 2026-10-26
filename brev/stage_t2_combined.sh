@@ -286,7 +286,6 @@ sys.exit(1 if bad else 0)
 PYEOF
 RC=$?
 
-( cd "$OUT" && find . -type f | sort | xargs md5sum ) > "$OUT.md5"
 NPZ_MAP=""
 REF_MAP=""
 MATCH_MAP=""
@@ -366,6 +365,14 @@ sha = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=Tru
 }, indent=2) + "\n")
 print(f"provenance: {out / 'provenance.json'}")
 PYEOF
+
+# The manifest is generated LAST, so it covers exactly what rsync will send. Generating it
+# before the provenance writer is what killed the first 30-clip launch: rsync shipped 182
+# files, the manifest listed 181, and so `diff -q` failed on every box on every attempt. Five
+# boxes burned ~35 min of bring-up and were deleted for "references never matched by md5"
+# while their transfers had in fact completed. Anything written into $OUT after this line is
+# invisible to the gate, so nothing may be.
+( cd "$OUT" && find . -type f | sort | xargs md5sum ) > "$OUT.md5"
 
 echo "staged $STAGED clips from $(wc -l < "$MAP") in the map, $(wc -l < "$OUT.md5") files, $(du -sh "$OUT" | cut -f1)"
 awk '{print $3}' "$OUT/sources.txt" | sort | uniq -c | sed 's/^/  source: /'

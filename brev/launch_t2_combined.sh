@@ -258,10 +258,15 @@ run_box() {
     setsid nohup bash "$REPO/brev/backstop_watchdog.sh" "$NAME" \
       "$(awk -v h="$BACKSTOP_HOURS" 'BEGIN{printf "%d", h*3600}')" "$OUT/backstop.log" >/dev/null 2>&1 &
 
+    local box_start; box_start=$(date +%s)
     bash "$REPO/brev/gate_launch.sh" --phase build --dev-box --name "$NAME" \
          --type "$TYPE" --max-hours "$MAX_HOURS" --go \
-      || { echo "!! $NAME: bring-up failed (quota, availability, or image build)"; return 1; }
-    local box_start; box_start=$(date +%s)
+      || { echo "!! $NAME: bring-up failed (quota, availability, or image build)"
+           # Brev bills from creation, so a box that failed during bring-up still cost something
+           # unless it never existed. Recording it is the difference between a $230 cap that
+           # means something and one that quietly drifts.
+           ab4_ledger_add "$NAME" "$(( ($(date +%s) - box_start) / 60 ))"
+           return 1; }
 
     ssh -n "$NAME" "mkdir -p ~/v2d_assets/$MOUNT ~/t2" 2>/dev/null
     local ok=0
@@ -276,10 +281,15 @@ run_box() {
          && diff -q <(sort -k2 "$STAGE.md5") "$OUT/${NAME}.remote.md5" >/dev/null; then
         ok=1; echo "references verified by md5 on attempt $attempt"; break
       fi
+      echo "   md5 attempt $attempt: $(wc -l < "$OUT/${NAME}.remote.md5") files on the box, $(wc -l < "$STAGE.md5") in the manifest"
       sleep 5
     done
     if [ "$ok" != 1 ]; then
       echo "!! $NAME: references never matched by md5; NOT training"
+      # Say WHY, here, now. The first 30-clip launch retried blind six times on each of five boxes
+      # and the reason -- one file in the tree that the manifest did not list -- was only found
+      # afterwards, by diffing the two listings by hand, after every box had been deleted.
+      diff <(sort -k2 "$STAGE.md5") "$OUT/${NAME}.remote.md5" | head -6 | sed 's/^/!!   /'
       ~/.local/bin/brev delete "$NAME" </dev/null >/dev/null 2>&1
       ab4_ledger_add "$NAME" "$(( ($(date +%s) - box_start) / 60 ))"
       return 1

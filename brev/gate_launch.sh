@@ -25,6 +25,7 @@ EVAL_EP=""              # B1: also evaluate the probe's checkpoint on this episo
 EVAL_WORLDS=64
 NAME="v2d-gate-$(date +%m%d-%H%M)"
 MIN_VRAM_GB=46          # FlashCHORD needs >=46,000 MiB free on a 48 GiB card
+MAX_USD_PER_HOUR=0.68   # the ceiling for a fallback card when --type is momentarily unavailable
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 OUT_DIR="$REPO_ROOT/results/gate"
 
@@ -148,8 +149,24 @@ fi
 PICK_ARGS=(brev-pick --min-vram "$MIN_VRAM_GB" --show 5)
 [ -n "$TYPE" ] && PICK_ARGS+=(--type "$TYPE")
 if ! PICK="$("$V2D_BIN" "${PICK_ARGS[@]}")"; then
-  echo "No usable GPU was chosen, so nothing will be created." >&2
-  exit 2
+  # Availability flickers: massedcompute_A6000_plus created eight boxes at 10:05 on 2026-10-26, was
+  # absent from the live table at 10:36 -- which killed a replacement box outright -- and was back
+  # at 10:45. A named type that is momentarily gone should not lose a box, but it must not silently
+  # buy a dearer card either, so the fallback is capped at the price the caller planned for.
+  if [ -n "$TYPE" ]; then
+    echo "   --type $TYPE is not in the live table; looking for another card at <= \$${MAX_USD_PER_HOUR}/h" >&2
+    if PICK="$("$V2D_BIN" brev-pick --min-vram "$MIN_VRAM_GB")" \
+       && awk -v h="$(echo "$PICK" | cut -d' ' -f1)" -v c="$MAX_USD_PER_HOUR" \
+            'BEGIN{exit !(h+0 <= c+0)}'; then
+      echo "   falling back to $(echo "$PICK" | cut -d' ' -f2) at \$$(echo "$PICK" | cut -d' ' -f1)/h" >&2
+    else
+      echo "No usable GPU at or below \$${MAX_USD_PER_HOUR}/h, so nothing will be created." >&2
+      exit 2
+    fi
+  else
+    echo "No usable GPU was chosen, so nothing will be created." >&2
+    exit 2
+  fi
 fi
 HOURLY="$(echo "$PICK" | cut -d' ' -f1)"
 INSTANCE_TYPE="$(echo "$PICK" | cut -d' ' -f2)"
