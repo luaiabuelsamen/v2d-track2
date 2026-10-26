@@ -125,3 +125,64 @@ def test_the_runner_the_launcher_starts_is_the_one_we_test(tmp_path: Path):
     assert "arm_flags_files" in launcher
     # And the clip's own asset root and results dir are passed, not assumed.
     assert "ASSET_ROOT=" in launcher and "RESULTS_DIR=" in launcher
+
+
+# ---------------------------------------------------------------- box names and replacement
+# A failed box is now replaced, which needs a name no other slot will take. Three of eight creates
+# failed provider-side on 2026-10-26 and nothing replaced them: 30 clips, 28 slots.
+HELPER = REPO / "brev/box_names.sh"
+
+
+def claim(tmp_path: Path, max_index: int) -> subprocess.CompletedProcess:
+    return subprocess.run(
+        ["bash", "-c", f'. "{HELPER}"; box_name_claim "{tmp_path}/names" {max_index}'],
+        capture_output=True, text=True, check=False,
+    )
+
+
+def test_each_name_is_handed_out_once(tmp_path: Path):
+    assert [claim(tmp_path, 3).stdout.strip() for _ in range(3)] == ["1", "2", "3"]
+
+
+def test_the_cap_is_the_end_of_it(tmp_path: Path):
+    for _ in range(2):
+        claim(tmp_path, 2)
+    refused = claim(tmp_path, 2)
+    assert refused.returncode == 1
+    assert refused.stdout.strip() == ""
+
+
+def test_concurrent_slots_never_take_the_same_name(tmp_path: Path):
+    """mkdir is the lock; without it two slots race and two boxes get one name."""
+    racers = [
+        subprocess.Popen(
+            ["bash", "-c", f'. "{HELPER}"; box_name_claim "{tmp_path}/names" 8'],
+            stdout=subprocess.PIPE, text=True,
+        )
+        for _ in range(8)
+    ]
+    got = sorted(int(r.communicate()[0].strip()) for r in racers)
+    assert got == list(range(1, 9))
+
+
+def test_a_specific_name_can_be_reserved_once(tmp_path: Path):
+    reserve = f'. "{HELPER}"; box_name_reserve "{tmp_path}/names" 9'
+    assert subprocess.run(["bash", "-c", reserve], check=False).returncode == 0
+    assert subprocess.run(["bash", "-c", reserve], check=False).returncode == 1
+
+
+def test_planning_hands_out_no_box_name(tmp_path: Path):
+    """The plan path must stay free of side effects now that it can allocate names."""
+    done = plan(tmp_path, list(range(30)))
+    assert done.returncode == 0, done.stderr
+    assert "plan only. Nothing created." in done.stdout
+    assert not (tmp_path / "t2_combined_run/boxnames").exists()
+
+
+def test_the_replacement_budget_is_a_flag_and_bounds_the_total(tmp_path: Path):
+    """--max-replacements is what stops a provider outage being paid for one box at a time."""
+    done = plan(tmp_path, list(range(30)), "--boxes", "8", "--max-replacements", "2")
+    assert done.returncode == 0, done.stderr
+    # The cap is BOXES + MAX_REPLACEMENTS, and the plan must still refuse to create anything.
+    assert "plan only. Nothing created." in done.stdout
+    assert "unknown argument" not in done.stderr

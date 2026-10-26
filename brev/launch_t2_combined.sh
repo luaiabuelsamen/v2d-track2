@@ -19,6 +19,7 @@ cd /home/jetson3/projects/v2d-challenge
 GO=0
 ONLY_BOX=0                    # --add-box N: one replacement box joining a run already in flight
 BOXES=8
+MAX_REPLACEMENTS=6            # extra creates a run may spend on boxes that fail during bring-up
 MAX_CLIPS_PER_BOX=4
 TYPE=massedcompute_A6000_plus
 STEPS=349999104
@@ -39,6 +40,7 @@ while [ $# -gt 0 ]; do
     --go) GO=1; shift ;;
     --add-box) ONLY_BOX="$2"; shift 2 ;;
     --boxes) BOXES="$2"; shift 2 ;;
+    --max-replacements) MAX_REPLACEMENTS="$2"; shift 2 ;;
     --clips-per-box) MAX_CLIPS_PER_BOX="$2"; shift 2 ;;
     --type) TYPE="$2"; shift 2 ;;
     --steps) STEPS="$2"; shift 2 ;;
@@ -60,6 +62,8 @@ RESULTS="$OUT/results"
 RUN_ID="t2-$(date -u +%Y%m%dT%H%M%SZ)-$$"
 # shellcheck source=brev/arm_flags.sh
 . "$REPO/brev/arm_flags.sh"
+# shellcheck source=brev/box_names.sh
+. "$REPO/brev/box_names.sh"
 # shellcheck source=brev/budget_guard.sh
 . "$REPO/brev/budget_guard.sh"
 
@@ -349,6 +353,8 @@ run_box() {
 }
 
 if [ "$ONLY_BOX" != 0 ]; then
+  box_name_reserve "$OUT/boxnames" "$ONLY_BOX" \
+    || echo "   (name $ONLY_BOX was already handed out in this run; continuing, it is your call)"
   echo "adding one box; log in $OUT/v2d-t2-b$(printf '%02d' "$ONLY_BOX").log"
   run_box "$ONLY_BOX" &
   wait
@@ -356,12 +362,54 @@ if [ "$ONLY_BOX" != 0 ]; then
   exit 0
 fi
 
+# One worker slot: take a free name, run a box on it, and if that box dies during bring-up, take
+# the next free name and try again. Three of eight creates failed provider-side on the first
+# attempt and nothing replaced them, which is how 30 clips ended up with 28 slots.
+#
+# It stops replacing for any of four reasons, and says which: no name left under the cap, no clip
+# left unclaimed, the dollar cap, or a box that did work (whose own exit is not a failure to
+# replace). A short pause first, so a provider outage is not hammered.
+NAMES="$OUT/boxnames"
+MAX_BOX_NAMES=$(( BOXES + MAX_REPLACEMENTS ))
+
+unclaimed_clips() {
+  comm -23 <(awk '{printf "e%02d\n", $1}' "$QUEUE" | sort) \
+           <(ls "$OUT/claims" 2>/dev/null | sort) | grep -c '[^[:space:]]'
+}
+
+box_slot() {
+  local slot="$1" index left replacements=0
+  while :; do
+    if ! index="$(box_name_claim "$NAMES" "$MAX_BOX_NAMES")"; then
+      echo "slot $slot: no box name left under the cap of $MAX_BOX_NAMES; not replacing"
+      return 1
+    fi
+    if run_box "$index"; then return 0; fi
+
+    # It failed. Everything below decides whether another box would have anything to do.
+    left="$(unclaimed_clips)"
+    if [ "$left" = 0 ]; then
+      echo "slot $slot: v2d-t2-b$(printf '%02d' "$index") failed, but every clip is claimed; not replacing"
+      return 1
+    fi
+    if ! budget_ok_for_hours "$HOURS_PER_BOX" "a replacement for the failed v2d-t2-b$(printf '%02d' "$index")"; then
+      echo "slot $slot: v2d-t2-b$(printf '%02d' "$index") failed and the budget will not fund a replacement"
+      return 1
+    fi
+    replacements=$((replacements + 1))
+    echo "slot $slot: v2d-t2-b$(printf '%02d' "$index") failed with $left clips unclaimed; replacing it (attempt $((replacements + 1)))"
+    sleep 30
+  done
+}
+
 echo "launching up to $BOXES boxes; per-box logs in $OUT/v2d-t2-b*.log"
+echo "failed boxes are replaced automatically, up to $MAX_BOX_NAMES boxes in total"
 for i in $(seq 1 "$BOXES"); do
-  run_box "$i" &
+  box_slot "$i" &
   sleep 20          # stagger the creates so a quota refusal is attributable to one box
 done
 wait
+echo "boxes created in total: $(box_names_taken "$NAMES") of a cap of $MAX_BOX_NAMES"
 
 LEFT=$(comm -23 <(awk '{printf "e%02d\n", $1}' "$QUEUE" | sort) \
                 <(ls "$OUT/claims" 2>/dev/null | sort) | tr '\n' ' ')
