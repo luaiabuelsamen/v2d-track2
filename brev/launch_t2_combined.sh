@@ -91,10 +91,10 @@ CONVERT_ROOTS="$(env -u PYTHONPATH ./.venv311/bin/python -I -c "
 import collections, json
 stage = json.load(open('$STAGE/provenance.json'))
 per_clip = stage.get('ref_dataset_by_clip', {})
-lines = [f'   convert root  : {n} clips against {root}'
+lines = [f'   convert root   : {n} clips against {root}'
          for root, n in sorted(collections.Counter(per_clip.values()).items())]
 if per_clip and len(per_clip) < len(stage['clips']):
-    lines.append(f'   convert root  : {len(stage[\"clips\"]) - len(per_clip)} clips against the release')
+    lines.append(f'   convert root   : {len(stage[\"clips\"]) - len(per_clip)} clips against the release')
 print('\n'.join(lines))
 " 2>/dev/null)"
 
