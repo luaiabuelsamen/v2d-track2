@@ -159,3 +159,22 @@ are pulled every 10 minutes, not at the end. Liveness is probed every 2 minutes:
 gone with no `DONE`, or `train.log` not growing for 15 minutes, ends the clip loudly. References
 are verified on the box by md5, not by file count, because a truncated parquet passes a count and
 then fails with "Parquet magic bytes not found in footer" four hours in.
+
+## Addendum, 2026-10-26 20:30 UTC — the four-clip read: PASS
+
+The four bar clips finished and were kit-scored (`results/t2_combined_bar_read.json`).
+
+| clip | stock pick | stock kit AUC | combined pick | combined kit AUC | Δ | drop-free, stock → combined |
+|---|---|---|---|---|---|---|
+| e03 | 99M | 0.3556 | 299M | **0.6589** | +0.303 | 0/7 → 2/7 |
+| e09 | 349M | 0.2409 | 299M | 0.2448 | +0.004 | 4/7 → 3/7 |
+| e18 | 349M | 0.3826 | 249M | **0.7362** | +0.354 | 7/7 → 7/7 |
+| e24 | 299M | 0.4863 | 299M | **0.7574** | +0.271 | 3/7 → 5/7 |
+| **mean** | | **0.36635** | | **0.59932** | **+0.233** | 1 of 4 → **0 of 4** |
+
+Mean kit MPPE 13.04 → **3.61 cm**. Both registered conditions pass: the mean beats the bar by
+0.233, and the count of clips with no drop-free checkpoint fell from 1 to 0 rather than rising.
+
+Two things this does **not** say. It does not attribute the gain — four variables moved at once,
+which is what a shipping run buys. And e09 is flat, so the mean rests on three clips; with one
+evaluation world per checkpoint a single clip's AUC carries real variance.

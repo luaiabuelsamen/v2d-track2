@@ -5,16 +5,18 @@
     "e04",
     "e05",
     "e06",
+    "e07",
     "e08",
     "e10",
-    "e11"
+    "e11",
+    "e12"
   ],
   "clips_skipped_not_fully_scored": [],
   "mean_kit_add_auc": {
-    "z_drop_registered": 0.329261,
-    "latest_drop_free": 0.361463,
-    "final_checkpoint": 0.361463,
-    "oracle_reads_truth": 0.38786
+    "z_drop_registered": 0.367016,
+    "latest_drop_free": 0.38823,
+    "final_checkpoint": 0.38823,
+    "oracle_reads_truth": 0.412127
   },
   "reads_ground_truth": {
     "z_drop_registered": false,
@@ -110,6 +112,33 @@
         "oracle_reads_truth": 349999104
       }
     },
+    "e07": {
+      "episode": 7,
+      "kit_add_auc_by_checkpoint": {
+        "49999872": 0.250837,
+        "99999744": 0.226981,
+        "149999616": 0.2274,
+        "199999488": 0.22726,
+        "249999360": 0.22733,
+        "299999232": 0.226981,
+        "349999104": 0.22733
+      },
+      "dropped_by_checkpoint": {
+        "49999872": false,
+        "99999744": false,
+        "149999616": false,
+        "199999488": false,
+        "249999360": false,
+        "299999232": false,
+        "349999104": false
+      },
+      "picks": {
+        "z_drop_registered": 49999872,
+        "latest_drop_free": 349999104,
+        "final_checkpoint": 349999104,
+        "oracle_reads_truth": 49999872
+      }
+    },
     "e08": {
       "episode": 8,
       "kit_add_auc_by_checkpoint": {
@@ -189,6 +218,33 @@
         "latest_drop_free": 349999104,
         "final_checkpoint": 349999104,
         "oracle_reads_truth": 349999104
+      }
+    },
+    "e12": {
+      "episode": 12,
+      "kit_add_auc_by_checkpoint": {
+        "49999872": 0.298929,
+        "99999744": 0.143661,
+        "149999616": 0.311518,
+        "199999488": 0.591696,
+        "249999360": 0.719018,
+        "299999232": 0.688839,
+        "349999104": 0.709732
+      },
+      "dropped_by_checkpoint": {
+        "49999872": true,
+        "99999744": true,
+        "149999616": true,
+        "199999488": false,
+        "249999360": false,
+        "299999232": false,
+        "349999104": false
+      },
+      "picks": {
+        "z_drop_registered": 349999104,
+        "latest_drop_free": 349999104,
+        "final_checkpoint": 349999104,
+        "oracle_reads_truth": 249999360
       }
     }
   }

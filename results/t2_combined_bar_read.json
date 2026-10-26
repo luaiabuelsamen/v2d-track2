@@ -1,0 +1,108 @@
+{
+  "what": "the pre-registered four-clip read of the 30-clip combined run against the stock record",
+  "git_sha": "cd396cd507a964a1e3f4d63134aed1e74a9b9d98",
+  "measured_utc": "2026-10-26T20:30Z",
+  "run": "t2-20261026T111941Z-881504",
+  "arm": {
+    "flags": [
+      "start_curriculum",
+      "orientation_reward",
+      "finger_targets",
+      "clean_references"
+    ],
+    "overrides": {
+      "reset.reset_voc_scale": 0.0,
+      "object_orientation_std": 0.3
+    },
+    "references": "interp's finger parquets on tetool's bridge_v1 clean retarget, 30/30 clips",
+    "attribution": "four variables at once. This is a shipping run, not an attribution run -- Luai chose that knowingly (docs/T2_COMBINED_RUN.md). The gain cannot be split between the arms."
+  },
+  "rule_as_registered": {
+    "source": "docs/T2_COMBINED_RUN.md",
+    "bar_mean_kit_add_auc": 0.36635,
+    "also_required": "no increase in the number of clips with no drop-free checkpoint",
+    "selection": "v2d pick-checkpoint z-drop, reads only the input reference",
+    "scorer": "official kit scorer, the one the board uses"
+  },
+  "result": {
+    "mean_kit_add_auc": 0.599316,
+    "stock_mean_kit_add_auc": 0.36635,
+    "delta": 0.232966,
+    "mean_kit_mppe_cm": 3.6058,
+    "stock_mean_kit_mppe_cm": 13.04,
+    "clips_with_no_drop_free_checkpoint": 0,
+    "stock_clips_with_no_drop_free_checkpoint": 1,
+    "verdict": "PASS on both conditions"
+  },
+  "caveats": [
+    "e09 is flat (+0.004); the mean is carried by e03, e18 and e24.",
+    "One evaluation world per checkpoint, so a single clip's AUC carries real variance: adjacent checkpoints have moved 0.137 -> 0.563 on e08.",
+    "The arms differ in reference provenance as well as recipe, which is part of the arm: the kit score itself is against Tier 1 truth either way, so the comparison is a fair score."
+  ],
+  "per_clip": {
+    "e03": {
+      "episode": 3,
+      "combined": {
+        "selected_environment_steps": 299999232,
+        "kit_add_auc": 0.658851,
+        "kit_mppe_cm": 3.6646,
+        "drop_free_checkpoints": 2,
+        "checkpoints": 7
+      },
+      "stock": {
+        "kit_add_auc": 0.3556,
+        "picked": 99999744,
+        "drop_free": 0
+      },
+      "delta_kit_add_auc": 0.303251
+    },
+    "e09": {
+      "episode": 9,
+      "combined": {
+        "selected_environment_steps": 299999232,
+        "kit_add_auc": 0.244828,
+        "kit_mppe_cm": 5.4738,
+        "drop_free_checkpoints": 3,
+        "checkpoints": 7
+      },
+      "stock": {
+        "kit_add_auc": 0.2409,
+        "picked": 349999104,
+        "drop_free": 4
+      },
+      "delta_kit_add_auc": 0.003928
+    },
+    "e18": {
+      "episode": 18,
+      "combined": {
+        "selected_environment_steps": 249999360,
+        "kit_add_auc": 0.736233,
+        "kit_mppe_cm": 2.4589,
+        "drop_free_checkpoints": 7,
+        "checkpoints": 7
+      },
+      "stock": {
+        "kit_add_auc": 0.3826,
+        "picked": 349999104,
+        "drop_free": 7
+      },
+      "delta_kit_add_auc": 0.353633
+    },
+    "e24": {
+      "episode": 24,
+      "combined": {
+        "selected_environment_steps": 299999232,
+        "kit_add_auc": 0.757353,
+        "kit_mppe_cm": 2.8259,
+        "drop_free_checkpoints": 5,
+        "checkpoints": 7
+      },
+      "stock": {
+        "kit_add_auc": 0.4863,
+        "picked": 299999232,
+        "drop_free": 3
+      },
+      "delta_kit_add_auc": 0.271053
+    }
+  }
+}
