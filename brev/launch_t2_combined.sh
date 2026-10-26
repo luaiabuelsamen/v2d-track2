@@ -80,16 +80,24 @@ for label, path in sorted(stage.get('npz_by_source', {}).items()):
     print(f'--npz {label}={path}')
 for label, path in sorted(stage.get('ref_dataset_by_source', {}).items()):
     print(f'--ref-dataset {label}={path}')
-# Per-clip roots travel in the stage's provenance, which score_pulled.sh reads directly; printed
-# here only so a launch that scores against two different roots says so out loud.
-per_clip = stage.get('ref_dataset_by_clip', {})
-if per_clip:
-    import collections
-    for root, tags in sorted(collections.Counter(per_clip.values()).items()):
-        print(f'# {tags} clips convert against {root}', file=sys.stderr)
 " 2>/dev/null)
   [ "${#NPZ_ARGS[@]}" -gt 0 ] && echo "scoring references from the stage: ${NPZ_ARGS[*]}"
 fi
+
+# One tree can carry two references (interp's finger tree does), so the convert root is recorded
+# per clip in the stage's provenance and score_pulled.sh reads it there. Printed in the plan
+# because a run that scores against two roots should not look like a run that scores against one.
+CONVERT_ROOTS="$(env -u PYTHONPATH ./.venv311/bin/python -I -c "
+import collections, json
+stage = json.load(open('$STAGE/provenance.json'))
+per_clip = stage.get('ref_dataset_by_clip', {})
+lines = [f'   convert root  : {n} clips against {root}'
+         for root, n in sorted(collections.Counter(per_clip.values()).items())]
+if per_clip and len(per_clip) < len(stage['clips']):
+    lines.append(f'   convert root  : {len(stage[\"clips\"]) - len(per_clip)} clips against the release')
+print('\n'.join(lines))
+" 2>/dev/null)"
+
 
 # The queue: the four clips with a stock record first, then the rest in map order.
 mkdir -p "$OUT" "$RESULTS" "$OUT/claims"
@@ -121,6 +129,7 @@ cat <<PLAN
 == The 30-clip Tier 2 run, combined recipe ($RUN_ID)
    clips          : $CLIPS, queue order $(head -4 "$QUEUE" | awk '{printf "e%02d ", $1}')... ($STAGE)
    references     : $(awk '{print $3}' "$STAGE/sources.txt" 2>/dev/null | sort | uniq -c | tr '\n' ' ')
+$CONVERT_ROOTS
    recipe         : seed 42, $STEPS steps, checkpoint every $SAVE_EVERY, support per clip
    arm flags      : $ARM_FLAGS  (overrides: $(arm_flags_overrides "$ARM_FLAGS"), object_orientation_std=$STD)
    boxes          : up to $BOXES x $TYPE, <= $MAX_CLIPS_PER_BOX clips each, sequential
