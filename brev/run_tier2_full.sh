@@ -84,13 +84,22 @@ while read -r EP SEQ <&3; do
   say "[$INDEX/$TOTAL] $TAG: train seed 42, $STEPS steps (checkpoint every $SAVE_EVERY)"
   START=$(date +%s)
   # train.log per clip, so the launcher's stall probe has one file per clip to watch grow.
-  run "cd /workspace && WANDB_MODE=disabled python scripts/train_flash_sac.py \
+  # W&B runs offline on the box (no key, no network) into /workspace/$RUN_DIR/wandb; the run dir is
+  # copied next to the checkpoints below and synced from a laptop with `wandb sync -e <entity>`.
+  # Checkpoint upload stays off so the offline dir does not carry a second copy of every policy.
+  run "cd /workspace && WANDB_MODE=offline python scripts/train_flash_sac.py \
     experiment=g1_recon_body_flash_sac \"task.parquet='${PARQUET}'\" \
     training.total_environment_steps=${STEPS} \
     training.checkpoint.save_interval_environment_steps=${SAVE_EVERY} \
-    $SUPPORT $ARM_OVERRIDES logging.mode=disabled \
+    $SUPPORT $ARM_OVERRIDES logging.mode=offline logging.upload_checkpoints=false \
+    logging.project=v2d-t2-combined logging.run_name=t2_${TAG} \
     reset.seed=42 output_dir=$RUN_DIR" 2>&1 | tee "$CLIP/train.log" | tail -20
   echo "$TAG train seconds=$(( $(date +%s) - START ))" | tee -a "$CLIP/summary.txt"
+  if run "test -d /workspace/$RUN_DIR/wandb"; then
+    docker exec -i "$CID" tar -C "/workspace/$RUN_DIR" -cf - wandb < /dev/null | tar -C "$CLIP" -xf - \
+      && echo "$TAG wandb offline dir: $(du -sh "$CLIP/wandb" | cut -f1)" | tee -a "$CLIP/summary.txt" \
+      || echo "$TAG wandb offline dir NOT copied" | tee -a "$CLIP/summary.txt"
+  fi
 
   CKPTS="$(run "ls -1 /workspace/$RUN_DIR/policy_*.safetensors 2>/dev/null" | tr -d '\r')"
   [ "${DRY_RUN:-0}" = 1 ] && CKPTS="/workspace/$RUN_DIR/policy_${STEPS}.safetensors"
