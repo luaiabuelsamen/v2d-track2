@@ -146,7 +146,7 @@ Then, with `$DATA` pointing at the released dataset and `$KIT` at the extracted 
 | contact coverage | `v2d contact --arms-root ARMS --baseline-logs LOGS` |
 | the root cleaner's failure | `v2d clean-root --seq-root SEQ --repo REPO --soma-root SOMA` |
 | the Tier 1 package | `v2d pack-tier1 --kit-root $KIT --dataset-root $DATA --motion-root MOTION --dry-run` |
-| which checkpoint to submit per episode | `v2d pick-checkpoint --cell e03=CELL --cell e09=CELL -o results/checkpoint_selection.json` |
+| which checkpoint to submit per episode | `v2d pick-checkpoint --cell e03=CELL --cell e09=CELL -o results/checkpoint_selection.json` (z-drop is the default and the submission rule) |
 
 `v2d --help` lists everything. Each command writes its JSON record under `results/`.
 

@@ -1,8 +1,8 @@
 {
   "what": "one checkpoint per episode, chosen without reading any ground truth",
-  "git_sha": "4442b4e6f943a2d503aa4925c8c855150a69ff46",
+  "git_sha": "4aa8db3c578b931da553561300550d00e0916ef8",
   "rule": {
-    "criterion": "divergence",
+    "criterion": "z-drop",
     "divergence_limit_m": 0.1,
     "drop_z_m": 0.15,
     "margin_m": 0.05,
@@ -30,8 +30,8 @@
           "evaluator_object_orientation_error_deg": 129.72409780705655,
           "checkpoint_sha256_of_local_policy": "ca46980e650ae03d4a5e8abc2bd091e7e92d4348a4c455e4e09cd4dfb3da1a69",
           "dropped": true,
-          "first_violation_frame": 67,
-          "held_frames": 67
+          "first_violation_frame": 90,
+          "held_frames": 90
         },
         {
           "environment_steps": 99999744,
@@ -46,8 +46,8 @@
           "evaluator_object_orientation_error_deg": 77.12230619419275,
           "checkpoint_sha256_of_local_policy": "fe51794c67c90b364ebd311392c8b12e1dceab56fc4fa6f39e1ca92b70e86b60",
           "dropped": true,
-          "first_violation_frame": 141,
-          "held_frames": 141
+          "first_violation_frame": 516,
+          "held_frames": 516
         },
         {
           "environment_steps": 149999616,
@@ -62,8 +62,8 @@
           "evaluator_object_orientation_error_deg": 106.3124524319585,
           "checkpoint_sha256_of_local_policy": "046432ca7d878872da83613756d1b1781f83f28322deebf9f2f3d09ac04956e9",
           "dropped": true,
-          "first_violation_frame": 103,
-          "held_frames": 103
+          "first_violation_frame": 126,
+          "held_frames": 126
         },
         {
           "environment_steps": 199999488,
@@ -78,8 +78,8 @@
           "evaluator_object_orientation_error_deg": 71.03512498729167,
           "checkpoint_sha256_of_local_policy": "a7fae6704e6b0a62b9863c003ed0839c357a73d4fc16689b0756ed143d3376e6",
           "dropped": true,
-          "first_violation_frame": 104,
-          "held_frames": 104
+          "first_violation_frame": 127,
+          "held_frames": 127
         },
         {
           "environment_steps": 249999360,
@@ -94,8 +94,8 @@
           "evaluator_object_orientation_error_deg": 131.5962167001331,
           "checkpoint_sha256_of_local_policy": "1f4292966b129f7096709b1d788cc23ecf2d1d565d22421e439ca24d49fb352f",
           "dropped": true,
-          "first_violation_frame": 44,
-          "held_frames": 44
+          "first_violation_frame": 67,
+          "held_frames": 67
         },
         {
           "environment_steps": 299999232,
@@ -110,8 +110,8 @@
           "evaluator_object_orientation_error_deg": 76.91283811980634,
           "checkpoint_sha256_of_local_policy": "4b6f0d4ef581bce51129618bbbebeda38d2438ea982c3eae12bb45b31e80bcf5",
           "dropped": true,
-          "first_violation_frame": 154,
-          "held_frames": 154
+          "first_violation_frame": 399,
+          "held_frames": 399
         },
         {
           "environment_steps": 349999104,
@@ -126,14 +126,14 @@
           "evaluator_object_orientation_error_deg": 77.87601212267553,
           "checkpoint_sha256_of_local_policy": "7ec08e70b4ef94a8baac2521dd84d66114b675ff944da2e217aa6b5b8c24b973",
           "dropped": true,
-          "first_violation_frame": 61,
-          "held_frames": 61
+          "first_violation_frame": 83,
+          "held_frames": 83
         }
       ],
       "drop_free_checkpoints": [],
-      "selected_environment_steps": 299999232,
-      "selected_checkpoint_sha256": "4b6f0d4ef581bce51129618bbbebeda38d2438ea982c3eae12bb45b31e80bcf5",
-      "selection_reason": "every checkpoint drops; the one that held longest (154 frames), then the smallest mean distance to the input reference"
+      "selected_environment_steps": 99999744,
+      "selected_checkpoint_sha256": "fe51794c67c90b364ebd311392c8b12e1dceab56fc4fa6f39e1ca92b70e86b60",
+      "selection_reason": "every checkpoint drops; the one that held longest (516 frames), then the smallest mean distance to the input reference"
     },
     "e09": {
       "episode": 9,
@@ -152,8 +152,8 @@
           "evaluator_object_orientation_error_deg": 74.29536515910421,
           "checkpoint_sha256_of_local_policy": "d92f88d5d41316b2191e4187aa5f41562a568ab68688666ca65c5afd6f69cfe4",
           "dropped": true,
-          "first_violation_frame": 222,
-          "held_frames": 222
+          "first_violation_frame": 269,
+          "held_frames": 269
         },
         {
           "environment_steps": 99999744,
@@ -167,9 +167,9 @@
           "evaluator_chord_sr": 0.0,
           "evaluator_object_orientation_error_deg": 68.29478223175941,
           "checkpoint_sha256_of_local_policy": "9aff1239c5aa197bd3745ea92d47847e5e79b735023be40c16bd80d87985ddde",
-          "dropped": true,
-          "first_violation_frame": 207,
-          "held_frames": 207
+          "dropped": false,
+          "first_violation_frame": null,
+          "held_frames": 870
         },
         {
           "environment_steps": 149999616,
@@ -183,9 +183,9 @@
           "evaluator_chord_sr": 0.0,
           "evaluator_object_orientation_error_deg": 80.33878229323813,
           "checkpoint_sha256_of_local_policy": "11e9c155c588a07d600adc6c0d6de4e6fb052c2d3c6059ce8769adf480cc54c1",
-          "dropped": true,
-          "first_violation_frame": 203,
-          "held_frames": 203
+          "dropped": false,
+          "first_violation_frame": null,
+          "held_frames": 870
         },
         {
           "environment_steps": 199999488,
@@ -200,8 +200,8 @@
           "evaluator_object_orientation_error_deg": 72.29015693120007,
           "checkpoint_sha256_of_local_policy": "ddd3f5d2a75ee5a94082c86d10c4e6b38f336ca2d62135da6d1cb2b522334a52",
           "dropped": true,
-          "first_violation_frame": 376,
-          "held_frames": 376
+          "first_violation_frame": 438,
+          "held_frames": 438
         },
         {
           "environment_steps": 249999360,
@@ -232,8 +232,8 @@
           "evaluator_object_orientation_error_deg": 132.86137143497652,
           "checkpoint_sha256_of_local_policy": "59a75d8ef20f4bc5e16f54ff905d9fec93ab6585a4bddc6554a5a55ebe172071",
           "dropped": true,
-          "first_violation_frame": 212,
-          "held_frames": 212
+          "first_violation_frame": 244,
+          "held_frames": 244
         },
         {
           "environment_steps": 349999104,
@@ -253,6 +253,8 @@
         }
       ],
       "drop_free_checkpoints": [
+        99999744,
+        149999616,
         249999360,
         349999104
       ],
@@ -276,9 +278,9 @@
           "evaluator_chord_sr": 0.0,
           "evaluator_object_orientation_error_deg": 112.56963392364814,
           "checkpoint_sha256_of_local_policy": "3403f1f4efaeb0bda974f7c629e280115d18f07248dc568ab921a9825872f6ed",
-          "dropped": true,
-          "first_violation_frame": 229,
-          "held_frames": 229
+          "dropped": false,
+          "first_violation_frame": null,
+          "held_frames": 858
         },
         {
           "environment_steps": 99999744,
@@ -292,9 +294,9 @@
           "evaluator_chord_sr": 0.0,
           "evaluator_object_orientation_error_deg": 85.60252243810733,
           "checkpoint_sha256_of_local_policy": "7fe6f2dd25cc5590d26ac230283cc204529332e0924332717308c034dd62a55d",
-          "dropped": true,
-          "first_violation_frame": 103,
-          "held_frames": 103
+          "dropped": false,
+          "first_violation_frame": null,
+          "held_frames": 858
         },
         {
           "environment_steps": 149999616,
@@ -308,9 +310,9 @@
           "evaluator_chord_sr": 0.0,
           "evaluator_object_orientation_error_deg": 31.021810225918202,
           "checkpoint_sha256_of_local_policy": "2347abacc46b6a8d5e4c86fb3aace4b72ce96b4821ee3dcabbfa6a2aa1d07b99",
-          "dropped": true,
-          "first_violation_frame": 292,
-          "held_frames": 292
+          "dropped": false,
+          "first_violation_frame": null,
+          "held_frames": 858
         },
         {
           "environment_steps": 199999488,
@@ -324,9 +326,9 @@
           "evaluator_chord_sr": 0.0,
           "evaluator_object_orientation_error_deg": 83.10945530156134,
           "checkpoint_sha256_of_local_policy": "3abb27093ca90b011865b2246492ab611f9d0acf7558840521e16d839a12e938",
-          "dropped": true,
-          "first_violation_frame": 292,
-          "held_frames": 292
+          "dropped": false,
+          "first_violation_frame": null,
+          "held_frames": 858
         },
         {
           "environment_steps": 249999360,
@@ -340,9 +342,9 @@
           "evaluator_chord_sr": 0.0,
           "evaluator_object_orientation_error_deg": 48.140662498875784,
           "checkpoint_sha256_of_local_policy": "fd848b7c245f275d68c782150e6c07c10392a89275f793874ff1da57d1187b0c",
-          "dropped": true,
-          "first_violation_frame": 404,
-          "held_frames": 404
+          "dropped": false,
+          "first_violation_frame": null,
+          "held_frames": 858
         },
         {
           "environment_steps": 299999232,
@@ -356,9 +358,9 @@
           "evaluator_chord_sr": 0.0,
           "evaluator_object_orientation_error_deg": 59.710696905591426,
           "checkpoint_sha256_of_local_policy": "5378f3eaf929e7e0ada08d07e765cdefdcd99c0149aeb8235f360674f4377ee2",
-          "dropped": true,
-          "first_violation_frame": 547,
-          "held_frames": 547
+          "dropped": false,
+          "first_violation_frame": null,
+          "held_frames": 858
         },
         {
           "environment_steps": 349999104,
@@ -378,6 +380,12 @@
         }
       ],
       "drop_free_checkpoints": [
+        49999872,
+        99999744,
+        149999616,
+        199999488,
+        249999360,
+        299999232,
         349999104
       ],
       "selected_environment_steps": 349999104,
@@ -400,8 +408,8 @@
           "evaluator_chord_sr": 0.0,
           "evaluator_object_orientation_error_deg": 107.3780658712435,
           "dropped": true,
-          "first_violation_frame": 165,
-          "held_frames": 165
+          "first_violation_frame": 171,
+          "held_frames": 171
         },
         {
           "environment_steps": 99999744,
@@ -415,8 +423,8 @@
           "evaluator_chord_sr": 0.0,
           "evaluator_object_orientation_error_deg": 133.16025372605367,
           "dropped": true,
-          "first_violation_frame": 132,
-          "held_frames": 132
+          "first_violation_frame": 171,
+          "held_frames": 171
         },
         {
           "environment_steps": 149999616,
@@ -430,8 +438,8 @@
           "evaluator_chord_sr": 0.0,
           "evaluator_object_orientation_error_deg": 53.08300372011405,
           "dropped": true,
-          "first_violation_frame": 166,
-          "held_frames": 166
+          "first_violation_frame": 171,
+          "held_frames": 171
         },
         {
           "environment_steps": 199999488,
@@ -444,9 +452,9 @@
           "evaluator_mppe_cm": 7.674438700601294,
           "evaluator_chord_sr": 0.0,
           "evaluator_object_orientation_error_deg": 50.267161858588096,
-          "dropped": true,
-          "first_violation_frame": 632,
-          "held_frames": 632
+          "dropped": false,
+          "first_violation_frame": null,
+          "held_frames": 748
         },
         {
           "environment_steps": 249999360,
@@ -460,8 +468,8 @@
           "evaluator_chord_sr": 0.0,
           "evaluator_object_orientation_error_deg": 38.49629619453027,
           "dropped": true,
-          "first_violation_frame": 163,
-          "held_frames": 163
+          "first_violation_frame": 171,
+          "held_frames": 171
         },
         {
           "environment_steps": 299999232,
@@ -495,6 +503,7 @@
         }
       ],
       "drop_free_checkpoints": [
+        199999488,
         299999232,
         349999104
       ],
@@ -504,7 +513,7 @@
     }
   },
   "per_episode_checkpoint_sha256": {
-    "3": "4b6f0d4ef581bce51129618bbbebeda38d2438ea982c3eae12bb45b31e80bcf5",
+    "3": "fe51794c67c90b364ebd311392c8b12e1dceab56fc4fa6f39e1ca92b70e86b60",
     "9": "5a81f89eb5d99113407815f15c185f33af8d701d783b7c4390a597eb64eca586",
     "18": "3093bd04607cf9f115c3f97ce52bac259e12be4c9e7c4bdc10aec60d3a76aaba",
     "24": "72eacaa3cd794ef4f556ccdf9f5d2c5520dbf4b23507bfb463da2f9ed1d359d6"
@@ -512,9 +521,9 @@
   "summary": {
     "episodes": 4,
     "mean_evaluator_add_auc_final": 0.203997,
-    "mean_evaluator_add_auc_selected": 0.235053,
+    "mean_evaluator_add_auc_selected": 0.274525,
     "mean_evaluator_mppe_cm_final": 26.059144,
-    "mean_evaluator_mppe_cm_selected": 17.565795,
+    "mean_evaluator_mppe_cm_selected": 13.319985,
     "episodes_dropping_at_the_final_checkpoint": 1,
     "episodes_with_no_drop_free_checkpoint": 1
   }

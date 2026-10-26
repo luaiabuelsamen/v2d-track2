@@ -101,12 +101,12 @@ Applied to our existing 28 checkpoints (`scratchpad/nodrop_select_margin.json`):
 no ground truth.**
 
 *2026-10-25: this rule is now `v2d pick-checkpoint --criterion z-drop`, and its picks are
-reproduced exactly (`results/checkpoint_selection_zdrop.json`): on the evaluator's own AUC the
+reproduced exactly (`results/checkpoint_selection.json`): on the evaluator's own AUC the
 four-clip mean goes 0.203997 → 0.274525 and MPPE 26.06 → 13.32 cm. The alternative criterion
 `--criterion divergence`, which rejects any checkpoint that leaves the evaluator's 10 cm position
-band at any frame, is weaker here — 0.235053 and 17.57 cm (`results/checkpoint_selection.json`) —
+band at any frame, is weaker here — 0.235053 and 17.57 cm (`results/checkpoint_selection_divergence.json`) —
 because it rejects e03's 99M checkpoint, which is off by more than 10 cm for a stretch without
-having lost the object. Both are on the record; the z-drop rule stays the registered one.* It applies unchanged to all 30 clips at submission time. The bare-line variant
+having lost the object. Both are on the record. **Luai's decision, 2026-10-25: z-drop is the submission rule**, so it is `v2d pick-checkpoint`'s default, and divergence stays as a reported alternative.* It applies unchanged to all 30 clips at submission time. The bare-line variant
 gives 0.35728; the margin variant is registered because it is justified by the evaluator's own
 threshold and the control rate, and because the e24 artifact is visible in the *z* columns alone —
 the AUCs of both variants are quoted here so the choice is on the record.

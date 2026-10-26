@@ -82,7 +82,7 @@ def test_picks_the_closest_checkpoint_that_never_diverges(tmp_path: Path):
     achieved, reference = held(0.01)
     achieved[40:60, 0] += 0.30
     write_checkpoint(cell, 300, achieved, reference, auc=0.90)
-    record = run(tmp_path, f"e03={cell}")
+    record = run(tmp_path, f"e03={cell}", extra=["--criterion", "divergence"])
     episode = record["episodes"]["e03"]
     assert episode["drop_free_checkpoints"] == [100, 200]
     assert episode["selected_environment_steps"] == 200
@@ -97,7 +97,7 @@ def test_when_every_checkpoint_drops_the_longest_hold_wins(tmp_path: Path):
         achieved, reference = held(offset)
         achieved[drop_at:, 0] += 0.4
         write_checkpoint(cell, steps, achieved, reference)
-    record = run(tmp_path, f"e09={cell}")
+    record = run(tmp_path, f"e09={cell}", extra=["--criterion", "divergence"])
     episode = record["episodes"]["e09"]
     assert episode["drop_free_checkpoints"] == []
     assert episode["selected_environment_steps"] == 200
@@ -120,7 +120,7 @@ def test_invalid_frames_are_not_scored(tmp_path: Path):
     valid = np.ones(FRAMES, dtype=bool)
     valid[80:] = False  # ...but the evaluator marked those frames invalid
     write_checkpoint(cell, 100, achieved, reference, valid=valid)
-    episode = run(tmp_path, f"e24={cell}")["episodes"]["e24"]
+    episode = run(tmp_path, f"e24={cell}", extra=["--criterion", "divergence"])["episodes"]["e24"]
     assert episode["checkpoints"][0]["frames"] == 80
     assert episode["checkpoints"][0]["frames_invalid"] == 20
     assert episode["drop_free_checkpoints"] == [100]
@@ -130,7 +130,7 @@ def test_the_divergence_limit_is_the_evaluators_own_threshold(tmp_path: Path):
     cell = tmp_path / "e03"
     write_checkpoint(cell, 100, *held(0.11))  # 11 cm: past the evaluator's 10 cm
     write_checkpoint(cell, 200, *held(0.09))  # 9 cm: inside it
-    record = run(tmp_path, f"e03={cell}")
+    record = run(tmp_path, f"e03={cell}", extra=["--criterion", "divergence"])
     assert record["rule"]["divergence_limit_m"] == 0.10
     assert record["episodes"]["e03"]["drop_free_checkpoints"] == [200]
 
@@ -147,14 +147,16 @@ def test_a_two_frame_lift_lag_is_not_a_drop_under_the_z_rule():
     assert first_z_drop(achieved, reference) == 60
 
 
-def test_the_z_drop_criterion_is_selectable_and_recorded(tmp_path: Path):
+def test_the_default_criterion_is_z_drop_the_submission_rule(tmp_path: Path):
     cell = tmp_path / "e24"
     # Diverges far in x, but never falls: a drop under `divergence`, not under `z-drop`.
     achieved, reference = held(0.0)
     achieved[50:, 0] += 0.5
     write_checkpoint(cell, 100, achieved, reference)
-    assert run(tmp_path, f"e24={cell}")["episodes"]["e24"]["drop_free_checkpoints"] == []
-    record = run(tmp_path, f"e24={cell}", extra=["--criterion", "z-drop"])
+    assert run(tmp_path, f"e24={cell}", extra=["--criterion", "divergence"])["episodes"]["e24"][
+        "drop_free_checkpoints"
+    ] == []
+    record = run(tmp_path, f"e24={cell}")
     assert record["rule"]["criterion"] == "z-drop"
     assert record["episodes"]["e24"]["drop_free_checkpoints"] == [100]
 

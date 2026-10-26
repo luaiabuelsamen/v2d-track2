@@ -10,14 +10,16 @@ into `objects.parquet` as the `reference_*` columns, so that is the only thing t
 Tier 1 is never opened; there is no argument for it. What survives is a rule with two parts:
 
 1. **Reject a checkpoint that loses the object.** Two definitions are available, because they
-   disagree and the disagreement is on the record:
-   - `divergence` (default): the achieved object must stay within `--divergence` metres of its
-     reference at *every* frame. 0.10 m is the evaluator's own `object_position_threshold_m`, so
-     this rejects exactly the checkpoints that have stopped tracking by the evaluator's yardstick.
-   - `z-drop`: the achieved object sits `--margin` below its reference *and* under `--drop-z` for
-     `--min-frames` consecutive frames. This is the rule registered in docs/AB4_DESIGN.md; the
-     margin and the run length are there because the bare `z < 0.15 m` form fires on a 2-frame,
-     7 mm lift lag and threw away 6 of e24's 7 checkpoints for nothing.
+   disagree and the disagreement is measured:
+   - `z-drop` (default, and the submission rule): the achieved object sits `--margin` below its
+     reference *and* under `--drop-z` for `--min-frames` consecutive frames. This is the rule
+     registered in docs/AB4_DESIGN.md; the margin and the run length are there because the bare
+     `z < 0.15 m` form fires on a 2-frame, 7 mm lift lag and threw away 6 of e24's 7 checkpoints
+     for nothing. Four-clip mean: evaluator AUC 0.274525, MPPE 13.32 cm.
+   - `divergence`: the achieved object must stay within `--divergence` metres of its reference at
+     *every* frame; 0.10 m is the evaluator's own `object_position_threshold_m`. Reported as the
+     alternative, not used: 0.235053 and 17.57 cm, because it rejects e03's 99M checkpoint for
+     leaving the band without ever having dropped the object.
 2. **Among the survivors take the smallest mean distance to that same input reference.** If none
    survive, take the one that held on longest and break ties the same way, because a clip with no
    clean checkpoint still has to submit something.
@@ -201,9 +203,9 @@ def main(argv: list[str] | None = None) -> None:
     )
     parser.add_argument(
         "--criterion",
-        choices=("divergence", "z-drop"),
-        default="divergence",
-        help="how a lost object is defined (default: divergence)",
+        choices=("z-drop", "divergence"),
+        default="z-drop",
+        help="how a lost object is defined (default: z-drop, the submission rule)",
     )
     parser.add_argument(
         "--divergence",
