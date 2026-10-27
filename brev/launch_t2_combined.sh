@@ -159,6 +159,10 @@ WORST_USD="$(awk -v x="$BOXES" -v h="$MAX_HOURS" -v r="$RATE_USD_PER_HOUR" 'BEGI
 cat <<PLAN
 == The 30-clip Tier 2 run, combined recipe ($RUN_ID)
    clips          : $CLIPS, queue order $(head -4 "$QUEUE" | awk '{printf "e%02d ", $1}')... ($STAGE)
+   map            : $MAP
+   tier           : $TIER  (what the pulled checkpoints are scored against)
+   box names      : $(for i in $(seq 1 "$BOXES"); do printf '%s%02d ' "$BOX_PREFIX" "$i"; done)
+                    replacements up to ${BOX_PREFIX}$(printf '%02d' $(( BOXES + MAX_REPLACEMENTS )))
    references     : $(awk '{print $3}' "$STAGE/sources.txt" 2>/dev/null | sort | uniq -c | tr '\n' ' ')
 $CONVERT_ROOTS
    recipe         : seed 42, $STEPS steps, checkpoint every $SAVE_EVERY, support per clip

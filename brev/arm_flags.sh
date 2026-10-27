@@ -21,7 +21,7 @@
 # is the only way to know the box is running the code we think it is. A cell either carries the
 # change or dies before training, which is the opposite of the failure that cost us three cells.
 
-ARM_FLAGS_ORDER="start_curriculum orientation_reward finger_targets object_position voc_curriculum"
+ARM_FLAGS_ORDER="start_curriculum orientation_reward finger_targets object_position body_joint_position voc_curriculum"
 
 # arm_flags_patch_script <flag>  -- flag names are the experiment's vocabulary, file names are the
 # patch's, and they are kept apart on purpose: renaming a script must not rename an arm on the
@@ -32,6 +32,7 @@ arm_flags_patch_script() {
     orientation_reward) echo "patch_object_orientation.py" ;;
     finger_targets)     echo "patch_finger_targets.py" ;;
     object_position)    echo "patch_object_position.py" ;;
+    body_joint_position) echo "patch_body_joint_position.py" ;;
     voc_curriculum)     echo "patch_voc_curriculum.py" ;;
     *) return 2 ;;
   esac
@@ -82,6 +83,7 @@ arm_flags_slug() {
       orientation_reward) slug="${slug}-or" ;;
       finger_targets)     slug="${slug}-ft" ;;
       object_position)    slug="${slug}-op" ;;
+      body_joint_position) slug="${slug}-bj" ;;
       voc_curriculum)     slug="${slug}-vc" ;;
     esac
   done <<< "$flags"
@@ -111,6 +113,7 @@ arm_flags_overrides() {
       orientation_reward) ;;  # the weight and std live in the config the patch edits
       finger_targets)     ;;  # whatever it needs is the patch's business
       object_position)    ;;  # std and weight live in the config and curriculum the patch edits
+      body_joint_position) ;;  # weight and std live in the config and curriculum the patch edits
       voc_curriculum)     ;;  # the thresholds live in the curriculum the patch edits
     esac
   done <<< "$flags"
@@ -166,6 +169,11 @@ arm_flags_apply() {
         [ -n "${V2D_OBJECT_POSITION_STD:-}" ] && args="--std ${V2D_OBJECT_POSITION_STD}"
         [ -n "${V2D_OBJECT_POSITION_WEIGHT:-}" ] \
           && args="$args --weight ${V2D_OBJECT_POSITION_WEIGHT}" ;;
+      body_joint_position)
+        [ -n "${V2D_BODY_JOINT_POSITION_WEIGHT:-}" ] \
+          && args="--weight ${V2D_BODY_JOINT_POSITION_WEIGHT}"
+        [ -n "${V2D_BODY_JOINT_POSITION_STD:-}" ] \
+          && args="$args --std ${V2D_BODY_JOINT_POSITION_STD}" ;;
       voc_curriculum)
         [ -n "${V2D_VOC_ZERO_AT:-}" ] && args="--zero-at ${V2D_VOC_ZERO_AT}" ;;
     esac

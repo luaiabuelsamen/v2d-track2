@@ -23,6 +23,9 @@ STEPS="${2:-349999104}"
 SAVE_EVERY="${3:-49999872}"        # 2048 * 24414
 ASSETS="${ASSET_ROOT:-/v2d/assets/t2_raw}"
 OUT="${RESULTS_DIR:-$HOME/t2_results}"
+# Seed 42 for every run so far. A second seed is a separate arm with its own box prefix and its
+# own results tree, so the only thing that has to change on the box is this.
+SEED="${V2D_SEED:-42}"
 ARM_FLAGS="${ARM_FLAGS:-}"
 
 for n in "$STEPS" "$SAVE_EVERY"; do
@@ -81,7 +84,7 @@ while read -r EP SEQ <&3; do
     echo "$TAG SUPPORT UNRESOLVED -- skipped" | tee -a "$OUT/summary.txt"; continue; }
   echo "$TAG $SUPPORT" | tee -a "$CLIP/summary.txt" | tee -a "$OUT/summary.txt"
 
-  say "[$INDEX/$TOTAL] $TAG: train seed 42, $STEPS steps (checkpoint every $SAVE_EVERY)"
+  say "[$INDEX/$TOTAL] $TAG: train seed $SEED, $STEPS steps (checkpoint every $SAVE_EVERY)"
   START=$(date +%s)
   # train.log per clip, so the launcher's stall probe has one file per clip to watch grow.
   # W&B runs offline on the box (no key, no network) into /workspace/$RUN_DIR/wandb; the run dir is
@@ -92,8 +95,8 @@ while read -r EP SEQ <&3; do
     training.total_environment_steps=${STEPS} \
     training.checkpoint.save_interval_environment_steps=${SAVE_EVERY} \
     $SUPPORT $ARM_OVERRIDES logging.mode=offline logging.upload_checkpoints=false \
-    logging.project=v2d-t2-combined logging.run_name=t2_${TAG} \
-    reset.seed=42 output_dir=$RUN_DIR" 2>&1 | tee "$CLIP/train.log" | tail -20
+    logging.project=v2d-t2-combined logging.run_name=t2_${TAG}_s${SEED} \
+    reset.seed=${SEED} output_dir=$RUN_DIR" 2>&1 | tee "$CLIP/train.log" | tail -20
   echo "$TAG train seconds=$(( $(date +%s) - START ))" | tee -a "$CLIP/summary.txt"
   if run "test -d /workspace/$RUN_DIR/wandb"; then
     docker exec -i "$CID" tar -C "/workspace/$RUN_DIR" -cf - wandb < /dev/null | tar -C "$CLIP" -xf - \
