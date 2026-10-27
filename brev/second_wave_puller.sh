@@ -35,27 +35,44 @@ PY="env -u PYTHONPATH ./.venv311/bin/python -I"
 run_v2d() { $PY -c "import sys; sys.argv=['v2d']+sys.argv[1:]; from v2d.cli import main; main()" "$@"; }
 
 # arm -> stage dir; the results dir is $WAVE/run_<arm>, the box prefix v2d-sw-<lowercase arm>-b.
-ARMS="A B1 B2 B3 B4 B5"
+ARMS="A B1 B2 B3 B4 B5 B4x"
 LAST_STATE=""
 FINAL_CHECKPOINT=349999104
-# 28 clips were staged across the six arms; the wave is in when all of them have landed.
-EXPECTED_CLIPS=28
 INTERVAL="${V2D_PULL_INTERVAL:-600}"
 ONCE=""
 case "${1:-}" in
   --once) ONCE=1 ;;
-  --arm-of) ARMS="A B1 B2 B3 B4 B5" ;;
 esac
 
 stamp() { date -u +%H:%M:%S; }
 say() { echo "$(stamp) $*"; }
 
-# v2d-sw-a-b03 -> A, v2d-sw-b1-b01 -> B1. Getting this wrong would score a clip against another
-# arm's stage, so it is a named function with a test rather than an inline sed.
+# v2d-sw-a-b03 -> A, v2d-sw-b1-b01 -> B1, v2d-sw-b4x-b01 -> B4x. Getting this wrong would score a
+# clip against another arm's stage, so it is a named function with a test rather than an inline
+# sed. The comparison is case-insensitive and returns the arm's CANONICAL spelling: box names are
+# lower case, and B4x is not "B4X" -- its stage dir, map and results dir all carry the small x.
 arm_of() {
-  local ARM
-  ARM="$(printf '%s' "${1#v2d-sw-}" | sed 's/-b[0-9]*$//' | tr 'a-z' 'A-Z')"
-  case " $ARMS " in *" $ARM "*) printf '%s' "$ARM" ;; *) return 1 ;; esac
+  local want candidate
+  want="$(printf '%s' "${1#v2d-sw-}" | sed 's/-b[0-9]*$//' | tr 'A-Z' 'a-z')"
+  [ -n "$want" ] || return 1
+  for candidate in $ARMS; do
+    if [ "$(printf '%s' "$candidate" | tr 'A-Z' 'a-z')" = "$want" ]; then
+      printf '%s' "$candidate"
+      return 0
+    fi
+  done
+  return 1
+}
+
+# How many clips this watch is waiting for: whatever the staged maps say, so adding an arm (B4x
+# was added mid-watch) does not leave the loop waiting on a number written by hand.
+expected_clips() {
+  local arm n=0
+  for arm in $ARMS; do
+    [ -f "$WAVE/map_$arm.txt" ] || continue
+    n=$(( n + $(grep -c '[^[:space:]]' "$WAVE/map_$arm.txt") ))
+  done
+  echo "$n"
 }
 
 # The clips a box has finished: a clip dir holding the final checkpoint's metrics.json. Anything
@@ -73,6 +90,8 @@ if [ "${1:-}" = "--arm-of" ]; then
   echo
   exit 0
 fi
+
+EXPECTED_CLIPS="$(expected_clips)"
 
 live_boxes() {
   # One brev ls per pass. A transient empty answer must not read as "every box is gone", so an

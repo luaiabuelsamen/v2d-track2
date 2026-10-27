@@ -61,6 +61,10 @@ def arm_of(name: str) -> subprocess.CompletedProcess:
         ("v2d-sw-b3-b01", "B3"),
         ("v2d-sw-b4-b02", "B4"),
         ("v2d-sw-b5-b01", "B5"),
+        # B4x keeps its small x everywhere -- stage dir, map, results dir -- so the mapping must
+        # return the canonical spelling and not the upper-cased box name.
+        ("v2d-sw-b4x-b01", "B4x"),
+        ("v2d-sw-b4x-b08", "B4x"),
     ],
 )
 def test_every_live_box_maps_to_its_own_arm(box: str, arm: str):
@@ -69,7 +73,9 @@ def test_every_live_box_maps_to_its_own_arm(box: str, arm: str):
     assert done.stdout.strip() == arm
 
 
-@pytest.mark.parametrize("box", ["v2d-t2-b01", "v2d-ab-raw-e03", "", "v2d-sw-c-b01"])
+@pytest.mark.parametrize(
+    "box", ["v2d-t2-b01", "v2d-ab-raw-e03", "", "v2d-sw-c-b01", "v2d-sw-b4y-b01"]
+)
 def test_a_box_from_another_run_is_refused_rather_than_guessed(box: str):
     done = arm_of(box)
     assert done.returncode == 1
@@ -111,5 +117,14 @@ def test_it_scores_through_the_shared_pass_so_selection_cannot_see_a_score():
     assert '--results "$RESULTS"' in text
 
 
-def test_it_waits_for_all_28_staged_clips():
-    assert "EXPECTED_CLIPS=28" in PULLER.read_text()
+def test_the_clip_count_comes_from_the_staged_maps_not_a_hand_written_number():
+    """B4x was added to the watch mid-run; a hardcoded 28 would have ended it eight clips early."""
+    text = PULLER.read_text()
+    assert "EXPECTED_CLIPS=\"$(expected_clips)\"" in text
+    assert "map_$arm.txt" in text
+
+
+def test_every_arm_of_the_wave_is_watched():
+    text = PULLER.read_text()
+    for arm in ("A", "B1", "B2", "B3", "B4", "B5", "B4x"):
+        assert f" {arm}" in text.split("ARMS=", 1)[1].split("\n", 1)[0] or f'"{arm} ' in text
