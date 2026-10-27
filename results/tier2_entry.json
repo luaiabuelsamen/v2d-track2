@@ -1,0 +1,359 @@
+{
+  "what": "Track 2 Tier 2 entry packed from the 30-clip combined run; NOT uploaded",
+  "tier": "tier2",
+  "packed_utc": "2026-10-26T21:37Z",
+  "submittable": true,
+  "kit_packer": "pass",
+  "kit_validator": "pass",
+  "audit_findings": [],
+  "csv": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t2_entry/pack/track2_tier2.csv",
+  "csv_bytes": 11839854,
+  "csv_sha256": "3a410393e203a9ec30f54d85655d6f7924122ca44c6b991de8140e7a77c5e013",
+  "rows": 22989,
+  "episodes": 30,
+  "local_score": {
+    "add_auc": 0.3907633575535539,
+    "maniptrans_sr": 0.16666666666666666,
+    "mppe_cm": 17.358397274531093,
+    "spider_sr": 0.5666666666666667
+  },
+  "reproduces_the_run_record": {
+    "note": "the packed CSV scores exactly what the per-clip pass scored, so the pack and the frame conversion lose nothing",
+    "run_record_mean": {
+      "add_auc": 0.390763,
+      "spider_sr": 0.566667,
+      "maniptrans_sr": 0.166667,
+      "mppe_cm": 17.358397
+    }
+  },
+  "selection": {
+    "rule": "z-drop, the registered submission rule (v2d pick-checkpoint); reads only the input reference, never Tier 1 truth",
+    "distinct_checkpoints": 30,
+    "note": "a different checkpoint_sha256 per episode, which the provenance rules allow and the kit's packer confirmed ('30 distinct checkpoints ... expected for per-sequence policies')",
+    "selected_steps_in_play": [
+      "49M",
+      "99M",
+      "149M",
+      "199M",
+      "249M",
+      "299M",
+      "349M"
+    ]
+  },
+  "frame_conversion": {
+    "frame_references": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t2_entry/frame_refs",
+    "split": "29 clips against tetool's bridge_v1 clean retarget, e01 against the released Tier 2 input -- the same per-clip split the scoring pass used",
+    "max_residual": "1.29e-07 m, 1.43e-07 rad: one rigid transform per episode, as required",
+    "why_not_one_root": "e01's cleaner flagged the clip, so it trained on the released input; a single --frame-references root would convert it against a reference it never tracked"
+  },
+  "code_commit_url": "https://github.com/luaiabuelsamen/v2d-track2/commit/189773fe190a845afa728e3666dfeea5ff4f4618",
+  "code_commit_caveat": {
+    "unpushed": "origin/main is 517ad99; this commit is local only, so the URL does not resolve yet. Upload requires the push first -- Luai's standing rule.",
+    "is_it_the_code_that_trained": "brev/patch_object_orientation.py and brev/arm_flags.sh at this commit are byte-identical to b0ac795, the fix the boxes actually ran, and brev/run_tier2_full.sh is md5 16466796d863384b5e510b4810d0a85c, the runner shipped to every box mid-run.",
+    "the_one_difference": "the 15 clips that started before 17:45 UTC (e00 e01 e03 e04 e05 e06 e07 e08 e09 e10 e11 e12 e13 e18 e24) ran run_tier2_full.sh before the W&B-offline block was added. That block changes logging flags only -- not the scene, the reward, the curriculum or the policy -- so the trained policies are unaffected. Stated rather than asserted away."
+  },
+  "not_uploaded": "packed and validated only; no upload, no registration, no network",
+  "reproduce": "v2d pack --tier tier2 --kit-root $KIT --dataset-root $DATA --rollout-root ROLLOUTS --frame-references FRAME_REFS --work-dir OUT --code-commit $URL   (ws/submit branch; inputs staged by scratchpad/build_t2_entry.py, recorded in t2_entry/inputs.json)",
+  "per_episode": [
+    {
+      "episode": 0,
+      "tag": "e00",
+      "selected_environment_steps": 299999232,
+      "checkpoint_sha256": "15e87c8d5069fcc4fb42dd1cd79dd8126ff73acb27a4f4a33d46a88f8f3fb190",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "frames": 778,
+      "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+      "frame_reference_is_released_input": false
+    },
+    {
+      "episode": 1,
+      "tag": "e01",
+      "selected_environment_steps": 199999488,
+      "checkpoint_sha256": "656db59f430606a391b432a4f57a7113aa48fd300dd6bcc3ff35df94983b92f6",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "frames": 747,
+      "frame_reference_root": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/data",
+      "frame_reference_is_released_input": true
+    },
+    {
+      "episode": 2,
+      "tag": "e02",
+      "selected_environment_steps": 249999360,
+      "checkpoint_sha256": "30bf93aaf19961941f7ad36bd3f743683390a2f935626c1ace30064fd886b228",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "frames": 980,
+      "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+      "frame_reference_is_released_input": false
+    },
+    {
+      "episode": 3,
+      "tag": "e03",
+      "selected_environment_steps": 299999232,
+      "checkpoint_sha256": "2e265ba019d60ccc0c6efa511a117297918b1f15d392bc64d7333a4c0ac100f2",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "frames": 781,
+      "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+      "frame_reference_is_released_input": false
+    },
+    {
+      "episode": 4,
+      "tag": "e04",
+      "selected_environment_steps": 349999104,
+      "checkpoint_sha256": "04a34a75a638fd8f80428adfbb03978c317a1787260d15e4f1168235a3347c0e",
+      "selection_reason": "every checkpoint drops; the one that held longest (386 frames), then the smallest mean distance to the input reference",
+      "frames": 803,
+      "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+      "frame_reference_is_released_input": false
+    },
+    {
+      "episode": 5,
+      "tag": "e05",
+      "selected_environment_steps": 49999872,
+      "checkpoint_sha256": "db80dc8849b16894879d14273c40c5f5cf7caada9f03e87a6f035e8d582e8afd",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "frames": 1003,
+      "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+      "frame_reference_is_released_input": false
+    },
+    {
+      "episode": 6,
+      "tag": "e06",
+      "selected_environment_steps": 199999488,
+      "checkpoint_sha256": "d17fbfd77bd2ba25b9375aafca890aa41f3e2a3975f9295b4bae0ff0f00f7237",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "frames": 546,
+      "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+      "frame_reference_is_released_input": false
+    },
+    {
+      "episode": 7,
+      "tag": "e07",
+      "selected_environment_steps": 49999872,
+      "checkpoint_sha256": "5d0dcbab16831450402039174bdb44c45a5447c87e16bfa8f74e4f10a9b53a7e",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "frames": 896,
+      "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+      "frame_reference_is_released_input": false
+    },
+    {
+      "episode": 8,
+      "tag": "e08",
+      "selected_environment_steps": 349999104,
+      "checkpoint_sha256": "48a3d7f91c23f81c08737517daf7d924ed7c1cdff8ea2b097d0b6a3f8cab24d6",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "frames": 708,
+      "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+      "frame_reference_is_released_input": false
+    },
+    {
+      "episode": 9,
+      "tag": "e09",
+      "selected_environment_steps": 299999232,
+      "checkpoint_sha256": "6b32d10dc6b5a4ec5b0607e913335684baca64c21672180aea95c8a461c1adc0",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "frames": 870,
+      "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+      "frame_reference_is_released_input": false
+    },
+    {
+      "episode": 10,
+      "tag": "e10",
+      "selected_environment_steps": 249999360,
+      "checkpoint_sha256": "1faa715733c1ead5fc6938213b6bd18ce4ca198b64f09254622e29e6ee09ed48",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "frames": 794,
+      "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+      "frame_reference_is_released_input": false
+    },
+    {
+      "episode": 11,
+      "tag": "e11",
+      "selected_environment_steps": 299999232,
+      "checkpoint_sha256": "8cff8c6423eae58de10de5c78a5adef1de6edbcf71ef483606dbda4d35c96c79",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "frames": 901,
+      "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+      "frame_reference_is_released_input": false
+    },
+    {
+      "episode": 12,
+      "tag": "e12",
+      "selected_environment_steps": 349999104,
+      "checkpoint_sha256": "e35b5934d681311ff7da5568ecda2a805578d84a761f30386fc4698d45882619",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "frames": 700,
+      "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+      "frame_reference_is_released_input": false
+    },
+    {
+      "episode": 13,
+      "tag": "e13",
+      "selected_environment_steps": 299999232,
+      "checkpoint_sha256": "b8d50915d8e1cc67a33fc86cf8b122a6df2892460c76d0734293857fc6042cc8",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "frames": 922,
+      "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+      "frame_reference_is_released_input": false
+    },
+    {
+      "episode": 14,
+      "tag": "e14",
+      "selected_environment_steps": 49999872,
+      "checkpoint_sha256": "257b0032f18ad27e514c17c60ecc8563de54160f9216a92a61a9021656e9bcb6",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "frames": 993,
+      "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+      "frame_reference_is_released_input": false
+    },
+    {
+      "episode": 15,
+      "tag": "e15",
+      "selected_environment_steps": 249999360,
+      "checkpoint_sha256": "4711c56f2a017b5da7df52ad9b1c96149514827f66b4e9170729df31504ea72a",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "frames": 715,
+      "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+      "frame_reference_is_released_input": false
+    },
+    {
+      "episode": 16,
+      "tag": "e16",
+      "selected_environment_steps": 249999360,
+      "checkpoint_sha256": "3a65de403c7bb6013b89099a495861247338215d2802d75b387bc4c812d75912",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "frames": 477,
+      "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+      "frame_reference_is_released_input": false
+    },
+    {
+      "episode": 17,
+      "tag": "e17",
+      "selected_environment_steps": 299999232,
+      "checkpoint_sha256": "3dbf5cd643e13df187855e997fdd8dd87a95c6d2d68a8ab1b2ec46276db1bafe",
+      "selection_reason": "every checkpoint drops; the one that held longest (399 frames), then the smallest mean distance to the input reference",
+      "frames": 440,
+      "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+      "frame_reference_is_released_input": false
+    },
+    {
+      "episode": 18,
+      "tag": "e18",
+      "selected_environment_steps": 249999360,
+      "checkpoint_sha256": "9bd658c985d3ba393c0d716ccae0bb71001fb5faeaff6331faf4bee97fdd09c7",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "frames": 858,
+      "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+      "frame_reference_is_released_input": false
+    },
+    {
+      "episode": 19,
+      "tag": "e19",
+      "selected_environment_steps": 149999616,
+      "checkpoint_sha256": "96416ae299a80c36eb3af9de826f34ea484e27d9b4d5d6af7caceeea16b01f33",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "frames": 886,
+      "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+      "frame_reference_is_released_input": false
+    },
+    {
+      "episode": 20,
+      "tag": "e20",
+      "selected_environment_steps": 49999872,
+      "checkpoint_sha256": "fac538d2ce2924d2f3d39bdc36e01aa376c58f4a2abb3614465f99b0bfecfc97",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "frames": 553,
+      "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+      "frame_reference_is_released_input": false
+    },
+    {
+      "episode": 21,
+      "tag": "e21",
+      "selected_environment_steps": 349999104,
+      "checkpoint_sha256": "f9509618faa2ba02a75057023e90bfb07d8a111ac67283b8c95f028c96e2016f",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "frames": 678,
+      "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+      "frame_reference_is_released_input": false
+    },
+    {
+      "episode": 22,
+      "tag": "e22",
+      "selected_environment_steps": 199999488,
+      "checkpoint_sha256": "921dfddfa7beb5ac92a60b8ccb3390b328a4143fca19161c767b66120b0ee7e6",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "frames": 719,
+      "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+      "frame_reference_is_released_input": false
+    },
+    {
+      "episode": 23,
+      "tag": "e23",
+      "selected_environment_steps": 249999360,
+      "checkpoint_sha256": "6b025a8405bee39209f83752398e78260a2d46d81d8c183b1c051895f9f09fa4",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "frames": 946,
+      "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+      "frame_reference_is_released_input": false
+    },
+    {
+      "episode": 24,
+      "tag": "e24",
+      "selected_environment_steps": 299999232,
+      "checkpoint_sha256": "d2a097753481ba0d3b3e692bc56bacf95df049879c1bb81c325032289b12be9c",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "frames": 748,
+      "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+      "frame_reference_is_released_input": false
+    },
+    {
+      "episode": 25,
+      "tag": "e25",
+      "selected_environment_steps": 149999616,
+      "checkpoint_sha256": "d1aadab32352a50dfa7aa1e8814de62965362059c33c77a785dd64596da7ef87",
+      "selection_reason": "every checkpoint drops; the one that held longest (484 frames), then the smallest mean distance to the input reference",
+      "frames": 859,
+      "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+      "frame_reference_is_released_input": false
+    },
+    {
+      "episode": 26,
+      "tag": "e26",
+      "selected_environment_steps": 349999104,
+      "checkpoint_sha256": "98d6a09ee0a7896247e43259c9fa6d09a7ff0252813ac8b4c9dee66838308530",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "frames": 669,
+      "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+      "frame_reference_is_released_input": false
+    },
+    {
+      "episode": 27,
+      "tag": "e27",
+      "selected_environment_steps": 349999104,
+      "checkpoint_sha256": "47cccc3ebad310fd752792d7d30cf7dd456a8dd71e7e3dc008d6da3f03dc7e86",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "frames": 565,
+      "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+      "frame_reference_is_released_input": false
+    },
+    {
+      "episode": 28,
+      "tag": "e28",
+      "selected_environment_steps": 99999744,
+      "checkpoint_sha256": "ff3afa4eaa15287ad1a9a0e33d608a726b8567bfe381284179e6bcfbfb4b9d36",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "frames": 988,
+      "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+      "frame_reference_is_released_input": false
+    },
+    {
+      "episode": 29,
+      "tag": "e29",
+      "selected_environment_steps": 249999360,
+      "checkpoint_sha256": "88be36cc526488c410eb974d40cca8ec6a242d91742e320f42a4d76a286f804c",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "frames": 467,
+      "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+      "frame_reference_is_released_input": false
+    }
+  ]
+}
