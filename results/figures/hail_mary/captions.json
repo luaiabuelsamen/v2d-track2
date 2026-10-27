@@ -1,0 +1,5 @@
+{
+  "a_auc_lost_by_class.png": "AUC headroom (reference ceiling minus achieved) summed over the clips in each failure class, with the clip count on each bar. The tallest bar is where a fix buys the most.",
+  "b_failing_clip_error_curves.png": "Object position error against the Tier 1 clean truth, per frame, for every shipping rollout below 0.35 AUC. Dashed vertical line: the frame the failure class fires. Dotted horizontal line: the 10 cm SP-SR gate.",
+  "c_mass_vs_auc.png": "Left: object mass as the trainer loads it against AUC -- every one of the 30 object URDFs carries mass 1.0 kg and inertia 0.01, so the axis is a constant and mass explains nothing. Right: the bounding radius, which does vary, against AUC."
+}

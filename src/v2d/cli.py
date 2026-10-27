@@ -143,6 +143,10 @@ FORWARDED: dict[str, tuple[str, str]] = {
         "apply docs/EXP_SUPPORT_AND_ROOT.md's rule",
     ),
     "pack-tier1": ("v2d.submit.tier1", "pack a Tier 1 submission with the kit's own packer"),
+    "taxonomy": (
+        "v2d.analyze.taxonomy",
+        "class every shipping rollout's failure by mechanism",
+    ),
     "stage-entry-wave2": (
         "v2d.submit.wave2",
         "stage the final-candidate Tier 2 entry from the adoption record",

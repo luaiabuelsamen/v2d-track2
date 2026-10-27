@@ -1,0 +1,1701 @@
+{
+ "what": "the failure class of every shipping rollout, by mechanism",
+ "rules": {
+  "order": [
+   "reference_ceiling",
+   "never_grasped",
+   "toppled_on_contact",
+   "dropped_mid_clip",
+   "lost_at_placement",
+   "held_but_drifting"
+  ],
+  "ceiling_margin": 0.03,
+  "loss_cm": 10.0,
+  "drop_z_m": 0.15,
+  "topple_deg": 45.0,
+  "topple_lead_frames": 20,
+  "placement_fraction": 0.8,
+  "never_moved_cm": 3.0
+ },
+ "summary": {
+  "clips": 30,
+  "mean_kit_add_auc": 0.4631,
+  "weak_clips": [
+   "e01",
+   "e04",
+   "e05",
+   "e07",
+   "e09",
+   "e13",
+   "e14",
+   "e19",
+   "e21",
+   "e25",
+   "e28"
+  ],
+  "by_class": {
+   "held_but_drifting": {
+    "clips": [
+     "e02",
+     "e06",
+     "e09",
+     "e11",
+     "e13",
+     "e16",
+     "e17",
+     "e22",
+     "e26",
+     "e27",
+     "e29"
+    ],
+    "auc_headroom": 2.2132,
+    "auc_headroom_positive": 2.2132,
+    "auc_now": 5.445,
+    "mean_auc_gain_over_30_if_fixed": 0.0738
+   },
+   "toppled_on_contact": {
+    "clips": [
+     "e04",
+     "e07"
+    ],
+    "auc_headroom": 0.9574,
+    "auc_headroom_positive": 0.9574,
+    "auc_now": 0.3974,
+    "mean_auc_gain_over_30_if_fixed": 0.0319
+   },
+   "dropped_mid_clip": {
+    "clips": [
+     "e05",
+     "e25",
+     "e28"
+    ],
+    "auc_headroom": 0.9094,
+    "auc_headroom_positive": 0.9094,
+    "auc_now": 0.4885,
+    "mean_auc_gain_over_30_if_fixed": 0.0303
+   },
+   "never_grasped": {
+    "clips": [
+     "e01",
+     "e19"
+    ],
+    "auc_headroom": 0.6303,
+    "auc_headroom_positive": 0.6303,
+    "auc_now": 0.3164,
+    "mean_auc_gain_over_30_if_fixed": 0.021
+   },
+   "reference_ceiling": {
+    "clips": [
+     "e00",
+     "e03",
+     "e08",
+     "e10",
+     "e12",
+     "e14",
+     "e15",
+     "e18",
+     "e20",
+     "e21",
+     "e23",
+     "e24"
+    ],
+    "auc_headroom": -0.5688,
+    "auc_headroom_positive": 0.079,
+    "auc_now": 7.2462,
+    "mean_auc_gain_over_30_if_fixed": 0.0026
+   }
+  }
+ },
+ "clips": [
+  {
+   "tag": "e00",
+   "episode": 0,
+   "ships_from": "A",
+   "object": "tall_bar_stool",
+   "object_mass_kg": 1.0,
+   "object_radius_cm": 61.7,
+   "hands": "two-hand",
+   "kit_add_auc": 0.5178,
+   "kit_mppe_cm": 2.04,
+   "reference_ceiling_add_auc": 0.3879,
+   "auc_headroom": -0.1299,
+   "closure": {
+    "measured": true,
+    "hands": {
+     "left": {
+      "closure": 1.0,
+      "rule": "full",
+      "palm_depth_cm": 1.7
+     },
+     "right": {
+      "closure": 1.0,
+      "rule": "full",
+      "palm_depth_cm": 0.0
+     }
+    },
+    "contact_frames": {
+     "left": 93,
+     "right": 117
+    },
+    "any_hand_closes": true,
+    "max_closure": 1.0
+   },
+   "position_error_cm": {
+    "max": 5.2,
+    "mean": 1.5
+   },
+   "orientation_error_deg": {
+    "max": 71.4,
+    "mean": 17.4
+   },
+   "failure_class": "reference_ceiling",
+   "failure_frame": null,
+   "frames": 778,
+   "first_loss_frame": null,
+   "first_topple_frame": 356,
+   "drop_frame": null,
+   "placement_begins_frame": 622,
+   "achieved_max_travel_cm": 76.9,
+   "reference_max_travel_cm": 78.7,
+   "loss_event_frame": null,
+   "loss_signal": null
+  },
+  {
+   "tag": "e01",
+   "episode": 1,
+   "ships_from": "first wave",
+   "object": "vacuum",
+   "object_mass_kg": 1.0,
+   "object_radius_cm": 66.0,
+   "hands": "one-hand",
+   "kit_add_auc": 0.2001,
+   "kit_mppe_cm": 43.67,
+   "reference_ceiling_add_auc": 0.3803,
+   "auc_headroom": 0.1802,
+   "closure": {
+    "measured": true,
+    "hands": {
+     "left": {
+      "closure": 1.0,
+      "rule": "full",
+      "palm_depth_cm": 0.0
+     },
+     "right": {
+      "closure": 1.0,
+      "rule": "no contact",
+      "palm_depth_cm": 0.0
+     }
+    },
+    "contact_frames": {
+     "left": 2,
+     "right": 0
+    },
+    "any_hand_closes": true,
+    "max_closure": 1.0
+   },
+   "position_error_cm": {
+    "max": 118.9,
+    "mean": 43.6
+   },
+   "orientation_error_deg": {
+    "max": 79.2,
+    "mean": 34.2
+   },
+   "failure_class": "never_grasped",
+   "failure_frame": 134,
+   "frames": 747,
+   "first_loss_frame": 135,
+   "first_topple_frame": 187,
+   "drop_frame": null,
+   "placement_begins_frame": 597,
+   "achieved_max_travel_cm": 2.5,
+   "reference_max_travel_cm": 121.4,
+   "loss_event_frame": 135,
+   "loss_signal": "position"
+  },
+  {
+   "tag": "e02",
+   "episode": 2,
+   "ships_from": "first wave",
+   "object": "blue_easter_basket",
+   "object_mass_kg": 1.0,
+   "object_radius_cm": 15.1,
+   "hands": "one-hand",
+   "kit_add_auc": 0.4263,
+   "kit_mppe_cm": 4.57,
+   "reference_ceiling_add_auc": 0.8056,
+   "auc_headroom": 0.3793,
+   "closure": {
+    "measured": true,
+    "hands": {
+     "left": {
+      "closure": 0.1,
+      "rule": "palm-limited",
+      "palm_depth_cm": 1.63
+     },
+     "right": {
+      "closure": 1.0,
+      "rule": "full",
+      "palm_depth_cm": 6.04
+     }
+    },
+    "contact_frames": {
+     "left": 387,
+     "right": 100
+    },
+    "any_hand_closes": true,
+    "max_closure": 1.0
+   },
+   "position_error_cm": {
+    "max": 10.9,
+    "mean": 4.3
+   },
+   "orientation_error_deg": {
+    "max": 77.7,
+    "mean": 21.3
+   },
+   "failure_class": "held_but_drifting",
+   "failure_frame": null,
+   "frames": 980,
+   "first_loss_frame": null,
+   "first_topple_frame": 138,
+   "drop_frame": null,
+   "placement_begins_frame": 784,
+   "achieved_max_travel_cm": 99.7,
+   "reference_max_travel_cm": 99.8,
+   "loss_event_frame": null,
+   "loss_signal": null
+  },
+  {
+   "tag": "e03",
+   "episode": 3,
+   "ships_from": "A",
+   "object": "contigo_coffee_mug",
+   "object_mass_kg": 1.0,
+   "object_radius_cm": 11.9,
+   "hands": "one-hand",
+   "kit_add_auc": 0.7806,
+   "kit_mppe_cm": 2.66,
+   "reference_ceiling_add_auc": 0.8051,
+   "auc_headroom": 0.0245,
+   "closure": {
+    "measured": true,
+    "hands": {
+     "left": {
+      "closure": 1.0,
+      "rule": "no contact",
+      "palm_depth_cm": 0.0
+     },
+     "right": {
+      "closure": 0.30000000000000004,
+      "rule": "target",
+      "palm_depth_cm": 0.93
+     }
+    },
+    "contact_frames": {
+     "left": 0,
+     "right": 524
+    },
+    "any_hand_closes": true,
+    "max_closure": 1.0
+   },
+   "position_error_cm": {
+    "max": 6.0,
+    "mean": 2.4
+   },
+   "orientation_error_deg": {
+    "max": 66.7,
+    "mean": 13.7
+   },
+   "failure_class": "reference_ceiling",
+   "failure_frame": null,
+   "frames": 781,
+   "first_loss_frame": null,
+   "first_topple_frame": 391,
+   "drop_frame": null,
+   "placement_begins_frame": 624,
+   "achieved_max_travel_cm": 41.3,
+   "reference_max_travel_cm": 41.6,
+   "loss_event_frame": null,
+   "loss_signal": null
+  },
+  {
+   "tag": "e04",
+   "episode": 4,
+   "ships_from": "B1",
+   "object": "baseball_bat",
+   "object_mass_kg": 1.0,
+   "object_radius_cm": 33.3,
+   "hands": "one-hand",
+   "kit_add_auc": 0.1466,
+   "kit_mppe_cm": 102.96,
+   "reference_ceiling_add_auc": 0.4903,
+   "auc_headroom": 0.3437,
+   "closure": {
+    "measured": true,
+    "hands": {
+     "left": {
+      "closure": 0.0,
+      "rule": "palm-limited",
+      "palm_depth_cm": 1.8
+     },
+     "right": {
+      "closure": 0.0,
+      "rule": "palm-limited",
+      "palm_depth_cm": 0.0
+     }
+    },
+    "contact_frames": {
+     "left": 360,
+     "right": 277
+    },
+    "any_hand_closes": false,
+    "max_closure": 0.0
+   },
+   "position_error_cm": {
+    "max": 226.3,
+    "mean": 102.4
+   },
+   "orientation_error_deg": {
+    "max": 179.9,
+    "mean": 106.2
+   },
+   "failure_class": "toppled_on_contact",
+   "failure_frame": 87,
+   "frames": 803,
+   "first_loss_frame": 308,
+   "first_topple_frame": 87,
+   "drop_frame": null,
+   "placement_begins_frame": 642,
+   "achieved_max_travel_cm": 159.0,
+   "reference_max_travel_cm": 194.8,
+   "loss_event_frame": 308,
+   "loss_signal": "position"
+  },
+  {
+   "tag": "e05",
+   "episode": 5,
+   "ships_from": "first wave",
+   "object": "big_black_box",
+   "object_mass_kg": 1.0,
+   "object_radius_cm": 50.1,
+   "hands": "one-hand",
+   "kit_add_auc": 0.266,
+   "kit_mppe_cm": 14.63,
+   "reference_ceiling_add_auc": 0.4717,
+   "auc_headroom": 0.2057,
+   "closure": {
+    "measured": true,
+    "hands": {
+     "left": {
+      "closure": 0.2,
+      "rule": "palm-limited",
+      "palm_depth_cm": 4.72
+     },
+     "right": {
+      "closure": 1.0,
+      "rule": "full",
+      "palm_depth_cm": 3.59
+     }
+    },
+    "contact_frames": {
+     "left": 390,
+     "right": 381
+    },
+    "any_hand_closes": true,
+    "max_closure": 1.0
+   },
+   "position_error_cm": {
+    "max": 56.0,
+    "mean": 14.6
+   },
+   "orientation_error_deg": {
+    "max": 96.4,
+    "mean": 27.6
+   },
+   "failure_class": "dropped_mid_clip",
+   "failure_frame": 269,
+   "frames": 1003,
+   "first_loss_frame": 269,
+   "first_topple_frame": 814,
+   "drop_frame": null,
+   "placement_begins_frame": 802,
+   "achieved_max_travel_cm": 80.9,
+   "reference_max_travel_cm": 85.9,
+   "loss_event_frame": 269,
+   "loss_signal": "position"
+  },
+  {
+   "tag": "e06",
+   "episode": 6,
+   "ships_from": "A",
+   "object": "monitor",
+   "object_mass_kg": 1.0,
+   "object_radius_cm": 36.2,
+   "hands": "one-hand",
+   "kit_add_auc": 0.4758,
+   "kit_mppe_cm": 3.2,
+   "reference_ceiling_add_auc": 0.5066,
+   "auc_headroom": 0.0308,
+   "closure": {
+    "measured": true,
+    "hands": {
+     "left": {
+      "closure": 1.0,
+      "rule": "full",
+      "palm_depth_cm": 2.28
+     },
+     "right": {
+      "closure": 1.0,
+      "rule": "full",
+      "palm_depth_cm": 0.0
+     }
+    },
+    "contact_frames": {
+     "left": 333,
+     "right": 305
+    },
+    "any_hand_closes": true,
+    "max_closure": 1.0
+   },
+   "position_error_cm": {
+    "max": 8.5,
+    "mean": 2.9
+   },
+   "orientation_error_deg": {
+    "max": 34.2,
+    "mean": 20.6
+   },
+   "failure_class": "held_but_drifting",
+   "failure_frame": null,
+   "frames": 546,
+   "first_loss_frame": null,
+   "first_topple_frame": null,
+   "drop_frame": null,
+   "placement_begins_frame": 436,
+   "achieved_max_travel_cm": 38.7,
+   "reference_max_travel_cm": 41.2,
+   "loss_event_frame": null,
+   "loss_signal": null
+  },
+  {
+   "tag": "e07",
+   "episode": 7,
+   "ships_from": "first wave",
+   "object": "iron",
+   "object_mass_kg": 1.0,
+   "object_radius_cm": 18.0,
+   "hands": "one-hand",
+   "kit_add_auc": 0.2508,
+   "kit_mppe_cm": 10.89,
+   "reference_ceiling_add_auc": 0.8645,
+   "auc_headroom": 0.6137,
+   "closure": {
+    "measured": true,
+    "hands": {
+     "left": {
+      "closure": 1.0,
+      "rule": "no contact",
+      "palm_depth_cm": 0.0
+     },
+     "right": {
+      "closure": 1.0,
+      "rule": "full",
+      "palm_depth_cm": 0.78
+     }
+    },
+    "contact_frames": {
+     "left": 0,
+     "right": 693
+    },
+    "any_hand_closes": true,
+    "max_closure": 1.0
+   },
+   "position_error_cm": {
+    "max": 24.1,
+    "mean": 9.4
+   },
+   "orientation_error_deg": {
+    "max": 179.9,
+    "mean": 105.3
+   },
+   "failure_class": "toppled_on_contact",
+   "failure_frame": 284,
+   "frames": 896,
+   "first_loss_frame": 310,
+   "first_topple_frame": 284,
+   "drop_frame": null,
+   "placement_begins_frame": 716,
+   "achieved_max_travel_cm": 24.9,
+   "reference_max_travel_cm": 29.4,
+   "loss_event_frame": 310,
+   "loss_signal": "position"
+  },
+  {
+   "tag": "e08",
+   "episode": 8,
+   "ships_from": "A",
+   "object": "skinny_wood_chair",
+   "object_mass_kg": 1.0,
+   "object_radius_cm": 57.3,
+   "hands": "one-hand",
+   "kit_add_auc": 0.6654,
+   "kit_mppe_cm": 1.84,
+   "reference_ceiling_add_auc": 0.4343,
+   "auc_headroom": -0.2311,
+   "closure": {
+    "measured": true,
+    "hands": {
+     "left": {
+      "closure": 0.0,
+      "rule": "target",
+      "palm_depth_cm": 0.2
+     },
+     "right": {
+      "closure": 0.0,
+      "rule": "target",
+      "palm_depth_cm": 0.92
+     }
+    },
+    "contact_frames": {
+     "left": 172,
+     "right": 218
+    },
+    "any_hand_closes": false,
+    "max_closure": 0.0
+   },
+   "position_error_cm": {
+    "max": 6.4,
+    "mean": 1.7
+   },
+   "orientation_error_deg": {
+    "max": 37.1,
+    "mean": 10.3
+   },
+   "failure_class": "reference_ceiling",
+   "failure_frame": null,
+   "frames": 708,
+   "first_loss_frame": null,
+   "first_topple_frame": null,
+   "drop_frame": null,
+   "placement_begins_frame": 566,
+   "achieved_max_travel_cm": 54.9,
+   "reference_max_travel_cm": 57.1,
+   "loss_event_frame": null,
+   "loss_signal": null
+  },
+  {
+   "tag": "e09",
+   "episode": 9,
+   "ships_from": "B4x",
+   "object": "big_red_bowl",
+   "object_mass_kg": 1.0,
+   "object_radius_cm": 16.3,
+   "hands": "two-hand",
+   "kit_add_auc": 0.3003,
+   "kit_mppe_cm": 4.89,
+   "reference_ceiling_add_auc": 0.6188,
+   "auc_headroom": 0.3185,
+   "closure": {
+    "measured": true,
+    "hands": {
+     "left": {
+      "closure": 1.0,
+      "rule": "full",
+      "palm_depth_cm": 0.33
+     },
+     "right": {
+      "closure": 1.0,
+      "rule": "full",
+      "palm_depth_cm": 0.29
+     }
+    },
+    "contact_frames": {
+     "left": 408,
+     "right": 371
+    },
+    "any_hand_closes": true,
+    "max_closure": 1.0
+   },
+   "position_error_cm": {
+    "max": 10.3,
+    "mean": 4.2
+   },
+   "orientation_error_deg": {
+    "max": 70.8,
+    "mean": 38.4
+   },
+   "failure_class": "held_but_drifting",
+   "failure_frame": null,
+   "frames": 870,
+   "first_loss_frame": null,
+   "first_topple_frame": 222,
+   "drop_frame": null,
+   "placement_begins_frame": 696,
+   "achieved_max_travel_cm": 106.3,
+   "reference_max_travel_cm": 109.8,
+   "loss_event_frame": null,
+   "loss_signal": null
+  },
+  {
+   "tag": "e10",
+   "episode": 10,
+   "ships_from": "A",
+   "object": "white_desk",
+   "object_mass_kg": 1.0,
+   "object_radius_cm": 86.2,
+   "hands": "one-hand",
+   "kit_add_auc": 0.4794,
+   "kit_mppe_cm": 2.97,
+   "reference_ceiling_add_auc": 0.4838,
+   "auc_headroom": 0.0044,
+   "closure": {
+    "measured": true,
+    "hands": {
+     "left": {
+      "closure": 0.0,
+      "rule": "palm-limited",
+      "palm_depth_cm": 6.93
+     },
+     "right": {
+      "closure": 1.0,
+      "rule": "full",
+      "palm_depth_cm": 1.07
+     }
+    },
+    "contact_frames": {
+     "left": 271,
+     "right": 319
+    },
+    "any_hand_closes": true,
+    "max_closure": 1.0
+   },
+   "position_error_cm": {
+    "max": 9.2,
+    "mean": 2.9
+   },
+   "orientation_error_deg": {
+    "max": 20.6,
+    "mean": 6.8
+   },
+   "failure_class": "reference_ceiling",
+   "failure_frame": null,
+   "frames": 794,
+   "first_loss_frame": null,
+   "first_topple_frame": null,
+   "drop_frame": null,
+   "placement_begins_frame": 635,
+   "achieved_max_travel_cm": 111.7,
+   "reference_max_travel_cm": 106.4,
+   "loss_event_frame": null,
+   "loss_signal": null
+  },
+  {
+   "tag": "e11",
+   "episode": 11,
+   "ships_from": "A",
+   "object": "light_blue_book",
+   "object_mass_kg": 1.0,
+   "object_radius_cm": 16.2,
+   "hands": "one-hand",
+   "kit_add_auc": 0.4676,
+   "kit_mppe_cm": 3.97,
+   "reference_ceiling_add_auc": 0.7835,
+   "auc_headroom": 0.3159,
+   "closure": {
+    "measured": true,
+    "hands": {
+     "left": {
+      "closure": 1.0,
+      "rule": "full",
+      "palm_depth_cm": 0.8
+     },
+     "right": {
+      "closure": 0.1,
+      "rule": "palm-limited",
+      "palm_depth_cm": 1.52
+     }
+    },
+    "contact_frames": {
+     "left": 470,
+     "right": 750
+    },
+    "any_hand_closes": true,
+    "max_closure": 1.0
+   },
+   "position_error_cm": {
+    "max": 341.3,
+    "mean": 4.0
+   },
+   "orientation_error_deg": {
+    "max": 180.0,
+    "mean": 22.2
+   },
+   "failure_class": "held_but_drifting",
+   "failure_frame": null,
+   "frames": 901,
+   "first_loss_frame": null,
+   "first_topple_frame": 140,
+   "drop_frame": null,
+   "placement_begins_frame": 720,
+   "achieved_max_travel_cm": 125.4,
+   "reference_max_travel_cm": 315.9,
+   "loss_event_frame": null,
+   "loss_signal": null
+  },
+  {
+   "tag": "e12",
+   "episode": 12,
+   "ships_from": "A",
+   "object": "black_platform",
+   "object_mass_kg": 1.0,
+   "object_radius_cm": 49.0,
+   "hands": "one-hand",
+   "kit_add_auc": 0.7904,
+   "kit_mppe_cm": 2.04,
+   "reference_ceiling_add_auc": 0.5938,
+   "auc_headroom": -0.1966,
+   "closure": {
+    "measured": true,
+    "hands": {
+     "left": {
+      "closure": 0.0,
+      "rule": "target",
+      "palm_depth_cm": 1.1
+     },
+     "right": {
+      "closure": 0.0,
+      "rule": "palm-limited",
+      "palm_depth_cm": 0.88
+     }
+    },
+    "contact_frames": {
+     "left": 290,
+     "right": 126
+    },
+    "any_hand_closes": false,
+    "max_closure": 0.0
+   },
+   "position_error_cm": {
+    "max": 8.4,
+    "mean": 2.0
+   },
+   "orientation_error_deg": {
+    "max": 16.0,
+    "mean": 3.7
+   },
+   "failure_class": "reference_ceiling",
+   "failure_frame": null,
+   "frames": 700,
+   "first_loss_frame": null,
+   "first_topple_frame": null,
+   "drop_frame": null,
+   "placement_begins_frame": 560,
+   "achieved_max_travel_cm": 51.9,
+   "reference_max_travel_cm": 50.3,
+   "loss_event_frame": null,
+   "loss_signal": null
+  },
+  {
+   "tag": "e13",
+   "episode": 13,
+   "ships_from": "first wave",
+   "object": "snack_box",
+   "object_mass_kg": 1.0,
+   "object_radius_cm": 27.7,
+   "hands": "foot",
+   "kit_add_auc": 0.1594,
+   "kit_mppe_cm": 4.98,
+   "reference_ceiling_add_auc": 0.1925,
+   "auc_headroom": 0.0331,
+   "closure": {
+    "measured": true,
+    "hands": {
+     "left": {
+      "closure": 0.0,
+      "rule": "palm-limited",
+      "palm_depth_cm": 0.52
+     },
+     "right": {
+      "closure": 0.0,
+      "rule": "palm-limited",
+      "palm_depth_cm": 0.0
+     }
+    },
+    "contact_frames": {
+     "left": 291,
+     "right": 192
+    },
+    "any_hand_closes": false,
+    "max_closure": 0.0
+   },
+   "position_error_cm": {
+    "max": 9.8,
+    "mean": 4.1
+   },
+   "orientation_error_deg": {
+    "max": 95.6,
+    "mean": 40.2
+   },
+   "failure_class": "held_but_drifting",
+   "failure_frame": null,
+   "frames": 922,
+   "first_loss_frame": null,
+   "first_topple_frame": 226,
+   "drop_frame": null,
+   "placement_begins_frame": 737,
+   "achieved_max_travel_cm": 94.1,
+   "reference_max_travel_cm": 95.3,
+   "loss_event_frame": null,
+   "loss_signal": null
+  },
+  {
+   "tag": "e14",
+   "episode": 14,
+   "ships_from": "B2",
+   "object": "round_table",
+   "object_mass_kg": 1.0,
+   "object_radius_cm": 73.9,
+   "hands": "two-hand",
+   "kit_add_auc": 0.2055,
+   "kit_mppe_cm": 6.06,
+   "reference_ceiling_add_auc": 0.2236,
+   "auc_headroom": 0.0181,
+   "closure": {
+    "measured": true,
+    "hands": {
+     "left": {
+      "closure": 1.0,
+      "rule": "full",
+      "palm_depth_cm": 3.45
+     },
+     "right": {
+      "closure": 1.0,
+      "rule": "full",
+      "palm_depth_cm": 1.45
+     }
+    },
+    "contact_frames": {
+     "left": 204,
+     "right": 455
+    },
+    "any_hand_closes": true,
+    "max_closure": 1.0
+   },
+   "position_error_cm": {
+    "max": 31.8,
+    "mean": 5.8
+   },
+   "orientation_error_deg": {
+    "max": 94.1,
+    "mean": 25.9
+   },
+   "failure_class": "reference_ceiling",
+   "failure_frame": null,
+   "frames": 993,
+   "first_loss_frame": 849,
+   "first_topple_frame": 742,
+   "drop_frame": null,
+   "placement_begins_frame": 794,
+   "achieved_max_travel_cm": 131.4,
+   "reference_max_travel_cm": 130.5,
+   "loss_event_frame": 849,
+   "loss_signal": "position"
+  },
+  {
+   "tag": "e15",
+   "episode": 15,
+   "ships_from": "A",
+   "object": "wet_floor_sign",
+   "object_mass_kg": 1.0,
+   "object_radius_cm": 35.7,
+   "hands": "one-hand",
+   "kit_add_auc": 0.6653,
+   "kit_mppe_cm": 2.79,
+   "reference_ceiling_add_auc": 0.6274,
+   "auc_headroom": -0.0379,
+   "closure": {
+    "measured": true,
+    "hands": {
+     "left": {
+      "closure": 1.0,
+      "rule": "no contact",
+      "palm_depth_cm": 0.0
+     },
+     "right": {
+      "closure": 1.0,
+      "rule": "full",
+      "palm_depth_cm": 4.32
+     }
+    },
+    "contact_frames": {
+     "left": 0,
+     "right": 248
+    },
+    "any_hand_closes": true,
+    "max_closure": 1.0
+   },
+   "position_error_cm": {
+    "max": 5.6,
+    "mean": 2.7
+   },
+   "orientation_error_deg": {
+    "max": 30.3,
+    "mean": 10.4
+   },
+   "failure_class": "reference_ceiling",
+   "failure_frame": null,
+   "frames": 715,
+   "first_loss_frame": null,
+   "first_topple_frame": null,
+   "drop_frame": null,
+   "placement_begins_frame": 572,
+   "achieved_max_travel_cm": 163.8,
+   "reference_max_travel_cm": 163.8,
+   "loss_event_frame": null,
+   "loss_signal": null
+  },
+  {
+   "tag": "e16",
+   "episode": 16,
+   "ships_from": "A",
+   "object": "spray_bottle",
+   "object_mass_kg": 1.0,
+   "object_radius_cm": 17.1,
+   "hands": "one-hand",
+   "kit_add_auc": 0.5639,
+   "kit_mppe_cm": 3.78,
+   "reference_ceiling_add_auc": 0.8894,
+   "auc_headroom": 0.3255,
+   "closure": {
+    "measured": true,
+    "hands": {
+     "left": {
+      "closure": 1.0,
+      "rule": "full",
+      "palm_depth_cm": 1.71
+     },
+     "right": {
+      "closure": 1.0,
+      "rule": "no contact",
+      "palm_depth_cm": 0.0
+     }
+    },
+    "contact_frames": {
+     "left": 91,
+     "right": 0
+    },
+    "any_hand_closes": true,
+    "max_closure": 1.0
+   },
+   "position_error_cm": {
+    "max": 8.8,
+    "mean": 3.1
+   },
+   "orientation_error_deg": {
+    "max": 72.2,
+    "mean": 32.2
+   },
+   "failure_class": "held_but_drifting",
+   "failure_frame": null,
+   "frames": 477,
+   "first_loss_frame": null,
+   "first_topple_frame": 200,
+   "drop_frame": null,
+   "placement_begins_frame": 381,
+   "achieved_max_travel_cm": 113.1,
+   "reference_max_travel_cm": 111.2,
+   "loss_event_frame": null,
+   "loss_signal": null
+  },
+  {
+   "tag": "e17",
+   "episode": 17,
+   "ships_from": "B4",
+   "object": "traffic_cone",
+   "object_mass_kg": 1.0,
+   "object_radius_cm": 28.5,
+   "hands": "two-hand",
+   "kit_add_auc": 0.447,
+   "kit_mppe_cm": 5.15,
+   "reference_ceiling_add_auc": 0.8672,
+   "auc_headroom": 0.4202,
+   "closure": {
+    "measured": true,
+    "hands": {
+     "left": {
+      "closure": 0.0,
+      "rule": "target",
+      "palm_depth_cm": 0.0
+     },
+     "right": {
+      "closure": 0.0,
+      "rule": "palm-limited",
+      "palm_depth_cm": 0.37
+     }
+    },
+    "contact_frames": {
+     "left": 141,
+     "right": 221
+    },
+    "any_hand_closes": false,
+    "max_closure": 0.0
+   },
+   "position_error_cm": {
+    "max": 10.1,
+    "mean": 4.8
+   },
+   "orientation_error_deg": {
+    "max": 91.3,
+    "mean": 25.3
+   },
+   "failure_class": "held_but_drifting",
+   "failure_frame": null,
+   "frames": 440,
+   "first_loss_frame": null,
+   "first_topple_frame": 143,
+   "drop_frame": null,
+   "placement_begins_frame": 352,
+   "achieved_max_travel_cm": 191.1,
+   "reference_max_travel_cm": 197.4,
+   "loss_event_frame": null,
+   "loss_signal": null
+  },
+  {
+   "tag": "e18",
+   "episode": 18,
+   "ships_from": "A",
+   "object": "blue_trash_can",
+   "object_mass_kg": 1.0,
+   "object_radius_cm": 47.0,
+   "hands": "one-hand",
+   "kit_add_auc": 0.7385,
+   "kit_mppe_cm": 1.96,
+   "reference_ceiling_add_auc": 0.6949,
+   "auc_headroom": -0.0436,
+   "closure": {
+    "measured": true,
+    "hands": {
+     "left": {
+      "closure": 0.0,
+      "rule": "palm-limited",
+      "palm_depth_cm": 0.72
+     },
+     "right": {
+      "closure": 0.0,
+      "rule": "palm-limited",
+      "palm_depth_cm": 8.44
+     }
+    },
+    "contact_frames": {
+     "left": 199,
+     "right": 234
+    },
+    "any_hand_closes": false,
+    "max_closure": 0.0
+   },
+   "position_error_cm": {
+    "max": 6.1,
+    "mean": 1.9
+   },
+   "orientation_error_deg": {
+    "max": 17.8,
+    "mean": 6.3
+   },
+   "failure_class": "reference_ceiling",
+   "failure_frame": null,
+   "frames": 858,
+   "first_loss_frame": null,
+   "first_topple_frame": null,
+   "drop_frame": null,
+   "placement_begins_frame": 686,
+   "achieved_max_travel_cm": 93.3,
+   "reference_max_travel_cm": 91.6,
+   "loss_event_frame": null,
+   "loss_signal": null
+  },
+  {
+   "tag": "e19",
+   "episode": 19,
+   "ships_from": "B2",
+   "object": "cane",
+   "object_mass_kg": 1.0,
+   "object_radius_cm": 53.7,
+   "hands": "one-hand",
+   "kit_add_auc": 0.1163,
+   "kit_mppe_cm": 58.1,
+   "reference_ceiling_add_auc": 0.5664,
+   "auc_headroom": 0.4501,
+   "closure": {
+    "measured": true,
+    "hands": {
+     "left": {
+      "closure": 1.0,
+      "rule": "full",
+      "palm_depth_cm": 0.25
+     },
+     "right": {
+      "closure": 0.30000000000000004,
+      "rule": "target",
+      "palm_depth_cm": 0.0
+     }
+    },
+    "contact_frames": {
+     "left": 135,
+     "right": 100
+    },
+    "any_hand_closes": true,
+    "max_closure": 1.0
+   },
+   "position_error_cm": {
+    "max": 125.2,
+    "mean": 58.0
+   },
+   "orientation_error_deg": {
+    "max": 178.7,
+    "mean": 71.3
+   },
+   "failure_class": "never_grasped",
+   "failure_frame": 133,
+   "frames": 886,
+   "first_loss_frame": 133,
+   "first_topple_frame": 190,
+   "drop_frame": null,
+   "placement_begins_frame": 708,
+   "achieved_max_travel_cm": 2.7,
+   "reference_max_travel_cm": 125.8,
+   "loss_event_frame": 133,
+   "loss_signal": "position"
+  },
+  {
+   "tag": "e20",
+   "episode": 20,
+   "ships_from": "A",
+   "object": "rice_cooker",
+   "object_mass_kg": 1.0,
+   "object_radius_cm": 14.7,
+   "hands": "one-hand",
+   "kit_add_auc": 0.7149,
+   "kit_mppe_cm": 2.08,
+   "reference_ceiling_add_auc": 0.7259,
+   "auc_headroom": 0.011,
+   "closure": {
+    "measured": true,
+    "hands": {
+     "left": {
+      "closure": 1.0,
+      "rule": "no contact",
+      "palm_depth_cm": 0.0
+     },
+     "right": {
+      "closure": 0.0,
+      "rule": "palm-limited",
+      "palm_depth_cm": 1.5
+     }
+    },
+    "contact_frames": {
+     "left": 0,
+     "right": 244
+    },
+    "any_hand_closes": true,
+    "max_closure": 1.0
+   },
+   "position_error_cm": {
+    "max": 6.4,
+    "mean": 1.6
+   },
+   "orientation_error_deg": {
+    "max": 100.6,
+    "mean": 20.2
+   },
+   "failure_class": "reference_ceiling",
+   "failure_frame": null,
+   "frames": 553,
+   "first_loss_frame": null,
+   "first_topple_frame": 346,
+   "drop_frame": null,
+   "placement_begins_frame": 442,
+   "achieved_max_travel_cm": 8.1,
+   "reference_max_travel_cm": 4.0,
+   "loss_event_frame": null,
+   "loss_signal": null
+  },
+  {
+   "tag": "e21",
+   "episode": 21,
+   "ships_from": "first wave",
+   "object": "tall_bar_stool",
+   "object_mass_kg": 1.0,
+   "object_radius_cm": 61.7,
+   "hands": "one-hand",
+   "kit_add_auc": 0.2061,
+   "kit_mppe_cm": 4.78,
+   "reference_ceiling_add_auc": 0.2042,
+   "auc_headroom": -0.0019,
+   "closure": {
+    "measured": true,
+    "hands": {
+     "left": {
+      "closure": 0.0,
+      "rule": "palm-limited",
+      "palm_depth_cm": 2.52
+     },
+     "right": {
+      "closure": 0.30000000000000004,
+      "rule": "target",
+      "palm_depth_cm": 1.05
+     }
+    },
+    "contact_frames": {
+     "left": 410,
+     "right": 376
+    },
+    "any_hand_closes": true,
+    "max_closure": 0.30000000000000004
+   },
+   "position_error_cm": {
+    "max": 10.3,
+    "mean": 4.4
+   },
+   "orientation_error_deg": {
+    "max": 75.2,
+    "mean": 28.4
+   },
+   "failure_class": "reference_ceiling",
+   "failure_frame": null,
+   "frames": 678,
+   "first_loss_frame": null,
+   "first_topple_frame": 265,
+   "drop_frame": null,
+   "placement_begins_frame": 542,
+   "achieved_max_travel_cm": 111.2,
+   "reference_max_travel_cm": 112.6,
+   "loss_event_frame": null,
+   "loss_signal": null
+  },
+  {
+   "tag": "e22",
+   "episode": 22,
+   "ships_from": "A",
+   "object": "step_ladder",
+   "object_mass_kg": 1.0,
+   "object_radius_cm": 37.6,
+   "hands": "one-hand",
+   "kit_add_auc": 0.6686,
+   "kit_mppe_cm": 2.21,
+   "reference_ceiling_add_auc": 0.7015,
+   "auc_headroom": 0.0329,
+   "closure": {
+    "measured": true,
+    "hands": {
+     "left": {
+      "closure": 1.0,
+      "rule": "no contact",
+      "palm_depth_cm": 0.0
+     },
+     "right": {
+      "closure": 0.0,
+      "rule": "palm-limited",
+      "palm_depth_cm": 5.59
+     }
+    },
+    "contact_frames": {
+     "left": 0,
+     "right": 314
+    },
+    "any_hand_closes": true,
+    "max_closure": 1.0
+   },
+   "position_error_cm": {
+    "max": 6.7,
+    "mean": 2.1
+   },
+   "orientation_error_deg": {
+    "max": 28.0,
+    "mean": 11.0
+   },
+   "failure_class": "held_but_drifting",
+   "failure_frame": null,
+   "frames": 719,
+   "first_loss_frame": null,
+   "first_topple_frame": null,
+   "drop_frame": null,
+   "placement_begins_frame": 575,
+   "achieved_max_travel_cm": 122.9,
+   "reference_max_travel_cm": 119.6,
+   "loss_event_frame": null,
+   "loss_signal": null
+  },
+  {
+   "tag": "e23",
+   "episode": 23,
+   "ships_from": "A",
+   "object": "toy_stroller",
+   "object_mass_kg": 1.0,
+   "object_radius_cm": 33.1,
+   "hands": "two-hand",
+   "kit_add_auc": 0.5881,
+   "kit_mppe_cm": 2.74,
+   "reference_ceiling_add_auc": 0.5813,
+   "auc_headroom": -0.0068,
+   "closure": {
+    "measured": true,
+    "hands": {
+     "left": {
+      "closure": 1.0,
+      "rule": "full",
+      "palm_depth_cm": 0.39
+     },
+     "right": {
+      "closure": 1.0,
+      "rule": "full",
+      "palm_depth_cm": 0.83
+     }
+    },
+    "contact_frames": {
+     "left": 437,
+     "right": 535
+    },
+    "any_hand_closes": true,
+    "max_closure": 1.0
+   },
+   "position_error_cm": {
+    "max": 7.7,
+    "mean": 2.5
+   },
+   "orientation_error_deg": {
+    "max": 33.9,
+    "mean": 17.4
+   },
+   "failure_class": "reference_ceiling",
+   "failure_frame": null,
+   "frames": 946,
+   "first_loss_frame": null,
+   "first_topple_frame": null,
+   "drop_frame": null,
+   "placement_begins_frame": 756,
+   "achieved_max_travel_cm": 135.4,
+   "reference_max_travel_cm": 136.6,
+   "loss_event_frame": null,
+   "loss_signal": null
+  },
+  {
+   "tag": "e24",
+   "episode": 24,
+   "ships_from": "A",
+   "object": "watering_can",
+   "object_mass_kg": 1.0,
+   "object_radius_cm": 19.8,
+   "hands": "one-hand",
+   "kit_add_auc": 0.8942,
+   "kit_mppe_cm": 1.56,
+   "reference_ceiling_add_auc": 0.9152,
+   "auc_headroom": 0.021,
+   "closure": {
+    "measured": true,
+    "hands": {
+     "left": {
+      "closure": 1.0,
+      "rule": "no contact",
+      "palm_depth_cm": 0.0
+     },
+     "right": {
+      "closure": 0.0,
+      "rule": "palm-limited",
+      "palm_depth_cm": 0.0
+     }
+    },
+    "contact_frames": {
+     "left": 0,
+     "right": 464
+    },
+    "any_hand_closes": true,
+    "max_closure": 1.0
+   },
+   "position_error_cm": {
+    "max": 4.1,
+    "mean": 1.5
+   },
+   "orientation_error_deg": {
+    "max": 16.6,
+    "mean": 7.5
+   },
+   "failure_class": "reference_ceiling",
+   "failure_frame": null,
+   "frames": 748,
+   "first_loss_frame": null,
+   "first_topple_frame": null,
+   "drop_frame": null,
+   "placement_begins_frame": 598,
+   "achieved_max_travel_cm": 17.0,
+   "reference_max_travel_cm": 17.3,
+   "loss_event_frame": null,
+   "loss_signal": null
+  },
+  {
+   "tag": "e25",
+   "episode": 25,
+   "ships_from": "B1",
+   "object": "cyan_water_bottle",
+   "object_mass_kg": 1.0,
+   "object_radius_cm": 14.9,
+   "hands": "one-hand",
+   "kit_add_auc": 0.1334,
+   "kit_mppe_cm": 74.78,
+   "reference_ceiling_add_auc": 0.7865,
+   "auc_headroom": 0.6531,
+   "closure": {
+    "measured": true,
+    "hands": {
+     "left": {
+      "closure": 0.0,
+      "rule": "target",
+      "palm_depth_cm": 1.12
+     },
+     "right": {
+      "closure": 0.0,
+      "rule": "palm-limited",
+      "palm_depth_cm": 0.12
+     }
+    },
+    "contact_frames": {
+     "left": 301,
+     "right": 420
+    },
+    "any_hand_closes": false,
+    "max_closure": 0.0
+   },
+   "position_error_cm": {
+    "max": 153.9,
+    "mean": 74.6
+   },
+   "orientation_error_deg": {
+    "max": 180.0,
+    "mean": 98.8
+   },
+   "failure_class": "dropped_mid_clip",
+   "failure_frame": 126,
+   "frames": 859,
+   "first_loss_frame": 126,
+   "first_topple_frame": 184,
+   "drop_frame": null,
+   "placement_begins_frame": 687,
+   "achieved_max_travel_cm": 101.3,
+   "reference_max_travel_cm": 105.2,
+   "loss_event_frame": 126,
+   "loss_signal": "position"
+  },
+  {
+   "tag": "e26",
+   "episode": 26,
+   "ships_from": "A",
+   "object": "skateboard",
+   "object_mass_kg": 1.0,
+   "object_radius_cm": 39.1,
+   "hands": "one-hand",
+   "kit_add_auc": 0.593,
+   "kit_mppe_cm": 2.11,
+   "reference_ceiling_add_auc": 0.669,
+   "auc_headroom": 0.076,
+   "closure": {
+    "measured": true,
+    "hands": {
+     "left": {
+      "closure": 1.0,
+      "rule": "full",
+      "palm_depth_cm": 0.0
+     },
+     "right": {
+      "closure": 1.0,
+      "rule": "full",
+      "palm_depth_cm": 0.0
+     }
+    },
+    "contact_frames": {
+     "left": 135,
+     "right": 74
+    },
+    "any_hand_closes": true,
+    "max_closure": 1.0
+   },
+   "position_error_cm": {
+    "max": 5.5,
+    "mean": 1.6
+   },
+   "orientation_error_deg": {
+    "max": 56.1,
+    "mean": 19.0
+   },
+   "failure_class": "held_but_drifting",
+   "failure_frame": null,
+   "frames": 669,
+   "first_loss_frame": null,
+   "first_topple_frame": 499,
+   "drop_frame": null,
+   "placement_begins_frame": 535,
+   "achieved_max_travel_cm": 13.3,
+   "reference_max_travel_cm": 15.9,
+   "loss_event_frame": null,
+   "loss_signal": null
+  },
+  {
+   "tag": "e27",
+   "episode": 27,
+   "ships_from": "A",
+   "object": "woven_basket",
+   "object_mass_kg": 1.0,
+   "object_radius_cm": 17.5,
+   "hands": "two-hand",
+   "kit_add_auc": 0.7793,
+   "kit_mppe_cm": 2.48,
+   "reference_ceiling_add_auc": 0.8448,
+   "auc_headroom": 0.0655,
+   "closure": {
+    "measured": true,
+    "hands": {
+     "left": {
+      "closure": 0.0,
+      "rule": "target",
+      "palm_depth_cm": 6.5
+     },
+     "right": {
+      "closure": 1.0,
+      "rule": "full",
+      "palm_depth_cm": 0.37
+     }
+    },
+    "contact_frames": {
+     "left": 206,
+     "right": 266
+    },
+    "any_hand_closes": true,
+    "max_closure": 1.0
+   },
+   "position_error_cm": {
+    "max": 8.0,
+    "mean": 2.4
+   },
+   "orientation_error_deg": {
+    "max": 21.0,
+    "mean": 6.5
+   },
+   "failure_class": "held_but_drifting",
+   "failure_frame": null,
+   "frames": 565,
+   "first_loss_frame": null,
+   "first_topple_frame": null,
+   "drop_frame": null,
+   "placement_begins_frame": 452,
+   "achieved_max_travel_cm": 153.2,
+   "reference_max_travel_cm": 151.6,
+   "loss_event_frame": null,
+   "loss_signal": null
+  },
+  {
+   "tag": "e28",
+   "episode": 28,
+   "ships_from": "first wave",
+   "object": "squeegee",
+   "object_mass_kg": 1.0,
+   "object_radius_cm": 101.8,
+   "hands": "two-hand",
+   "kit_add_auc": 0.0891,
+   "kit_mppe_cm": 44.07,
+   "reference_ceiling_add_auc": 0.1397,
+   "auc_headroom": 0.0506,
+   "closure": {
+    "measured": true,
+    "hands": {
+     "left": {
+      "closure": 1.0,
+      "rule": "full",
+      "palm_depth_cm": 0.0
+     },
+     "right": {
+      "closure": 1.0,
+      "rule": "full",
+      "palm_depth_cm": 1.01
+     }
+    },
+    "contact_frames": {
+     "left": 29,
+     "right": 12
+    },
+    "any_hand_closes": true,
+    "max_closure": 1.0
+   },
+   "position_error_cm": {
+    "max": 90.3,
+    "mean": 43.7
+   },
+   "orientation_error_deg": {
+    "max": 179.5,
+    "mean": 131.3
+   },
+   "failure_class": "dropped_mid_clip",
+   "failure_frame": 118,
+   "frames": 988,
+   "first_loss_frame": 118,
+   "first_topple_frame": 115,
+   "drop_frame": null,
+   "placement_begins_frame": 790,
+   "achieved_max_travel_cm": 20.4,
+   "reference_max_travel_cm": 101.9,
+   "loss_event_frame": 118,
+   "loss_signal": "position"
+  },
+  {
+   "tag": "e29",
+   "episode": 29,
+   "ships_from": "A",
+   "object": "rolling_luggage",
+   "object_mass_kg": 1.0,
+   "object_radius_cm": 65.5,
+   "hands": "foot",
+   "kit_add_auc": 0.5638,
+   "kit_mppe_cm": 4.36,
+   "reference_ceiling_add_auc": 0.7793,
+   "auc_headroom": 0.2155,
+   "closure": {
+    "measured": true,
+    "hands": {
+     "left": {
+      "closure": 1.0,
+      "rule": "no contact",
+      "palm_depth_cm": 0.0
+     },
+     "right": {
+      "closure": 1.0,
+      "rule": "no contact",
+      "palm_depth_cm": 0.0
+     }
+    },
+    "contact_frames": {
+     "left": 0,
+     "right": 0
+    },
+    "any_hand_closes": true,
+    "max_closure": 1.0
+   },
+   "position_error_cm": {
+    "max": 8.5,
+    "mean": 4.3
+   },
+   "orientation_error_deg": {
+    "max": 24.6,
+    "mean": 4.3
+   },
+   "failure_class": "held_but_drifting",
+   "failure_frame": null,
+   "frames": 467,
+   "first_loss_frame": null,
+   "first_topple_frame": null,
+   "drop_frame": null,
+   "placement_begins_frame": 373,
+   "achieved_max_travel_cm": 64.7,
+   "reference_max_travel_cm": 67.8,
+   "loss_event_frame": null,
+   "loss_signal": null
+  }
+ ]
+}
