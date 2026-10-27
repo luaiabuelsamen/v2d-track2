@@ -257,3 +257,76 @@ def test_the_cli_reports_the_arm_split_and_the_digest_count(tmp_path, capsys):
     assert "B4x 1" in out
     assert "1 distinct checkpoint digests" in out
     assert "PARTIAL" in out
+
+
+def test_a_clip_no_arm_re_ran_still_ships_from_the_first_wave(tmp_path):
+    """e21 is in no arm, so it is absent from the adoption record and would pack 29 episodes."""
+    released = tmp_path / "released"
+    write_dataset(released, 0, x=0.5)
+    write_dataset(released, 21, x=0.7)
+    adoption = adoption_record(tmp_path, arm="B4x")
+
+    results = tmp_path / "first_wave_results"
+    checkpoint = results / "e21" / "policy_349999104"
+    write_rollout(checkpoint)
+    (results / "e21" / "selection.json").write_text(
+        json.dumps(
+            {
+                "episodes": {
+                    "e21": {
+                        "episode": 21,
+                        "selected_environment_steps": 349999104,
+                        "selected_checkpoint_sha256": "d" * 64,
+                    }
+                }
+            }
+        )
+    )
+
+    staged = stage(
+        adoption,
+        tmp_path / "out",
+        stage_root=tmp_path,
+        released=released,
+        first_wave_results=results,
+        allow_partial=True,
+    )
+
+    tags = {entry["tag"]: entry for entry in staged["episodes"]}
+    assert tags["e21"]["ships_from"] == FIRST_WAVE
+    assert tags["e21"]["checkpoint_sha256"] == "d" * 64
+    assert (tmp_path / "out" / "rollouts" / "episode_000021.parquet").exists()
+
+
+def test_the_first_wave_tree_never_overrides_a_clip_the_record_decided(tmp_path):
+    released = tmp_path / "released"
+    write_dataset(released, 0, x=0.5)
+    adoption = adoption_record(tmp_path, arm="B4x")
+
+    results = tmp_path / "first_wave_results"
+    checkpoint = results / "e00" / "policy_349999104"
+    write_rollout(checkpoint)
+    (results / "e00" / "selection.json").write_text(
+        json.dumps(
+            {
+                "episodes": {
+                    "e00": {
+                        "episode": 0,
+                        "selected_environment_steps": 349999104,
+                        "selected_checkpoint_sha256": "e" * 64,
+                    }
+                }
+            }
+        )
+    )
+
+    staged = stage(
+        adoption,
+        tmp_path / "out",
+        stage_root=tmp_path,
+        released=released,
+        first_wave_results=results,
+        allow_partial=True,
+    )
+
+    assert staged["episodes"][0]["ships_from"] == "B4x"

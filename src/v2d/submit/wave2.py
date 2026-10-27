@@ -14,13 +14,16 @@ Two things it does check rather than assume, because both would corrupt the entr
   the reference), while the first wave's e01 trained on the released input. The root is therefore
   taken from the *shipping* arm's own `provenance.json`, falling back to the released dataset only
   for a clip that arm's provenance does not list, and the choice is recorded per episode.
-- **Completeness.** A Tier 2 entry is 30 episodes. A clip still awaiting its arm's result, or a
-  checkpoint directory missing its rollout, is a refusal rather than a short CSV; `--allow-partial`
-  exists for a dry run and stamps the record so a partial pack cannot be mistaken for the entry.
+- **Completeness.** A Tier 2 entry is 30 episodes, and the adoption record holds only the clips
+  the second wave re-ran -- 29, because nothing re-ran e21. A clip the record does not mention
+  still has to ship, so `--first-wave-results` supplies it from that run's own z-drop selection.
+  A clip still awaiting its arm's result, or a checkpoint directory missing its rollout, is a
+  refusal rather than a short CSV; `--allow-partial` exists for a dry run and stamps the record
+  so a partial pack cannot be mistaken for the entry.
 
     v2d stage-entry-wave2 --adoption results/second_wave_adoption.json \
       --stage-root $S --first-wave-provenance results/t2_combined_provenance.json \
-      --released $S/data --out $S/t2_entry_wave2
+      --first-wave-results $S/t2_combined_run/results --released $S/data --out $S/t2_entry_wave2
 
 The output is the two trees `v2d pack --tier tier2` wants (`--rollout-root`, `--frame-references`)
 plus `inputs.json`, the per-episode provenance the packed record quotes.
@@ -84,6 +87,32 @@ def reference_root(
     return Path(root), Path(root) == released
 
 
+def first_wave_only(results: Path, *, skip: set[str]) -> dict[str, dict[str, Any]]:
+    """Clips the second wave never re-ran, shaped like an adoption entry so `ships` reads them.
+
+    `adopt-check` records only the clips that had a candidate, so a clip no arm touched (e21) is
+    absent from it entirely. Dropping it would pack 29 episodes; re-deciding it would be a second
+    selection rule. Its first-wave `selection.json` is the same z-drop pick that is on the board.
+    """
+    found: dict[str, dict[str, Any]] = {}
+    for selection_path in sorted(results.glob("e[0-9][0-9]/selection.json")):
+        tag = selection_path.parent.name
+        if tag in skip:
+            continue
+        selection = json.loads(selection_path.read_text())["episodes"][tag]
+        found[tag] = {
+            "episode": int(selection["episode"]),
+            "shipped": {
+                "checkpoint_dir": str(
+                    selection_path.parent / f"policy_{selection['selected_environment_steps']}"
+                ),
+                "selected_environment_steps": selection["selected_environment_steps"],
+                "selected_checkpoint_sha256": selection["selected_checkpoint_sha256"],
+            },
+        }
+    return found
+
+
 def stage(
     adoption: Path,
     out: Path,
@@ -91,6 +120,7 @@ def stage(
     stage_root: Path,
     released: Path,
     first_wave_provenance: Path | None = None,
+    first_wave_results: Path | None = None,
     allow_partial: bool = False,
 ) -> dict[str, Any]:
     """Write the rollout and frame-reference trees, and return the record that describes them."""
@@ -100,7 +130,9 @@ def stage(
         pending = ", ".join(f"{arm} {' '.join(clips)}" for arm, clips in sorted(awaiting.items()))
         raise SystemExit(f"refusing to stage: still awaiting {pending} (--allow-partial to force)")
 
-    clips = record["clips"]
+    clips = dict(record["clips"])
+    if first_wave_results is not None:
+        clips.update(first_wave_only(first_wave_results, skip=set(clips)))
     if len(clips) != TIER2_EPISODES and not allow_partial:
         raise SystemExit(
             f"refusing to stage: {len(clips)} clips decided, a Tier 2 entry needs {TIER2_EPISODES}"
@@ -179,6 +211,11 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("--released", type=Path, required=True, help="the released dataset root")
     parser.add_argument("--first-wave-provenance", type=Path)
     parser.add_argument(
+        "--first-wave-results",
+        type=Path,
+        help="the first wave's results dir, for clips the second wave never re-ran",
+    )
+    parser.add_argument(
         "--allow-partial",
         action="store_true",
         help="stage what has landed; the record is stamped partial and must not be submitted",
@@ -192,6 +229,7 @@ def main(argv: list[str] | None = None) -> None:
         stage_root=args.stage_root,
         released=args.released,
         first_wave_provenance=args.first_wave_provenance,
+        first_wave_results=args.first_wave_results,
         allow_partial=args.allow_partial,
     )
     counts = ", ".join(f"{arm} {n}" for arm, n in staged["episodes_by_arm"].items())
