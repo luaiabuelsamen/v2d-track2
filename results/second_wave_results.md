@@ -10,7 +10,7 @@ each judged against the incumbent at that moment, and **ships** marks the winner
 
 | clip | arm | record AUC | new AUC | Δ AUC | MP-SR | input dist cm, incumbent → new | verdict | ships |
 |---|---|---|---|---|---|---|---|---|
-| e00 | A | 0.4983 | 0.5178 | 0.0194 | pass | 3.81 → 2.35 | adopt | **ships** |
+| e00 | A | 0.4983 | 0.5178 | 0.0194 | pass | 3.81 → 2.35 | adopt | ships, pending B4x |
 | e01 | B5 | 0.2001 | 0.0576 | -0.1425 | fail | 44.07 → 45.90 | keep |  |
 | e01 | — | 0.2001 | — | — | — | — | — | **ships (board)** |
 | e02 | A | 0.4263 | 0.3237 | -0.1026 | fail | 4.36 → 5.75 | keep |  |
@@ -19,8 +19,8 @@ each judged against the incumbent at that moment, and **ships** marks the winner
 | e04 | B1 | 0.1472 | 0.1466 | -0.0006 | fail | 116.55 → 102.25 | adopt | **ships** |
 | e05 | B3 | 0.2660 | 0.3418 | 0.0758 | fail | 14.95 → 20.63 | keep |  |
 | e05 | — | 0.2660 | — | — | — | — | — | **ships (board)** |
-| e06 | A | 0.4730 | 0.4758 | 0.0029 | pass | 2.50 → 2.08 | adopt | **ships** |
-| e08 | A | 0.4431 | 0.6654 | 0.2223 | pass | 3.91 → 2.08 | adopt | **ships** |
+| e06 | A | 0.4730 | 0.4758 | 0.0029 | pass | 2.50 → 2.08 | adopt | ships, pending B4x |
+| e08 | A | 0.4431 | 0.6654 | 0.2223 | pass | 3.91 → 2.08 | adopt | ships, pending B4x |
 | e10 | A | 0.3147 | 0.4794 | 0.1647 | pass | 4.22 → 2.72 | adopt | **ships** |
 | e14 | B2 | 0.1091 | 0.2055 | 0.0964 | fail | 47.49 → 5.91 | adopt | **ships** |
 | e17 | B4 | 0.2466 | 0.4470 | 0.2004 | fail | 20.25 → 4.73 | adopt | **ships** |
@@ -42,4 +42,4 @@ each judged against the incumbent at that moment, and **ships** marks the winner
 
 Mean kit AUC of the shipping rollout over the clips landed so far: **0.4191** (not comparable to the 30-clip 0.3908 until every clip is in).
 
-Still training or not yet selected — A: e11 e12 e15 e16 e18 e20; B1: e25; B2: e19; B3: e07.
+Still training or not yet selected — A: e11 e12 e15 e16 e18 e20; B1: e25; B2: e19; B3: e07; B4x: e00 e06 e08 e09.
