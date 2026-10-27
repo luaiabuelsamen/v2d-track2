@@ -109,6 +109,14 @@ FORWARDED: dict[str, tuple[str, str]] = {
         "v2d.analyze.noise_channels",
         "which channels Tier 2 corrupts, how hard, and which ones the metric reads",
     ),
+    "deep-dive": (
+        "v2d.analyze.deep_dive",
+        "a metrics-level reading of a finished run, per clip and per bucket",
+    ),
+    "deep-dive-figures": (
+        "v2d.analyze.deep_dive_figures",
+        "the figures behind the metrics deep dive",
+    ),
     "triage-weak-clips": (
         "v2d.analyze.triage",
         "why each weak clip is weak, from its own rollout rather than its score",

@@ -1,0 +1,3162 @@
+{
+  "what": "metrics-level reading of a finished run: AUC decomposition, error in time, success margins, checkpoint curves, hand-object distance and correlations",
+  "thresholds": {
+    "spider_position_m": 0.1,
+    "spider_orientation_rad": 0.5,
+    "maniptrans_position_m": 0.03,
+    "maniptrans_orientation_deg": 30.0,
+    "lost_limit_m": 0.1,
+    "out_of_hand_excess_m": 0.1,
+    "palm_moving_m_per_s": 0.05,
+    "note": "the first four are the kit's own; both success rates threshold the TIME-AVERAGED error, so a clip passes or fails once"
+  },
+  "caveat_part_e": "the boxes exported object trajectories only, so the achieved palm was never recorded. Hand-object distances use the REFERENCE palm and so measure 'the hand went where it should and the object did not follow', assuming body tracking is good.",
+  "mean_kit_add_auc": 0.390763,
+  "mean_position_only_auc": 0.536562,
+  "mean_orientation_only_auc": 0.538061,
+  "buckets": {
+    "fell_back": {
+      "clips": [
+        "e04",
+        "e17",
+        "e25"
+      ],
+      "n": 3,
+      "mean_kit_add_auc": 0.1758,
+      "mean_position_only_auc": 0.2275,
+      "mean_orientation_only_auc": 0.2899
+    },
+    "held_drifting": {
+      "clips": [
+        "e13",
+        "e21"
+      ],
+      "n": 2,
+      "mean_kit_add_auc": 0.1827,
+      "mean_position_only_auc": 0.5919,
+      "mean_orientation_only_auc": 0.2256
+    },
+    "lost_mid_clip": {
+      "clips": [
+        "e05",
+        "e07",
+        "e09",
+        "e14",
+        "e19",
+        "e28"
+      ],
+      "n": 6,
+      "mean_kit_add_auc": 0.1794,
+      "mean_position_only_auc": 0.2745,
+      "mean_orientation_only_auc": 0.2548
+    },
+    "never_locks_on": {
+      "clips": [
+        "e01"
+      ],
+      "n": 1,
+      "mean_kit_add_auc": 0.2001,
+      "mean_position_only_auc": 0.1796,
+      "mean_orientation_only_auc": 0.3933
+    },
+    "strong": {
+      "clips": [
+        "e00",
+        "e02",
+        "e03",
+        "e06",
+        "e08",
+        "e10",
+        "e11",
+        "e12",
+        "e15",
+        "e16",
+        "e18",
+        "e20",
+        "e22",
+        "e23",
+        "e24",
+        "e26",
+        "e27",
+        "e29"
+      ],
+      "n": 18,
+      "mean_kit_add_auc": 0.5308,
+      "mean_position_only_auc": 0.6891,
+      "mean_orientation_only_auc": 0.7166
+    }
+  },
+  "correlations": {
+    "what": "Spearman rank correlation of kit AUC against each clip property, over the clips where both are defined. Rank, not linear, because none of these is normal.",
+    "pairs": {
+      "object_radius_cm": {
+        "spearman_rho": -0.191,
+        "n": 30
+      },
+      "bridge_anchor_segments": {
+        "spearman_rho": 0.295,
+        "n": 30
+      },
+      "reference_ceiling_add_auc": {
+        "spearman_rho": 0.466,
+        "n": 30
+      },
+      "first_loss_frame": {
+        "spearman_rho": 0.636,
+        "n": 10
+      },
+      "first_loss_fraction": {
+        "spearman_rho": 0.661,
+        "n": 10
+      },
+      "hands_one_two_foot": {
+        "spearman_rho": -0.201,
+        "n": 30
+      },
+      "scene_floor0_table1": {
+        "spearman_rho": -0.133,
+        "n": 12
+      },
+      "pantomime_fraction": {
+        "spearman_rho": -0.647,
+        "n": 30
+      },
+      "frames": {
+        "spearman_rho": -0.449,
+        "n": 30
+      }
+    }
+  },
+  "clips": [
+    {
+      "tag": "e00",
+      "episode": 0,
+      "frames": 778,
+      "selected_environment_steps": 299999232,
+      "kit_add_auc": 0.498313,
+      "first_loss_frame": null,
+      "first_loss_fraction": null,
+      "fraction_inside": {
+        "5cm": 0.8959,
+        "10cm": 1.0,
+        "20cm": 1.0
+      },
+      "position_error_cm": {
+        "max": 7.04,
+        "mean_before_loss": 2.87,
+        "mean_after_loss": null,
+        "mean_all": 2.87
+      },
+      "orientation_error_deg": {
+        "max": 28.7,
+        "mean_before_loss": 10.8,
+        "mean_after_loss": null,
+        "mean_all": 10.8
+      },
+      "add_cm": {
+        "max": 11.28,
+        "mean_before_loss": 5.05,
+        "recomputed_auc": 0.498313
+      },
+      "success": {
+        "spider_pass": true,
+        "spider_position_margin_cm": 7.13,
+        "spider_orientation_margin_deg": 17.8,
+        "maniptrans_pass": true,
+        "maniptrans_position_margin_cm": 0.13,
+        "maniptrans_orientation_margin_deg": 19.2
+      },
+      "checkpoint_curve": {
+        "steps_millions": [
+          49,
+          99,
+          149,
+          199,
+          249,
+          299,
+          349
+        ],
+        "kit_add_auc": [
+          0.2565,
+          0.3068,
+          0.3141,
+          0.3196,
+          0.3459,
+          0.4983,
+          0.4987
+        ],
+        "shape": "monotone",
+        "best_steps_millions": 349,
+        "selection_is_per_clip_best": false,
+        "cost_of_selection": 0.0004,
+        "spread": 0.0893
+      },
+      "object_radius_cm": 61.7,
+      "hand_object": {
+        "frame": "simulator; palms and both object tracks come from the same staged motion",
+        "frames_reference_says_held": 153,
+        "fraction_reference_says_held": 0.197,
+        "fraction_achieved_in_hand_while_reference_holds": 1.0,
+        "pantomime_frames": 0,
+        "pantomime_fraction": 0.0,
+        "pantomime_fraction_of_held": 0.0,
+        "palm_to_object_excess_cm_while_held": {
+          "mean": -1.0,
+          "max": 2.1
+        },
+        "reference_palm_to_object_cm_while_held": {
+          "mean": 3.7,
+          "p90": 6.9
+        },
+        "palm_to_achieved_object_cm_while_held": 2.7
+      },
+      "position_only": {
+        "kit_add_auc": 0.743332,
+        "kit_mppe_cm": 2.8674,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 1.0
+      },
+      "orientation_only": {
+        "kit_add_auc": 0.586681,
+        "kit_mppe_cm": 0.7209,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 1.0
+      },
+      "object": "tall_bar_stool",
+      "bucket": "strong",
+      "hands": "two-hand",
+      "scene": null,
+      "bridge_anchor_segments": 12,
+      "reference_ceiling_add_auc": 0.3879
+    },
+    {
+      "tag": "e01",
+      "episode": 1,
+      "frames": 747,
+      "selected_environment_steps": 199999488,
+      "kit_add_auc": 0.200134,
+      "first_loss_frame": 135,
+      "first_loss_fraction": 0.181,
+      "fraction_inside": {
+        "5cm": 0.1767,
+        "10cm": 0.3708,
+        "20cm": 0.3909
+      },
+      "position_error_cm": {
+        "max": 118.87,
+        "mean_before_loss": 2.86,
+        "mean_after_loss": 52.6,
+        "mean_all": 43.61
+      },
+      "orientation_error_deg": {
+        "max": 79.2,
+        "mean_before_loss": 7.7,
+        "mean_after_loss": 40.1,
+        "mean_all": 34.2
+      },
+      "add_cm": {
+        "max": 122.49,
+        "mean_before_loss": 2.81,
+        "recomputed_auc": 0.200134
+      },
+      "success": {
+        "spider_pass": false,
+        "spider_position_margin_cm": -33.61,
+        "spider_orientation_margin_deg": -5.6,
+        "maniptrans_pass": false,
+        "maniptrans_position_margin_cm": -40.61,
+        "maniptrans_orientation_margin_deg": -4.2
+      },
+      "checkpoint_curve": {
+        "steps_millions": [
+          49,
+          99,
+          149,
+          199,
+          249,
+          299,
+          349
+        ],
+        "kit_add_auc": [
+          0.0412,
+          0.0346,
+          0.1902,
+          0.2001,
+          0.1483,
+          0.1628,
+          0.1593
+        ],
+        "shape": "collapsing",
+        "best_steps_millions": 199,
+        "selection_is_per_clip_best": true,
+        "cost_of_selection": 0.0,
+        "spread": 0.0629
+      },
+      "object_radius_cm": 66.0,
+      "hand_object": {
+        "frame": "simulator; palms and both object tracks come from the same staged motion",
+        "frames_reference_says_held": 2,
+        "fraction_reference_says_held": 0.003,
+        "fraction_achieved_in_hand_while_reference_holds": 1.0,
+        "pantomime_frames": 0,
+        "pantomime_fraction": 0.0,
+        "pantomime_fraction_of_held": 0.0,
+        "palm_to_object_excess_cm_while_held": {
+          "mean": -1.0,
+          "max": -0.8
+        },
+        "reference_palm_to_object_cm_while_held": {
+          "mean": 7.8,
+          "p90": 8.3
+        },
+        "palm_to_achieved_object_cm_while_held": 6.8
+      },
+      "position_only": {
+        "kit_add_auc": 0.179635,
+        "kit_mppe_cm": 43.6073,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0
+      },
+      "orientation_only": {
+        "kit_add_auc": 0.393323,
+        "kit_mppe_cm": 2.2491,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0
+      },
+      "object": "vacuum",
+      "bucket": "never_locks_on",
+      "hands": "one-hand",
+      "scene": "table",
+      "bridge_anchor_segments": 10,
+      "reference_ceiling_add_auc": 0.3803
+    },
+    {
+      "tag": "e02",
+      "episode": 2,
+      "frames": 980,
+      "selected_environment_steps": 249999360,
+      "kit_add_auc": 0.426276,
+      "first_loss_frame": null,
+      "first_loss_fraction": null,
+      "fraction_inside": {
+        "5cm": 0.4949,
+        "10cm": 0.9857,
+        "20cm": 1.0
+      },
+      "position_error_cm": {
+        "max": 10.95,
+        "mean_before_loss": 4.34,
+        "mean_after_loss": null,
+        "mean_all": 4.34
+      },
+      "orientation_error_deg": {
+        "max": 77.7,
+        "mean_before_loss": 21.3,
+        "mean_after_loss": null,
+        "mean_all": 21.3
+      },
+      "add_cm": {
+        "max": 13.86,
+        "mean_before_loss": 5.71,
+        "recomputed_auc": 0.426276
+      },
+      "success": {
+        "spider_pass": true,
+        "spider_position_margin_cm": 5.66,
+        "spider_orientation_margin_deg": 7.3,
+        "maniptrans_pass": false,
+        "maniptrans_position_margin_cm": -1.34,
+        "maniptrans_orientation_margin_deg": 8.7
+      },
+      "checkpoint_curve": {
+        "steps_millions": [
+          49,
+          99,
+          149,
+          199,
+          249,
+          299,
+          349
+        ],
+        "kit_add_auc": [
+          0.1169,
+          0.1323,
+          0.1305,
+          0.0992,
+          0.4263,
+          0.1139,
+          0.3636
+        ],
+        "shape": "collapsing",
+        "best_steps_millions": 249,
+        "selection_is_per_clip_best": true,
+        "cost_of_selection": 0.0,
+        "spread": 0.1264
+      },
+      "object_radius_cm": 15.1,
+      "hand_object": {
+        "frame": "simulator; palms and both object tracks come from the same staged motion",
+        "frames_reference_says_held": 487,
+        "fraction_reference_says_held": 0.497,
+        "fraction_achieved_in_hand_while_reference_holds": 1.0,
+        "pantomime_frames": 0,
+        "pantomime_fraction": 0.0,
+        "pantomime_fraction_of_held": 0.0,
+        "palm_to_object_excess_cm_while_held": {
+          "mean": 0.0,
+          "max": 6.7
+        },
+        "reference_palm_to_object_cm_while_held": {
+          "mean": 4.4,
+          "p90": 5.8
+        },
+        "palm_to_achieved_object_cm_while_held": 4.4
+      },
+      "position_only": {
+        "kit_add_auc": 0.570344,
+        "kit_mppe_cm": 4.343,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 0.0
+      },
+      "orientation_only": {
+        "kit_add_auc": 0.68125,
+        "kit_mppe_cm": 1.386,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 1.0
+      },
+      "object": "blue_easter_basket",
+      "bucket": "strong",
+      "hands": "one-hand",
+      "scene": null,
+      "bridge_anchor_segments": 10,
+      "reference_ceiling_add_auc": 0.8056
+    },
+    {
+      "tag": "e03",
+      "episode": 3,
+      "frames": 781,
+      "selected_environment_steps": 299999232,
+      "kit_add_auc": 0.658851,
+      "first_loss_frame": null,
+      "first_loss_fraction": null,
+      "fraction_inside": {
+        "5cm": 0.7503,
+        "10cm": 1.0,
+        "20cm": 1.0
+      },
+      "position_error_cm": {
+        "max": 8.85,
+        "mean_before_loss": 3.52,
+        "mean_after_loss": null,
+        "mean_all": 3.52
+      },
+      "orientation_error_deg": {
+        "max": 66.5,
+        "mean_before_loss": 13.4,
+        "mean_after_loss": null,
+        "mean_all": 13.4
+      },
+      "add_cm": {
+        "max": 9.16,
+        "mean_before_loss": 3.71,
+        "recomputed_auc": 0.658851
+      },
+      "success": {
+        "spider_pass": true,
+        "spider_position_margin_cm": 6.48,
+        "spider_orientation_margin_deg": 15.3,
+        "maniptrans_pass": false,
+        "maniptrans_position_margin_cm": -0.52,
+        "maniptrans_orientation_margin_deg": 16.6
+      },
+      "checkpoint_curve": {
+        "steps_millions": [
+          49,
+          99,
+          149,
+          199,
+          249,
+          299,
+          349
+        ],
+        "kit_add_auc": [
+          0.1786,
+          0.15,
+          0.142,
+          0.0975,
+          0.444,
+          0.6589,
+          0.4212
+        ],
+        "shape": "collapsing",
+        "best_steps_millions": 299,
+        "selection_is_per_clip_best": true,
+        "cost_of_selection": 0.0,
+        "spread": 0.1955
+      },
+      "object_radius_cm": 11.9,
+      "hand_object": {
+        "frame": "simulator; palms and both object tracks come from the same staged motion",
+        "frames_reference_says_held": 524,
+        "fraction_reference_says_held": 0.671,
+        "fraction_achieved_in_hand_while_reference_holds": 1.0,
+        "pantomime_frames": 0,
+        "pantomime_fraction": 0.0,
+        "pantomime_fraction_of_held": 0.0,
+        "palm_to_object_excess_cm_while_held": {
+          "mean": -1.9,
+          "max": 2.1
+        },
+        "reference_palm_to_object_cm_while_held": {
+          "mean": 5.0,
+          "p90": 9.4
+        },
+        "palm_to_achieved_object_cm_while_held": 3.1
+      },
+      "position_only": {
+        "kit_add_auc": 0.678777,
+        "kit_mppe_cm": 3.5238,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 0.0
+      },
+      "orientation_only": {
+        "kit_add_auc": 0.946703,
+        "kit_mppe_cm": 0.8564,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 1.0
+      },
+      "object": "contigo_coffee_mug",
+      "bucket": "strong",
+      "hands": "one-hand",
+      "scene": null,
+      "bridge_anchor_segments": 9,
+      "reference_ceiling_add_auc": 0.8051
+    },
+    {
+      "tag": "e04",
+      "episode": 4,
+      "frames": 803,
+      "selected_environment_steps": 349999104,
+      "kit_add_auc": 0.147182,
+      "first_loss_frame": 355,
+      "first_loss_fraction": 0.442,
+      "fraction_inside": {
+        "5cm": 0.2578,
+        "10cm": 0.4421,
+        "20cm": 0.4471
+      },
+      "position_error_cm": {
+        "max": 260.46,
+        "mean_before_loss": 4.25,
+        "mean_after_loss": 205.65,
+        "mean_all": 116.61
+      },
+      "orientation_error_deg": {
+        "max": 179.8,
+        "mean_before_loss": 50.2,
+        "mean_after_loss": 131.5,
+        "mean_all": 95.6
+      },
+      "add_cm": {
+        "max": 258.53,
+        "mean_before_loss": 9.58,
+        "recomputed_auc": 0.147182
+      },
+      "success": {
+        "spider_pass": false,
+        "spider_position_margin_cm": -106.61,
+        "spider_orientation_margin_deg": -67.0,
+        "maniptrans_pass": false,
+        "maniptrans_position_margin_cm": -113.61,
+        "maniptrans_orientation_margin_deg": -65.6
+      },
+      "checkpoint_curve": {
+        "steps_millions": [
+          49,
+          99,
+          149,
+          199,
+          249,
+          299,
+          349
+        ],
+        "kit_add_auc": [
+          0.1211,
+          0.1297,
+          0.1297,
+          0.1297,
+          0.158,
+          0.1476,
+          0.1472
+        ],
+        "shape": "peaked",
+        "best_steps_millions": 249,
+        "selection_is_per_clip_best": false,
+        "cost_of_selection": 0.0108,
+        "spread": 0.0123
+      },
+      "object_radius_cm": 33.3,
+      "hand_object": {
+        "frame": "simulator; palms and both object tracks come from the same staged motion",
+        "frames_reference_says_held": 444,
+        "fraction_reference_says_held": 0.553,
+        "fraction_achieved_in_hand_while_reference_holds": 0.437,
+        "pantomime_frames": 250,
+        "pantomime_fraction": 0.311,
+        "pantomime_fraction_of_held": 0.563,
+        "palm_to_object_excess_cm_while_held": {
+          "mean": 105.9,
+          "max": 228.6
+        },
+        "reference_palm_to_object_cm_while_held": {
+          "mean": 5.2,
+          "p90": 9.2
+        },
+        "palm_to_achieved_object_cm_while_held": 111.1
+      },
+      "position_only": {
+        "kit_add_auc": 0.251323,
+        "kit_mppe_cm": 116.6113,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0
+      },
+      "orientation_only": {
+        "kit_add_auc": 0.231709,
+        "kit_mppe_cm": 5.1847,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0
+      },
+      "object": "baseball_bat",
+      "bucket": "fell_back",
+      "hands": "one-hand",
+      "scene": "floor",
+      "bridge_anchor_segments": 0,
+      "reference_ceiling_add_auc": 0.4903
+    },
+    {
+      "tag": "e05",
+      "episode": 5,
+      "frames": 1003,
+      "selected_environment_steps": 49999872,
+      "kit_add_auc": 0.266014,
+      "first_loss_frame": 269,
+      "first_loss_fraction": 0.268,
+      "fraction_inside": {
+        "5cm": 0.3599,
+        "10cm": 0.6331,
+        "20cm": 0.8195
+      },
+      "position_error_cm": {
+        "max": 55.96,
+        "mean_before_loss": 3.01,
+        "mean_after_loss": 18.79,
+        "mean_all": 14.56
+      },
+      "orientation_error_deg": {
+        "max": 96.4,
+        "mean_before_loss": 5.2,
+        "mean_after_loss": 35.7,
+        "mean_all": 27.6
+      },
+      "add_cm": {
+        "max": 66.88,
+        "mean_before_loss": 3.51,
+        "recomputed_auc": 0.266014
+      },
+      "success": {
+        "spider_pass": false,
+        "spider_position_margin_cm": -4.56,
+        "spider_orientation_margin_deg": 1.1,
+        "maniptrans_pass": false,
+        "maniptrans_position_margin_cm": -11.56,
+        "maniptrans_orientation_margin_deg": 2.4
+      },
+      "checkpoint_curve": {
+        "steps_millions": [
+          49,
+          99,
+          149,
+          199,
+          249,
+          299,
+          349
+        ],
+        "kit_add_auc": [
+          0.266,
+          0.1665,
+          0.1665,
+          0.1215,
+          0.3719,
+          0.3786,
+          0.3851
+        ],
+        "shape": "monotone",
+        "best_steps_millions": 349,
+        "selection_is_per_clip_best": false,
+        "cost_of_selection": 0.1191,
+        "spread": 0.1061
+      },
+      "object_radius_cm": 50.1,
+      "hand_object": {
+        "frame": "simulator; palms and both object tracks come from the same staged motion",
+        "frames_reference_says_held": 571,
+        "fraction_reference_says_held": 0.569,
+        "fraction_achieved_in_hand_while_reference_holds": 0.912,
+        "pantomime_frames": 50,
+        "pantomime_fraction": 0.05,
+        "pantomime_fraction_of_held": 0.088,
+        "palm_to_object_excess_cm_while_held": {
+          "mean": 3.9,
+          "max": 47.3
+        },
+        "reference_palm_to_object_cm_while_held": {
+          "mean": 4.8,
+          "p90": 7.2
+        },
+        "palm_to_achieved_object_cm_while_held": 8.6
+      },
+      "position_only": {
+        "kit_add_auc": 0.356306,
+        "kit_mppe_cm": 14.5564,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0
+      },
+      "orientation_only": {
+        "kit_add_auc": 0.373068,
+        "kit_mppe_cm": 1.702,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 1.0
+      },
+      "object": "big_black_box",
+      "bucket": "lost_mid_clip",
+      "hands": "one-hand",
+      "scene": "floor",
+      "bridge_anchor_segments": 21,
+      "reference_ceiling_add_auc": 0.4717
+    },
+    {
+      "tag": "e06",
+      "episode": 6,
+      "frames": 546,
+      "selected_environment_steps": 199999488,
+      "kit_add_auc": 0.472985,
+      "first_loss_frame": null,
+      "first_loss_fraction": null,
+      "fraction_inside": {
+        "5cm": 0.793,
+        "10cm": 1.0,
+        "20cm": 1.0
+      },
+      "position_error_cm": {
+        "max": 8.62,
+        "mean_before_loss": 3.36,
+        "mean_after_loss": null,
+        "mean_all": 3.36
+      },
+      "orientation_error_deg": {
+        "max": 33.7,
+        "mean_before_loss": 18.7,
+        "mean_after_loss": null,
+        "mean_all": 18.7
+      },
+      "add_cm": {
+        "max": 8.91,
+        "mean_before_loss": 5.27,
+        "recomputed_auc": 0.472985
+      },
+      "success": {
+        "spider_pass": true,
+        "spider_position_margin_cm": 6.64,
+        "spider_orientation_margin_deg": 9.9,
+        "maniptrans_pass": false,
+        "maniptrans_position_margin_cm": -0.36,
+        "maniptrans_orientation_margin_deg": 11.3
+      },
+      "checkpoint_curve": {
+        "steps_millions": [
+          49,
+          99,
+          149,
+          199,
+          249,
+          299,
+          349
+        ],
+        "kit_add_auc": [
+          0.3538,
+          0.5468,
+          0.3673,
+          0.473,
+          0.3862,
+          0.4234,
+          0.5704
+        ],
+        "shape": "monotone",
+        "best_steps_millions": 349,
+        "selection_is_per_clip_best": false,
+        "cost_of_selection": 0.0974,
+        "spread": 0.0803
+      },
+      "object_radius_cm": 36.2,
+      "hand_object": {
+        "frame": "simulator; palms and both object tracks come from the same staged motion",
+        "frames_reference_says_held": 339,
+        "fraction_reference_says_held": 0.621,
+        "fraction_achieved_in_hand_while_reference_holds": 1.0,
+        "pantomime_frames": 0,
+        "pantomime_fraction": 0.0,
+        "pantomime_fraction_of_held": 0.0,
+        "palm_to_object_excess_cm_while_held": {
+          "mean": 0.9,
+          "max": 3.4
+        },
+        "reference_palm_to_object_cm_while_held": {
+          "mean": 3.7,
+          "p90": 5.7
+        },
+        "palm_to_achieved_object_cm_while_held": 4.5
+      },
+      "position_only": {
+        "kit_add_auc": 0.698718,
+        "kit_mppe_cm": 3.3559,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 0.0
+      },
+      "orientation_only": {
+        "kit_add_auc": 0.633471,
+        "kit_mppe_cm": 1.1907,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 1.0
+      },
+      "object": "monitor",
+      "bucket": "strong",
+      "hands": "one-hand",
+      "scene": null,
+      "bridge_anchor_segments": 17,
+      "reference_ceiling_add_auc": 0.5066
+    },
+    {
+      "tag": "e07",
+      "episode": 7,
+      "frames": 896,
+      "selected_environment_steps": 49999872,
+      "kit_add_auc": 0.250837,
+      "first_loss_frame": 310,
+      "first_loss_fraction": 0.346,
+      "fraction_inside": {
+        "5cm": 0.4375,
+        "10cm": 0.5893,
+        "20cm": 0.8315
+      },
+      "position_error_cm": {
+        "max": 24.06,
+        "mean_before_loss": 2.05,
+        "mean_after_loss": 13.29,
+        "mean_all": 9.4
+      },
+      "orientation_error_deg": {
+        "max": 179.9,
+        "mean_before_loss": 17.9,
+        "mean_after_loss": 151.6,
+        "mean_all": 105.3
+      },
+      "add_cm": {
+        "max": 27.58,
+        "mean_before_loss": 3.11,
+        "recomputed_auc": 0.250837
+      },
+      "success": {
+        "spider_pass": false,
+        "spider_position_margin_cm": 0.6,
+        "spider_orientation_margin_deg": -76.7,
+        "maniptrans_pass": false,
+        "maniptrans_position_margin_cm": -6.4,
+        "maniptrans_orientation_margin_deg": -75.3
+      },
+      "checkpoint_curve": {
+        "steps_millions": [
+          49,
+          99,
+          149,
+          199,
+          249,
+          299,
+          349
+        ],
+        "kit_add_auc": [
+          0.2508,
+          0.227,
+          0.2274,
+          0.2273,
+          0.2273,
+          0.227,
+          0.2273
+        ],
+        "shape": "peaked",
+        "best_steps_millions": 49,
+        "selection_is_per_clip_best": true,
+        "cost_of_selection": 0.0,
+        "spread": 0.0083
+      },
+      "object_radius_cm": 18.0,
+      "hand_object": {
+        "frame": "simulator; palms and both object tracks come from the same staged motion",
+        "frames_reference_says_held": 693,
+        "fraction_reference_says_held": 0.773,
+        "fraction_achieved_in_hand_while_reference_holds": 0.89,
+        "pantomime_frames": 65,
+        "pantomime_fraction": 0.073,
+        "pantomime_fraction_of_held": 0.094,
+        "palm_to_object_excess_cm_while_held": {
+          "mean": 2.3,
+          "max": 13.2
+        },
+        "reference_palm_to_object_cm_while_held": {
+          "mean": 2.2,
+          "p90": 4.2
+        },
+        "palm_to_achieved_object_cm_while_held": 4.5
+      },
+      "position_only": {
+        "kit_add_auc": 0.398856,
+        "kit_mppe_cm": 9.3997,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 0.0
+      },
+      "orientation_only": {
+        "kit_add_auc": 0.283622,
+        "kit_mppe_cm": 5.2491,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0
+      },
+      "object": "iron",
+      "bucket": "lost_mid_clip",
+      "hands": "one-hand",
+      "scene": "table",
+      "bridge_anchor_segments": 11,
+      "reference_ceiling_add_auc": 0.8645
+    },
+    {
+      "tag": "e08",
+      "episode": 8,
+      "frames": 708,
+      "selected_environment_steps": 349999104,
+      "kit_add_auc": 0.44315,
+      "first_loss_frame": null,
+      "first_loss_fraction": null,
+      "fraction_inside": {
+        "5cm": 0.9138,
+        "10cm": 1.0,
+        "20cm": 1.0
+      },
+      "position_error_cm": {
+        "max": 8.08,
+        "mean_before_loss": 3.26,
+        "mean_after_loss": null,
+        "mean_all": 3.26
+      },
+      "orientation_error_deg": {
+        "max": 32.2,
+        "mean_before_loss": 13.5,
+        "mean_after_loss": null,
+        "mean_all": 13.5
+      },
+      "add_cm": {
+        "max": 10.45,
+        "mean_before_loss": 5.48,
+        "recomputed_auc": 0.44315
+      },
+      "success": {
+        "spider_pass": true,
+        "spider_position_margin_cm": 6.74,
+        "spider_orientation_margin_deg": 15.1,
+        "maniptrans_pass": false,
+        "maniptrans_position_margin_cm": -0.26,
+        "maniptrans_orientation_margin_deg": 16.5
+      },
+      "checkpoint_curve": {
+        "steps_millions": [
+          49,
+          99,
+          149,
+          199,
+          249,
+          299,
+          349
+        ],
+        "kit_add_auc": [
+          0.5107,
+          0.5119,
+          0.1366,
+          0.5629,
+          0.4791,
+          0.4766,
+          0.4431
+        ],
+        "shape": "collapsing",
+        "best_steps_millions": 199,
+        "selection_is_per_clip_best": false,
+        "cost_of_selection": 0.1197,
+        "spread": 0.1309
+      },
+      "object_radius_cm": 57.3,
+      "hand_object": {
+        "frame": "simulator; palms and both object tracks come from the same staged motion",
+        "frames_reference_says_held": 252,
+        "fraction_reference_says_held": 0.356,
+        "fraction_achieved_in_hand_while_reference_holds": 1.0,
+        "pantomime_frames": 0,
+        "pantomime_fraction": 0.0,
+        "pantomime_fraction_of_held": 0.0,
+        "palm_to_object_excess_cm_while_held": {
+          "mean": 0.2,
+          "max": 5.8
+        },
+        "reference_palm_to_object_cm_while_held": {
+          "mean": 3.5,
+          "p90": 6.2
+        },
+        "palm_to_achieved_object_cm_while_held": 3.7
+      },
+      "position_only": {
+        "kit_add_auc": 0.705067,
+        "kit_mppe_cm": 3.2555,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 0.0
+      },
+      "orientation_only": {
+        "kit_add_auc": 0.580332,
+        "kit_mppe_cm": 0.8219,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 1.0
+      },
+      "object": "skinny_wood_chair",
+      "bucket": "strong",
+      "hands": "one-hand",
+      "scene": null,
+      "bridge_anchor_segments": 16,
+      "reference_ceiling_add_auc": 0.4343
+    },
+    {
+      "tag": "e09",
+      "episode": 9,
+      "frames": 870,
+      "selected_environment_steps": 299999232,
+      "kit_add_auc": 0.244828,
+      "first_loss_frame": 854,
+      "first_loss_fraction": 0.982,
+      "fraction_inside": {
+        "5cm": 0.5414,
+        "10cm": 0.977,
+        "20cm": 0.992
+      },
+      "position_error_cm": {
+        "max": 22.07,
+        "mean_before_loss": 4.44,
+        "mean_after_loss": 18.13,
+        "mean_all": 4.7
+      },
+      "orientation_error_deg": {
+        "max": 95.4,
+        "mean_before_loss": 40.1,
+        "mean_after_loss": 88.6,
+        "mean_all": 41.0
+      },
+      "add_cm": {
+        "max": 23.33,
+        "mean_before_loss": 7.99,
+        "recomputed_auc": 0.244828
+      },
+      "success": {
+        "spider_pass": false,
+        "spider_position_margin_cm": 5.3,
+        "spider_orientation_margin_deg": -12.3,
+        "maniptrans_pass": false,
+        "maniptrans_position_margin_cm": -1.7,
+        "maniptrans_orientation_margin_deg": -11.0
+      },
+      "checkpoint_curve": {
+        "steps_millions": [
+          49,
+          99,
+          149,
+          199,
+          249,
+          299,
+          349
+        ],
+        "kit_add_auc": [
+          0.1586,
+          0.2027,
+          0.1954,
+          0.181,
+          0.2219,
+          0.2448,
+          0.2454
+        ],
+        "shape": "monotone",
+        "best_steps_millions": 349,
+        "selection_is_per_clip_best": false,
+        "cost_of_selection": 0.0006,
+        "spread": 0.03
+      },
+      "object_radius_cm": 16.3,
+      "hand_object": {
+        "frame": "simulator; palms and both object tracks come from the same staged motion",
+        "frames_reference_says_held": 454,
+        "fraction_reference_says_held": 0.522,
+        "fraction_achieved_in_hand_while_reference_holds": 0.998,
+        "pantomime_frames": 1,
+        "pantomime_fraction": 0.001,
+        "pantomime_fraction_of_held": 0.002,
+        "palm_to_object_excess_cm_while_held": {
+          "mean": 2.4,
+          "max": 10.1
+        },
+        "reference_palm_to_object_cm_while_held": {
+          "mean": 2.1,
+          "p90": 4.0
+        },
+        "palm_to_achieved_object_cm_while_held": 4.5
+      },
+      "position_only": {
+        "kit_add_auc": 0.554957,
+        "kit_mppe_cm": 4.6966,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 0.0
+      },
+      "orientation_only": {
+        "kit_add_auc": 0.35546,
+        "kit_mppe_cm": 2.7005,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0
+      },
+      "object": "big_red_bowl",
+      "bucket": "lost_mid_clip",
+      "hands": "two-hand",
+      "scene": "table",
+      "bridge_anchor_segments": 13,
+      "reference_ceiling_add_auc": 0.6188
+    },
+    {
+      "tag": "e10",
+      "episode": 10,
+      "frames": 794,
+      "selected_environment_steps": 249999360,
+      "kit_add_auc": 0.314704,
+      "first_loss_frame": null,
+      "first_loss_fraction": null,
+      "fraction_inside": {
+        "5cm": 0.5617,
+        "10cm": 0.9924,
+        "20cm": 1.0
+      },
+      "position_error_cm": {
+        "max": 10.73,
+        "mean_before_loss": 4.14,
+        "mean_after_loss": null,
+        "mean_all": 4.14
+      },
+      "orientation_error_deg": {
+        "max": 20.1,
+        "mean_before_loss": 8.2,
+        "mean_after_loss": null,
+        "mean_all": 8.2
+      },
+      "add_cm": {
+        "max": 14.88,
+        "mean_before_loss": 7.53,
+        "recomputed_auc": 0.314704
+      },
+      "success": {
+        "spider_pass": true,
+        "spider_position_margin_cm": 5.86,
+        "spider_orientation_margin_deg": 20.4,
+        "maniptrans_pass": false,
+        "maniptrans_position_margin_cm": -1.14,
+        "maniptrans_orientation_margin_deg": 21.8
+      },
+      "checkpoint_curve": {
+        "steps_millions": [
+          49,
+          99,
+          149,
+          199,
+          249,
+          299,
+          349
+        ],
+        "kit_add_auc": [
+          0.2096,
+          0.1178,
+          0.2424,
+          0.2426,
+          0.3147,
+          0.3125,
+          0.2868
+        ],
+        "shape": "peaked",
+        "best_steps_millions": 249,
+        "selection_is_per_clip_best": true,
+        "cost_of_selection": 0.0,
+        "spread": 0.0639
+      },
+      "object_radius_cm": 86.2,
+      "hand_object": {
+        "frame": "simulator; palms and both object tracks come from the same staged motion",
+        "frames_reference_says_held": 422,
+        "fraction_reference_says_held": 0.531,
+        "fraction_achieved_in_hand_while_reference_holds": 1.0,
+        "pantomime_frames": 0,
+        "pantomime_fraction": 0.0,
+        "pantomime_fraction_of_held": 0.0,
+        "palm_to_object_excess_cm_while_held": {
+          "mean": 1.0,
+          "max": 7.2
+        },
+        "reference_palm_to_object_cm_while_held": {
+          "mean": 3.4,
+          "p90": 6.1
+        },
+        "palm_to_achieved_object_cm_while_held": 4.4
+      },
+      "position_only": {
+        "kit_add_auc": 0.61335,
+        "kit_mppe_cm": 4.1401,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 0.0
+      },
+      "orientation_only": {
+        "kit_add_auc": 0.531093,
+        "kit_mppe_cm": 0.5356,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 1.0
+      },
+      "object": "white_desk",
+      "bucket": "strong",
+      "hands": "one-hand",
+      "scene": null,
+      "bridge_anchor_segments": 12,
+      "reference_ceiling_add_auc": 0.4838
+    },
+    {
+      "tag": "e11",
+      "episode": 11,
+      "frames": 901,
+      "selected_environment_steps": 299999232,
+      "kit_add_auc": 0.331528,
+      "first_loss_frame": null,
+      "first_loss_fraction": null,
+      "fraction_inside": {
+        "5cm": 0.4861,
+        "10cm": 0.9989,
+        "20cm": 0.9989
+      },
+      "position_error_cm": {
+        "max": 344.01,
+        "mean_before_loss": 5.54,
+        "mean_after_loss": null,
+        "mean_all": 5.54
+      },
+      "orientation_error_deg": {
+        "max": 180.0,
+        "mean_before_loss": 21.9,
+        "mean_after_loss": null,
+        "mean_all": 21.9
+      },
+      "add_cm": {
+        "max": 343.99,
+        "mean_before_loss": 6.79,
+        "recomputed_auc": 0.33116
+      },
+      "success": {
+        "spider_pass": true,
+        "spider_position_margin_cm": 4.46,
+        "spider_orientation_margin_deg": 6.7,
+        "maniptrans_pass": false,
+        "maniptrans_position_margin_cm": -2.54,
+        "maniptrans_orientation_margin_deg": 8.1
+      },
+      "checkpoint_curve": {
+        "steps_millions": [
+          49,
+          99,
+          149,
+          199,
+          249,
+          299,
+          349
+        ],
+        "kit_add_auc": [
+          0.0625,
+          0.0877,
+          0.0749,
+          0.0794,
+          0.1337,
+          0.3315,
+          0.3361
+        ],
+        "shape": "monotone",
+        "best_steps_millions": 349,
+        "selection_is_per_clip_best": false,
+        "cost_of_selection": 0.0046,
+        "spread": 0.1131
+      },
+      "object_radius_cm": 16.2,
+      "hand_object": {
+        "frame": "simulator; palms and both object tracks come from the same staged motion",
+        "frames_reference_says_held": 817,
+        "fraction_reference_says_held": 0.907,
+        "fraction_achieved_in_hand_while_reference_holds": 1.0,
+        "pantomime_frames": 0,
+        "pantomime_fraction": 0.0,
+        "pantomime_fraction_of_held": 0.0,
+        "palm_to_object_excess_cm_while_held": {
+          "mean": -1.1,
+          "max": 6.2
+        },
+        "reference_palm_to_object_cm_while_held": {
+          "mean": 4.0,
+          "p90": 8.5
+        },
+        "palm_to_achieved_object_cm_while_held": 2.9
+      },
+      "position_only": {
+        "kit_add_auc": 0.480208,
+        "kit_mppe_cm": 5.1617,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 0.0
+      },
+      "orientation_only": {
+        "kit_add_auc": 0.687569,
+        "kit_mppe_cm": 1.4901,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 1.0
+      },
+      "object": "light_blue_book",
+      "bucket": "strong",
+      "hands": "one-hand",
+      "scene": null,
+      "bridge_anchor_segments": 13,
+      "reference_ceiling_add_auc": 0.7835
+    },
+    {
+      "tag": "e12",
+      "episode": 12,
+      "frames": 700,
+      "selected_environment_steps": 349999104,
+      "kit_add_auc": 0.709732,
+      "first_loss_frame": null,
+      "first_loss_fraction": null,
+      "fraction_inside": {
+        "5cm": 0.8914,
+        "10cm": 1.0,
+        "20cm": 1.0
+      },
+      "position_error_cm": {
+        "max": 7.61,
+        "mean_before_loss": 2.59,
+        "mean_after_loss": null,
+        "mean_all": 2.59
+      },
+      "orientation_error_deg": {
+        "max": 22.0,
+        "mean_before_loss": 4.4,
+        "mean_after_loss": null,
+        "mean_all": 4.4
+      },
+      "add_cm": {
+        "max": 8.08,
+        "mean_before_loss": 3.16,
+        "recomputed_auc": 0.709732
+      },
+      "success": {
+        "spider_pass": true,
+        "spider_position_margin_cm": 7.41,
+        "spider_orientation_margin_deg": 24.2,
+        "maniptrans_pass": true,
+        "maniptrans_position_margin_cm": 0.41,
+        "maniptrans_orientation_margin_deg": 25.6
+      },
+      "checkpoint_curve": {
+        "steps_millions": [
+          49,
+          99,
+          149,
+          199,
+          249,
+          299,
+          349
+        ],
+        "kit_add_auc": [
+          0.2989,
+          0.1437,
+          0.3115,
+          0.5917,
+          0.719,
+          0.6888,
+          0.7097
+        ],
+        "shape": "peaked",
+        "best_steps_millions": 249,
+        "selection_is_per_clip_best": false,
+        "cost_of_selection": 0.0093,
+        "spread": 0.22
+      },
+      "object_radius_cm": 49.0,
+      "hand_object": {
+        "frame": "simulator; palms and both object tracks come from the same staged motion",
+        "frames_reference_says_held": 301,
+        "fraction_reference_says_held": 0.43,
+        "fraction_achieved_in_hand_while_reference_holds": 1.0,
+        "pantomime_frames": 0,
+        "pantomime_fraction": 0.0,
+        "pantomime_fraction_of_held": 0.0,
+        "palm_to_object_excess_cm_while_held": {
+          "mean": -0.6,
+          "max": 4.7
+        },
+        "reference_palm_to_object_cm_while_held": {
+          "mean": 6.0,
+          "p90": 8.9
+        },
+        "palm_to_achieved_object_cm_while_held": 5.4
+      },
+      "position_only": {
+        "kit_add_auc": 0.775,
+        "kit_mppe_cm": 2.5874,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 1.0
+      },
+      "orientation_only": {
+        "kit_add_auc": 0.883125,
+        "kit_mppe_cm": 0.3019,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 1.0
+      },
+      "object": "black_platform",
+      "bucket": "strong",
+      "hands": "one-hand",
+      "scene": null,
+      "bridge_anchor_segments": 5,
+      "reference_ceiling_add_auc": 0.5938
+    },
+    {
+      "tag": "e13",
+      "episode": 13,
+      "frames": 922,
+      "selected_environment_steps": 299999232,
+      "kit_add_auc": 0.159368,
+      "first_loss_frame": null,
+      "first_loss_fraction": null,
+      "fraction_inside": {
+        "5cm": 0.5748,
+        "10cm": 1.0,
+        "20cm": 1.0
+      },
+      "position_error_cm": {
+        "max": 9.83,
+        "mean_before_loss": 4.07,
+        "mean_after_loss": null,
+        "mean_all": 4.07
+      },
+      "orientation_error_deg": {
+        "max": 95.6,
+        "mean_before_loss": 40.2,
+        "mean_after_loss": null,
+        "mean_all": 40.2
+      },
+      "add_cm": {
+        "max": 26.39,
+        "mean_before_loss": 11.97,
+        "recomputed_auc": 0.159368
+      },
+      "success": {
+        "spider_pass": false,
+        "spider_position_margin_cm": 5.93,
+        "spider_orientation_margin_deg": -11.5,
+        "maniptrans_pass": false,
+        "maniptrans_position_margin_cm": -1.07,
+        "maniptrans_orientation_margin_deg": -10.2
+      },
+      "checkpoint_curve": {
+        "steps_millions": [
+          49,
+          99,
+          149,
+          199,
+          249,
+          299,
+          349
+        ],
+        "kit_add_auc": [
+          0.169,
+          0.1721,
+          0.152,
+          0.1496,
+          0.2655,
+          0.1594,
+          0.1777
+        ],
+        "shape": "collapsing",
+        "best_steps_millions": 249,
+        "selection_is_per_clip_best": false,
+        "cost_of_selection": 0.1061,
+        "spread": 0.037
+      },
+      "object_radius_cm": 27.7,
+      "hand_object": {
+        "frame": "simulator; palms and both object tracks come from the same staged motion",
+        "frames_reference_says_held": 308,
+        "fraction_reference_says_held": 0.334,
+        "fraction_achieved_in_hand_while_reference_holds": 1.0,
+        "pantomime_frames": 0,
+        "pantomime_fraction": 0.0,
+        "pantomime_fraction_of_held": 0.0,
+        "palm_to_object_excess_cm_while_held": {
+          "mean": -2.1,
+          "max": 3.5
+        },
+        "reference_palm_to_object_cm_while_held": {
+          "mean": 7.5,
+          "p90": 9.8
+        },
+        "palm_to_achieved_object_cm_while_held": 5.5
+      },
+      "position_only": {
+        "kit_add_auc": 0.620323,
+        "kit_mppe_cm": 4.0685,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 0.0
+      },
+      "orientation_only": {
+        "kit_add_auc": 0.209056,
+        "kit_mppe_cm": 2.3669,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0
+      },
+      "object": "snack_box",
+      "bucket": "held_drifting",
+      "hands": "foot",
+      "scene": "table",
+      "bridge_anchor_segments": 7,
+      "reference_ceiling_add_auc": 0.1925
+    },
+    {
+      "tag": "e14",
+      "episode": 14,
+      "frames": 993,
+      "selected_environment_steps": 49999872,
+      "kit_add_auc": 0.109139,
+      "first_loss_frame": 243,
+      "first_loss_fraction": 0.245,
+      "fraction_inside": {
+        "5cm": 0.1007,
+        "10cm": 0.2336,
+        "20cm": 0.29
+      },
+      "position_error_cm": {
+        "max": 87.88,
+        "mean_before_loss": 5.05,
+        "mean_after_loss": 60.78,
+        "mean_all": 47.14
+      },
+      "orientation_error_deg": {
+        "max": 180.0,
+        "mean_before_loss": 6.4,
+        "mean_after_loss": 121.9,
+        "mean_all": 93.6
+      },
+      "add_cm": {
+        "max": 99.4,
+        "mean_before_loss": 5.66,
+        "recomputed_auc": 0.109139
+      },
+      "success": {
+        "spider_pass": false,
+        "spider_position_margin_cm": -37.14,
+        "spider_orientation_margin_deg": -65.0,
+        "maniptrans_pass": false,
+        "maniptrans_position_margin_cm": -44.14,
+        "maniptrans_orientation_margin_deg": -63.6
+      },
+      "checkpoint_curve": {
+        "steps_millions": [
+          49,
+          99,
+          149,
+          199,
+          249,
+          299,
+          349
+        ],
+        "kit_add_auc": [
+          0.1091,
+          0.1523,
+          0.1675,
+          0.1255,
+          0.1157,
+          0.1237,
+          0.1164
+        ],
+        "shape": "collapsing",
+        "best_steps_millions": 149,
+        "selection_is_per_clip_best": false,
+        "cost_of_selection": 0.0583,
+        "spread": 0.0199
+      },
+      "object_radius_cm": 73.9,
+      "hand_object": {
+        "frame": "simulator; palms and both object tracks come from the same staged motion",
+        "frames_reference_says_held": 487,
+        "fraction_reference_says_held": 0.49,
+        "fraction_achieved_in_hand_while_reference_holds": 0.361,
+        "pantomime_frames": 310,
+        "pantomime_fraction": 0.312,
+        "pantomime_fraction_of_held": 0.637,
+        "palm_to_object_excess_cm_while_held": {
+          "mean": 19.0,
+          "max": 57.2
+        },
+        "reference_palm_to_object_cm_while_held": {
+          "mean": 3.2,
+          "p90": 5.9
+        },
+        "palm_to_achieved_object_cm_while_held": 22.2
+      },
+      "position_only": {
+        "kit_add_auc": 0.115181,
+        "kit_mppe_cm": 47.1428,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0
+      },
+      "orientation_only": {
+        "kit_add_auc": 0.183724,
+        "kit_mppe_cm": 5.1082,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0
+      },
+      "object": "round_table",
+      "bucket": "lost_mid_clip",
+      "hands": "two-hand",
+      "scene": "floor",
+      "bridge_anchor_segments": 10,
+      "reference_ceiling_add_auc": 0.2236
+    },
+    {
+      "tag": "e15",
+      "episode": 15,
+      "frames": 715,
+      "selected_environment_steps": 249999360,
+      "kit_add_auc": 0.453846,
+      "first_loss_frame": null,
+      "first_loss_fraction": null,
+      "fraction_inside": {
+        "5cm": 0.6126,
+        "10cm": 1.0,
+        "20cm": 1.0
+      },
+      "position_error_cm": {
+        "max": 8.27,
+        "mean_before_loss": 4.26,
+        "mean_after_loss": null,
+        "mean_all": 4.26
+      },
+      "orientation_error_deg": {
+        "max": 42.1,
+        "mean_before_loss": 13.3,
+        "mean_after_loss": null,
+        "mean_all": 13.3
+      },
+      "add_cm": {
+        "max": 9.71,
+        "mean_before_loss": 5.33,
+        "recomputed_auc": 0.453846
+      },
+      "success": {
+        "spider_pass": true,
+        "spider_position_margin_cm": 5.74,
+        "spider_orientation_margin_deg": 15.3,
+        "maniptrans_pass": false,
+        "maniptrans_position_margin_cm": -1.26,
+        "maniptrans_orientation_margin_deg": 16.7
+      },
+      "checkpoint_curve": {
+        "steps_millions": [
+          49,
+          99,
+          149,
+          199,
+          249,
+          299,
+          349
+        ],
+        "kit_add_auc": [
+          0.2462,
+          0.2102,
+          0.2392,
+          0.1121,
+          0.4538,
+          0.4335,
+          0.467
+        ],
+        "shape": "monotone",
+        "best_steps_millions": 349,
+        "selection_is_per_clip_best": false,
+        "cost_of_selection": 0.0131,
+        "spread": 0.1303
+      },
+      "object_radius_cm": 35.7,
+      "hand_object": {
+        "frame": "simulator; palms and both object tracks come from the same staged motion",
+        "frames_reference_says_held": 248,
+        "fraction_reference_says_held": 0.347,
+        "fraction_achieved_in_hand_while_reference_holds": 1.0,
+        "pantomime_frames": 0,
+        "pantomime_fraction": 0.0,
+        "pantomime_fraction_of_held": 0.0,
+        "palm_to_object_excess_cm_while_held": {
+          "mean": 1.4,
+          "max": 5.9
+        },
+        "reference_palm_to_object_cm_while_held": {
+          "mean": 5.3,
+          "p90": 8.1
+        },
+        "palm_to_achieved_object_cm_while_held": 6.7
+      },
+      "position_only": {
+        "kit_add_auc": 0.590647,
+        "kit_mppe_cm": 4.2579,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 0.0
+      },
+      "orientation_only": {
+        "kit_add_auc": 0.701049,
+        "kit_mppe_cm": 0.8835,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 1.0
+      },
+      "object": "wet_floor_sign",
+      "bucket": "strong",
+      "hands": "one-hand",
+      "scene": null,
+      "bridge_anchor_segments": 7,
+      "reference_ceiling_add_auc": 0.6274
+    },
+    {
+      "tag": "e16",
+      "episode": 16,
+      "frames": 477,
+      "selected_environment_steps": 249999360,
+      "kit_add_auc": 0.38902,
+      "first_loss_frame": null,
+      "first_loss_fraction": null,
+      "fraction_inside": {
+        "5cm": 0.4633,
+        "10cm": 1.0,
+        "20cm": 1.0
+      },
+      "position_error_cm": {
+        "max": 9.48,
+        "mean_before_loss": 4.95,
+        "mean_after_loss": null,
+        "mean_all": 4.95
+      },
+      "orientation_error_deg": {
+        "max": 73.6,
+        "mean_before_loss": 35.4,
+        "mean_after_loss": null,
+        "mean_all": 35.4
+      },
+      "add_cm": {
+        "max": 12.32,
+        "mean_before_loss": 6.2,
+        "recomputed_auc": 0.38902
+      },
+      "success": {
+        "spider_pass": false,
+        "spider_position_margin_cm": 5.05,
+        "spider_orientation_margin_deg": -6.7,
+        "maniptrans_pass": false,
+        "maniptrans_position_margin_cm": -1.95,
+        "maniptrans_orientation_margin_deg": -5.4
+      },
+      "checkpoint_curve": {
+        "steps_millions": [
+          49,
+          99,
+          149,
+          199,
+          249,
+          299,
+          349
+        ],
+        "kit_add_auc": [
+          0.2293,
+          0.2615,
+          0.2627,
+          0.2533,
+          0.389,
+          0.3948,
+          0.3699
+        ],
+        "shape": "peaked",
+        "best_steps_millions": 299,
+        "selection_is_per_clip_best": false,
+        "cost_of_selection": 0.0058,
+        "spread": 0.0669
+      },
+      "object_radius_cm": 17.1,
+      "hand_object": {
+        "frame": "simulator; palms and both object tracks come from the same staged motion",
+        "frames_reference_says_held": 91,
+        "fraction_reference_says_held": 0.191,
+        "fraction_achieved_in_hand_while_reference_holds": 1.0,
+        "pantomime_frames": 0,
+        "pantomime_fraction": 0.0,
+        "pantomime_fraction_of_held": 0.0,
+        "palm_to_object_excess_cm_while_held": {
+          "mean": 1.6,
+          "max": 7.0
+        },
+        "reference_palm_to_object_cm_while_held": {
+          "mean": 3.7,
+          "p90": 6.0
+        },
+        "palm_to_achieved_object_cm_while_held": 5.3
+      },
+      "position_only": {
+        "kit_add_auc": 0.498821,
+        "kit_mppe_cm": 4.9478,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 0.0
+      },
+      "orientation_only": {
+        "kit_add_auc": 0.515592,
+        "kit_mppe_cm": 2.2869,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0
+      },
+      "object": "spray_bottle",
+      "bucket": "strong",
+      "hands": "one-hand",
+      "scene": null,
+      "bridge_anchor_segments": 10,
+      "reference_ceiling_add_auc": 0.8894
+    },
+    {
+      "tag": "e17",
+      "episode": 17,
+      "frames": 440,
+      "selected_environment_steps": 299999232,
+      "kit_add_auc": 0.246591,
+      "first_loss_frame": 292,
+      "first_loss_fraction": 0.664,
+      "fraction_inside": {
+        "5cm": 0.2977,
+        "10cm": 0.65,
+        "20cm": 0.7773
+      },
+      "position_error_cm": {
+        "max": 96.85,
+        "mean_before_loss": 5.5,
+        "mean_after_loss": 49.97,
+        "mean_all": 20.46
+      },
+      "orientation_error_deg": {
+        "max": 144.5,
+        "mean_before_loss": 31.8,
+        "mean_after_loss": 96.1,
+        "mean_all": 53.4
+      },
+      "add_cm": {
+        "max": 96.96,
+        "mean_before_loss": 7.11,
+        "recomputed_auc": 0.246591
+      },
+      "success": {
+        "spider_pass": false,
+        "spider_position_margin_cm": -10.46,
+        "spider_orientation_margin_deg": -24.8,
+        "maniptrans_pass": false,
+        "maniptrans_position_margin_cm": -17.46,
+        "maniptrans_orientation_margin_deg": -23.4
+      },
+      "checkpoint_curve": {
+        "steps_millions": [
+          49,
+          99,
+          149,
+          199,
+          249,
+          299,
+          349
+        ],
+        "kit_add_auc": [
+          0.2266,
+          0.2368,
+          0.2362,
+          0.2365,
+          0.2408,
+          0.2466,
+          0.2416
+        ],
+        "shape": "peaked",
+        "best_steps_millions": 299,
+        "selection_is_per_clip_best": true,
+        "cost_of_selection": 0.0,
+        "spread": 0.0058
+      },
+      "object_radius_cm": 28.5,
+      "hand_object": {
+        "frame": "simulator; palms and both object tracks come from the same staged motion",
+        "frames_reference_says_held": 223,
+        "fraction_reference_says_held": 0.507,
+        "fraction_achieved_in_hand_while_reference_holds": 1.0,
+        "pantomime_frames": 0,
+        "pantomime_fraction": 0.0,
+        "pantomime_fraction_of_held": 0.0,
+        "palm_to_object_excess_cm_while_held": {
+          "mean": 0.5,
+          "max": 6.2
+        },
+        "reference_palm_to_object_cm_while_held": {
+          "mean": 4.3,
+          "p90": 6.3
+        },
+        "palm_to_achieved_object_cm_while_held": 4.8
+      },
+      "position_only": {
+        "kit_add_auc": 0.29446,
+        "kit_mppe_cm": 20.4599,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0
+      },
+      "orientation_only": {
+        "kit_add_auc": 0.40625,
+        "kit_mppe_cm": 3.1724,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0
+      },
+      "object": "traffic_cone",
+      "bucket": "fell_back",
+      "hands": "two-hand",
+      "scene": "table",
+      "bridge_anchor_segments": 11,
+      "reference_ceiling_add_auc": 0.8672
+    },
+    {
+      "tag": "e18",
+      "episode": 18,
+      "frames": 858,
+      "selected_environment_steps": 249999360,
+      "kit_add_auc": 0.736233,
+      "first_loss_frame": null,
+      "first_loss_fraction": null,
+      "fraction_inside": {
+        "5cm": 0.7739,
+        "10cm": 1.0,
+        "20cm": 1.0
+      },
+      "position_error_cm": {
+        "max": 9.32,
+        "mean_before_loss": 2.44,
+        "mean_after_loss": null,
+        "mean_all": 2.44
+      },
+      "orientation_error_deg": {
+        "max": 18.4,
+        "mean_before_loss": 5.0,
+        "mean_after_loss": null,
+        "mean_all": 5.0
+      },
+      "add_cm": {
+        "max": 11.15,
+        "mean_before_loss": 3.04,
+        "recomputed_auc": 0.736233
+      },
+      "success": {
+        "spider_pass": true,
+        "spider_position_margin_cm": 7.56,
+        "spider_orientation_margin_deg": 23.7,
+        "maniptrans_pass": true,
+        "maniptrans_position_margin_cm": 0.56,
+        "maniptrans_orientation_margin_deg": 25.0
+      },
+      "checkpoint_curve": {
+        "steps_millions": [
+          49,
+          99,
+          149,
+          199,
+          249,
+          299,
+          349
+        ],
+        "kit_add_auc": [
+          0.3277,
+          0.3203,
+          0.3277,
+          0.3277,
+          0.7362,
+          0.5574,
+          0.6619
+        ],
+        "shape": "peaked",
+        "best_steps_millions": 249,
+        "selection_is_per_clip_best": true,
+        "cost_of_selection": 0.0,
+        "spread": 0.1683
+      },
+      "object_radius_cm": 47.0,
+      "hand_object": {
+        "frame": "simulator; palms and both object tracks come from the same staged motion",
+        "frames_reference_says_held": 259,
+        "fraction_reference_says_held": 0.302,
+        "fraction_achieved_in_hand_while_reference_holds": 1.0,
+        "pantomime_frames": 0,
+        "pantomime_fraction": 0.0,
+        "pantomime_fraction_of_held": 0.0,
+        "palm_to_object_excess_cm_while_held": {
+          "mean": -0.4,
+          "max": 4.5
+        },
+        "reference_palm_to_object_cm_while_held": {
+          "mean": 7.1,
+          "p90": 10.9
+        },
+        "palm_to_achieved_object_cm_while_held": 6.7
+      },
+      "position_only": {
+        "kit_add_auc": 0.785329,
+        "kit_mppe_cm": 2.4352,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 1.0
+      },
+      "orientation_only": {
+        "kit_add_auc": 0.8809,
+        "kit_mppe_cm": 0.3282,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 1.0
+      },
+      "object": "blue_trash_can",
+      "bucket": "strong",
+      "hands": "one-hand",
+      "scene": null,
+      "bridge_anchor_segments": 13,
+      "reference_ceiling_add_auc": 0.6949
+    },
+    {
+      "tag": "e19",
+      "episode": 19,
+      "frames": 886,
+      "selected_environment_steps": 149999616,
+      "kit_add_auc": 0.116253,
+      "first_loss_frame": 133,
+      "first_loss_fraction": 0.15,
+      "fraction_inside": {
+        "5cm": 0.1377,
+        "10cm": 0.1501,
+        "20cm": 0.158
+      },
+      "position_error_cm": {
+        "max": 125.15,
+        "mean_before_loss": 2.54,
+        "mean_after_loss": 67.79,
+        "mean_all": 57.99
+      },
+      "orientation_error_deg": {
+        "max": 178.7,
+        "mean_before_loss": 2.5,
+        "mean_after_loss": 83.4,
+        "mean_all": 71.3
+      },
+      "add_cm": {
+        "max": 126.08,
+        "mean_before_loss": 2.64,
+        "recomputed_auc": 0.116253
+      },
+      "success": {
+        "spider_pass": false,
+        "spider_position_margin_cm": -47.99,
+        "spider_orientation_margin_deg": -42.6,
+        "maniptrans_pass": false,
+        "maniptrans_position_margin_cm": -54.99,
+        "maniptrans_orientation_margin_deg": -41.3
+      },
+      "checkpoint_curve": {
+        "steps_millions": [
+          49,
+          99,
+          149,
+          199,
+          249,
+          299,
+          349
+        ],
+        "kit_add_auc": [
+          0.1163,
+          0.1163,
+          0.1163,
+          0.129,
+          0.2046,
+          0.1777,
+          0.2353
+        ],
+        "shape": "monotone",
+        "best_steps_millions": 349,
+        "selection_is_per_clip_best": false,
+        "cost_of_selection": 0.1191,
+        "spread": 0.0457
+      },
+      "object_radius_cm": 53.7,
+      "hand_object": {
+        "frame": "simulator; palms and both object tracks come from the same staged motion",
+        "frames_reference_says_held": 235,
+        "fraction_reference_says_held": 0.265,
+        "fraction_achieved_in_hand_while_reference_holds": 0.294,
+        "pantomime_frames": 166,
+        "pantomime_fraction": 0.187,
+        "pantomime_fraction_of_held": 0.706,
+        "palm_to_object_excess_cm_while_held": {
+          "mean": 20.7,
+          "max": 43.5
+        },
+        "reference_palm_to_object_cm_while_held": {
+          "mean": 4.1,
+          "p90": 7.4
+        },
+        "palm_to_achieved_object_cm_while_held": 24.8
+      },
+      "position_only": {
+        "kit_add_auc": 0.118157,
+        "kit_mppe_cm": 57.9909,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0
+      },
+      "orientation_only": {
+        "kit_add_auc": 0.222841,
+        "kit_mppe_cm": 3.7669,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0
+      },
+      "object": "cane",
+      "bucket": "lost_mid_clip",
+      "hands": "one-hand",
+      "scene": "floor",
+      "bridge_anchor_segments": 7,
+      "reference_ceiling_add_auc": 0.5664
+    },
+    {
+      "tag": "e20",
+      "episode": 20,
+      "frames": 553,
+      "selected_environment_steps": 49999872,
+      "kit_add_auc": 0.472875,
+      "first_loss_frame": null,
+      "first_loss_fraction": null,
+      "fraction_inside": {
+        "5cm": 1.0,
+        "10cm": 1.0,
+        "20cm": 1.0
+      },
+      "position_error_cm": {
+        "max": 4.13,
+        "mean_before_loss": 1.74,
+        "mean_after_loss": null,
+        "mean_all": 1.74
+      },
+      "orientation_error_deg": {
+        "max": 179.8,
+        "mean_before_loss": 49.8,
+        "mean_after_loss": null,
+        "mean_all": 49.8
+      },
+      "add_cm": {
+        "max": 17.89,
+        "mean_before_loss": 6.68,
+        "recomputed_auc": 0.472875
+      },
+      "success": {
+        "spider_pass": false,
+        "spider_position_margin_cm": 8.26,
+        "spider_orientation_margin_deg": -21.1,
+        "maniptrans_pass": false,
+        "maniptrans_position_margin_cm": 1.26,
+        "maniptrans_orientation_margin_deg": -19.8
+      },
+      "checkpoint_curve": {
+        "steps_millions": [
+          49,
+          99,
+          149,
+          199,
+          249,
+          299,
+          349
+        ],
+        "kit_add_auc": [
+          0.4729,
+          0.4151,
+          0.4629,
+          0.489,
+          0.5448,
+          0.5392,
+          0.5613
+        ],
+        "shape": "monotone",
+        "best_steps_millions": 349,
+        "selection_is_per_clip_best": false,
+        "cost_of_selection": 0.0884,
+        "spread": 0.0488
+      },
+      "object_radius_cm": 14.7,
+      "hand_object": {
+        "frame": "simulator; palms and both object tracks come from the same staged motion",
+        "frames_reference_says_held": 244,
+        "fraction_reference_says_held": 0.441,
+        "fraction_achieved_in_hand_while_reference_holds": 1.0,
+        "pantomime_frames": 0,
+        "pantomime_fraction": 0.0,
+        "pantomime_fraction_of_held": 0.0,
+        "palm_to_object_excess_cm_while_held": {
+          "mean": 1.5,
+          "max": 3.6
+        },
+        "reference_palm_to_object_cm_while_held": {
+          "mean": 2.9,
+          "p90": 5.7
+        },
+        "palm_to_achieved_object_cm_while_held": 4.4
+      },
+      "position_only": {
+        "kit_add_auc": 0.861099,
+        "kit_mppe_cm": 1.7432,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 1.0
+      },
+      "orientation_only": {
+        "kit_add_auc": 0.473553,
+        "kit_mppe_cm": 2.5057,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0
+      },
+      "object": "rice_cooker",
+      "bucket": "strong",
+      "hands": "one-hand",
+      "scene": null,
+      "bridge_anchor_segments": 16,
+      "reference_ceiling_add_auc": 0.7259
+    },
+    {
+      "tag": "e21",
+      "episode": 21,
+      "frames": 678,
+      "selected_environment_steps": 349999104,
+      "kit_add_auc": 0.206121,
+      "first_loss_frame": null,
+      "first_loss_fraction": null,
+      "fraction_inside": {
+        "5cm": 0.587,
+        "10cm": 0.9838,
+        "20cm": 1.0
+      },
+      "position_error_cm": {
+        "max": 10.34,
+        "mean_before_loss": 4.43,
+        "mean_after_loss": null,
+        "mean_all": 4.43
+      },
+      "orientation_error_deg": {
+        "max": 75.2,
+        "mean_before_loss": 28.4,
+        "mean_after_loss": null,
+        "mean_all": 28.4
+      },
+      "add_cm": {
+        "max": 28.32,
+        "mean_before_loss": 11.58,
+        "recomputed_auc": 0.206121
+      },
+      "success": {
+        "spider_pass": true,
+        "spider_position_margin_cm": 5.57,
+        "spider_orientation_margin_deg": 0.2,
+        "maniptrans_pass": false,
+        "maniptrans_position_margin_cm": -1.43,
+        "maniptrans_orientation_margin_deg": 1.6
+      },
+      "checkpoint_curve": {
+        "steps_millions": [
+          49,
+          99,
+          149,
+          199,
+          249,
+          299,
+          349
+        ],
+        "kit_add_auc": [
+          0.1637,
+          0.1443,
+          0.1852,
+          0.1757,
+          0.1901,
+          0.1869,
+          0.2061
+        ],
+        "shape": "monotone",
+        "best_steps_millions": 349,
+        "selection_is_per_clip_best": true,
+        "cost_of_selection": 0.0,
+        "spread": 0.0186
+      },
+      "object_radius_cm": 61.7,
+      "hand_object": {
+        "frame": "simulator; palms and both object tracks come from the same staged motion",
+        "frames_reference_says_held": 445,
+        "fraction_reference_says_held": 0.656,
+        "fraction_achieved_in_hand_while_reference_holds": 1.0,
+        "pantomime_frames": 0,
+        "pantomime_fraction": 0.0,
+        "pantomime_fraction_of_held": 0.0,
+        "palm_to_object_excess_cm_while_held": {
+          "mean": 2.6,
+          "max": 9.0
+        },
+        "reference_palm_to_object_cm_while_held": {
+          "mean": 3.1,
+          "p90": 5.6
+        },
+        "palm_to_achieved_object_cm_while_held": 5.8
+      },
+      "position_only": {
+        "kit_add_auc": 0.563422,
+        "kit_mppe_cm": 4.4309,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 0.0
+      },
+      "orientation_only": {
+        "kit_add_auc": 0.242072,
+        "kit_mppe_cm": 1.7586,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 1.0
+      },
+      "object": "tall_bar_stool",
+      "bucket": "held_drifting",
+      "hands": "one-hand",
+      "scene": "floor",
+      "bridge_anchor_segments": 14,
+      "reference_ceiling_add_auc": 0.2042
+    },
+    {
+      "tag": "e22",
+      "episode": 22,
+      "frames": 719,
+      "selected_environment_steps": 199999488,
+      "kit_add_auc": 0.527556,
+      "first_loss_frame": null,
+      "first_loss_fraction": null,
+      "fraction_inside": {
+        "5cm": 0.8067,
+        "10cm": 1.0,
+        "20cm": 1.0
+      },
+      "position_error_cm": {
+        "max": 9.26,
+        "mean_before_loss": 3.04,
+        "mean_after_loss": null,
+        "mean_all": 3.04
+      },
+      "orientation_error_deg": {
+        "max": 33.9,
+        "mean_before_loss": 13.0,
+        "mean_after_loss": null,
+        "mean_all": 13.0
+      },
+      "add_cm": {
+        "max": 10.17,
+        "mean_before_loss": 4.64,
+        "recomputed_auc": 0.527556
+      },
+      "success": {
+        "spider_pass": true,
+        "spider_position_margin_cm": 6.96,
+        "spider_orientation_margin_deg": 15.6,
+        "maniptrans_pass": false,
+        "maniptrans_position_margin_cm": -0.04,
+        "maniptrans_orientation_margin_deg": 17.0
+      },
+      "checkpoint_curve": {
+        "steps_millions": [
+          49,
+          99,
+          149,
+          199,
+          249,
+          299,
+          349
+        ],
+        "kit_add_auc": [
+          0.2636,
+          0.2888,
+          0.45,
+          0.5276,
+          0.5539,
+          0.5193,
+          0.6014
+        ],
+        "shape": "monotone",
+        "best_steps_millions": 349,
+        "selection_is_per_clip_best": false,
+        "cost_of_selection": 0.0738,
+        "spread": 0.1224
+      },
+      "object_radius_cm": 37.6,
+      "hand_object": {
+        "frame": "simulator; palms and both object tracks come from the same staged motion",
+        "frames_reference_says_held": 314,
+        "fraction_reference_says_held": 0.437,
+        "fraction_achieved_in_hand_while_reference_holds": 1.0,
+        "pantomime_frames": 0,
+        "pantomime_fraction": 0.0,
+        "pantomime_fraction_of_held": 0.0,
+        "palm_to_object_excess_cm_while_held": {
+          "mean": 1.1,
+          "max": 5.4
+        },
+        "reference_palm_to_object_cm_while_held": {
+          "mean": 6.4,
+          "p90": 9.6
+        },
+        "palm_to_achieved_object_cm_while_held": 7.5
+      },
+      "position_only": {
+        "kit_add_auc": 0.71862,
+        "kit_mppe_cm": 3.035,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 0.0
+      },
+      "orientation_only": {
+        "kit_add_auc": 0.658293,
+        "kit_mppe_cm": 0.852,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 1.0
+      },
+      "object": "step_ladder",
+      "bucket": "strong",
+      "hands": "one-hand",
+      "scene": null,
+      "bridge_anchor_segments": 12,
+      "reference_ceiling_add_auc": 0.7015
+    },
+    {
+      "tag": "e23",
+      "episode": 23,
+      "frames": 946,
+      "selected_environment_steps": 249999360,
+      "kit_add_auc": 0.498877,
+      "first_loss_frame": null,
+      "first_loss_fraction": null,
+      "fraction_inside": {
+        "5cm": 0.7992,
+        "10cm": 1.0,
+        "20cm": 1.0
+      },
+      "position_error_cm": {
+        "max": 8.24,
+        "mean_before_loss": 3.48,
+        "mean_after_loss": null,
+        "mean_all": 3.48
+      },
+      "orientation_error_deg": {
+        "max": 32.0,
+        "mean_before_loss": 17.8,
+        "mean_after_loss": null,
+        "mean_all": 17.8
+      },
+      "add_cm": {
+        "max": 9.96,
+        "mean_before_loss": 4.97,
+        "recomputed_auc": 0.498877
+      },
+      "success": {
+        "spider_pass": true,
+        "spider_position_margin_cm": 6.52,
+        "spider_orientation_margin_deg": 10.9,
+        "maniptrans_pass": false,
+        "maniptrans_position_margin_cm": -0.48,
+        "maniptrans_orientation_margin_deg": 12.2
+      },
+      "checkpoint_curve": {
+        "steps_millions": [
+          49,
+          99,
+          149,
+          199,
+          249,
+          299,
+          349
+        ],
+        "kit_add_auc": [
+          0.1044,
+          0.1485,
+          0.1415,
+          0.452,
+          0.4989,
+          0.4963,
+          0.5065
+        ],
+        "shape": "monotone",
+        "best_steps_millions": 349,
+        "selection_is_per_clip_best": false,
+        "cost_of_selection": 0.0077,
+        "spread": 0.1778
+      },
+      "object_radius_cm": 33.1,
+      "hand_object": {
+        "frame": "simulator; palms and both object tracks come from the same staged motion",
+        "frames_reference_says_held": 556,
+        "fraction_reference_says_held": 0.588,
+        "fraction_achieved_in_hand_while_reference_holds": 1.0,
+        "pantomime_frames": 0,
+        "pantomime_fraction": 0.0,
+        "pantomime_fraction_of_held": 0.0,
+        "palm_to_object_excess_cm_while_held": {
+          "mean": -3.5,
+          "max": 0.7
+        },
+        "reference_palm_to_object_cm_while_held": {
+          "mean": 7.2,
+          "p90": 8.8
+        },
+        "palm_to_achieved_object_cm_while_held": 3.7
+      },
+      "position_only": {
+        "kit_add_auc": 0.682677,
+        "kit_mppe_cm": 3.483,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 0.0
+      },
+      "orientation_only": {
+        "kit_add_auc": 0.686179,
+        "kit_mppe_cm": 1.1698,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 1.0
+      },
+      "object": "toy_stroller",
+      "bucket": "strong",
+      "hands": "two-hand",
+      "scene": null,
+      "bridge_anchor_segments": 6,
+      "reference_ceiling_add_auc": 0.5813
+    },
+    {
+      "tag": "e24",
+      "episode": 24,
+      "frames": 748,
+      "selected_environment_steps": 299999232,
+      "kit_add_auc": 0.757353,
+      "first_loss_frame": null,
+      "first_loss_fraction": null,
+      "fraction_inside": {
+        "5cm": 0.9078,
+        "10cm": 1.0,
+        "20cm": 1.0
+      },
+      "position_error_cm": {
+        "max": 6.73,
+        "mean_before_loss": 2.79,
+        "mean_after_loss": null,
+        "mean_all": 2.79
+      },
+      "orientation_error_deg": {
+        "max": 18.8,
+        "mean_before_loss": 7.2,
+        "mean_after_loss": null,
+        "mean_all": 7.2
+      },
+      "add_cm": {
+        "max": 6.79,
+        "mean_before_loss": 2.88,
+        "recomputed_auc": 0.757353
+      },
+      "success": {
+        "spider_pass": true,
+        "spider_position_margin_cm": 7.21,
+        "spider_orientation_margin_deg": 21.5,
+        "maniptrans_pass": true,
+        "maniptrans_position_margin_cm": 0.21,
+        "maniptrans_orientation_margin_deg": 22.8
+      },
+      "checkpoint_curve": {
+        "steps_millions": [
+          49,
+          99,
+          149,
+          199,
+          249,
+          299,
+          349
+        ],
+        "kit_add_auc": [
+          0.2766,
+          0.1923,
+          0.4589,
+          0.4068,
+          0.7653,
+          0.7574,
+          0.7602
+        ],
+        "shape": "peaked",
+        "best_steps_millions": 249,
+        "selection_is_per_clip_best": false,
+        "cost_of_selection": 0.0079,
+        "spread": 0.2259
+      },
+      "object_radius_cm": 19.8,
+      "hand_object": {
+        "frame": "simulator; palms and both object tracks come from the same staged motion",
+        "frames_reference_says_held": 464,
+        "fraction_reference_says_held": 0.62,
+        "fraction_achieved_in_hand_while_reference_holds": 1.0,
+        "pantomime_frames": 0,
+        "pantomime_fraction": 0.0,
+        "pantomime_fraction_of_held": 0.0,
+        "palm_to_object_excess_cm_while_held": {
+          "mean": 1.0,
+          "max": 4.6
+        },
+        "reference_palm_to_object_cm_while_held": {
+          "mean": 4.8,
+          "p90": 8.9
+        },
+        "palm_to_achieved_object_cm_while_held": 5.8
+      },
+      "position_only": {
+        "kit_add_auc": 0.75986,
+        "kit_mppe_cm": 2.7882,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 1.0
+      },
+      "orientation_only": {
+        "kit_add_auc": 0.973346,
+        "kit_mppe_cm": 0.4846,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 1.0
+      },
+      "object": "watering_can",
+      "bucket": "strong",
+      "hands": "one-hand",
+      "scene": null,
+      "bridge_anchor_segments": 9,
+      "reference_ceiling_add_auc": 0.9152
+    },
+    {
+      "tag": "e25",
+      "episode": 25,
+      "frames": 859,
+      "selected_environment_steps": 149999616,
+      "kit_add_auc": 0.133513,
+      "first_loss_frame": 126,
+      "first_loss_fraction": 0.147,
+      "fraction_inside": {
+        "5cm": 0.1397,
+        "10cm": 0.1467,
+        "20cm": 0.1548
+      },
+      "position_error_cm": {
+        "max": 173.39,
+        "mean_before_loss": 1.3,
+        "mean_after_loss": 97.75,
+        "mean_all": 83.6
+      },
+      "orientation_error_deg": {
+        "max": 179.7,
+        "mean_before_loss": 4.2,
+        "mean_after_loss": 132.8,
+        "mean_all": 114.0
+      },
+      "add_cm": {
+        "max": 170.89,
+        "mean_before_loss": 1.58,
+        "recomputed_auc": 0.133513
+      },
+      "success": {
+        "spider_pass": false,
+        "spider_position_margin_cm": -73.6,
+        "spider_orientation_margin_deg": -85.3,
+        "maniptrans_pass": false,
+        "maniptrans_position_margin_cm": -80.6,
+        "maniptrans_orientation_margin_deg": -84.0
+      },
+      "checkpoint_curve": {
+        "steps_millions": [
+          49,
+          99,
+          149,
+          199,
+          249,
+          299,
+          349
+        ],
+        "kit_add_auc": [
+          0.1317,
+          0.0884,
+          0.1335,
+          0.0891,
+          0.1325,
+          0.1297,
+          0.135
+        ],
+        "shape": "monotone",
+        "best_steps_millions": 349,
+        "selection_is_per_clip_best": false,
+        "cost_of_selection": 0.0015,
+        "spread": 0.0198
+      },
+      "object_radius_cm": 14.9,
+      "hand_object": {
+        "frame": "simulator; palms and both object tracks come from the same staged motion",
+        "frames_reference_says_held": 646,
+        "fraction_reference_says_held": 0.752,
+        "fraction_achieved_in_hand_while_reference_holds": 0.04,
+        "pantomime_frames": 620,
+        "pantomime_fraction": 0.722,
+        "pantomime_fraction_of_held": 0.96,
+        "palm_to_object_excess_cm_while_held": {
+          "mean": 74.3,
+          "max": 152.6
+        },
+        "reference_palm_to_object_cm_while_held": {
+          "mean": 6.1,
+          "p90": 10.2
+        },
+        "palm_to_achieved_object_cm_while_held": 80.4
+      },
+      "position_only": {
+        "kit_add_auc": 0.136641,
+        "kit_mppe_cm": 83.6002,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0
+      },
+      "orientation_only": {
+        "kit_add_auc": 0.231883,
+        "kit_mppe_cm": 5.8131,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0
+      },
+      "object": "cyan_water_bottle",
+      "bucket": "fell_back",
+      "hands": "one-hand",
+      "scene": "table",
+      "bridge_anchor_segments": 6,
+      "reference_ceiling_add_auc": 0.7865
+    },
+    {
+      "tag": "e26",
+      "episode": 26,
+      "frames": 669,
+      "selected_environment_steps": 349999104,
+      "kit_add_auc": 0.577354,
+      "first_loss_frame": null,
+      "first_loss_fraction": null,
+      "fraction_inside": {
+        "5cm": 0.9806,
+        "10cm": 1.0,
+        "20cm": 1.0
+      },
+      "position_error_cm": {
+        "max": 5.59,
+        "mean_before_loss": 1.68,
+        "mean_after_loss": null,
+        "mean_all": 1.68
+      },
+      "orientation_error_deg": {
+        "max": 72.6,
+        "mean_before_loss": 23.0,
+        "mean_after_loss": null,
+        "mean_all": 23.0
+      },
+      "add_cm": {
+        "max": 24.12,
+        "mean_before_loss": 8.12,
+        "recomputed_auc": 0.577354
+      },
+      "success": {
+        "spider_pass": true,
+        "spider_position_margin_cm": 8.32,
+        "spider_orientation_margin_deg": 5.6,
+        "maniptrans_pass": true,
+        "maniptrans_position_margin_cm": 1.32,
+        "maniptrans_orientation_margin_deg": 7.0
+      },
+      "checkpoint_curve": {
+        "steps_millions": [
+          49,
+          99,
+          149,
+          199,
+          249,
+          299,
+          349
+        ],
+        "kit_add_auc": [
+          0.4624,
+          0.1709,
+          0.5066,
+          0.5393,
+          0.5441,
+          0.5781,
+          0.5774
+        ],
+        "shape": "peaked",
+        "best_steps_millions": 299,
+        "selection_is_per_clip_best": false,
+        "cost_of_selection": 0.0007,
+        "spread": 0.1327
+      },
+      "object_radius_cm": 39.1,
+      "hand_object": {
+        "frame": "simulator; palms and both object tracks come from the same staged motion",
+        "frames_reference_says_held": 141,
+        "fraction_reference_says_held": 0.211,
+        "fraction_achieved_in_hand_while_reference_holds": 1.0,
+        "pantomime_frames": 0,
+        "pantomime_fraction": 0.0,
+        "pantomime_fraction_of_held": 0.0,
+        "palm_to_object_excess_cm_while_held": {
+          "mean": -2.0,
+          "max": -0.5
+        },
+        "reference_palm_to_object_cm_while_held": {
+          "mean": 9.7,
+          "p90": 10.8
+        },
+        "palm_to_achieved_object_cm_while_held": 7.7
+      },
+      "position_only": {
+        "kit_add_auc": 0.889294,
+        "kit_mppe_cm": 1.678,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 1.0
+      },
+      "orientation_only": {
+        "kit_add_auc": 0.617526,
+        "kit_mppe_cm": 1.2913,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 1.0
+      },
+      "object": "skateboard",
+      "bucket": "strong",
+      "hands": "one-hand",
+      "scene": null,
+      "bridge_anchor_segments": 17,
+      "reference_ceiling_add_auc": 0.669
+    },
+    {
+      "tag": "e27",
+      "episode": 27,
+      "frames": 565,
+      "selected_environment_steps": 349999104,
+      "kit_add_auc": 0.692257,
+      "first_loss_frame": null,
+      "first_loss_fraction": null,
+      "fraction_inside": {
+        "5cm": 0.7841,
+        "10cm": 1.0,
+        "20cm": 1.0
+      },
+      "position_error_cm": {
+        "max": 7.42,
+        "mean_before_loss": 3.02,
+        "mean_after_loss": null,
+        "mean_all": 3.02
+      },
+      "orientation_error_deg": {
+        "max": 41.6,
+        "mean_before_loss": 8.8,
+        "mean_after_loss": null,
+        "mean_all": 8.8
+      },
+      "add_cm": {
+        "max": 9.14,
+        "mean_before_loss": 3.38,
+        "recomputed_auc": 0.692257
+      },
+      "success": {
+        "spider_pass": true,
+        "spider_position_margin_cm": 6.98,
+        "spider_orientation_margin_deg": 19.9,
+        "maniptrans_pass": false,
+        "maniptrans_position_margin_cm": -0.02,
+        "maniptrans_orientation_margin_deg": 21.2
+      },
+      "checkpoint_curve": {
+        "steps_millions": [
+          49,
+          99,
+          149,
+          199,
+          249,
+          299,
+          349
+        ],
+        "kit_add_auc": [
+          0.273,
+          0.2761,
+          0.2337,
+          0.2708,
+          0.7075,
+          0.6933,
+          0.6923
+        ],
+        "shape": "peaked",
+        "best_steps_millions": 249,
+        "selection_is_per_clip_best": false,
+        "cost_of_selection": 0.0153,
+        "spread": 0.2153
+      },
+      "object_radius_cm": 17.5,
+      "hand_object": {
+        "frame": "simulator; palms and both object tracks come from the same staged motion",
+        "frames_reference_says_held": 271,
+        "fraction_reference_says_held": 0.48,
+        "fraction_achieved_in_hand_while_reference_holds": 1.0,
+        "pantomime_frames": 0,
+        "pantomime_fraction": 0.0,
+        "pantomime_fraction_of_held": 0.0,
+        "palm_to_object_excess_cm_while_held": {
+          "mean": 1.4,
+          "max": 5.6
+        },
+        "reference_palm_to_object_cm_while_held": {
+          "mean": 4.9,
+          "p90": 8.2
+        },
+        "palm_to_achieved_object_cm_while_held": 6.3
+      },
+      "position_only": {
+        "kit_add_auc": 0.730642,
+        "kit_mppe_cm": 3.0203,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 0.0
+      },
+      "orientation_only": {
+        "kit_add_auc": 0.925996,
+        "kit_mppe_cm": 0.5915,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 1.0
+      },
+      "object": "woven_basket",
+      "bucket": "strong",
+      "hands": "two-hand",
+      "scene": null,
+      "bridge_anchor_segments": 13,
+      "reference_ceiling_add_auc": 0.8448
+    },
+    {
+      "tag": "e28",
+      "episode": 28,
+      "frames": 988,
+      "selected_environment_steps": 99999744,
+      "kit_add_auc": 0.089132,
+      "first_loss_frame": 118,
+      "first_loss_fraction": 0.119,
+      "fraction_inside": {
+        "5cm": 0.1123,
+        "10cm": 0.1194,
+        "20cm": 0.1356
+      },
+      "position_error_cm": {
+        "max": 90.3,
+        "mean_before_loss": 1.97,
+        "mean_after_loss": 49.36,
+        "mean_all": 43.7
+      },
+      "orientation_error_deg": {
+        "max": 179.5,
+        "mean_before_loss": 16.0,
+        "mean_after_loss": 146.9,
+        "mean_all": 131.3
+      },
+      "add_cm": {
+        "max": 114.21,
+        "mean_before_loss": 2.98,
+        "recomputed_auc": 0.089132
+      },
+      "success": {
+        "spider_pass": false,
+        "spider_position_margin_cm": -33.7,
+        "spider_orientation_margin_deg": -102.7,
+        "maniptrans_pass": false,
+        "maniptrans_position_margin_cm": -40.7,
+        "maniptrans_orientation_margin_deg": -101.3
+      },
+      "checkpoint_curve": {
+        "steps_millions": [
+          49,
+          99,
+          149,
+          199,
+          249,
+          299,
+          349
+        ],
+        "kit_add_auc": [
+          0.0963,
+          0.0891,
+          0.0932,
+          0.0893,
+          0.1077,
+          0.1006,
+          0.1087
+        ],
+        "shape": "flat",
+        "best_steps_millions": 349,
+        "selection_is_per_clip_best": false,
+        "cost_of_selection": 0.0195,
+        "spread": 0.0075
+      },
+      "object_radius_cm": 101.8,
+      "hand_object": {
+        "frame": "simulator; palms and both object tracks come from the same staged motion",
+        "frames_reference_says_held": 41,
+        "fraction_reference_says_held": 0.041,
+        "fraction_achieved_in_hand_while_reference_holds": 0.0,
+        "pantomime_frames": 40,
+        "pantomime_fraction": 0.04,
+        "pantomime_fraction_of_held": 0.976,
+        "palm_to_object_excess_cm_while_held": {
+          "mean": 31.2,
+          "max": 44.7
+        },
+        "reference_palm_to_object_cm_while_held": {
+          "mean": 5.7,
+          "p90": 7.3
+        },
+        "palm_to_achieved_object_cm_while_held": 36.9
+      },
+      "position_only": {
+        "kit_add_auc": 0.103745,
+        "kit_mppe_cm": 43.6971,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0
+      },
+      "orientation_only": {
+        "kit_add_auc": 0.110008,
+        "kit_mppe_cm": 6.6788,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0
+      },
+      "object": "squeegee",
+      "bucket": "lost_mid_clip",
+      "hands": "two-hand",
+      "scene": "table",
+      "bridge_anchor_segments": 0,
+      "reference_ceiling_add_auc": 0.1397
+    },
+    {
+      "tag": "e29",
+      "episode": 29,
+      "frames": 467,
+      "selected_environment_steps": 249999360,
+      "kit_add_auc": 0.59288,
+      "first_loss_frame": null,
+      "first_loss_fraction": null,
+      "fraction_inside": {
+        "5cm": 0.6403,
+        "10cm": 1.0,
+        "20cm": 1.0
+      },
+      "position_error_cm": {
+        "max": 8.8,
+        "mean_before_loss": 4.04,
+        "mean_after_loss": null,
+        "mean_all": 4.04
+      },
+      "orientation_error_deg": {
+        "max": 20.6,
+        "mean_before_loss": 4.3,
+        "mean_after_loss": null,
+        "mean_all": 4.3
+      },
+      "add_cm": {
+        "max": 9.01,
+        "mean_before_loss": 4.28,
+        "recomputed_auc": 0.59288
+      },
+      "success": {
+        "spider_pass": true,
+        "spider_position_margin_cm": 5.96,
+        "spider_orientation_margin_deg": 24.3,
+        "maniptrans_pass": false,
+        "maniptrans_position_margin_cm": -1.04,
+        "maniptrans_orientation_margin_deg": 25.7
+      },
+      "checkpoint_curve": {
+        "steps_millions": [
+          49,
+          99,
+          149,
+          199,
+          249,
+          299,
+          349
+        ],
+        "kit_add_auc": [
+          0.202,
+          0.2036,
+          0.2337,
+          0.2275,
+          0.5929,
+          0.4691,
+          0.4822
+        ],
+        "shape": "collapsing",
+        "best_steps_millions": 249,
+        "selection_is_per_clip_best": true,
+        "cost_of_selection": 0.0,
+        "spread": 0.1523
+      },
+      "object_radius_cm": 65.5,
+      "hand_object": {
+        "frame": "simulator; palms and both object tracks come from the same staged motion",
+        "frames_reference_says_held": 0,
+        "fraction_reference_says_held": 0.0,
+        "fraction_achieved_in_hand_while_reference_holds": 1.0,
+        "pantomime_frames": 0,
+        "pantomime_fraction": 0.0,
+        "pantomime_fraction_of_held": 0.0,
+        "palm_to_object_excess_cm_while_held": {
+          "mean": -0.1,
+          "max": 6.4
+        },
+        "reference_palm_to_object_cm_while_held": {
+          "mean": 34.2,
+          "p90": 47.9
+        },
+        "palm_to_achieved_object_cm_while_held": 34.2
+      },
+      "position_only": {
+        "kit_add_auc": 0.622056,
+        "kit_mppe_cm": 4.039,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 0.0
+      },
+      "orientation_only": {
+        "kit_add_auc": 0.936162,
+        "kit_mppe_cm": 0.2917,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 1.0
+      },
+      "object": "rolling_luggage",
+      "bucket": "strong",
+      "hands": "foot",
+      "scene": null,
+      "bridge_anchor_segments": 18,
+      "reference_ceiling_add_auc": 0.7793
+    }
+  ]
+}

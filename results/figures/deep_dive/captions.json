@@ -1,0 +1,15 @@
+{
+  "what": "one-line caption per figure behind docs/METRICS_DEEP_DIVE.md",
+  "record": "results/metrics_deep_dive.json",
+  "palette": "Okabe-Ito; blue=position, vermillion=orientation or weak, green=event, grey=context",
+  "dpi": 150,
+  "captions": {
+    "a_per_clip_error_timeseries.png": "Object position (blue, left axis) and orientation (vermillion, right axis) error against the clean Tier 1 truth over each clip's selected checkpoint; green dashed line is the first sustained loss past 10 cm, grey fill the reference's own speed. Weak clips titled in vermillion.",
+    "b_comparison_clips_vs_stock.png": "The four clips that have a stock-recipe record: combined recipe (blue) against stock (orange), position error above and orientation below, both against clean truth. Dotted lines are the 10 cm and 30 deg gates.",
+    "c_checkpoint_curves_and_variance.png": "Left: kit AUC against training steps for every clip, weak clips highlighted, black star on the checkpoint the registered z-drop rule picked. Right: the standard deviation of AUC across each clip's last five checkpoints -- the noise floor any second-wave A/B has to beat.",
+    "d_auc_decomposition.png": "Per clip: the submitted AUC (grey) against the AUC the same rollout earns with its orientation replaced by truth (blue, so only position error remains) and with its position replaced by truth (vermillion, only orientation remains). The taller the gap over grey, the more that channel is costing.",
+    "e_hand_to_object_distance.png": "The twelve clips with the most pantomime. Distance from the reference palm to the nearest point of the object's AUC vertex cloud, for the achieved object (vermillion) and the reference object (blue); grey is palm speed, the green band is where the retargeter reports the object in hand. Reference palms, because the achieved body was never exported.",
+    "f_correlations.png": "Kit AUC against object radius, the frame of first loss, the bridge smoother's anchor count and the reference's own ceiling, with the Spearman rank correlation in each title. The dashed line in the last panel is y = x: points above it are clips that beat the reference they tracked.",
+    "g_threshold_margins.png": "Distance from each success threshold, per clip, on a symmetric log scale. A clip passes only when both of its bars are positive. SP-SR above (10 cm / 0.5 rad), MP-SR below (3 cm / 30 deg); both thresholds apply to the time-averaged error."
+  }
+}
