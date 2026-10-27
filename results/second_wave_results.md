@@ -14,15 +14,15 @@ truth and are reported, never used to decide.
 
 - **Part A** (0/18 scored): MP-SR passes on **0**, bar is 9 (was 5); clips more than 0.05 AUC below their record: none
 - **Part B**, per clip against its own record:
-  - e01: bar 0.200, new — — waiting
-  - e04: bar 0.147, new — — waiting
-  - e05: bar 0.266, new — — waiting
-  - e07: bar 0.251, new — — waiting
-  - e09: bar 0.245, new — — waiting
-  - e14: bar 0.109, new — — waiting
-  - e17: bar 0.247, new — — waiting
-  - e19: bar 0.116, new — — waiting
-  - e25: bar 0.134, new — — waiting
-  - e28: bar 0.089, new — — waiting
+  - e01: bar 0.200, new — (waiting)
+  - e04: bar 0.147, new — (waiting)
+  - e05: bar 0.266, new — (waiting)
+  - e07: bar 0.251, new — (waiting)
+  - e09: bar 0.245, new — (waiting)
+  - e14: bar 0.109, new — (waiting)
+  - e17: bar 0.247, new — (waiting)
+  - e19: bar 0.116, new — (waiting)
+  - e25: bar 0.134, new — (waiting)
+  - e28: bar 0.089, new — (waiting)
 
 Still training or not yet selected — A: e00 e02 e03 e06 e08 e10; B1: e04; B2: e14; B3: e05; B4: e17; B5: e01.

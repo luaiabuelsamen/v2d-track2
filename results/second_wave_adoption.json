@@ -2,7 +2,7 @@
   "what": "per clip, whether the second wave's rollout replaces the one on the board",
   "rule": {
     "source": "docs/SECOND_WAVE.md, 'The rule for the final entry \u2014 no truth reads'",
-    "decided_on": "mean distance from the z-drop-selected checkpoint to the input reference",
+    "decided_on": "mean distance from the z-drop-selected checkpoint to the input",
     "tie_break": "a tie keeps the first-wave rollout",
     "reference_tolerance_m": 0.01,
     "reference_from_old": [
