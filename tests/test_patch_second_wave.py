@@ -227,3 +227,70 @@ def test_voc_check_mode_writes_nothing(tree: Path):
     before = curriculum(tree)
     assert voc.main([str(tree), "--zero-at", "0.85", "--check"]) == 0
     assert curriculum(tree) == before
+
+
+# ------------------------------------------------------- the report the runner's guard reads
+# A patch script talks to arm_flags.sh through its stdout, and arm_flags_apply refuses a flag
+# whose script "reported no patch at all". Requiring the colon form of the no-op line cost e11 on
+# a-b05 and e25 on b1-b01 a dead start on 2026-10-27, and would have cost every later clip on
+# every A, B1 and B2 box: on the second clip of a box the container is already patched, so the
+# no-op report IS the normal case. These tests feed each script's real stdout to the real
+# predicate rather than to a copy of it.
+ARM_FLAGS = Path(__file__).parents[1] / "brev/arm_flags.sh"
+
+
+def report_is_accepted(report: str) -> bool:
+    import subprocess
+
+    return (
+        subprocess.run(
+            ["bash", str(ARM_FLAGS), "--report-ok", report],
+            capture_output=True,
+            text=True,
+            check=False,
+        ).returncode
+        == 0
+    )
+
+
+def captured(module, argv: list[str], capsys) -> str:
+    module.main(argv)
+    return capsys.readouterr().out
+
+
+def test_the_object_position_report_is_accepted_fresh_and_again(tree: Path, capsys):
+    first = captured(position, [str(tree), "--std", "0.08"], capsys)
+    assert report_is_accepted(first), first
+    again = captured(position, [str(tree), "--std", "0.08"], capsys)
+    assert "already patched at std 0.08" in again
+    assert report_is_accepted(again), again
+
+
+def test_the_object_position_weight_report_is_accepted_again(tree: Path, capsys):
+    captured(position, [str(tree), "--std", "0.2", "--weight", "5.0"], capsys)
+    again = captured(position, [str(tree), "--std", "0.2", "--weight", "5.0"], capsys)
+    assert report_is_accepted(again), again
+
+
+def test_the_voc_report_is_accepted_fresh_and_again(tree: Path, capsys):
+    start = load("patch_start_curriculum")
+    first_start = captured(start, [str(tree)], capsys)
+    assert report_is_accepted(first_start), first_start
+    first = captured(voc, [str(tree), "--zero-at", "0.85"], capsys)
+    assert report_is_accepted(first), first
+    again = captured(voc, [str(tree), "--zero-at", "0.85"], capsys)
+    assert "already patched at zero_at 0.85" in again
+    assert report_is_accepted(again), again
+
+
+def test_the_start_curriculum_report_is_accepted_again(tree: Path, capsys):
+    start = load("patch_start_curriculum")
+    captured(start, [str(tree)], capsys)
+    again = captured(start, [str(tree)], capsys)
+    assert report_is_accepted(again), again
+
+
+@pytest.mark.parametrize("report", ["", "   ", "FATAL: upstream moved", "nothing to do"])
+def test_a_report_that_claims_no_patch_is_still_refused(report: str):
+    """The guard's whole point: a script that quietly changes nothing must not pass."""
+    assert not report_is_accepted(report)

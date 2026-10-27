@@ -121,6 +121,22 @@ arm_flags_overrides() {
 # Applies every flag's patch inside the container and prints the hydra overrides on stdout, with a
 # line per patch on stderr. Aborts the cell if any patch is missing, refuses to apply, or reports
 # nothing: a half-patched tree trains something nobody designed.
+# Did a patch script actually do something? The guard exists because a script that silently
+# changes nothing would put the stock recipe on the record under an arm's name.
+#
+# It must accept BOTH report dialects, and requiring the colon form cost us 15 clips' worth of
+# bring-up on 2026-10-27: the per-file scripts print "already patched: <path>", while the
+# parameterised ones (object position, VOC) print "already patched at std 0.08, weight unchanged"
+# with no colon and return before any per-file line. On the second clip of a box the container is
+# already patched, so that no-op report is the NORMAL case -- e11 on a-b05 and e25 on b1-b01 both
+# died on it within a minute of starting, and every later clip on an A, B1 or B2 box would have.
+arm_flags_report_ok() {
+  case "$1" in
+    *patched*) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
 arm_flags_apply() {
   local csv="${1:-}" label="${2:-cell}" flags flag script here args report
   flags="$(arm_flags_normalise "$csv")" || return 2
@@ -174,16 +190,22 @@ arm_flags_apply() {
       } >&2
       return 1
     }
-    case "$report" in
-      *"patched:"*) ;;
-      *)
-        {
-          echo "FATAL: $label -- $(basename "$script") reported no patch at all:"
-          printf '%s\n' "$report" | sed 's/^/       /'
-        } >&2
-        return 1 ;;
-    esac
+    if ! arm_flags_report_ok "$report"; then
+      {
+        echo "FATAL: $label -- $(basename "$script") reported no patch at all:"
+        printf '%s\n' "$report" | sed 's/^/       /'
+      } >&2
+      return 1
+    fi
     printf '%s\n' "$report" | sed "s/^/arm flags: $label | /" >&2
   done <<< "$flags"
   printf '%s' "$(arm_flags_overrides "$csv")"
 }
+
+# A self-test entry point, so the predicate above can be checked without a box or a container:
+#   bash brev/arm_flags.sh --report-ok "already patched at std 0.08, weight unchanged"
+# Only when this file is RUN. Sourcing it (the runner and the launcher both do) reaches nothing.
+if [ "${BASH_SOURCE[0]}" = "${0}" ] && [ "${1:-}" = "--report-ok" ]; then
+  arm_flags_report_ok "${2:-}"
+  exit $?
+fi
