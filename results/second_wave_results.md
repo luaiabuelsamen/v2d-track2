@@ -21,7 +21,7 @@ each judged against the incumbent at that moment, and **ships** marks the winner
 | e05 | — | 0.2660 | — | — | — | — | — | **ships (board)** |
 | e06 | A | 0.4730 | 0.4758 | 0.0029 | pass | 2.50 → 2.08 | adopt | ships, pending B4x |
 | e08 | A | 0.4431 | 0.6654 | 0.2223 | pass | 3.91 → 2.08 | adopt | ships, pending B4x |
-| e10 | A | 0.3147 | 0.4794 | 0.1647 | pass | 4.22 → 2.72 | adopt | **ships** |
+| e10 | A | 0.3147 | 0.4794 | 0.1647 | pass | 4.22 → 2.72 | adopt | ships, pending B4x |
 | e14 | B2 | 0.1091 | 0.2055 | 0.0964 | fail | 47.49 → 5.91 | adopt | **ships** |
 | e17 | B4 | 0.2466 | 0.4470 | 0.2004 | fail | 20.25 → 4.73 | adopt | **ships** |
 
@@ -42,4 +42,4 @@ each judged against the incumbent at that moment, and **ships** marks the winner
 
 Mean kit AUC of the shipping rollout over the clips landed so far: **0.4191** (not comparable to the 30-clip 0.3908 until every clip is in).
 
-Still training or not yet selected — A: e11 e12 e15 e16 e18 e20; B1: e25; B2: e19; B3: e07; B4x: e00 e06 e08 e09.
+Still training or not yet selected — A: e11 e12 e15 e16 e18 e20; B1: e25; B2: e19; B3: e07; B4x: e00 e06 e08 e09 e10.
