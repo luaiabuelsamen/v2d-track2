@@ -32,7 +32,7 @@ S="${V2D_SCRATCH:-/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508
 WAVE="$S/second_wave"
 BREV=~/.local/bin/brev
 PY="env -u PYTHONPATH ./.venv311/bin/python -I"
-run_v2d() { $PY -c "import sys; sys.argv=['v2d']+sys.argv[1:]; from v2d.cli import main; main()" "$@"; }
+run_v2d() { $PY -c "import sys; sys.argv=['v2d']+sys.argv[1:]; from v2d.cli import main; raise SystemExit(main())" "$@"; }
 
 # arm -> stage dir; the results dir is $WAVE/run_<arm>, the box prefix v2d-sw-<lowercase arm>-b.
 ARMS="A B1 B2 B3 B4 B5 B4x"

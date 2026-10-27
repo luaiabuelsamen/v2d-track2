@@ -15,7 +15,7 @@ set -uo pipefail
 cd /home/jetson3/projects/v2d-challenge
 S="${V2D_SCRATCH:-/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad}"
 PY="env -u PYTHONPATH ./.venv311/bin/python -I"
-run_v2d() { $PY -c "import sys; sys.argv=['v2d']+sys.argv[1:]; from v2d.cli import main; main()" "$@"; }
+run_v2d() { $PY -c "import sys; sys.argv=['v2d']+sys.argv[1:]; from v2d.cli import main; raise SystemExit(main())" "$@"; }
 
 SELF="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")"
 ARGV=("$@")

@@ -143,6 +143,10 @@ FORWARDED: dict[str, tuple[str, str]] = {
         "apply docs/EXP_SUPPORT_AND_ROOT.md's rule",
     ),
     "pack-tier1": ("v2d.submit.tier1", "pack a Tier 1 submission with the kit's own packer"),
+    "stage-entry-wave2": (
+        "v2d.submit.wave2",
+        "stage the final-candidate Tier 2 entry from the adoption record",
+    ),
     "rollout-to-npz": (
         "v2d.submit.rollout",
         "convert a FlashCHORD rollout into the released frame for scoring",
@@ -155,14 +159,26 @@ FORWARDED: dict[str, tuple[str, str]] = {
 
 
 def _forward(module: str, argv: list[str]) -> int:
-    """Run a stage that owns its own argparse, with `argv` passed through."""
+    """Run a stage that owns its own argparse, with `argv` passed through.
+
+    A stage refuses with `SystemExit("why")`, which is what Python itself prints before exiting
+    non-zero. Passing that string to `int()` -- as this did -- turned every such refusal into a
+    ValueError traceback with the real reason buried in it, so a string code is printed and
+    reported as exit 2 instead.
+    """
     import importlib
 
     stage = importlib.import_module(module)
     try:
         stage.main(argv)
     except SystemExit as exit_code:
-        return int(exit_code.code or 0)
+        code = exit_code.code
+        if code is None or code is True or code is False:
+            return int(bool(code))
+        if isinstance(code, int):
+            return code
+        print(code, file=sys.stderr)
+        return 2
     return 0
 
 
