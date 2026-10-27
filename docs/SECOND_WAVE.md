@@ -337,11 +337,13 @@ well inside `adopt-check`'s 1 cm commensurability tolerance, so e01 would be dec
 yardstick either way. The puller still passes `--reference-from-old e01`, because the rule was
 registered that way and the measurement above came after the launch.
 
-# B4x — orientation std 0.8 on the nine orientation-limited clips (staged 2026-10-27, NOT launched)
+# B4x — orientation std 0.8 on the orientation-limited clips (launched 2026-10-27)
 
 B4 won e17 by **+0.2004 kit AUC** (0.2466 → 0.4470, MPPE 20.8 → 5.2 cm, SP-SR fail → pass) on the
-single change `object_orientation_std` 0.3 → 0.8. B4x is that same change on the nine clips the
-metrics deep dive named orientation-limited. Staged only; the launch needs Luai's go.
+single change `object_orientation_std` 0.3 → 0.8. B4x is that same change on the clips the
+metrics deep dive named orientation-limited, **less e21**: Luai dropped it at launch because it
+already scores above its own reference ceiling (0.2061 against 0.2042), so there is nothing there
+to collect. Eight clips, eight boxes, launched on Luai's go at $27.20 against a $30 arm cap.
 
 ## The nine clips, and where they collide
 
@@ -361,7 +363,8 @@ Mean headroom from perfect orientation over the nine: **+0.3178** per clip, = +0
 
 **Collisions.** Six of the nine — **e00 e06 e08 e10 e20 e26** — are also Part A clips, so two
 candidate rollouts will exist for each. One more, **e09**, is a B3 clip (START reverted). The
-remaining two, **e13 and e21**, are the clips this wave deliberately did not run.
+remaining two, **e13 and e21**, are the clips this wave deliberately did not run — and e21 was
+dropped from B4x at launch, leaving e13 as the only clip here with no wave-2 rollout.
 
 That matters more than it looks, and it has already started: Part A's e08 came back at **0.6654**
 against its 0.4431 record (+0.2223, MP-SR now passing) and e03 at 0.7806 against 0.6589. A B4x arm
@@ -388,16 +391,18 @@ than the rollout we already hold. So:
    stated mechanism*; e17 is evidence for a different one.
 2. **e13 and e21 are capped below their headroom.** Their reference ceilings are 0.1925 and
    0.2042 against records of 0.1594 and 0.2061 — e21 is already *above* its ceiling. The
-   decomposition's +0.461 and +0.357 cannot be collected through a reference that poor. Dropping
-   those two makes B4x 7 boxes and **$23.80**; they are kept in the staged plan only because the
-   nine were asked for by name.
+   decomposition's +0.461 and +0.357 cannot be collected through a reference that poor.
+   **e21 was dropped at launch for exactly that reason; e13 was kept**, where the ceiling still
+   leaves +0.033 of room above the record.
 
 ## Cost and the bar
 
-- **9 boxes × 1 clip, 5.0 h/box** (0.6 bring-up + 4.4 train) **× $0.68 = $30.60.**
-- Spend so far on the $230 authorisation: **$119.94** (first wave $88.22, second wave $31.73 to
-  date). B4x would take it to about $150 of $230 with the second wave's remaining hours still to
-  bill — roughly $75 of the authorisation left after both.
+- **8 boxes × 1 clip, 5.0 h/box** (0.6 bring-up + 4.4 train) **× $0.68 = $27.20**, against a
+  $30 cap for this arm enforced by `second_wave.sh --cap 30`, creates spaced 20 s apart with
+  auto-replacement on.
+- Spend at launch, on the $230 authorisation: **$119.94** (first wave $88.22, second wave $31.73
+  to date). B4x takes it to about $147 with the second wave's remaining hours still to bill —
+  roughly $80 of the authorisation left after both.
 - **Bar, per clip:** beat the best rollout we hold for that clip (above), on kit AUC, with no
   additional dropped clip. Ties keep the incumbent.
 - **Entry rule:** unchanged and input-only — a B4x rollout ships only if its z-drop-selected
@@ -406,10 +411,10 @@ than the rollout we already hold. So:
 ## The launch command
 
 ```
-cd ~/projects/v2d-challenge && brev/second_wave.sh --groups B4x --go
+cd ~/projects/v2d-challenge && V2D_CREATE_STAGGER=20 brev/second_wave.sh --groups B4x --cap 30 --go
 ```
 
 `--groups B4x` is required: B4x is not in the registered wave and a bare run never selects it.
-Dry-run first with `--groups B4x --dry-run`. Nine boxes needs the concurrency we have measured
-(8 ran at once on 2026-10-26, plus auto-replacement), so expect one or two create failures and
-replacements; the $30.60 assumes none.
+Eight concurrent boxes is exactly the concurrency measured on 2026-10-26, and the launcher
+auto-replaces a box that fails during bring-up (up to `--max-replacements`, 6), so expect one or
+two replacements; the $27.20 assumes none and each replacement adds its own bring-up minutes.
