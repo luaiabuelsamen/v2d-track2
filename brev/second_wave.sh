@@ -16,8 +16,9 @@
 #
 # And one follow-up, staged after B4 won e17 by +0.2004 and asked for by name, never by default:
 #
-#   B4x orientation std 0.3 -> 0.8                 the 9 orientation-limited clips
-#       e00 e06 e08 e09 e10 e13 e20 e21 e26        9 boxes, 1 clip each, ~$30.60
+#   B4x orientation std 0.3 -> 0.8                 the orientation-limited clips
+#       e00 e06 e08 e09 e10 e13 e20                8 boxes, 1 clip each, ~$27.20
+#       e26                                        e21 dropped: already above its ceiling
 #
 # e13 and e21 are deliberately not run: both sit within 0.03 of their own reference ceiling, so
 # there is nothing a policy change can win there (docs/METRICS_DEEP_DIVE.md).
@@ -42,6 +43,11 @@ while [ $# -gt 0 ]; do
     --groups) ONLY="$2"; shift 2 ;;
     --root) ROOT="$2"; shift 2 ;;
     --dry-run) DRY=1; shift ;;
+    # The cap this invocation is allowed to spend. The registered second wave's is $90; an arm
+    # launched on its own gets its own, so the refusal below is checked against what was
+    # authorised for THIS launch rather than against the whole wave's envelope.
+    --cap) V2D_CAP="$2"; shift 2 ;;
+    --box-cap) V2D_BOX_CAP="$2"; shift 2 ;;
     *) echo "unknown argument: $1" >&2; exit 2 ;;
   esac
 done
@@ -56,7 +62,7 @@ B2|14 19 28|start_curriculum,orientation_reward,voc_curriculum|V2D_VOC_ZERO_AT=0
 B3|5 7 9|orientation_reward||1|START reverted
 B4|17|start_curriculum,orientation_reward|V2D_OBJECT_ORIENTATION_STD=0.8|1|orientation std 0.8
 B5|1|start_curriculum,orientation_reward||1|bridge-smoothed reference
-B4x|0 6 8 9 10 13 20 21 26|start_curriculum,orientation_reward|V2D_OBJECT_ORIENTATION_STD=0.8|9|orientation std 0.8 on the 9 orientation-limited clips
+B4x|0 6 8 9 10 13 20 26|start_curriculum,orientation_reward|V2D_OBJECT_ORIENTATION_STD=0.8|8|orientation std 0.8 on the orientation-limited clips
 EOF
 )
 
@@ -74,8 +80,8 @@ selected() {
 # shellcheck source=brev/arm_flags.sh
 . "$REPO/brev/arm_flags.sh"
 
-CAP=90
-BOX_CAP=11
+CAP="${V2D_CAP:-90}"
+BOX_CAP="${V2D_BOX_CAP:-11}"
 RATE=0.68
 EST_HOURS_PER_CLIP=4.4
 BRINGUP_HOURS=0.6
