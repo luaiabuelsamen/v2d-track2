@@ -23,7 +23,10 @@ set -uo pipefail
 S="${V2D_SCRATCH:-/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad}"
 REPO=/home/jetson3/projects/v2d-challenge
 ROOT="$S/second_wave"
-SHIPPING="start_curriculum,orientation_reward,finger_targets"
+# The shipping recipe's PATCH flags. FING (interp's finger parquets) and CLEAN (tetool's
+# bridge-cleaned poses) are properties of the staged references, not patches, which is why they do
+# not appear here -- the first wave shipped exactly these two patch scripts.
+SHIPPING="start_curriculum,orientation_reward"
 GO=0
 ONLY=""
 DRY=0
@@ -42,12 +45,12 @@ done
 # NOT `GROUPS`: bash reserves that for the caller's group ids, so assigning to it silently
 # does nothing and every field below comes back empty.
 ARM_GROUPS=$(cat <<'EOF'
-A|0 2 3 6 8 10 11 12 15 16 18 20 22 23 24 26 27 29|start_curriculum,orientation_reward,finger_targets,object_position|V2D_OBJECT_POSITION_STD=0.08|6|object_position std 0.08 m
-B1|4 25|start_curriculum,orientation_reward,finger_targets,object_position|V2D_OBJECT_POSITION_STD=0.2 V2D_OBJECT_POSITION_WEIGHT=5.0|1|object_position weight 5
-B2|14 19 28|start_curriculum,orientation_reward,finger_targets,voc_curriculum|V2D_VOC_ZERO_AT=0.85|1|VOC zero point 85%
-B3|5 7 9|orientation_reward,finger_targets||1|START reverted
-B4|17|start_curriculum,orientation_reward,finger_targets|V2D_OBJECT_ORIENTATION_STD=0.8|1|orientation std 0.8
-B5|1|start_curriculum,orientation_reward,finger_targets||1|bridge-smoothed reference
+A|0 2 3 6 8 10 11 12 15 16 18 20 22 23 24 26 27 29|start_curriculum,orientation_reward,object_position|V2D_OBJECT_POSITION_STD=0.08|6|object_position std 0.08 m
+B1|4 25|start_curriculum,orientation_reward,object_position|V2D_OBJECT_POSITION_STD=0.2 V2D_OBJECT_POSITION_WEIGHT=5.0|1|object_position weight 5
+B2|14 19 28|start_curriculum,orientation_reward,voc_curriculum|V2D_VOC_ZERO_AT=0.85|1|VOC zero point 85%
+B3|5 7 9|orientation_reward||1|START reverted
+B4|17|start_curriculum,orientation_reward|V2D_OBJECT_ORIENTATION_STD=0.8|1|orientation std 0.8
+B5|1|start_curriculum,orientation_reward||1|bridge-smoothed reference
 EOF
 )
 
@@ -106,6 +109,50 @@ if [ "$total_boxes" -gt "$BOX_CAP" ]; then
 fi
 echo "   maps in $ROOT; staging and launching are separate -- this script only wrote maps."
 [ "$GO" = 1 ] || { echo "   (no --go: nothing staged or launched)"; exit 0; }
-echo "FATAL: --go is not implemented here on purpose; the launch command per group is in" >&2
-echo "       docs/SECOND_WAVE.md and needs the orchestrator's explicit go." >&2
-exit 2
+
+# ---------------------------------------------------------------------------- stage, then launch
+# Creates are rate limited at roughly three a minute, and several launchers create at once, so the
+# groups start spaced: the stagger inside a launcher plus the gap between launchers has to keep
+# the GLOBAL create rate under the limit. 30 s inside and 90 s between is ~2 creates a minute.
+STAGGER="${V2D_CREATE_STAGGER:-30}"
+GAP="${V2D_GROUP_GAP:-90}"
+
+while IFS='|' read -r group clips flags envs boxes why; do
+  [ -n "$group" ] || continue
+  case "$ONLY" in ""|*"$group"*) ;; *) continue ;; esac
+  map="$ROOT/map_$group.txt"
+  mount="sw_$group"
+  got=$(grep -c '[^[:space:]]' "$map")
+  per_box=$(( (got + boxes - 1) / boxes ))
+
+  echo "== staging $group ($got clips) into $S/$mount"
+  if [ "$DRY" = 1 ]; then
+    echo "   DRY: $REPO/brev/stage_t2_combined.sh --from-briefs --map $map --mount $mount"
+  else
+    "$REPO/brev/stage_t2_combined.sh" --from-briefs --map "$map" --mount "$mount" \
+      > "$ROOT/stage_$group.log" 2>&1 || {
+        echo "FATAL: staging $group failed; see $ROOT/stage_$group.log" >&2
+        tail -5 "$ROOT/stage_$group.log" >&2
+        exit 3
+      }
+    tail -2 "$ROOT/stage_$group.log" | sed 's/^/   /'
+  fi
+
+  echo "== launching $group: $boxes box(es) x $per_box clips, flags $flags, env ${envs:-none}"
+  launch=("$REPO/brev/launch_t2_combined.sh" --go
+          --map "$map" --stage "$S/$mount" --out "$ROOT/run_$group"
+          --name-prefix "v2d-sw-$(echo "$group" | tr 'A-Z' 'a-z')-b"
+          --arm-flags "$flags" --boxes "$boxes" --clips-per-box "$per_box"
+          --first "" --create-stagger "$STAGGER")
+  [ -n "$envs" ] && launch+=(--arm-env "$envs")
+  if [ "$DRY" = 1 ]; then
+    printf '   DRY: %s\n' "${launch[*]}"
+  else
+    nohup "${launch[@]}" > "$ROOT/launch_$group.log" 2>&1 &
+    echo "   started, pid $!, log $ROOT/launch_$group.log"
+    sleep "$GAP"
+  fi
+done <<< "$ARM_GROUPS"
+
+echo
+echo "== all selected groups launched; watch $ROOT/launch_*.log and $ROOT/run_*/\*.log"

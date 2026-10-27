@@ -32,6 +32,11 @@ EST_HOURS_PER_CLIP=5.1        # 4.4 h train + 7 evaluations, measured on full350
 BRINGUP_HOURS=0.3
 ARM_FLAGS="start_curriculum,orientation_reward"
 STD=0.3
+# Extra K=V pairs forwarded verbatim to the runner's env, for arms whose patch takes a parameter
+# (V2D_OBJECT_POSITION_STD, V2D_OBJECT_POSITION_WEIGHT, V2D_VOC_ZERO_AT). Kept generic so a new
+# parameterised patch needs no launcher change.
+ARM_ENV=""
+CREATE_STAGGER=20
 FIRST="3 9 18 24"             # the four clips with a stock record, so the first read is comparable
 S="${V2D_SCRATCH:-/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad}"
 STAGE="$S/t2_combined"
@@ -52,6 +57,8 @@ while [ $# -gt 0 ]; do
     --name-prefix) BOX_PREFIX="$2"; shift 2 ;;
     --arm-flags) ARM_FLAGS="$2"; shift 2 ;;
     --std) STD="$2"; shift 2 ;;
+    --arm-env) ARM_ENV="$2"; shift 2 ;;
+    --create-stagger) CREATE_STAGGER="$2"; shift 2 ;;
     --first) FIRST="$2"; shift 2 ;;
     --max-hours) MAX_HOURS="$2"; shift 2 ;;
     --npz) NPZ_ARGS+=(--npz "$2"); shift 2 ;;
@@ -152,6 +159,7 @@ cat <<PLAN
 $CONVERT_ROOTS
    recipe         : seed 42, $STEPS steps, checkpoint every $SAVE_EVERY, support per clip
    arm flags      : $ARM_FLAGS  (overrides: $(arm_flags_overrides "$ARM_FLAGS"), object_orientation_std=$STD)
+   arm env        : ${ARM_ENV:-(none)}
    boxes          : up to $BOXES x $TYPE, <= $MAX_CLIPS_PER_BOX clips each, sequential
    capacity       : $CAPACITY clip-slots for $CLIPS clips$([ "$CAPACITY" -lt "$CLIPS" ] && echo "  -- NOT ENOUGH, a second wave will be needed")
    per box        : ~$HOURS_PER_BOX h of work against a ${MAX_HOURS} h authority
@@ -196,6 +204,7 @@ run_clip() {
   ssh -n "$NAME" "mkdir -p ~/t2 && printf '%s %s\n' $EP $SEQ > ~/t2/map_$TAG.txt" 2>/dev/null \
     || { echo "!! $NAME: could not write the clip map"; return 1; }
   ssh -n "$NAME" "setsid nohup env ARM_FLAGS='$ARM_FLAGS' V2D_OBJECT_ORIENTATION_STD='$STD' \
+      $ARM_ENV \
       ASSET_ROOT='/v2d/assets/$MOUNT' RESULTS_DIR=\$HOME/t2_results \
       bash ~/t2/run_tier2_full.sh ~/t2/map_$TAG.txt $STEPS $SAVE_EVERY \
       > ~/t2/clip_$TAG.log 2>&1 < /dev/null & echo started" 2>/dev/null \
@@ -412,7 +421,10 @@ echo "launching up to $BOXES boxes; per-box logs in $OUT/$BOX_PREFIX*.log"
 echo "failed boxes are replaced automatically, up to $MAX_BOX_NAMES boxes in total"
 for i in $(seq 1 "$BOXES"); do
   box_slot "$i" &
-  sleep 20          # stagger the creates so a quota refusal is attributable to one box
+  sleep "$CREATE_STAGGER"   # stagger the creates: a quota refusal stays attributable to one
+                            # box, and `brev create` is rate limited at roughly three a minute --
+                            # three in one minute returned "rate limit exceeded" on 2026-10-26.
+                            # Raise it when several launchers are creating at the same time.
 done
 wait
 echo "boxes created in total: $(box_names_taken "$NAMES") of a cap of $MAX_BOX_NAMES"
