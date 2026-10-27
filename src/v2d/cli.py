@@ -133,6 +133,10 @@ FORWARDED: dict[str, tuple[str, str]] = {
         "v2d.select.rules",
         "what the registered checkpoint rule costs against the alternatives",
     ),
+    "adopt-check": (
+        "v2d.select.adopt",
+        "which second-wave clips replace the board, decided on the input reference alone",
+    ),
     "prereg-cleanup": ("v2d.score.prereg_cleanup", "apply docs/EXP_CLEANUP_CONTACT.md's rule"),
     "prereg-support-root": (
         "v2d.score.prereg_support_root",
