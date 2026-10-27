@@ -42,4 +42,4 @@ each judged against the incumbent at that moment, and **ships** marks the winner
 
 Mean kit AUC of the shipping rollout over the clips landed so far: **0.4191** (not comparable to the 30-clip 0.3908 until every clip is in).
 
-Still training or not yet selected — A: e11 e12 e15 e16 e18 e20; B1: e25; B2: e19; B3: e07; B4x: e00 e06 e08 e09 e10.
+Still training or not yet selected — A: e11 e12 e15 e16 e18 e20; B1: e25; B2: e19; B3: e07; B4x: e00 e06 e08 e09 e10 e13.
