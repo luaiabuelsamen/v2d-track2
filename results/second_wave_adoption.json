@@ -1,0 +1,110 @@
+{
+  "what": "per clip, whether the second wave's rollout replaces the one on the board",
+  "rule": {
+    "source": "docs/SECOND_WAVE.md, 'The rule for the final entry \u2014 no truth reads'",
+    "decided_on": "mean distance from the z-drop-selected checkpoint to the input reference",
+    "tie_break": "a tie keeps the first-wave rollout",
+    "reference_tolerance_m": 0.01,
+    "reference_from_old": [
+      "e01"
+    ],
+    "ground_truth_read": false
+  },
+  "summary": {
+    "clips_landed": 0,
+    "clips_scored": 0,
+    "clips_adopted": 0,
+    "adopted": [],
+    "undecidable": []
+  },
+  "bars": {
+    "part_a": {
+      "clips": 18,
+      "clips_scored": 0,
+      "maniptrans_passes_before": 5,
+      "maniptrans_passes_now": 0,
+      "maniptrans_bar": 9,
+      "clips_below_record_by_more_than": 0.05,
+      "clips_regressed": [],
+      "met": null
+    },
+    "part_b": {
+      "e01": {
+        "bar": 0.2,
+        "new_kit_add_auc": null,
+        "beats_bar": null
+      },
+      "e04": {
+        "bar": 0.147,
+        "new_kit_add_auc": null,
+        "beats_bar": null
+      },
+      "e05": {
+        "bar": 0.266,
+        "new_kit_add_auc": null,
+        "beats_bar": null
+      },
+      "e07": {
+        "bar": 0.251,
+        "new_kit_add_auc": null,
+        "beats_bar": null
+      },
+      "e09": {
+        "bar": 0.245,
+        "new_kit_add_auc": null,
+        "beats_bar": null
+      },
+      "e14": {
+        "bar": 0.109,
+        "new_kit_add_auc": null,
+        "beats_bar": null
+      },
+      "e17": {
+        "bar": 0.247,
+        "new_kit_add_auc": null,
+        "beats_bar": null
+      },
+      "e19": {
+        "bar": 0.116,
+        "new_kit_add_auc": null,
+        "beats_bar": null
+      },
+      "e25": {
+        "bar": 0.134,
+        "new_kit_add_auc": null,
+        "beats_bar": null
+      },
+      "e28": {
+        "bar": 0.089,
+        "new_kit_add_auc": null,
+        "beats_bar": null
+      }
+    }
+  },
+  "clips_awaiting_results": {
+    "A": [
+      "e00",
+      "e02",
+      "e03",
+      "e06",
+      "e08",
+      "e10"
+    ],
+    "B1": [
+      "e04"
+    ],
+    "B2": [
+      "e14"
+    ],
+    "B3": [
+      "e05"
+    ],
+    "B4": [
+      "e17"
+    ],
+    "B5": [
+      "e01"
+    ]
+  },
+  "clips": {}
+}
