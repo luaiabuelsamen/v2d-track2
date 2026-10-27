@@ -1,0 +1,262 @@
+{
+  "what": "the staged Tier 2 references for one full-budget run",
+  "git_sha": "1dcf93748d0bb15a9180200f8c9e7f2edcf19097",
+  "container_mount": "/v2d/assets/t2_combined",
+  "npz_by_source": {},
+  "ref_dataset_by_source": {
+    "clean": "/home/jetson3/projects/v2d-clean-refs/bridge_v1"
+  },
+  "ref_dataset_by_clip": {
+    "e00": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+    "e02": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+    "e03": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+    "e04": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+    "e05": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+    "e06": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+    "e07": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+    "e08": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+    "e09": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+    "e10": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+    "e11": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+    "e12": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+    "e13": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+    "e14": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+    "e15": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+    "e16": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+    "e17": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+    "e18": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+    "e19": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+    "e20": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+    "e21": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+    "e22": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+    "e23": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+    "e24": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+    "e25": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+    "e26": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+    "e27": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+    "e28": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+    "e29": "/home/jetson3/projects/v2d-clean-refs/bridge_v1"
+  },
+  "object_trajectory_matched_by": {
+    "fing": {
+      "clean": 29,
+      "raw": 1
+    }
+  },
+  "clips": {
+    "e00": {
+      "episode": 0,
+      "sequence_id": "2026-06-04_14-16-23_tall_bar_stool_tip_up_04",
+      "source": "fing",
+      "source_parquet": "/home/jetson3/projects/v2d-hand/out/finger_refs_bridge_v1/tier2/whole_body/soma/sequence_id=2026-06-04_14-16-23_tall_bar_stool_tip_up_04/robot_name=g1/data.parquet"
+    },
+    "e01": {
+      "episode": 1,
+      "sequence_id": "2026-05-18_17-06-21_vacuum_left_lean_02",
+      "source": "fing",
+      "source_parquet": "/home/jetson3/projects/v2d-hand/out/finger_refs_bridge_v1/tier2/whole_body/soma/sequence_id=2026-05-18_17-06-21_vacuum_left_lean_02/robot_name=g1/data.parquet"
+    },
+    "e02": {
+      "episode": 2,
+      "sequence_id": "2026-06-02_10-04-42_blue_easter_basket_place_10",
+      "source": "fing",
+      "source_parquet": "/home/jetson3/projects/v2d-hand/out/finger_refs_bridge_v1/tier2/whole_body/soma/sequence_id=2026-06-02_10-04-42_blue_easter_basket_place_10/robot_name=g1/data.parquet"
+    },
+    "e03": {
+      "episode": 3,
+      "sequence_id": "2026-04-27_11-50-10_contigo_coffee_mug_handle_table_05",
+      "source": "fing",
+      "source_parquet": "/home/jetson3/projects/v2d-hand/out/finger_refs_bridge_v1/tier2/whole_body/soma/sequence_id=2026-04-27_11-50-10_contigo_coffee_mug_handle_table_05/robot_name=g1/data.parquet"
+    },
+    "e04": {
+      "episode": 4,
+      "sequence_id": "2026-04-24_11-40-52_baseball_bat_rotate_05",
+      "source": "fing",
+      "source_parquet": "/home/jetson3/projects/v2d-hand/out/finger_refs_bridge_v1/tier2/whole_body/soma/sequence_id=2026-04-24_11-40-52_baseball_bat_rotate_05/robot_name=g1/data.parquet"
+    },
+    "e05": {
+      "episode": 5,
+      "sequence_id": "2026-03-18_19-36-56_g1_box_rotate_01",
+      "source": "fing",
+      "source_parquet": "/home/jetson3/projects/v2d-hand/out/finger_refs_bridge_v1/tier2/whole_body/soma/sequence_id=2026-03-18_19-36-56_g1_box_rotate_01/robot_name=g1/data.parquet"
+    },
+    "e06": {
+      "episode": 6,
+      "sequence_id": "2026-06-01_11-26-44_monitor_rotate_05",
+      "source": "fing",
+      "source_parquet": "/home/jetson3/projects/v2d-hand/out/finger_refs_bridge_v1/tier2/whole_body/soma/sequence_id=2026-06-01_11-26-44_monitor_rotate_05/robot_name=g1/data.parquet"
+    },
+    "e07": {
+      "episode": 7,
+      "sequence_id": "2026-05-29_15-20-43_iron_round_table_02",
+      "source": "fing",
+      "source_parquet": "/home/jetson3/projects/v2d-hand/out/finger_refs_bridge_v1/tier2/whole_body/soma/sequence_id=2026-05-29_15-20-43_iron_round_table_02/robot_name=g1/data.parquet"
+    },
+    "e08": {
+      "episode": 8,
+      "sequence_id": "2026-06-05_15-08-08_skinny_wood_chair_push_10",
+      "source": "fing",
+      "source_parquet": "/home/jetson3/projects/v2d-hand/out/finger_refs_bridge_v1/tier2/whole_body/soma/sequence_id=2026-06-05_15-08-08_skinny_wood_chair_push_10/robot_name=g1/data.parquet"
+    },
+    "e09": {
+      "episode": 9,
+      "sequence_id": "2026-06-04_16-45-04_big_red_bowl_under_skinny_wood_chair_03",
+      "source": "fing",
+      "source_parquet": "/home/jetson3/projects/v2d-hand/out/finger_refs_bridge_v1/tier2/whole_body/soma/sequence_id=2026-06-04_16-45-04_big_red_bowl_under_skinny_wood_chair_03/robot_name=g1/data.parquet"
+    },
+    "e10": {
+      "episode": 10,
+      "sequence_id": "2026-05-01_11-36-40_white_desk_lower_to_ground_10",
+      "source": "fing",
+      "source_parquet": "/home/jetson3/projects/v2d-hand/out/finger_refs_bridge_v1/tier2/whole_body/soma/sequence_id=2026-05-01_11-36-40_white_desk_lower_to_ground_10/robot_name=g1/data.parquet"
+    },
+    "e11": {
+      "episode": 11,
+      "sequence_id": "2026-04-24_13-56-58_light_blue_book_pick_place_09",
+      "source": "fing",
+      "source_parquet": "/home/jetson3/projects/v2d-hand/out/finger_refs_bridge_v1/tier2/whole_body/soma/sequence_id=2026-04-24_13-56-58_light_blue_book_pick_place_09/robot_name=g1/data.parquet"
+    },
+    "e12": {
+      "episode": 12,
+      "sequence_id": "2026-04-25_17-20-04_black_platform_turn_05",
+      "source": "fing",
+      "source_parquet": "/home/jetson3/projects/v2d-hand/out/finger_refs_bridge_v1/tier2/whole_body/soma/sequence_id=2026-04-25_17-20-04_black_platform_turn_05/robot_name=g1/data.parquet"
+    },
+    "e13": {
+      "episode": 13,
+      "sequence_id": "2026-06-09_10-19-09_snack_box_desk_through_06",
+      "source": "fing",
+      "source_parquet": "/home/jetson3/projects/v2d-hand/out/finger_refs_bridge_v1/tier2/whole_body/soma/sequence_id=2026-06-09_10-19-09_snack_box_desk_through_06/robot_name=g1/data.parquet"
+    },
+    "e14": {
+      "episode": 14,
+      "sequence_id": "2026-05-28_14-44-09_round_table_flip_08",
+      "source": "fing",
+      "source_parquet": "/home/jetson3/projects/v2d-hand/out/finger_refs_bridge_v1/tier2/whole_body/soma/sequence_id=2026-05-28_14-44-09_round_table_flip_08/robot_name=g1/data.parquet"
+    },
+    "e15": {
+      "episode": 15,
+      "sequence_id": "2026-05-06_11-06-15_wet_floor_sign_pick_place_ground_08",
+      "source": "fing",
+      "source_parquet": "/home/jetson3/projects/v2d-hand/out/finger_refs_bridge_v1/tier2/whole_body/soma/sequence_id=2026-05-06_11-06-15_wet_floor_sign_pick_place_ground_08/robot_name=g1/data.parquet"
+    },
+    "e16": {
+      "episode": 16,
+      "sequence_id": "2026-03-12_15-06-36_spray_bottle_left_desk_ground_02",
+      "source": "fing",
+      "source_parquet": "/home/jetson3/projects/v2d-hand/out/finger_refs_bridge_v1/tier2/whole_body/soma/sequence_id=2026-03-12_15-06-36_spray_bottle_left_desk_ground_02/robot_name=g1/data.parquet"
+    },
+    "e17": {
+      "episode": 17,
+      "sequence_id": "2026-05-01_17-04-55_traffic_cone_ground_table_02",
+      "source": "fing",
+      "source_parquet": "/home/jetson3/projects/v2d-hand/out/finger_refs_bridge_v1/tier2/whole_body/soma/sequence_id=2026-05-01_17-04-55_traffic_cone_ground_table_02/robot_name=g1/data.parquet"
+    },
+    "e18": {
+      "episode": 18,
+      "sequence_id": "2026-05-06_10-00-19_blue_trash_can_drag_sideways_08",
+      "source": "fing",
+      "source_parquet": "/home/jetson3/projects/v2d-hand/out/finger_refs_bridge_v1/tier2/whole_body/soma/sequence_id=2026-05-06_10-00-19_blue_trash_can_drag_sideways_08/robot_name=g1/data.parquet"
+    },
+    "e19": {
+      "episode": 19,
+      "sequence_id": "2026-05-19_10-19-48_cane_swing_05",
+      "source": "fing",
+      "source_parquet": "/home/jetson3/projects/v2d-hand/out/finger_refs_bridge_v1/tier2/whole_body/soma/sequence_id=2026-05-19_10-19-48_cane_swing_05/robot_name=g1/data.parquet"
+    },
+    "e20": {
+      "episode": 20,
+      "sequence_id": "2026-06-08_16-57-34_rice_cooker_clockwise_04",
+      "source": "fing",
+      "source_parquet": "/home/jetson3/projects/v2d-hand/out/finger_refs_bridge_v1/tier2/whole_body/soma/sequence_id=2026-06-08_16-57-34_rice_cooker_clockwise_04/robot_name=g1/data.parquet"
+    },
+    "e21": {
+      "episode": 21,
+      "sequence_id": "2026-04-29_11-53-57_tall_bar_stool_pull_08",
+      "source": "fing",
+      "source_parquet": "/home/jetson3/projects/v2d-hand/out/finger_refs_bridge_v1/tier2/whole_body/soma/sequence_id=2026-04-29_11-53-57_tall_bar_stool_pull_08/robot_name=g1/data.parquet"
+    },
+    "e22": {
+      "episode": 22,
+      "sequence_id": "2026-05-22_16-52-36_step_ladder_drag_03",
+      "source": "fing",
+      "source_parquet": "/home/jetson3/projects/v2d-hand/out/finger_refs_bridge_v1/tier2/whole_body/soma/sequence_id=2026-05-22_16-52-36_step_ladder_drag_03/robot_name=g1/data.parquet"
+    },
+    "e23": {
+      "episode": 23,
+      "sequence_id": "2026-06-03_15-08-03_toy_stroller_back_forth_ground_04",
+      "source": "fing",
+      "source_parquet": "/home/jetson3/projects/v2d-hand/out/finger_refs_bridge_v1/tier2/whole_body/soma/sequence_id=2026-06-03_15-08-03_toy_stroller_back_forth_ground_04/robot_name=g1/data.parquet"
+    },
+    "e24": {
+      "episode": 24,
+      "sequence_id": "2026-05-29_15-43-20_watering_can_pour_right_02",
+      "source": "fing",
+      "source_parquet": "/home/jetson3/projects/v2d-hand/out/finger_refs_bridge_v1/tier2/whole_body/soma/sequence_id=2026-05-29_15-43-20_watering_can_pour_right_02/robot_name=g1/data.parquet"
+    },
+    "e25": {
+      "episode": 25,
+      "sequence_id": "2026-03-20_11-59-57_cyan_water_bottle_rotate_01",
+      "source": "fing",
+      "source_parquet": "/home/jetson3/projects/v2d-hand/out/finger_refs_bridge_v1/tier2/whole_body/soma/sequence_id=2026-03-20_11-59-57_cyan_water_bottle_rotate_01/robot_name=g1/data.parquet"
+    },
+    "e26": {
+      "episode": 26,
+      "sequence_id": "2026-06-05_16-05-08_skateboard_rotate_ground_10",
+      "source": "fing",
+      "source_parquet": "/home/jetson3/projects/v2d-hand/out/finger_refs_bridge_v1/tier2/whole_body/soma/sequence_id=2026-06-05_16-05-08_skateboard_rotate_ground_10/robot_name=g1/data.parquet"
+    },
+    "e27": {
+      "episode": 27,
+      "sequence_id": "2026-05-01_11-15-05_woven_basket_ground_desk_10",
+      "source": "fing",
+      "source_parquet": "/home/jetson3/projects/v2d-hand/out/finger_refs_bridge_v1/tier2/whole_body/soma/sequence_id=2026-05-01_11-15-05_woven_basket_ground_desk_10/robot_name=g1/data.parquet"
+    },
+    "e28": {
+      "episode": 28,
+      "sequence_id": "2026-05-19_11-27-07_squeegee_sweep_away_from_you_03_",
+      "source": "fing",
+      "source_parquet": "/home/jetson3/projects/v2d-hand/out/finger_refs_bridge_v1/tier2/whole_body/soma/sequence_id=2026-05-19_11-27-07_squeegee_sweep_away_from_you_03_/robot_name=g1/data.parquet"
+    },
+    "e29": {
+      "episode": 29,
+      "sequence_id": "2026-06-05_18-27-40_rolling_luggage_left_foot_push_06",
+      "source": "fing",
+      "source_parquet": "/home/jetson3/projects/v2d-hand/out/finger_refs_bridge_v1/tier2/whole_body/soma/sequence_id=2026-06-05_18-27-40_rolling_luggage_left_foot_push_06/robot_name=g1/data.parquet"
+    }
+  },
+  "by_source": {
+    "fing": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29
+    ]
+  }
+}

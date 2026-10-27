@@ -27,17 +27,28 @@ Goal: A valid Track 2 submission before the freeze (this keeps the $250 Brev cre
 Finish line: Tier 1 insurance submission accepted; Tier 2 submitted; results/ frozen; README + short tech report; every number traceable to a committed results file.
 Deadline: leaderboard freeze 2026-11-04 17:00 EST (internal cutoff 12:00 EST that day)
 Milestone: **a valid Track 2 submission is in and scored, so the $250 Brev credit is secured.** Gate G1 passed long since (all 60 clips retargeted on CPU at 0.0 mm). **Brev is live**: three probe attempts, two real bugs found and fixed, the hardware confirmed, ~$0.22 spent of a $2 cap. The reference cleaner now has a **known-answer gate, and the original cleaner failed it** -- a gated variant that passes is built and scored. Code is one package with one CLI, ruff/format clean, 76 tests. Observability is live to W&B and a private Hugging Face repo.
-Ready, not launched (2026-10-26): **the 30-clip Tier 2 run with the combined recipe is
-prepared end to end** -- `docs/T2_COMBINED_RUN.md`, one command,
-`brev/launch_t2_combined.sh --go`. Staging verified on all 30 clips (0 problems, 14/30 resolve to a
-supported scene, md5 manifest, per-clip provenance). The host scoring path reproduces e18's
-recorded kit AUC **0.382576** and MPPE **4.166134 cm** exactly, from pull to z-drop selection.
-Expected spend **$105.67** of the $230 authorized ($0.00 committed); first comparable results
-~5.4 h after go, all 30 clips ~21 h. **Blocked on two handovers:** tetool's bridge-cleaned
-references (path in `~/projects/_ops/briefs/clean_refs_path.txt`) and interp's finger-target
-retarget, which must be solved on top of tetool's object poses. Without them the run goes on the
-released-input retarget, which is the registered fallback. z-drop is the submission rule and is now
-`v2d pick-checkpoint`'s default.
+Done (2026-10-27 01:57 UTC): **the 30-clip Tier 2 run with the combined recipe finished, all 30
+clips trained to 349,999,104 steps, pulled, kit-scored and selected** --
+`results/t2_combined_run_record.json`, `docs/T2_COMBINED_RUN.md`.
+
+| | our 30 clips | CHORD board average |
+|---|---|---|
+| mean kit AUC | **0.3908** | 0.374 |
+| SP-SR | **0.567** | 0.533 |
+| MP-SR | **0.167** | 0.067 |
+| mean MPPE | **17.36 cm** | 20.5 cm |
+
+**The pre-registered four-clip bar passed**: mean kit AUC on e03/e09/e18/e24 went 0.36635 (stock)
+to **0.59932**, and the count of clips with no drop-free checkpoint fell 1 -> 0 rather than rising
+(`results/t2_combined_bar_read.json`). It is a shipping run, not an attribution run -- START, ORI,
+FING and CLEAN moved together, so the gain cannot be split between them.
+
+Cost **$88.22** of the $230 authorized, 125.0 GPU-h over 11 A6000 boxes, against a $105.67
+projection. Every instance deleted; confirmed by five `brev ls` reads over 50 s. Three clips
+(e04, e17, e25) have no drop-free checkpoint, and on six failing clips the z-drop rule picked an
+early checkpoint (49M-149M of 350M) because the later ones register a drop against the noisy input
+reference -- that is the registered rule's cost on the tail, measured and left alone. z-drop is the
+submission rule and is `v2d pick-checkpoint`'s default.
 
 Last result (2026-10-26): **step 1 re-measured with the support fix -- the AUC line is crossed,
 the pipeline is not.** RAW e03 and e09 were relaunched with the per-clip `scene.support` rule and ran

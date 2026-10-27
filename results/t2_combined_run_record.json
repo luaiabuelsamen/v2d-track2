@@ -1,0 +1,583 @@
+{
+  "what": "the combined-recipe Tier 2 run: one z-drop-selected checkpoint per clip, kit-scored",
+  "selection_rule": "z-drop, on the input reference only; see results/checkpoint_selection.json",
+  "summary": {
+    "clips_with_results": 30,
+    "clips_scored": 30,
+    "clips_with_no_drop_free_checkpoint": 3,
+    "mean_kit_add_auc": 0.390763,
+    "mean_kit_spider_sr": 0.566667,
+    "mean_kit_maniptrans_sr": 0.166667,
+    "mean_kit_mppe_cm": 17.358397
+  },
+  "clips": {
+    "e00": {
+      "episode": 0,
+      "reference_source": "fing",
+      "checkpoints_evaluated": 7,
+      "drop_free_checkpoints": 7,
+      "selected_environment_steps": 299999232,
+      "selected_checkpoint_sha256": "15e87c8d5069fcc4fb42dd1cd79dd8126ff73acb27a4f4a33d46a88f8f3fb190",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "selected_kit_score": {
+        "kit_add_auc": 0.49831298200514135,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 1.0,
+        "kit_mppe_cm": 2.9397199484535506
+      }
+    },
+    "e01": {
+      "episode": 1,
+      "reference_source": "fing",
+      "checkpoints_evaluated": 7,
+      "drop_free_checkpoints": 2,
+      "selected_environment_steps": 199999488,
+      "selected_checkpoint_sha256": "656db59f430606a391b432a4f57a7113aa48fd300dd6bcc3ff35df94983b92f6",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "selected_kit_score": {
+        "kit_add_auc": 0.2001338688085676,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0,
+        "kit_mppe_cm": 43.667687982697785
+      }
+    },
+    "e02": {
+      "episode": 2,
+      "reference_source": "fing",
+      "checkpoints_evaluated": 7,
+      "drop_free_checkpoints": 3,
+      "selected_environment_steps": 249999360,
+      "selected_checkpoint_sha256": "30bf93aaf19961941f7ad36bd3f743683390a2f935626c1ace30064fd886b228",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "selected_kit_score": {
+        "kit_add_auc": 0.4262755102040816,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 0.0,
+        "kit_mppe_cm": 4.573193332524935
+      }
+    },
+    "e03": {
+      "episode": 3,
+      "reference_source": "fing",
+      "checkpoints_evaluated": 7,
+      "drop_free_checkpoints": 2,
+      "selected_environment_steps": 299999232,
+      "selected_checkpoint_sha256": "2e265ba019d60ccc0c6efa511a117297918b1f15d392bc64d7333a4c0ac100f2",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "selected_kit_score": {
+        "kit_add_auc": 0.6588508322663252,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 0.0,
+        "kit_mppe_cm": 3.6646280076488242
+      }
+    },
+    "e04": {
+      "episode": 4,
+      "reference_source": "fing",
+      "checkpoints_evaluated": 7,
+      "drop_free_checkpoints": 0,
+      "selected_environment_steps": 349999104,
+      "selected_checkpoint_sha256": "04a34a75a638fd8f80428adfbb03978c317a1787260d15e4f1168235a3347c0e",
+      "selection_reason": "every checkpoint drops; the one that held longest (386 frames), then the smallest mean distance to the input reference",
+      "selected_kit_score": {
+        "kit_add_auc": 0.1471824408468244,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0,
+        "kit_mppe_cm": 117.18662196925855
+      }
+    },
+    "e05": {
+      "episode": 5,
+      "reference_source": "fing",
+      "checkpoints_evaluated": 7,
+      "drop_free_checkpoints": 7,
+      "selected_environment_steps": 49999872,
+      "selected_checkpoint_sha256": "db80dc8849b16894879d14273c40c5f5cf7caada9f03e87a6f035e8d582e8afd",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "selected_kit_score": {
+        "kit_add_auc": 0.26601445663010964,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0,
+        "kit_mppe_cm": 14.632616242988284
+      }
+    },
+    "e06": {
+      "episode": 6,
+      "reference_source": "fing",
+      "checkpoints_evaluated": 7,
+      "drop_free_checkpoints": 7,
+      "selected_environment_steps": 199999488,
+      "selected_checkpoint_sha256": "d17fbfd77bd2ba25b9375aafca890aa41f3e2a3975f9295b4bae0ff0f00f7237",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "selected_kit_score": {
+        "kit_add_auc": 0.47298534798534797,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 0.0,
+        "kit_mppe_cm": 3.5939012221081015
+      }
+    },
+    "e07": {
+      "episode": 7,
+      "reference_source": "fing",
+      "checkpoints_evaluated": 7,
+      "drop_free_checkpoints": 7,
+      "selected_environment_steps": 49999872,
+      "selected_checkpoint_sha256": "5d0dcbab16831450402039174bdb44c45a5447c87e16bfa8f74e4f10a9b53a7e",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "selected_kit_score": {
+        "kit_add_auc": 0.2508370535714286,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0,
+        "kit_mppe_cm": 10.891428333575966
+      }
+    },
+    "e08": {
+      "episode": 8,
+      "reference_source": "fing",
+      "checkpoints_evaluated": 7,
+      "drop_free_checkpoints": 7,
+      "selected_environment_steps": 349999104,
+      "selected_checkpoint_sha256": "48a3d7f91c23f81c08737517daf7d924ed7c1cdff8ea2b097d0b6a3f8cab24d6",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "selected_kit_score": {
+        "kit_add_auc": 0.44314971751412424,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 0.0,
+        "kit_mppe_cm": 3.3928508813528073
+      }
+    },
+    "e09": {
+      "episode": 9,
+      "reference_source": "fing",
+      "checkpoints_evaluated": 7,
+      "drop_free_checkpoints": 3,
+      "selected_environment_steps": 299999232,
+      "selected_checkpoint_sha256": "6b32d10dc6b5a4ec5b0607e913335684baca64c21672180aea95c8a461c1adc0",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "selected_kit_score": {
+        "kit_add_auc": 0.24482758620689654,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0,
+        "kit_mppe_cm": 5.473843578724505
+      }
+    },
+    "e10": {
+      "episode": 10,
+      "reference_source": "fing",
+      "checkpoints_evaluated": 7,
+      "drop_free_checkpoints": 7,
+      "selected_environment_steps": 249999360,
+      "selected_checkpoint_sha256": "1faa715733c1ead5fc6938213b6bd18ce4ca198b64f09254622e29e6ee09ed48",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "selected_kit_score": {
+        "kit_add_auc": 0.31470403022670024,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 0.0,
+        "kit_mppe_cm": 4.207956700665655
+      }
+    },
+    "e11": {
+      "episode": 11,
+      "reference_source": "fing",
+      "checkpoints_evaluated": 7,
+      "drop_free_checkpoints": 4,
+      "selected_environment_steps": 299999232,
+      "selected_checkpoint_sha256": "8cff8c6423eae58de10de5c78a5adef1de6edbcf71ef483606dbda4d35c96c79",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "selected_kit_score": {
+        "kit_add_auc": 0.33152777777777775,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 0.0,
+        "kit_mppe_cm": 5.439754770762724
+      }
+    },
+    "e12": {
+      "episode": 12,
+      "reference_source": "fing",
+      "checkpoints_evaluated": 7,
+      "drop_free_checkpoints": 4,
+      "selected_environment_steps": 349999104,
+      "selected_checkpoint_sha256": "e35b5934d681311ff7da5568ecda2a805578d84a761f30386fc4698d45882619",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "selected_kit_score": {
+        "kit_add_auc": 0.7097321428571429,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 1.0,
+        "kit_mppe_cm": 2.6079262288108023
+      }
+    },
+    "e13": {
+      "episode": 13,
+      "reference_source": "fing",
+      "checkpoints_evaluated": 7,
+      "drop_free_checkpoints": 3,
+      "selected_environment_steps": 299999232,
+      "selected_checkpoint_sha256": "b8d50915d8e1cc67a33fc86cf8b122a6df2892460c76d0734293857fc6042cc8",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "selected_kit_score": {
+        "kit_add_auc": 0.1593682212581345,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0,
+        "kit_mppe_cm": 4.981312591149206
+      }
+    },
+    "e14": {
+      "episode": 14,
+      "reference_source": "fing",
+      "checkpoints_evaluated": 7,
+      "drop_free_checkpoints": 5,
+      "selected_environment_steps": 49999872,
+      "selected_checkpoint_sha256": "257b0032f18ad27e514c17c60ecc8563de54160f9216a92a61a9021656e9bcb6",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "selected_kit_score": {
+        "kit_add_auc": 0.10913897280966767,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0,
+        "kit_mppe_cm": 47.352314699297466
+      }
+    },
+    "e15": {
+      "episode": 15,
+      "reference_source": "fing",
+      "checkpoints_evaluated": 7,
+      "drop_free_checkpoints": 5,
+      "selected_environment_steps": 249999360,
+      "selected_checkpoint_sha256": "4711c56f2a017b5da7df52ad9b1c96149514827f66b4e9170729df31504ea72a",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "selected_kit_score": {
+        "kit_add_auc": 0.4538461538461538,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 0.0,
+        "kit_mppe_cm": 4.344284900918038
+      }
+    },
+    "e16": {
+      "episode": 16,
+      "reference_source": "fing",
+      "checkpoints_evaluated": 7,
+      "drop_free_checkpoints": 4,
+      "selected_environment_steps": 249999360,
+      "selected_checkpoint_sha256": "3a65de403c7bb6013b89099a495861247338215d2802d75b387bc4c812d75912",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "selected_kit_score": {
+        "kit_add_auc": 0.38901991614255765,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0,
+        "kit_mppe_cm": 5.327873244012806
+      }
+    },
+    "e17": {
+      "episode": 17,
+      "reference_source": "fing",
+      "checkpoints_evaluated": 7,
+      "drop_free_checkpoints": 0,
+      "selected_environment_steps": 299999232,
+      "selected_checkpoint_sha256": "3dbf5cd643e13df187855e997fdd8dd87a95c6d2d68a8ab1b2ec46276db1bafe",
+      "selection_reason": "every checkpoint drops; the one that held longest (399 frames), then the smallest mean distance to the input reference",
+      "selected_kit_score": {
+        "kit_add_auc": 0.2465909090909091,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0,
+        "kit_mppe_cm": 20.840625816200024
+      }
+    },
+    "e18": {
+      "episode": 18,
+      "reference_source": "fing",
+      "checkpoints_evaluated": 7,
+      "drop_free_checkpoints": 7,
+      "selected_environment_steps": 249999360,
+      "selected_checkpoint_sha256": "9bd658c985d3ba393c0d716ccae0bb71001fb5faeaff6331faf4bee97fdd09c7",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "selected_kit_score": {
+        "kit_add_auc": 0.7362325174825175,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 1.0,
+        "kit_mppe_cm": 2.4589146668389317
+      }
+    },
+    "e19": {
+      "episode": 19,
+      "reference_source": "fing",
+      "checkpoints_evaluated": 7,
+      "drop_free_checkpoints": 3,
+      "selected_environment_steps": 149999616,
+      "selected_checkpoint_sha256": "96416ae299a80c36eb3af9de826f34ea484e27d9b4d5d6af7caceeea16b01f33",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "selected_kit_score": {
+        "kit_add_auc": 0.11625282167042891,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0,
+        "kit_mppe_cm": 58.10064472230021
+      }
+    },
+    "e20": {
+      "episode": 20,
+      "reference_source": "fing",
+      "checkpoints_evaluated": 7,
+      "drop_free_checkpoints": 6,
+      "selected_environment_steps": 49999872,
+      "selected_checkpoint_sha256": "fac538d2ce2924d2f3d39bdc36e01aa376c58f4a2abb3614465f99b0bfecfc97",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "selected_kit_score": {
+        "kit_add_auc": 0.47287522603978305,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0,
+        "kit_mppe_cm": 3.2842961194610747
+      }
+    },
+    "e21": {
+      "episode": 21,
+      "reference_source": "fing",
+      "checkpoints_evaluated": 7,
+      "drop_free_checkpoints": 7,
+      "selected_environment_steps": 349999104,
+      "selected_checkpoint_sha256": "f9509618faa2ba02a75057023e90bfb07d8a111ac67283b8c95f028c96e2016f",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "selected_kit_score": {
+        "kit_add_auc": 0.20612094395280237,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 0.0,
+        "kit_mppe_cm": 4.784999757739607
+      }
+    },
+    "e22": {
+      "episode": 22,
+      "reference_source": "fing",
+      "checkpoints_evaluated": 7,
+      "drop_free_checkpoints": 5,
+      "selected_environment_steps": 199999488,
+      "selected_checkpoint_sha256": "921dfddfa7beb5ac92a60b8ccb3390b328a4143fca19161c767b66120b0ee7e6",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "selected_kit_score": {
+        "kit_add_auc": 0.5275556328233658,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 0.0,
+        "kit_mppe_cm": 3.1399438286380947
+      }
+    },
+    "e23": {
+      "episode": 23,
+      "reference_source": "fing",
+      "checkpoints_evaluated": 7,
+      "drop_free_checkpoints": 4,
+      "selected_environment_steps": 249999360,
+      "selected_checkpoint_sha256": "6b025a8405bee39209f83752398e78260a2d46d81d8c183b1c051895f9f09fa4",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "selected_kit_score": {
+        "kit_add_auc": 0.4988768498942917,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 0.0,
+        "kit_mppe_cm": 3.676989507011537
+      }
+    },
+    "e24": {
+      "episode": 24,
+      "reference_source": "fing",
+      "checkpoints_evaluated": 7,
+      "drop_free_checkpoints": 5,
+      "selected_environment_steps": 299999232,
+      "selected_checkpoint_sha256": "d2a097753481ba0d3b3e692bc56bacf95df049879c1bb81c325032289b12be9c",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "selected_kit_score": {
+        "kit_add_auc": 0.7573529411764706,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 1.0,
+        "kit_mppe_cm": 2.8259215531543607
+      }
+    },
+    "e25": {
+      "episode": 25,
+      "reference_source": "fing",
+      "checkpoints_evaluated": 7,
+      "drop_free_checkpoints": 0,
+      "selected_environment_steps": 149999616,
+      "selected_checkpoint_sha256": "d1aadab32352a50dfa7aa1e8814de62965362059c33c77a785dd64596da7ef87",
+      "selection_reason": "every checkpoint drops; the one that held longest (484 frames), then the smallest mean distance to the input reference",
+      "selected_kit_score": {
+        "kit_add_auc": 0.1335128055878929,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0,
+        "kit_mppe_cm": 83.77470137099239
+      }
+    },
+    "e26": {
+      "episode": 26,
+      "reference_source": "fing",
+      "checkpoints_evaluated": 7,
+      "drop_free_checkpoints": 7,
+      "selected_environment_steps": 349999104,
+      "selected_checkpoint_sha256": "98d6a09ee0a7896247e43259c9fa6d09a7ff0252813ac8b4c9dee66838308530",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "selected_kit_score": {
+        "kit_add_auc": 0.5773542600896862,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 1.0,
+        "kit_mppe_cm": 2.3626914691787015
+      }
+    },
+    "e27": {
+      "episode": 27,
+      "reference_source": "fing",
+      "checkpoints_evaluated": 7,
+      "drop_free_checkpoints": 3,
+      "selected_environment_steps": 349999104,
+      "selected_checkpoint_sha256": "47cccc3ebad310fd752792d7d30cf7dd456a8dd71e7e3dc008d6da3f03dc7e86",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "selected_kit_score": {
+        "kit_add_auc": 0.6922566371681416,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 0.0,
+        "kit_mppe_cm": 3.098229809751072
+      }
+    },
+    "e28": {
+      "episode": 28,
+      "reference_source": "fing",
+      "checkpoints_evaluated": 7,
+      "drop_free_checkpoints": 1,
+      "selected_environment_steps": 99999744,
+      "selected_checkpoint_sha256": "ff3afa4eaa15287ad1a9a0e33d608a726b8567bfe381284179e6bcfbfb4b9d36",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "selected_kit_score": {
+        "kit_add_auc": 0.08913208502024292,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0,
+        "kit_mppe_cm": 44.07204584816708
+      }
+    },
+    "e29": {
+      "episode": 29,
+      "reference_source": "fing",
+      "checkpoints_evaluated": 7,
+      "drop_free_checkpoints": 6,
+      "selected_environment_steps": 249999360,
+      "selected_checkpoint_sha256": "88be36cc526488c410eb974d40cca8ec6a242d91742e320f42a4d76a286f804c",
+      "selection_reason": "no drop, then the smallest mean distance to the input reference",
+      "selected_kit_score": {
+        "kit_add_auc": 0.5928800856531049,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 0.0,
+        "kit_mppe_cm": 4.053985227535791
+      }
+    }
+  },
+  "run": {
+    "name": "t2-20261026T111941Z-881504",
+    "git_sha": "6ebb8ca7911b120e5190647c7072ad87db289bb6",
+    "recipe": {
+      "arm_flags": [
+        "start_curriculum",
+        "orientation_reward",
+        "finger_targets",
+        "clean_references"
+      ],
+      "seed": 42,
+      "environment_steps": 349999104,
+      "checkpoint_every": 49999872,
+      "world_count_train": 2048,
+      "world_count_eval": 1,
+      "scene_support": "per clip, true iff that clip's support USDA has primitives (14 of 30)",
+      "object_orientation_std": 0.3,
+      "reset_voc_scale": 0.0
+    },
+    "references": "interp's finger parquets on tetool's bridge_v1 clean retarget, 30/30 clips",
+    "attribution": "a shipping run, not an attribution run: four variables moved together, so the result cannot be split between them. Luai chose that knowingly.",
+    "boxes": [
+      {
+        "box": "v2d-t2-b01",
+        "clips": 4,
+        "minutes": 752,
+        "usd": 8.52
+      },
+      {
+        "box": "v2d-t2-b02",
+        "clips": 4,
+        "minutes": 702,
+        "usd": 7.96
+      },
+      {
+        "box": "v2d-t2-b03",
+        "clips": 4,
+        "minutes": 734,
+        "usd": 8.32
+      },
+      {
+        "box": "v2d-t2-b04",
+        "clips": 4,
+        "minutes": 764,
+        "usd": 8.66
+      },
+      {
+        "box": "v2d-t2-b05",
+        "clips": 4,
+        "minutes": 857,
+        "usd": 9.71
+      },
+      {
+        "box": "v2d-t2-b06",
+        "clips": 4,
+        "minutes": 741,
+        "usd": 8.4
+      },
+      {
+        "box": "v2d-t2-b07",
+        "clips": 4,
+        "minutes": 798,
+        "usd": 9.04
+      },
+      {
+        "box": "v2d-t2-b09",
+        "clips": 3,
+        "minutes": 716,
+        "usd": 8.11
+      },
+      {
+        "box": "v2d-t2-b10",
+        "clips": 2,
+        "minutes": 487,
+        "usd": 5.52
+      },
+      {
+        "box": "v2d-t2-b13",
+        "clips": 2,
+        "minutes": 486,
+        "usd": 5.51
+      },
+      {
+        "box": "v2d-t2-b14",
+        "clips": 2,
+        "minutes": 460,
+        "usd": 5.21
+      }
+    ],
+    "totals": {
+      "boxes": 11,
+      "clip_starts": 37,
+      "clip_starts_note": "37 starts for 30 clips: 7 were the aborted first wave, released and re-run",
+      "gpu_hours": 125.0,
+      "usd_launcher_clock": 84.96,
+      "usd_ledger_create_to_delete": 88.22,
+      "usd_ledger_note": "what Brev bills; includes $3.25 of the failed first launch attempt",
+      "budget_usd": 230,
+      "projected_was_usd": 105.67
+    },
+    "all_instances_deleted": "confirmed by 5 brev ls reads over 50 s at 2026-10-27T01:57Z"
+  },
+  "baseline_comparison": {
+    "what": "the CHORD baseline's published Tier 2 board average, for scale only",
+    "chord": {
+      "add_auc": 0.374,
+      "spider_sr": 0.533,
+      "maniptrans_sr": 0.067,
+      "mppe_cm": 20.5
+    },
+    "ours": {
+      "add_auc": 0.390763,
+      "spider_sr": 0.566667,
+      "maniptrans_sr": 0.166667,
+      "mppe_cm": 17.358397
+    },
+    "caveat": "our numbers are host-side kit scores on our own selection, not a board submission, and the board average is over its own 30 clips. Ahead on all four, most clearly on MP-SR."
+  }
+}
