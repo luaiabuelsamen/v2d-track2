@@ -300,3 +300,39 @@ that parquet**; without it e01 keeps its first-wave rollout, at a cost of one cl
 
 Everything else — A, B2, B3, B4 — is implemented, unit-tested against the real upstream text
 (`tests/test_patch_second_wave.py`, 24 tests) and needs nothing from anyone.
+
+## Addendum, 2026-10-27 08:30 UTC — what B5 is actually varying
+
+Measured while building the adoption check, which has to know whether two rollouts tracked the
+same input. For e01 they very nearly do, and that is not what the arm was registered on:
+
+| pair, e01 object trajectory | mean | max |
+|---|---|---|
+| released raw vs `bridge_v1` (released frame) | 8.13 cm | 16.36 cm |
+| `t2_raw` vs `t2_clean` retarget (`object_body_position`) | 0.109 cm | 0.109 cm |
+| first-wave staged (`finger_refs_bridge_v1`) vs B5 staged (`finger_refs_second_wave`) | 0.109 cm | 0.109 cm |
+
+The per-frame step lengths of all four trajectories are **bit-identical** (mean step 9.154 mm,
+max 33.51 mm), so the smoother's effect on e01's object is a *rigid* transform, not a smoothing of
+the path — and the retargeter, which re-expresses the object in the robot base frame, absorbs it.
+The two trees' `robot_root_position` columns are bit-identical as well.
+
+So B5 does not train on a materially different object reference: it trains on one 1.09 mm away
+from the shipped run's. What *does* differ between the two staged trees is interp's re-solve:
+
+| column | max abs diff | mean abs diff |
+|---|---|---|
+| `robot_joint_positions` (43 joints, the Dex3 DOFs among them) | 0.879 rad | 0.004 rad |
+| `hand_contact_active` | 1.0 (2.7% of frames flipped) | — |
+| `ee_pose_w` (palms) | 0.0 | 0.0 |
+
+**B5 is therefore a finger-target arm on e01, not a reference arm**, and its result should be read
+that way: it tests interp's re-solved fingers and contact flags against the first wave's, with the
+object reference, body and palms held fixed. The registered bar (beat e01's 0.200) is unchanged
+and still meaningful; the *interpretation* is what changes, and the claim in the pre-registration
+that e01 "gets a reference it can track" is not what was launched.
+
+It also makes the adoption caveat moot rather than wrong: the two references agree to 1.09 mm,
+well inside `adopt-check`'s 1 cm commensurability tolerance, so e01 would be decided on the same
+yardstick either way. The puller still passes `--reference-from-old e01`, because the rule was
+registered that way and the measurement above came after the launch.
