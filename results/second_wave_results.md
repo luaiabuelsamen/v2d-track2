@@ -6,7 +6,7 @@ registered rule and reads only the noisy input reference; the kit columns are Ti
 truth and are reported, never used to decide. A clip two arms re-ran has one row per arm,
 each judged against the incumbent at that moment, and **ships** marks the winner.
 
-20 clips landed of 36 expected, 23 candidate rollouts, 17 clips replaced (A 11, B1 2, B2 2, B4 1, B4x 1).
+20 clips landed of 36 expected, 24 candidate rollouts, 17 clips replaced (A 11, B1 2, B2 2, B4 1, B4x 1).
 
 | clip | arm | record AUC | new AUC | Δ AUC | MP-SR | input dist cm, incumbent → new | verdict | ships |
 |---|---|---|---|---|---|---|---|---|
@@ -25,7 +25,8 @@ each judged against the incumbent at that moment, and **ships** marks the winner
 | e08 | A | 0.4431 | 0.6654 | 0.2223 | pass | 3.91 → 2.08 | adopt | **ships** |
 | e08 | B4x | 0.4431 | 0.6020 | 0.1588 | pass | 2.08 → 3.06 | keep |  |
 | e09 | B4x | 0.2448 | 0.3003 | 0.0555 | fail | 5.08 → 4.47 | adopt | **ships** |
-| e10 | A | 0.3147 | 0.4794 | 0.1647 | pass | 4.22 → 2.72 | adopt | ships, pending B4x |
+| e10 | A | 0.3147 | 0.4794 | 0.1647 | pass | 4.22 → 2.72 | adopt | **ships** |
+| e10 | B4x | 0.3147 | 0.3835 | 0.0688 | fail | 2.72 → 4.47 | keep |  |
 | e11 | A | 0.3315 | 0.4676 | 0.1360 | fail | 5.59 → 3.90 | adopt | **ships** |
 | e12 | A | 0.7097 | 0.7904 | 0.0806 | pass | 2.75 → 2.15 | adopt | **ships** |
 | e14 | B2 | 0.1091 | 0.2055 | 0.0964 | fail | 47.49 → 5.91 | adopt | **ships** |
@@ -57,7 +58,8 @@ each judged against the incumbent at that moment, and **ships** marks the winner
   - e06: bar 0.4758 (from A), new 0.6332 (beats)
   - e08: bar 0.6654 (from A), new 0.6020 (below)
   - e09: bar 0.2448 (from first wave), new 0.3003 (beats)
+  - e10: bar 0.4794 (from A), new 0.3835 (below)
 
 Mean kit AUC of the shipping rollout over the clips landed so far: **0.4551** (not comparable to the 30-clip 0.3908 until every clip is in).
 
-Still training or not yet selected — A: e22 e23 e24 e26 e27 e29; B2: e28; B3: e07; B4x: e10 e13.
+Still training or not yet selected — A: e22 e23 e24 e26 e27 e29; B2: e28; B3: e07; B4x: e13.
