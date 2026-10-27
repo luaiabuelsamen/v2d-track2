@@ -21,9 +21,9 @@
     "ground_truth_read": false
   },
   "summary": {
-    "clips_landed": 21,
-    "candidates_landed": 25,
-    "candidates_scored": 25,
+    "clips_landed": 22,
+    "candidates_landed": 26,
+    "candidates_scored": 26,
     "clips_replaced": 17,
     "ships_by_arm": {
       "A": 11,
@@ -52,9 +52,9 @@
       "e25": "B1"
     },
     "undecidable": [],
-    "mean_kit_auc_change_per_candidate": 0.079649,
+    "mean_kit_auc_change_per_candidate": 0.075695,
     "candidates_improving_on_kit_auc": 20,
-    "mean_kit_auc_of_shipping_rollouts_on_landed_clips": 0.440972
+    "mean_kit_auc_of_shipping_rollouts_on_landed_clips": 0.43233
   },
   "bars": {
     "part_a": {
@@ -89,9 +89,10 @@
         "beats_bar": true
       },
       "e07": {
+        "arm": "B3",
         "bar": 0.251,
-        "new_kit_add_auc": null,
-        "beats_bar": null
+        "new_kit_add_auc": 0.227679,
+        "beats_bar": false
       },
       "e09": {
         "bar": 0.245,
@@ -180,7 +181,7 @@
       "e28"
     ],
     "B3": [
-      "e07"
+      "e09"
     ],
     "B4x": [
       "e20"
@@ -713,6 +714,72 @@
         "selected_environment_steps": 349999104,
         "selected_checkpoint_sha256": "41e28551fadfb628e3845b7ae5e3c0666aca8f997e9e5a933930b92092b90dc9",
         "checkpoint_dir": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/second_wave/run_A/results/e06/policy_349999104"
+      }
+    },
+    "e07": {
+      "episode": 7,
+      "shipped": {
+        "cell": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t2_combined_run/results/e07",
+        "checkpoint_dir": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t2_combined_run/results/e07/policy_49999872",
+        "selected_environment_steps": 49999872,
+        "selected_checkpoint_sha256": "5d0dcbab16831450402039174bdb44c45a5447c87e16bfa8f74e4f10a9b53a7e",
+        "checkpoints_evaluated": 7,
+        "drop_free_checkpoints": 7,
+        "selection_reason": "no drop, then the smallest mean distance to the input reference",
+        "mean_distance_to_own_reference_cm": 9.3717
+      },
+      "shipped_kit_score": {
+        "kit_add_auc": 0.2508370535714286,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0,
+        "kit_mppe_cm": 10.891428333575966
+      },
+      "candidates": [
+        {
+          "arm": "B3",
+          "cell": {
+            "cell": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/second_wave/run_B3/results/e07",
+            "checkpoint_dir": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/second_wave/run_B3/results/e07/policy_299999232",
+            "selected_environment_steps": 299999232,
+            "selected_checkpoint_sha256": "d47dc789ac425cd62e25297ce0638f795db0bd750df4bc78b05762e5f3d35cac",
+            "checkpoints_evaluated": 6,
+            "drop_free_checkpoints": 6,
+            "selection_reason": "no drop, then the smallest mean distance to the input reference",
+            "mean_distance_to_own_reference_cm": 13.8876
+          },
+          "kit_score": {
+            "kit_add_auc": 0.2276785714285714,
+            "kit_spider_sr": 0.0,
+            "kit_maniptrans_sr": 0.0,
+            "kit_mppe_cm": 13.26726004000032
+          },
+          "decision": {
+            "reference_used": "each rollout's own input reference, checked to be the same one",
+            "reference_from_old": false,
+            "references_agree": true,
+            "reference_max_gap_cm": 0.0,
+            "frames_new": 896,
+            "frames_old": 896,
+            "new_mean_distance_to_input_cm": 13.8876,
+            "old_mean_distance_to_input_cm": 9.3717,
+            "verdict": "keep",
+            "verdict_reads_ground_truth": false,
+            "judged_against": "first wave"
+          },
+          "became_incumbent": false
+        }
+      ],
+      "record_kit_score": {
+        "kit_add_auc": 0.2508370535714286,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0,
+        "kit_mppe_cm": 10.891428333575966
+      },
+      "ships": {
+        "arm": "first wave",
+        "selected_environment_steps": 49999872,
+        "selected_checkpoint_sha256": "5d0dcbab16831450402039174bdb44c45a5447c87e16bfa8f74e4f10a9b53a7e",
+        "checkpoint_dir": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t2_combined_run/results/e07/policy_49999872"
       }
     },
     "e08": {
