@@ -336,3 +336,80 @@ It also makes the adoption caveat moot rather than wrong: the two references agr
 well inside `adopt-check`'s 1 cm commensurability tolerance, so e01 would be decided on the same
 yardstick either way. The puller still passes `--reference-from-old e01`, because the rule was
 registered that way and the measurement above came after the launch.
+
+# B4x — orientation std 0.8 on the nine orientation-limited clips (staged 2026-10-27, NOT launched)
+
+B4 won e17 by **+0.2004 kit AUC** (0.2466 → 0.4470, MPPE 20.8 → 5.2 cm, SP-SR fail → pass) on the
+single change `object_orientation_std` 0.3 → 0.8. B4x is that same change on the nine clips the
+metrics deep dive named orientation-limited. Staged only; the launch needs Luai's go.
+
+## The nine clips, and where they collide
+
+| clip | record AUC | +perfect orientation | mean ori err | mean pos err | ceiling | bucket | also in |
+|---|---|---|---|---|---|---|---|
+| e13 | 0.1594 | +0.4610 | 40.2° | 4.07 cm | 0.1925 | held_drifting | not run in wave 2 |
+| e20 | 0.4729 | +0.3882 | 49.8° | 1.74 cm | 0.7259 | strong | **Part A** |
+| e21 | 0.2061 | +0.3573 | 28.4° | 4.43 cm | 0.2042 | held_drifting | not run in wave 2 |
+| e26 | 0.5774 | +0.3119 | 23.0° | 1.68 cm | 0.6690 | strong | **Part A** |
+| e09 | 0.2448 | +0.3101 | 41.0° | 4.70 cm | 0.6188 | lost_mid_clip | **B3** |
+| e10 | 0.3147 | +0.2986 | 8.2° | 4.14 cm | 0.4838 | strong | **Part A** |
+| e08 | 0.4431 | +0.2619 | 13.5° | 3.26 cm | 0.4343 | strong | **Part A** |
+| e00 | 0.4983 | +0.2450 | 10.8° | 2.87 cm | 0.3879 | strong | **Part A** |
+| e06 | 0.4730 | +0.2257 | 18.7° | 3.36 cm | 0.5066 | strong | **Part A** |
+
+Mean headroom from perfect orientation over the nine: **+0.3178** per clip, = +0.0953 on the 30-clip mean if all of it were collected.
+
+**Collisions.** Six of the nine — **e00 e06 e08 e10 e20 e26** — are also Part A clips, so two
+candidate rollouts will exist for each. One more, **e09**, is a B3 clip (START reverted). The
+remaining two, **e13 and e21**, are the clips this wave deliberately did not run.
+
+That matters more than it looks, and it has already started: Part A's e08 came back at **0.6654**
+against its 0.4431 record (+0.2223, MP-SR now passing) and e03 at 0.7806 against 0.6589. A B4x arm
+judged against the *first-wave* record would "beat its bar" at 0.50 on e08 while being 0.17 worse
+than the rollout we already hold. So:
+
+- **The per-clip bar is the best rollout we hold when B4x is judged, not the first-wave record.**
+  For the six Part A clips that is `max(first-wave record, Part A result)`; for e09 it is
+  `max(record, B3 result)`; for e13 and e21 it is the first-wave record, since nothing else ran.
+- **The adoption comparison becomes three-way** on the same input-only rule: first wave vs the
+  wave-2 arm vs B4x, each by mean distance from its z-drop-selected checkpoint to the input
+  reference, ties keeping the older rollout. `v2d adopt-check` takes one `--old` root, so before
+  B4x is judged the current winner per clip has to be collected into one results tree and passed
+  as `--old`. That is free CPU work and reads no truth.
+
+## Two honest caveats about the headroom
+
+1. **The decomposition did not predict B4's win.** e17's own orientation headroom is only
+   **+0.048**; it gained +0.2004. The arm worked by changing *behaviour* — identical to stock
+   through 199M, then acquiring and holding the object from 249M on — not by shaving a residual
+   angle. Seven of the nine B4x clips already hold the object (six `strong`, two
+   `held_drifting`), so the acquire-and-hold mechanism that paid on e17 is largely unavailable
+   there, and what is on offer is the residual-angle gain. The nine are the right clips *for the
+   stated mechanism*; e17 is evidence for a different one.
+2. **e13 and e21 are capped below their headroom.** Their reference ceilings are 0.1925 and
+   0.2042 against records of 0.1594 and 0.2061 — e21 is already *above* its ceiling. The
+   decomposition's +0.461 and +0.357 cannot be collected through a reference that poor. Dropping
+   those two makes B4x 7 boxes and **$23.80**; they are kept in the staged plan only because the
+   nine were asked for by name.
+
+## Cost and the bar
+
+- **9 boxes × 1 clip, 5.0 h/box** (0.6 bring-up + 4.4 train) **× $0.68 = $30.60.**
+- Spend so far on the $230 authorisation: **$119.94** (first wave $88.22, second wave $31.73 to
+  date). B4x would take it to about $150 of $230 with the second wave's remaining hours still to
+  bill — roughly $75 of the authorisation left after both.
+- **Bar, per clip:** beat the best rollout we hold for that clip (above), on kit AUC, with no
+  additional dropped clip. Ties keep the incumbent.
+- **Entry rule:** unchanged and input-only — a B4x rollout ships only if its z-drop-selected
+  checkpoint sits closer to the input reference than the incumbent's does.
+
+## The launch command
+
+```
+cd ~/projects/v2d-challenge && brev/second_wave.sh --groups B4x --go
+```
+
+`--groups B4x` is required: B4x is not in the registered wave and a bare run never selects it.
+Dry-run first with `--groups B4x --dry-run`. Nine boxes needs the concurrency we have measured
+(8 ran at once on 2026-10-26, plus auto-replacement), so expect one or two create failures and
+replacements; the $30.60 assumes none.

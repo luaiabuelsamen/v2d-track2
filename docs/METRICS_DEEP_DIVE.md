@@ -147,7 +147,10 @@ the channel were perfect; nobody gets all of it.
 
 **One correction to `docs/SECOND_WAVE.md`.** Its proposal 2 put the wider orientation std on the
 fell-back clips e04/e17/e25. The decomposition says that is the wrong clip set: those three gain
-+0.085, +0.160 and +0.098 from *perfect* orientation, because their object is metres away. The
+only +0.104, +0.048 and +0.003 from *perfect* orientation, because their object is metres away.
+(+0.085, +0.160 and +0.098 are their gains from perfect *position*, which is what the column
+`orientation_only` holds -- truth position substituted, orientation error left in. The clip set
+below is the top nine by perfect-orientation gain and is unaffected.) The
 clips that are orientation-limited are the ones that **hold** the object — e13, e20, e21, e26, e09,
 e10, e08, e00, e06 — and they are worth +0.318 each. The arm was right; the clips were wrong.
 

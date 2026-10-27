@@ -14,6 +14,11 @@
 #   B4  orientation std 0.3 -> 0.8                 e17        angle, where 0.3 is inert
 #   B5  bridge-smoothed reference instead of raw   e01        a reference it can track
 #
+# And one follow-up, staged after B4 won e17 by +0.2004 and asked for by name, never by default:
+#
+#   B4x orientation std 0.3 -> 0.8                 the 9 orientation-limited clips
+#       e00 e06 e08 e09 e10 e13 e20 e21 e26        9 boxes, 1 clip each, ~$30.60
+#
 # e13 and e21 are deliberately not run: both sit within 0.03 of their own reference ceiling, so
 # there is nothing a policy change can win there (docs/METRICS_DEEP_DIVE.md).
 #
@@ -51,8 +56,20 @@ B2|14 19 28|start_curriculum,orientation_reward,voc_curriculum|V2D_VOC_ZERO_AT=0
 B3|5 7 9|orientation_reward||1|START reverted
 B4|17|start_curriculum,orientation_reward|V2D_OBJECT_ORIENTATION_STD=0.8|1|orientation std 0.8
 B5|1|start_curriculum,orientation_reward||1|bridge-smoothed reference
+B4x|0 6 8 9 10 13 20 21 26|start_curriculum,orientation_reward|V2D_OBJECT_ORIENTATION_STD=0.8|9|orientation std 0.8 on the 9 orientation-limited clips
 EOF
 )
+
+# B4x is the follow-up to B4's +0.2004 on e17, not part of the registered second wave, so a bare
+# run never includes it: it has to be asked for by name. See docs/SECOND_WAVE.md.
+REGISTERED="A B1 B2 B3 B4 B5"
+[ -n "$ONLY" ] || ONLY="$REGISTERED"
+
+# Substring matching would make `--groups B4` select B4x as well -- nine boxes nobody asked for.
+selected() {
+  case " $ONLY " in *" $1 "*) return 0 ;; esac
+  return 1
+}
 
 # shellcheck source=brev/arm_flags.sh
 . "$REPO/brev/arm_flags.sh"
@@ -64,12 +81,13 @@ EST_HOURS_PER_CLIP=4.4
 BRINGUP_HOURS=0.6
 total_cost=0
 total_boxes=0
+total_clips=0
 plan=""
 
 mkdir -p "$ROOT"
 while IFS='|' read -r group clips flags envs boxes why; do
   [ -n "$group" ] || continue
-  case "$ONLY" in ""|*"$group"*) ;; *) continue ;; esac
+  selected "$group" || continue
 
   map="$ROOT/map_$group.txt"
   : > "$map"
@@ -87,6 +105,7 @@ while IFS='|' read -r group clips flags envs boxes why; do
   cost="$(awk -v n="$boxes" -v h="$hours" -v r="$RATE" 'BEGIN{printf "%.2f", n*h*r}')"
   total_cost="$(awk -v a="$total_cost" -v b="$cost" 'BEGIN{printf "%.2f", a+b}')"
   total_boxes=$(( total_boxes + boxes ))
+  total_clips=$(( total_clips + got ))
 
   plan="$plan$(printf '%-3s %2d clips  %d box(es) x %s clips  %5s h/box  $%6s  %s\n' \
     "$group" "$got" "$boxes" "$per_box" "$hours" "$cost" "$why")"$'\n'
@@ -97,7 +116,7 @@ done <<< "$ARM_GROUPS"
 echo
 echo "== second wave plan"
 printf '%s' "$plan"
-printf '%-3s %2d clips  %d boxes%*s$%6s\n' "all" 28 "$total_boxes" 26 "" "$total_cost"
+printf '%-3s %2d clips  %d boxes%*s$%6s\n' "all" "$total_clips" "$total_boxes" 26 "" "$total_cost"
 echo "   budget: \$$total_cost of the \$$CAP cap; boxes: $total_boxes of $BOX_CAP"
 if awk -v c="$total_cost" -v cap="$CAP" 'BEGIN{exit !(c > cap)}'; then
   echo "REFUSED: \$$total_cost is over the \$$CAP cap. Cut clips or boxes before asking for a go." >&2
@@ -119,7 +138,7 @@ GAP="${V2D_GROUP_GAP:-90}"
 
 while IFS='|' read -r group clips flags envs boxes why; do
   [ -n "$group" ] || continue
-  case "$ONLY" in ""|*"$group"*) ;; *) continue ;; esac
+  selected "$group" || continue
   map="$ROOT/map_$group.txt"
   mount="sw_$group"
   got=$(grep -c '[^[:space:]]' "$map")
