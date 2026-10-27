@@ -13,10 +13,16 @@ after e26's pull and score, and `brev ls` reports no instances in the org. Nothi
 | | $ |
 |---|---|
 | credit at 21:42 UTC | 38.76 |
-| b17 to the end of e26 (~23:50 UTC, then pull, score, delete) | −1.80 |
+| b17's last 87 min, to its self-deletion at 23:09 UTC (686 min, $7.77 in all) | −0.99 |
+| **credit now** | **≈ 37.77** |
 | (1) the two packs | 0.00 |
 | (2) T3-VALID | −2.00 |
-| **available for (3) T3-FULL** | **≈ 34.90** |
+| **available for (3) T3-FULL** | **≈ 35.77** |
+
+Cross-checked against the box ledger rather than taken on trust: 16,678 box-minutes at $0.68/h is
+$189.02, plus the $21.13 spent before this authorisation, is $210.15 of the $250 credit — leaving
+$39.85, which agrees with the $37.77 above to within $2 of billing granularity. b17 was the last
+box, and `brev ls` is empty.
 
 b17's own launcher deleted it, as designed; `brev ls` confirms the org is empty.
 
