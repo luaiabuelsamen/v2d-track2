@@ -255,3 +255,20 @@ def test_each_pass_converts_into_its_own_npz_directory():
     assert '--npz-out "$NPZ_DIR"' in text
     assert '--npz-out "$CDIR/npz"' not in text
     assert 'rm -rf "$CDIR/npz"' not in text
+
+
+def test_the_tier_is_a_flag_and_reaches_the_scorer():
+    """A Tier 1 run must be scored against the clean tier_1 reference, not the noisy tier_2 one.
+
+    Both scripts hardcoded `--tier tier2`, which would have scored a Tier 1 run against an input
+    its policies never saw and reported the result as if it were comparable.
+    """
+    launcher = Path("brev/launch_t2_combined.sh").read_text()
+    scorer = Path("brev/score_pulled.sh").read_text()
+    assert '--tier) TIER="$2"' in launcher
+    assert '--tier) TIER="$2"' in scorer
+    assert 'TIER="tier2"' in launcher and 'TIER="tier2"' in scorer
+    assert "--tier tier2" not in launcher
+    assert "--tier tier2" not in scorer
+    assert launcher.count('--tier "$TIER"') == 2
+    assert scorer.count('--tier "$TIER"') == 2

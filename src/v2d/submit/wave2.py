@@ -43,6 +43,7 @@ from ..dataset import object_pose
 
 TIER2_EPISODES = 30
 FIRST_WAVE = "first wave"
+DEFAULT_TIER = "tier2"
 
 
 def ships(clip: dict[str, Any]) -> dict[str, Any]:
@@ -121,6 +122,7 @@ def stage(
     released: Path,
     first_wave_provenance: Path | None = None,
     first_wave_results: Path | None = None,
+    tier: str = DEFAULT_TIER,
     allow_partial: bool = False,
 ) -> dict[str, Any]:
     """Write the rollout and frame-reference trees, and return the record that describes them."""
@@ -160,7 +162,7 @@ def stage(
         shutil.copy2(metrics, rollouts / f"episode_{episode:06d}.json")
 
         root, is_released = reference_root(roots, ship["arm"], tag, released)
-        pose, _visible = object_pose(root, "tier2", episode)
+        pose, _visible = object_pose(root, tier, episode)
         np.savez(
             frame_refs / f"episode_{episode:06d}.npz",
             coordinate_frame=np.array("released_track2_world"),
@@ -187,6 +189,7 @@ def stage(
         by_arm[entry["ships_from"]] = by_arm.get(entry["ships_from"], 0) + 1
     staged = {
         "what": "the final-candidate Tier 2 entry's inputs: the adopted rollout per episode",
+        "reference_tier": tier,
         "adoption_record": str(adoption),
         "selection_rule": "z-drop per clip, then the registered input-only adoption rule",
         "partial": bool(awaiting) or len(clips) != TIER2_EPISODES,
@@ -216,6 +219,12 @@ def main(argv: list[str] | None = None) -> None:
         help="the first wave's results dir, for clips the second wave never re-ran",
     )
     parser.add_argument(
+        "--tier",
+        default=DEFAULT_TIER,
+        choices=["tier1", "tier2"],
+        help="the tier whose released object pose the rollouts are converted against",
+    )
+    parser.add_argument(
         "--allow-partial",
         action="store_true",
         help="stage what has landed; the record is stamped partial and must not be submitted",
@@ -230,6 +239,7 @@ def main(argv: list[str] | None = None) -> None:
         released=args.released,
         first_wave_provenance=args.first_wave_provenance,
         first_wave_results=args.first_wave_results,
+        tier=args.tier,
         allow_partial=args.allow_partial,
     )
     counts = ", ".join(f"{arm} {n}" for arm, n in staged["episodes_by_arm"].items())

@@ -330,3 +330,34 @@ def test_the_first_wave_tree_never_overrides_a_clip_the_record_decided(tmp_path)
     )
 
     assert staged["episodes"][0]["ships_from"] == "B4x"
+
+
+def test_the_conversion_tier_is_a_flag_for_a_tier_one_run(tmp_path):
+    """A Tier 1 run's rollouts convert against the clean tier_1 pose, not the noisy tier_2 one."""
+    released = tmp_path / "released"
+    write_dataset(released, 0, x=0.5)
+    path = episode_parquet(released, "tier1", 0)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    pq.write_table(
+        pa.table(
+            {
+                "observation.object.pose": [[0.1, 0.0, 0.9, 1.0, 0.0, 0.0, 0.0]] * 4,
+                "observation.object.visible": [True] * 4,
+            }
+        ),
+        path,
+    )
+    adoption = adoption_record(tmp_path, arm="B4x")
+
+    staged = stage(
+        adoption,
+        tmp_path / "out",
+        stage_root=tmp_path,
+        released=released,
+        tier="tier1",
+        allow_partial=True,
+    )
+
+    assert staged["reference_tier"] == "tier1"
+    pose = np.load(tmp_path / "out" / "frame_refs" / "episode_000000.npz")["pose_xyzw"]
+    assert pose[0, 0, 0] == pytest.approx(0.1)

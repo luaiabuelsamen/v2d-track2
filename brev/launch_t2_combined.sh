@@ -41,6 +41,9 @@ FIRST="3 9 18 24"             # the four clips with a stock record, so the first
 S="${V2D_SCRATCH:-/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad}"
 STAGE="$S/t2_combined"
 MAP="$S/tier2_episode_map.txt"
+# The tier the pulled rollouts are scored against. tier2 for every run so far; a Tier 1 run
+# trains on the clean tier_1 references and has to be scored against those.
+TIER="tier2"
 NPZ_ARGS=()
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -53,6 +56,7 @@ while [ $# -gt 0 ]; do
     --steps) STEPS="$2"; shift 2 ;;
     --stage) STAGE="$2"; shift 2 ;;
     --map) MAP="$2"; shift 2 ;;
+    --tier) TIER="$2"; shift 2 ;;
     --out) OUT_OVERRIDE="$2"; shift 2 ;;
     --name-prefix) BOX_PREFIX="$2"; shift 2 ;;
     --arm-flags) ARM_FLAGS="$2"; shift 2 ;;
@@ -261,7 +265,7 @@ run_clip() {
   done
   local got; got=$(find "$LOCAL" -name objects.parquet | wc -l)
   echo "-- $NAME: $TAG finished after $(( ($(date +%s) - started) / 60 )) min, $got trajectories${dead:+ ($dead)}"
-  bash "$REPO/brev/score_pulled.sh" --results "$RESULTS" --provenance "$STAGE/provenance.json" \
+  bash "$REPO/brev/score_pulled.sh" --results "$RESULTS" --tier "$TIER" --provenance "$STAGE/provenance.json" \
     "${NPZ_ARGS[@]+${NPZ_ARGS[@]}}" 2>&1 | sed 's/^/   /'
   [ -n "$dead" ] && return 1
   [ "$got" -gt 0 ] || return 1
@@ -432,7 +436,7 @@ echo "boxes created in total: $(box_names_taken "$NAMES") of a cap of $MAX_BOX_N
 LEFT=$(comm -23 <(awk '{printf "e%02d\n", $1}' "$QUEUE" | sort) \
                 <(ls "$OUT/claims" 2>/dev/null | sort) | tr '\n' ' ')
 echo "== run finished. clips never claimed: ${LEFT:-none}"
-bash "$REPO/brev/score_pulled.sh" --results "$RESULTS" --provenance "$STAGE/provenance.json" \
+bash "$REPO/brev/score_pulled.sh" --results "$RESULTS" --tier "$TIER" --provenance "$STAGE/provenance.json" \
   "${NPZ_ARGS[@]+${NPZ_ARGS[@]}}"
 echo "spend committed so far: \$$(ab4_spent_usd) of \$$NEW_BUDGET_USD"
 ~/.local/bin/brev ls 2>&1 | tail -3

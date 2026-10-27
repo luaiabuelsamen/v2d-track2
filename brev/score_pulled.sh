@@ -22,12 +22,18 @@ ARGV=("$@")
 
 RESULTS=""
 DATA="$S/data"
+# Which tier's clean reference the kit scores against, and which tier's released pose a rollout is
+# converted into. Tier 2 for every run so far; a Tier 1 run trains on the clean tier_1 references
+# and must be scored against them, and hardcoding tier2 here would have scored it against the
+# noisy input it never saw.
+TIER="tier2"
 KIT="$S/kit_extract/v2d_submission_kit"
 PROVENANCE=""
 declare -A NPZ=() REF_DATASET=()
 while [ $# -gt 0 ]; do
   case "$1" in
     --results) RESULTS="$2"; shift 2 ;;
+    --tier) TIER="$2"; shift 2 ;;
     --dataset-root) DATA="$2"; shift 2 ;;
     --kit-root) KIT="$2"; shift 2 ;;
     --provenance) PROVENANCE="$2"; shift 2 ;;
@@ -107,14 +113,14 @@ for CLIP in "$RESULTS"/e[0-9][0-9]; do
     CDIR="$(dirname "$TRAJ")"
     [ -s "$CDIR/score.json" ] && continue
     NPZ_DIR="$CDIR/npz.$$"
-    if ! run_v2d rollout-to-npz "$TRAJ" --dataset-root "$CONVERT_ROOT" --episode "$EP" --tier tier2 \
+    if ! run_v2d rollout-to-npz "$TRAJ" --dataset-root "$CONVERT_ROOT" --episode "$EP" --tier "$TIER" \
          "${REF[@]+${REF[@]}}" --npz-out "$NPZ_DIR" -o "$CDIR/rollout_record.json" \
          > "$CDIR/rollout.log" 2>&1; then
       echo "$TAG $(basename "$CDIR"): rollout-to-npz FAILED"; tail -3 "$CDIR/rollout.log" | sed 's/^/    /'
       rm -rf "$NPZ_DIR"
       continue
     fi
-    if ! run_v2d score --kit-root "$KIT" --dataset-root "$DATA" --tier tier2 \
+    if ! run_v2d score --kit-root "$KIT" --dataset-root "$DATA" --tier "$TIER" \
          --pred "npz:$NPZ_DIR" --episodes "$EP" -o "$CDIR/score.json" \
          > "$CDIR/score.log" 2>&1; then
       echo "$TAG $(basename "$CDIR"): score FAILED"; tail -3 "$CDIR/score.log" | sed 's/^/    /'
