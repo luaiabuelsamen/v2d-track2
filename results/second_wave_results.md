@@ -6,7 +6,7 @@ registered rule and reads only the noisy input reference; the kit columns are Ti
 truth and are reported, never used to decide. A clip two arms re-ran has one row per arm,
 each judged against the incumbent at that moment, and **ships** marks the winner.
 
-29 clips landed of 36 expected, 34 candidate rollouts, 23 clips replaced (A 17, B1 2, B2 2, B4 1, B4x 1).
+29 clips landed of 36 expected, 35 candidate rollouts, 23 clips replaced (A 17, B1 2, B2 2, B4 1, B4x 1).
 
 | clip | arm | record AUC | new AUC | Δ AUC | MP-SR | input dist cm, incumbent → new | verdict | ships |
 |---|---|---|---|---|---|---|---|---|
@@ -26,7 +26,8 @@ each judged against the incumbent at that moment, and **ships** marks the winner
 | e07 | — | 0.2508 | — | — | — | — | — | **ships (board)** |
 | e08 | A | 0.4431 | 0.6654 | 0.2223 | pass | 3.91 → 2.08 | adopt | **ships** |
 | e08 | B4x | 0.4431 | 0.6020 | 0.1588 | pass | 2.08 → 3.06 | keep |  |
-| e09 | B4x | 0.2448 | 0.3003 | 0.0555 | fail | 5.08 → 4.47 | adopt | ships, pending B3 |
+| e09 | B3 | 0.2448 | 0.1756 | -0.0693 | fail | 5.08 → 49.60 | keep |  |
+| e09 | B4x | 0.2448 | 0.3003 | 0.0555 | fail | 5.08 → 4.47 | adopt | **ships** |
 | e10 | A | 0.3147 | 0.4794 | 0.1647 | pass | 4.22 → 2.72 | adopt | **ships** |
 | e10 | B4x | 0.3147 | 0.3835 | 0.0688 | fail | 2.72 → 4.47 | keep |  |
 | e11 | A | 0.3315 | 0.4676 | 0.1360 | fail | 5.59 → 3.90 | adopt | **ships** |
@@ -59,7 +60,7 @@ each judged against the incumbent at that moment, and **ships** marks the winner
   - e04 [B1]: bar 0.147, new 0.1466 (below)
   - e05 [B3]: bar 0.266, new 0.3418 (beats)
   - e07 [B3]: bar 0.251, new 0.2277 (below)
-  - e09: bar 0.245, new — (waiting)
+  - e09 [B3]: bar 0.245, new 0.1756 (below)
   - e14 [B2]: bar 0.109, new 0.2055 (beats)
   - e17 [B4]: bar 0.247, new 0.4470 (beats)
   - e19 [B2]: bar 0.116, new 0.1163 (beats)
@@ -77,4 +78,4 @@ each judged against the incumbent at that moment, and **ships** marks the winner
 
 Mean kit AUC of the shipping rollout over the clips landed so far: **0.4720** (not comparable to the 30-clip 0.3908 until every clip is in).
 
-Still training or not yet selected — B3: e09; B4x: e26.
+Still training or not yet selected — B4x: e26.

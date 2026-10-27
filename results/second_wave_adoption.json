@@ -22,8 +22,8 @@
   },
   "summary": {
     "clips_landed": 29,
-    "candidates_landed": 34,
-    "candidates_scored": 34,
+    "candidates_landed": 35,
+    "candidates_scored": 35,
     "clips_replaced": 23,
     "ships_by_arm": {
       "A": 17,
@@ -58,7 +58,7 @@
       "e29": "A"
     },
     "undecidable": [],
-    "mean_kit_auc_change_per_candidate": 0.069882,
+    "mean_kit_auc_change_per_candidate": 0.065906,
     "candidates_improving_on_kit_auc": 26,
     "mean_kit_auc_of_shipping_rollouts_on_landed_clips": 0.47198
   },
@@ -101,9 +101,10 @@
         "beats_bar": false
       },
       "e09": {
+        "arm": "B3",
         "bar": 0.245,
-        "new_kit_add_auc": null,
-        "beats_bar": null
+        "new_kit_add_auc": 0.175575,
+        "beats_bar": false
       },
       "e14": {
         "arm": "B2",
@@ -182,9 +183,6 @@
     }
   },
   "clips_awaiting_results": {
-    "B3": [
-      "e09"
-    ],
     "B4x": [
       "e26"
     ]
@@ -902,6 +900,39 @@
         "kit_mppe_cm": 5.473843578724505
       },
       "candidates": [
+        {
+          "arm": "B3",
+          "cell": {
+            "cell": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/second_wave/run_B3/results/e09",
+            "checkpoint_dir": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/second_wave/run_B3/results/e09/policy_99999744",
+            "selected_environment_steps": 99999744,
+            "selected_checkpoint_sha256": "50cd352303d1c5df6f5f82c9c4b301f5126bf5eb660193a9db1085935fbc8721",
+            "checkpoints_evaluated": 7,
+            "drop_free_checkpoints": 3,
+            "selection_reason": "no drop, then the smallest mean distance to the input reference",
+            "mean_distance_to_own_reference_cm": 49.596
+          },
+          "kit_score": {
+            "kit_add_auc": 0.17557471264367816,
+            "kit_spider_sr": 0.0,
+            "kit_maniptrans_sr": 0.0,
+            "kit_mppe_cm": 49.447653747062525
+          },
+          "decision": {
+            "reference_used": "each rollout's own input reference, checked to be the same one",
+            "reference_from_old": false,
+            "references_agree": true,
+            "reference_max_gap_cm": 0.0,
+            "frames_new": 870,
+            "frames_old": 870,
+            "new_mean_distance_to_input_cm": 49.596,
+            "old_mean_distance_to_input_cm": 5.0795,
+            "verdict": "keep",
+            "verdict_reads_ground_truth": false,
+            "judged_against": "first wave"
+          },
+          "became_incumbent": false
+        },
         {
           "arm": "B4x",
           "cell": {
