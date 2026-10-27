@@ -21,15 +21,16 @@
     "ground_truth_read": false
   },
   "summary": {
-    "clips_landed": 19,
-    "candidates_landed": 21,
-    "candidates_scored": 21,
-    "clips_replaced": 16,
+    "clips_landed": 20,
+    "candidates_landed": 23,
+    "candidates_scored": 23,
+    "clips_replaced": 17,
     "ships_by_arm": {
       "A": 11,
       "B1": 2,
       "B2": 2,
-      "B4": 1
+      "B4": 1,
+      "B4x": 1
     },
     "replaced": {
       "e00": "A",
@@ -37,6 +38,7 @@
       "e04": "B1",
       "e06": "A",
       "e08": "A",
+      "e09": "B4x",
       "e10": "A",
       "e11": "A",
       "e12": "A",
@@ -50,9 +52,9 @@
       "e25": "B1"
     },
     "undecidable": [],
-    "mean_kit_auc_change_per_candidate": 0.080223,
-    "candidates_improving_on_kit_auc": 16,
-    "mean_kit_auc_of_shipping_rollouts_on_landed_clips": 0.463198
+    "mean_kit_auc_change_per_candidate": 0.082626,
+    "candidates_improving_on_kit_auc": 18,
+    "mean_kit_auc_of_shipping_rollouts_on_landed_clips": 0.455052
   },
   "bars": {
     "part_a": {
@@ -133,11 +135,23 @@
         "new_kit_add_auc": 0.518959,
         "beats_bar": true
       },
+      "e06": {
+        "bar": 0.475847,
+        "bar_from": "A",
+        "new_kit_add_auc": 0.633242,
+        "beats_bar": true
+      },
       "e08": {
         "bar": 0.665431,
         "bar_from": "A",
         "new_kit_add_auc": 0.60196,
         "beats_bar": false
+      },
+      "e09": {
+        "bar": 0.244828,
+        "bar_from": "first wave",
+        "new_kit_add_auc": 0.300287,
+        "beats_bar": true
       }
     }
   },
@@ -157,8 +171,6 @@
       "e07"
     ],
     "B4x": [
-      "e06",
-      "e09",
       "e10",
       "e13"
     ]
@@ -223,8 +235,8 @@
             "checkpoint_dir": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/second_wave/run_B4x/results/e00/policy_299999232",
             "selected_environment_steps": 299999232,
             "selected_checkpoint_sha256": "627120d6e66263196252511530d6b5e45123ef296dfa28a7e9726ea6930fb41f",
-            "checkpoints_evaluated": 5,
-            "drop_free_checkpoints": 5,
+            "checkpoints_evaluated": 7,
+            "drop_free_checkpoints": 7,
             "selection_reason": "no drop, then the smallest mean distance to the input reference",
             "mean_distance_to_own_reference_cm": 3.7726
           },
@@ -644,6 +656,39 @@
             "judged_against": "first wave"
           },
           "became_incumbent": true
+        },
+        {
+          "arm": "B4x",
+          "cell": {
+            "cell": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/second_wave/run_B4x/results/e06",
+            "checkpoint_dir": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/second_wave/run_B4x/results/e06/policy_99999744",
+            "selected_environment_steps": 99999744,
+            "selected_checkpoint_sha256": "dcd278401b6ec68679d00c31c4e8736bfad7385263e14fe2834b3383be52d3e9",
+            "checkpoints_evaluated": 7,
+            "drop_free_checkpoints": 7,
+            "selection_reason": "no drop, then the smallest mean distance to the input reference",
+            "mean_distance_to_own_reference_cm": 3.3453
+          },
+          "kit_score": {
+            "kit_add_auc": 0.6332417582417582,
+            "kit_spider_sr": 1.0,
+            "kit_maniptrans_sr": 0.0,
+            "kit_mppe_cm": 3.649985251088285
+          },
+          "decision": {
+            "reference_used": "each rollout's own input reference, checked to be the same one",
+            "reference_from_old": false,
+            "references_agree": true,
+            "reference_max_gap_cm": 0.0,
+            "frames_new": 546,
+            "frames_old": 546,
+            "new_mean_distance_to_input_cm": 3.3453,
+            "old_mean_distance_to_input_cm": 2.0826,
+            "verdict": "keep",
+            "verdict_reads_ground_truth": false,
+            "judged_against": "A"
+          },
+          "became_incumbent": false
         }
       ],
       "record_kit_score": {
@@ -756,6 +801,72 @@
         "selected_environment_steps": 249999360,
         "selected_checkpoint_sha256": "ceb67ed9e1f6fb3fe878228af5b73e334dec836fa8206c76ade0f194bf5278dc",
         "checkpoint_dir": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/second_wave/run_A/results/e08/policy_249999360"
+      }
+    },
+    "e09": {
+      "episode": 9,
+      "shipped": {
+        "cell": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t2_combined_run/results/e09",
+        "checkpoint_dir": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t2_combined_run/results/e09/policy_299999232",
+        "selected_environment_steps": 299999232,
+        "selected_checkpoint_sha256": "6b32d10dc6b5a4ec5b0607e913335684baca64c21672180aea95c8a461c1adc0",
+        "checkpoints_evaluated": 7,
+        "drop_free_checkpoints": 3,
+        "selection_reason": "no drop, then the smallest mean distance to the input reference",
+        "mean_distance_to_own_reference_cm": 5.0795
+      },
+      "shipped_kit_score": {
+        "kit_add_auc": 0.24482758620689654,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0,
+        "kit_mppe_cm": 5.473843578724505
+      },
+      "candidates": [
+        {
+          "arm": "B4x",
+          "cell": {
+            "cell": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/second_wave/run_B4x/results/e09",
+            "checkpoint_dir": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/second_wave/run_B4x/results/e09/policy_349999104",
+            "selected_environment_steps": 349999104,
+            "selected_checkpoint_sha256": "5d5ec726f8f7b25053629b4d91d62c2b000d501ec4836577b4404da48755fed4",
+            "checkpoints_evaluated": 7,
+            "drop_free_checkpoints": 3,
+            "selection_reason": "no drop, then the smallest mean distance to the input reference",
+            "mean_distance_to_own_reference_cm": 4.4744
+          },
+          "kit_score": {
+            "kit_add_auc": 0.3002873563218391,
+            "kit_spider_sr": 0.0,
+            "kit_maniptrans_sr": 0.0,
+            "kit_mppe_cm": 4.890156668215812
+          },
+          "decision": {
+            "reference_used": "each rollout's own input reference, checked to be the same one",
+            "reference_from_old": false,
+            "references_agree": true,
+            "reference_max_gap_cm": 0.0,
+            "frames_new": 870,
+            "frames_old": 870,
+            "new_mean_distance_to_input_cm": 4.4744,
+            "old_mean_distance_to_input_cm": 5.0795,
+            "verdict": "adopt",
+            "verdict_reads_ground_truth": false,
+            "judged_against": "first wave"
+          },
+          "became_incumbent": true
+        }
+      ],
+      "record_kit_score": {
+        "kit_add_auc": 0.24482758620689654,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0,
+        "kit_mppe_cm": 5.473843578724505
+      },
+      "ships": {
+        "arm": "B4x",
+        "selected_environment_steps": 349999104,
+        "selected_checkpoint_sha256": "5d5ec726f8f7b25053629b4d91d62c2b000d501ec4836577b4404da48755fed4",
+        "checkpoint_dir": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/second_wave/run_B4x/results/e09/policy_349999104"
       }
     },
     "e10": {
