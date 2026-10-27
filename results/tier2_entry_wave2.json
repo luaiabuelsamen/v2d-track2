@@ -1,0 +1,591 @@
+{
+ "what": "the final-candidate Tier 2 / Tier 1 entry from the second wave, packed and validated here; NOT uploaded",
+ "written": "2026-10-27T23:21:01Z",
+ "code_commit_url_in_every_row": "https://github.com/luaiabuelsamen/v2d-track2/commit/e8ffe8fb135681045c452997fa75869f915f53c2",
+ "selection_rule": "z-drop per clip, then the registered input-only adoption rule",
+ "adoption_record": "results/second_wave_adoption.json",
+ "partial": false,
+ "episodes_by_arm": {
+  "A": 17,
+  "B1": 2,
+  "B2": 2,
+  "B4": 1,
+  "B4x": 1,
+  "first wave": 7
+ },
+ "distinct_checkpoint_digests": 30,
+ "frame_references": {
+  "cleaned": 29,
+  "released_input": [
+   "e01"
+  ]
+ },
+ "packs": {
+  "tier2": {
+   "csv": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t2_entry_wave2/pack_tier2/track2_tier2.csv",
+   "csv_sha256": "ae4e2d1278a30cc4c572fd02e3f4bba1c0c582a5b4aaf4bfe2e28dcd5255512e",
+   "csv_bytes": 11841271,
+   "rows": 22989,
+   "episodes": 30,
+   "kit_packer": "pass",
+   "kit_validator": "pass",
+   "submittable": true,
+   "local_score": {
+    "add_auc": 0.4631252531743009,
+    "maniptrans_sr": 0.4666666666666667,
+    "mppe_cm": 14.144653012878667,
+    "spider_sr": 0.6666666666666666
+   },
+   "findings": [],
+   "track": "track_2_tier2"
+  },
+  "tier1": {
+   "csv": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t2_entry_wave2/pack_tier1/track2_tier1.csv",
+   "csv_sha256": "ae4e2d1278a30cc4c572fd02e3f4bba1c0c582a5b4aaf4bfe2e28dcd5255512e",
+   "csv_bytes": 11841271,
+   "rows": 22989,
+   "episodes": 30,
+   "kit_packer": "pass",
+   "kit_validator": "pass",
+   "submittable": true,
+   "local_score": {
+    "add_auc": 0.4631252531743009,
+    "maniptrans_sr": 0.4666666666666667,
+    "mppe_cm": 14.144653012878667,
+    "spider_sr": 0.6666666666666666
+   },
+   "findings": [],
+   "track": "track_2_tier1"
+  }
+ },
+ "csvs_are_byte_identical": true,
+ "on_the_boards_now": {
+  "tier2": {
+   "add_auc": 0.39076,
+   "spider_sr": 0.56666,
+   "maniptrans_sr": 0.16666,
+   "mppe_cm": 17.35839
+  },
+  "tier1": {
+   "add_auc": 0.134,
+   "note": "the 409,600-step insurance entry"
+  }
+ },
+ "mp_sr_clips_of_30": {
+  "on_the_boards_now": 5,
+  "this_entry": 14
+ },
+ "what_the_input_only_rule_cost": {
+  "note": "rollouts that kit-score higher than the one that ships, turned down because they sit further from the noisy input reference. The rule reads no ground truth, which is why it is the submission rule; this is its price, measured.",
+  "clips": [
+   {
+    "arm": "B4x",
+    "kit_add_auc_lost": 0.0012,
+    "tag": "e00"
+   },
+   {
+    "arm": "B3",
+    "kit_add_auc_lost": 0.0758,
+    "tag": "e05"
+   },
+   {
+    "arm": "B4x",
+    "kit_add_auc_lost": 0.1574,
+    "tag": "e06"
+   },
+   {
+    "arm": "B4x",
+    "kit_add_auc_lost": 0.022,
+    "tag": "e13"
+   },
+   {
+    "arm": "B4x",
+    "kit_add_auc_lost": 0.0438,
+    "tag": "e26"
+   },
+   {
+    "arm": "B2",
+    "kit_add_auc_lost": 0.01,
+    "tag": "e28"
+   }
+  ],
+  "kit_auc_lost_on_the_30_clip_mean": 0.01034
+ },
+ "episodes": [
+  {
+   "episode": 0,
+   "tag": "e00",
+   "ships_from": "A",
+   "selected_environment_steps": 349999104,
+   "checkpoint_sha256": "c3a98fd2280101fd3626502d1c022ed3a2cef4c28d10490103874a2006d960e8",
+   "frames": 778,
+   "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+   "frame_reference_is_released_input": false,
+   "kit_add_auc": 0.517753856041131,
+   "first_wave_kit_add_auc": 0.49831298200514135,
+   "turned_down_by_the_input_only_rule": [
+    {
+     "arm": "B4x",
+     "kit_add_auc": 0.5189588688946015,
+     "mean_distance_to_input_cm": 3.7726,
+     "incumbent_distance_to_input_cm": 2.3451
+    }
+   ]
+  },
+  {
+   "episode": 1,
+   "tag": "e01",
+   "ships_from": "first wave",
+   "selected_environment_steps": 199999488,
+   "checkpoint_sha256": "656db59f430606a391b432a4f57a7113aa48fd300dd6bcc3ff35df94983b92f6",
+   "frames": 747,
+   "frame_reference_root": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/data",
+   "frame_reference_is_released_input": true,
+   "kit_add_auc": 0.2001338688085676,
+   "first_wave_kit_add_auc": 0.2001338688085676,
+   "turned_down_by_the_input_only_rule": [
+    {
+     "arm": "B5",
+     "kit_add_auc": 0.05764725568942436,
+     "mean_distance_to_input_cm": 45.9003,
+     "incumbent_distance_to_input_cm": 44.0732
+    }
+   ]
+  },
+  {
+   "episode": 2,
+   "tag": "e02",
+   "ships_from": "first wave",
+   "selected_environment_steps": 249999360,
+   "checkpoint_sha256": "30bf93aaf19961941f7ad36bd3f743683390a2f935626c1ace30064fd886b228",
+   "frames": 980,
+   "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+   "frame_reference_is_released_input": false,
+   "kit_add_auc": 0.4262755102040816,
+   "first_wave_kit_add_auc": 0.4262755102040816,
+   "turned_down_by_the_input_only_rule": [
+    {
+     "arm": "A",
+     "kit_add_auc": 0.3237244897959184,
+     "mean_distance_to_input_cm": 5.7474,
+     "incumbent_distance_to_input_cm": 4.3632
+    }
+   ]
+  },
+  {
+   "episode": 3,
+   "tag": "e03",
+   "ships_from": "A",
+   "selected_environment_steps": 299999232,
+   "checkpoint_sha256": "a54c05fb1e473dca07e3161ac40591016d6a41695cf38a75229a8260f93d2bf7",
+   "frames": 781,
+   "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+   "frame_reference_is_released_input": false,
+   "kit_add_auc": 0.7806498079385403,
+   "first_wave_kit_add_auc": 0.6588508322663252
+  },
+  {
+   "episode": 4,
+   "tag": "e04",
+   "ships_from": "B1",
+   "selected_environment_steps": 349999104,
+   "checkpoint_sha256": "1b890b6429c487ead2561e3ea3510ac58fa2661f8c709cbea5d1dad2d70bb2e8",
+   "frames": 803,
+   "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+   "frame_reference_is_released_input": false,
+   "kit_add_auc": 0.14655977584059776,
+   "first_wave_kit_add_auc": 0.1471824408468244
+  },
+  {
+   "episode": 5,
+   "tag": "e05",
+   "ships_from": "first wave",
+   "selected_environment_steps": 49999872,
+   "checkpoint_sha256": "db80dc8849b16894879d14273c40c5f5cf7caada9f03e87a6f035e8d582e8afd",
+   "frames": 1003,
+   "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+   "frame_reference_is_released_input": false,
+   "kit_add_auc": 0.26601445663010964,
+   "first_wave_kit_add_auc": 0.26601445663010964,
+   "turned_down_by_the_input_only_rule": [
+    {
+     "arm": "B3",
+     "kit_add_auc": 0.34184945164506475,
+     "mean_distance_to_input_cm": 20.6326,
+     "incumbent_distance_to_input_cm": 14.9458
+    }
+   ]
+  },
+  {
+   "episode": 6,
+   "tag": "e06",
+   "ships_from": "A",
+   "selected_environment_steps": 349999104,
+   "checkpoint_sha256": "41e28551fadfb628e3845b7ae5e3c0666aca8f997e9e5a933930b92092b90dc9",
+   "frames": 546,
+   "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+   "frame_reference_is_released_input": false,
+   "kit_add_auc": 0.47584706959706957,
+   "first_wave_kit_add_auc": 0.47298534798534797,
+   "turned_down_by_the_input_only_rule": [
+    {
+     "arm": "B4x",
+     "kit_add_auc": 0.6332417582417582,
+     "mean_distance_to_input_cm": 3.3453,
+     "incumbent_distance_to_input_cm": 2.0826
+    }
+   ]
+  },
+  {
+   "episode": 7,
+   "tag": "e07",
+   "ships_from": "first wave",
+   "selected_environment_steps": 49999872,
+   "checkpoint_sha256": "5d0dcbab16831450402039174bdb44c45a5447c87e16bfa8f74e4f10a9b53a7e",
+   "frames": 896,
+   "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+   "frame_reference_is_released_input": false,
+   "kit_add_auc": 0.2508370535714286,
+   "first_wave_kit_add_auc": 0.2508370535714286,
+   "turned_down_by_the_input_only_rule": [
+    {
+     "arm": "B3",
+     "kit_add_auc": 0.2276785714285714,
+     "mean_distance_to_input_cm": 13.8876,
+     "incumbent_distance_to_input_cm": 9.3717
+    }
+   ]
+  },
+  {
+   "episode": 8,
+   "tag": "e08",
+   "ships_from": "A",
+   "selected_environment_steps": 249999360,
+   "checkpoint_sha256": "ceb67ed9e1f6fb3fe878228af5b73e334dec836fa8206c76ade0f194bf5278dc",
+   "frames": 708,
+   "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+   "frame_reference_is_released_input": false,
+   "kit_add_auc": 0.665430790960452,
+   "first_wave_kit_add_auc": 0.44314971751412424,
+   "turned_down_by_the_input_only_rule": [
+    {
+     "arm": "B4x",
+     "kit_add_auc": 0.6019597457627119,
+     "mean_distance_to_input_cm": 3.0557,
+     "incumbent_distance_to_input_cm": 2.0751
+    }
+   ]
+  },
+  {
+   "episode": 9,
+   "tag": "e09",
+   "ships_from": "B4x",
+   "selected_environment_steps": 349999104,
+   "checkpoint_sha256": "5d5ec726f8f7b25053629b4d91d62c2b000d501ec4836577b4404da48755fed4",
+   "frames": 870,
+   "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+   "frame_reference_is_released_input": false,
+   "kit_add_auc": 0.3002873563218391,
+   "first_wave_kit_add_auc": 0.24482758620689654,
+   "turned_down_by_the_input_only_rule": [
+    {
+     "arm": "B3",
+     "kit_add_auc": 0.17557471264367816,
+     "mean_distance_to_input_cm": 49.596,
+     "incumbent_distance_to_input_cm": 5.0795
+    }
+   ]
+  },
+  {
+   "episode": 10,
+   "tag": "e10",
+   "ships_from": "A",
+   "selected_environment_steps": 349999104,
+   "checkpoint_sha256": "2c8dbe73076a99706d222ab094378ebea5b868cb2dc7f83e635c0c7bcb719012",
+   "frames": 794,
+   "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+   "frame_reference_is_released_input": false,
+   "kit_add_auc": 0.4793765743073048,
+   "first_wave_kit_add_auc": 0.31470403022670024,
+   "turned_down_by_the_input_only_rule": [
+    {
+     "arm": "B4x",
+     "kit_add_auc": 0.38350125944584385,
+     "mean_distance_to_input_cm": 4.4749,
+     "incumbent_distance_to_input_cm": 2.7202
+    }
+   ]
+  },
+  {
+   "episode": 11,
+   "tag": "e11",
+   "ships_from": "A",
+   "selected_environment_steps": 249999360,
+   "checkpoint_sha256": "bc9f312626029610caa2529ce3c25ad4d595518ff1eaf28b37f95cb0591bb290",
+   "frames": 901,
+   "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+   "frame_reference_is_released_input": false,
+   "kit_add_auc": 0.4675694444444445,
+   "first_wave_kit_add_auc": 0.33152777777777775
+  },
+  {
+   "episode": 12,
+   "tag": "e12",
+   "ships_from": "A",
+   "selected_environment_steps": 349999104,
+   "checkpoint_sha256": "1d9acdd5b9c8b47cb16cbf9691183cd8c54ab4ee9b0847b853ce26d758e1527e",
+   "frames": 700,
+   "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+   "frame_reference_is_released_input": false,
+   "kit_add_auc": 0.790357142857143,
+   "first_wave_kit_add_auc": 0.7097321428571429
+  },
+  {
+   "episode": 13,
+   "tag": "e13",
+   "ships_from": "first wave",
+   "selected_environment_steps": 299999232,
+   "checkpoint_sha256": "b8d50915d8e1cc67a33fc86cf8b122a6df2892460c76d0734293857fc6042cc8",
+   "frames": 922,
+   "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+   "frame_reference_is_released_input": false,
+   "kit_add_auc": 0.1593682212581345,
+   "first_wave_kit_add_auc": 0.1593682212581345,
+   "turned_down_by_the_input_only_rule": [
+    {
+     "arm": "B4x",
+     "kit_add_auc": 0.1813991323210412,
+     "mean_distance_to_input_cm": 20.0303,
+     "incumbent_distance_to_input_cm": 4.9197
+    }
+   ]
+  },
+  {
+   "episode": 14,
+   "tag": "e14",
+   "ships_from": "B2",
+   "selected_environment_steps": 299999232,
+   "checkpoint_sha256": "32fcbae629d9a54ec451c4adada9e7c8138422dc9351dcdf694bbe763848e25c",
+   "frames": 993,
+   "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+   "frame_reference_is_released_input": false,
+   "kit_add_auc": 0.2055010070493454,
+   "first_wave_kit_add_auc": 0.10913897280966767
+  },
+  {
+   "episode": 15,
+   "tag": "e15",
+   "ships_from": "A",
+   "selected_environment_steps": 299999232,
+   "checkpoint_sha256": "4af572f1942a68946a3d0a241403400e0d73e84993b86cfed8c46e5a44efbd7a",
+   "frames": 715,
+   "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+   "frame_reference_is_released_input": false,
+   "kit_add_auc": 0.6652972027972027,
+   "first_wave_kit_add_auc": 0.4538461538461538
+  },
+  {
+   "episode": 16,
+   "tag": "e16",
+   "ships_from": "A",
+   "selected_environment_steps": 349999104,
+   "checkpoint_sha256": "8893521fb85dac951c510300ac4e917a5270f0cc5c61da4646ac3723b107467c",
+   "frames": 477,
+   "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+   "frame_reference_is_released_input": false,
+   "kit_add_auc": 0.5639412997903563,
+   "first_wave_kit_add_auc": 0.38901991614255765
+  },
+  {
+   "episode": 17,
+   "tag": "e17",
+   "ships_from": "B4",
+   "selected_environment_steps": 349999104,
+   "checkpoint_sha256": "894fe4d8cb322be1891581cf8e1d67dedf01154e91271de06adacfd4b6a54da1",
+   "frames": 440,
+   "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+   "frame_reference_is_released_input": false,
+   "kit_add_auc": 0.4470170454545454,
+   "first_wave_kit_add_auc": 0.2465909090909091
+  },
+  {
+   "episode": 18,
+   "tag": "e18",
+   "ships_from": "A",
+   "selected_environment_steps": 349999104,
+   "checkpoint_sha256": "708d1b2f0f107c955fd18fd4c8bcf516465bf70d5c82a79b3662c043839ffee6",
+   "frames": 858,
+   "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+   "frame_reference_is_released_input": false,
+   "kit_add_auc": 0.738490675990676,
+   "first_wave_kit_add_auc": 0.7362325174825175
+  },
+  {
+   "episode": 19,
+   "tag": "e19",
+   "ships_from": "B2",
+   "selected_environment_steps": 149999616,
+   "checkpoint_sha256": "9d86963b296ad1d8bddabc9b376ce6f9edd32cc4ba87d690b56b3d08d02034da",
+   "frames": 886,
+   "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+   "frame_reference_is_released_input": false,
+   "kit_add_auc": 0.11625282167042891,
+   "first_wave_kit_add_auc": 0.11625282167042891
+  },
+  {
+   "episode": 20,
+   "tag": "e20",
+   "ships_from": "A",
+   "selected_environment_steps": 299999232,
+   "checkpoint_sha256": "7b82299bdbb94e8a3f2745036f4bc38819d0d9cb05b082ad39c448ef84d85114",
+   "frames": 553,
+   "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+   "frame_reference_is_released_input": false,
+   "kit_add_auc": 0.7148508137432188,
+   "first_wave_kit_add_auc": 0.47287522603978305,
+   "turned_down_by_the_input_only_rule": [
+    {
+     "arm": "B4x",
+     "kit_add_auc": 0.43004068716094035,
+     "mean_distance_to_input_cm": 2.9153,
+     "incumbent_distance_to_input_cm": 2.518
+    }
+   ]
+  },
+  {
+   "episode": 21,
+   "tag": "e21",
+   "ships_from": "first wave",
+   "selected_environment_steps": 349999104,
+   "checkpoint_sha256": "f9509618faa2ba02a75057023e90bfb07d8a111ac67283b8c95f028c96e2016f",
+   "frames": 678,
+   "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+   "frame_reference_is_released_input": false,
+   "kit_add_auc": null,
+   "first_wave_kit_add_auc": null
+  },
+  {
+   "episode": 22,
+   "tag": "e22",
+   "ships_from": "A",
+   "selected_environment_steps": 349999104,
+   "checkpoint_sha256": "3774671b59798058ea1038be24093cc756a45398db0d23c4a61cc61c053a8796",
+   "frames": 719,
+   "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+   "frame_reference_is_released_input": false,
+   "kit_add_auc": 0.6686369958275382,
+   "first_wave_kit_add_auc": 0.5275556328233658
+  },
+  {
+   "episode": 23,
+   "tag": "e23",
+   "ships_from": "A",
+   "selected_environment_steps": 349999104,
+   "checkpoint_sha256": "40de27ec2a740d67903c6a30bbb3b33840238917151ae9e1548519fa70f7a850",
+   "frames": 946,
+   "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+   "frame_reference_is_released_input": false,
+   "kit_add_auc": 0.5880681818181819,
+   "first_wave_kit_add_auc": 0.4988768498942917
+  },
+  {
+   "episode": 24,
+   "tag": "e24",
+   "ships_from": "A",
+   "selected_environment_steps": 349999104,
+   "checkpoint_sha256": "f9dfbd643321873df859eaec2e963b1135f79df109a0e5942e971409420fa782",
+   "frames": 748,
+   "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+   "frame_reference_is_released_input": false,
+   "kit_add_auc": 0.8942179144385026,
+   "first_wave_kit_add_auc": 0.7573529411764706
+  },
+  {
+   "episode": 25,
+   "tag": "e25",
+   "ships_from": "B1",
+   "selected_environment_steps": 49999872,
+   "checkpoint_sha256": "d92c610f410ba92a4dbfb0cee0a61a2676f20bf5328653366d38d8ff7f878220",
+   "frames": 859,
+   "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+   "frame_reference_is_released_input": false,
+   "kit_add_auc": 0.13344004656577416,
+   "first_wave_kit_add_auc": 0.1335128055878929
+  },
+  {
+   "episode": 26,
+   "tag": "e26",
+   "ships_from": "A",
+   "selected_environment_steps": 349999104,
+   "checkpoint_sha256": "deb64b193869f4466c4a625f680b4ad0ffa45bd6d97262779bfe53ec5e2e8c86",
+   "frames": 669,
+   "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+   "frame_reference_is_released_input": false,
+   "kit_add_auc": 0.592955904334828,
+   "first_wave_kit_add_auc": 0.5773542600896862,
+   "turned_down_by_the_input_only_rule": [
+    {
+     "arm": "B4x",
+     "kit_add_auc": 0.6367713004484304,
+     "mean_distance_to_input_cm": 2.8535,
+     "incumbent_distance_to_input_cm": 2.2016
+    }
+   ]
+  },
+  {
+   "episode": 27,
+   "tag": "e27",
+   "ships_from": "A",
+   "selected_environment_steps": 299999232,
+   "checkpoint_sha256": "1f3027859546f2e1931dc4cbf409666e25d027caa53528aea0ed3515effae23f",
+   "frames": 565,
+   "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+   "frame_reference_is_released_input": false,
+   "kit_add_auc": 0.7793141592920354,
+   "first_wave_kit_add_auc": 0.6922566371681416
+  },
+  {
+   "episode": 28,
+   "tag": "e28",
+   "ships_from": "first wave",
+   "selected_environment_steps": 99999744,
+   "checkpoint_sha256": "ff3afa4eaa15287ad1a9a0e33d608a726b8567bfe381284179e6bcfbfb4b9d36",
+   "frames": 988,
+   "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+   "frame_reference_is_released_input": false,
+   "kit_add_auc": 0.08913208502024292,
+   "first_wave_kit_add_auc": 0.08913208502024292,
+   "turned_down_by_the_input_only_rule": [
+    {
+     "arm": "B2",
+     "kit_add_auc": 0.09912702429149797,
+     "mean_distance_to_input_cm": 50.0827,
+     "incumbent_distance_to_input_cm": 43.7992
+    }
+   ]
+  },
+  {
+   "episode": 29,
+   "tag": "e29",
+   "ships_from": "A",
+   "selected_environment_steps": 299999232,
+   "checkpoint_sha256": "6aae74dc2974a8b27a1b6ecf5f0e5f51835836179299cc3ad572bcee052edb72",
+   "frames": 467,
+   "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
+   "frame_reference_is_released_input": false,
+   "kit_add_auc": 0.563838329764454,
+   "first_wave_kit_add_auc": 0.5928800856531049
+  }
+ ],
+ "upload": {
+  "state": "not uploaded",
+  "gated_on": [
+   "Luai's word, per the standing order",
+   "a push: every row quotes a commit URL, and origin/main is e8ffe8f with every later commit local"
+  ],
+  "commands": [
+   "python submit/v2d_submit.py /tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t2_entry_wave2/pack_tier2/track2_tier2.csv --track track_2_tier2 -m '<message>'",
+   "python submit/v2d_submit.py /tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t2_entry_wave2/pack_tier1/track2_tier1.csv --track track_2_tier1 -m '<message>'"
+  ]
+ }
+}

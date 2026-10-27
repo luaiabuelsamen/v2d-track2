@@ -1,5 +1,30 @@
 # STATUS — v2d (NVIDIA V2D Challenge, Track 2)
 
+## The second wave is in, packed and waiting on a push
+
+**30 of 30 clips decided, both CSVs packed and kit-validated here, nothing uploaded.** The
+final-candidate entry assembled under the registered z-drop + input-only adoption rule:
+
+| | AUC | SP-SR | MP-SR | MPPE cm |
+|---|---|---|---|---|
+| on the Tier 2 boards now | 0.3908 | 0.5667 | 0.1667 | 17.36 |
+| **wave-2 ships (packed, not uploaded)** | **0.4631** | **0.6667** | **0.4667** | **14.14** |
+| on the Tier 1 board now (insurance) | 0.1343 | 0.0 | 0.0 | 74.20 |
+
+MP-SR goes from 5 clips of 30 to 14. The Tier 2 and Tier 1 CSVs are byte-identical (sha256
+`ae4e2d12…`, 22,989 rows, 30 episodes, 30 distinct checkpoint digests), so the same predictions
+are worth about +0.33 AUC on Tier 1, which has no input constraint. Ships by arm: A 17, first wave
+7, B1 2, B2 2, B4 1, B4x 1. Record: `results/tier2_entry_wave2.json`; plan:
+`docs/FINAL_PLAN.md`.
+
+The selection rule's measured price: six clips hold a rollout that kit-scores higher than the one
+that ships, rejected for sitting further from the noisy input — 0.0103 of mean AUC, the cost of a
+rule that reads no ground truth.
+
+**The one gate is a push.** Every row quotes `e8ffe8f`, which is `origin/main`; every commit since
+is local, and no submission should come from unpushed code. No instances are running (`brev ls`
+empty, b17 deleted itself after e26).
+
 ## Submitted — the real entry is on the Tier 2 board
 
 **The Tier 2 entry is on all four Tier 2 leaderboards and scored, 2026-10-27 05:18 UTC, eight days

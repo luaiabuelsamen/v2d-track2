@@ -7,7 +7,8 @@ smoke-tested on free compute, and stops at the create command.
 ## Budget
 
 The card is off. The budget is the remaining Brev credit: **$38.76 at 21:42 UTC**, less what
-`v2d-sw-b4x-b17` burns finishing e26 at $0.82/h.
+`v2d-sw-b4x-b17` burned finishing e26 at $0.82/h. That box is **gone** — its launcher deleted it
+after e26's pull and score, and `brev ls` reports no instances in the org. Nothing is running.
 
 | | $ |
 |---|---|
@@ -17,8 +18,7 @@ The card is off. The budget is the remaining Brev credit: **$38.76 at 21:42 UTC*
 | (2) T3-VALID | −2.00 |
 | **available for (3) T3-FULL** | **≈ 34.90** |
 
-b17 is deleted by its own launcher (pid 1354837, alive) the moment e26's pull and score finish;
-if that process is gone, `brev delete v2d-sw-b4x-b17` by hand. Nothing else is running.
+b17's own launcher deleted it, as designed; `brev ls` confirms the org is empty.
 
 ---
 
@@ -48,14 +48,23 @@ has no input constraint, and our Tier 1 entry on the board is the 409,600-step i
       --work-dir $S/t2_entry_wave2/pack_tier2 --code-commit <pushed commit URL>
     v2d pack --tier tier1 ... --work-dir $S/t2_entry_wave2/pack_tier1 ...
 
-**Two things gate the upload, both yours:**
+e26 has landed, and these are the **final** packs: 30 episodes, `partial: false`, the kit
+validator passing on both tracks, recorded in `results/tier2_entry_wave2.json`. The CSV is
+byte-for-byte what the dry pack produced, because e26's B4x rollout lost the adoption check (see
+below), so the numbers above are unchanged by its arrival.
 
-1. **e26.** The last cell is still training. Until it lands the stager refuses (it will not pack
-   29 episodes), and the packs above were made with `--allow-partial` on the 29 decided clips plus
-   e21 from the first wave. The final pack is one command once e26 is scored.
-2. **A push.** Provenance puts a commit URL in all 22,989 rows. `origin/main` is `e8ffe8f`; every
-   commit since is local. A submission from this code needs the push first — your standing rule,
-   and I have not pushed.
+**One thing gates the upload, and it is yours:** a **push**. Provenance puts a commit URL in all
+22,989 rows, and these CSVs quote `e8ffe8f`, which is `origin/main`. Every commit since is local.
+Submitting code we have not pushed is what your own rule forbids, so the upload waits on the push
+and on your word.
+
+### What the input-only selection rule cost, measured
+
+Six clips hold a rollout that kit-scores *higher* than the one that ships, turned down because it
+sits further from the noisy input reference: e06 (−0.157), e05 (−0.076), e26 (−0.044), e13
+(−0.022), e28 (−0.010), e00 (−0.001). That is **0.0103 of mean AUC left on the table**. It is the
+price of a rule that reads no ground truth, which is the only kind of rule we may register, and I
+am recording it rather than quietly reaching for the better number.
 
 ---
 
@@ -75,11 +84,11 @@ on interp's reconstructed references.
 | dollars | **$0.95 modelled, ~$2.00 against that precedent** |
 | bar | the kit validator accepts a 30-episode `track_2_tier3` CSV, and every episode's provenance shows the reconstruction — not Tier 1 truth, not the Tier 2 trajectory. Any score beats the nothing we have. |
 
-**Blocked on two things, neither of them compute.** interp's reconstruction tree is not staged
+**Blocked on one thing, and it is not compute.** interp's reconstruction tree is not staged
 (`$S/t3_recon` does not exist; the planner says `NOT STAGED YET` rather than quietly using
-something else). And our packer wrapper's `TRACKS` has only tier1 and tier2 — the kit's own
-`pack_submission.py` already takes `--track track_2_tier3`, so it is a one-line addition on
-`ws/submit`, which closer owns.
+something else). The packer gap has closed: closer added tier3 to the wrapper's `TRACKS` at 22:57
+UTC (`ws/submit` `f97b67c`, `track_2_tier3`, which needs `--frame-references`), so a Tier 3 entry
+packs with the same command as the other two.
 
 ---
 

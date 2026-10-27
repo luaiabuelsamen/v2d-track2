@@ -6,3 +6,4 @@ __pycache__/
 *.egg-info/
 results/gate/
 wandb/
+ship_ckpts_wave2/
