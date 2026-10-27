@@ -52,17 +52,30 @@ while [ $# -gt 0 ]; do
   esac
 done
 
-# group | clips | arm flags | env assignments | boxes | why
+# group | clips | arm flags | env assignments | boxes | stage | tier | steps | why
+# stage: a tree under $V2D_SCRATCH to launch from, instead of staging sw_<group> from
+#        the briefs. tier: what the pulled checkpoints are scored against (default
+#        tier2). steps: the training budget (default 349999104), optionally STEPS:SAVE when the
+#        checkpoint interval has to change with it. All three empty for every second-wave arm,
+#        which is what keeps those rows reading as they did.
+# A group whose clip list is not known yet reads it from $ROOT/clips_<group>.txt when that file
+# exists -- T3-FULL's order comes from interp's reconstruction quality, which lands later.
 # NOT `GROUPS`: bash reserves that for the caller's group ids, so assigning to it silently
 # does nothing and every field below comes back empty.
 ARM_GROUPS=$(cat <<'EOF'
-A|0 2 3 6 8 10 11 12 15 16 18 20 22 23 24 26 27 29|start_curriculum,orientation_reward,object_position|V2D_OBJECT_POSITION_STD=0.08|6|object_position std 0.08 m
-B1|4 25|start_curriculum,orientation_reward,object_position|V2D_OBJECT_POSITION_STD=0.2 V2D_OBJECT_POSITION_WEIGHT=5.0|1|object_position weight 5
-B2|14 19 28|start_curriculum,orientation_reward,voc_curriculum|V2D_VOC_ZERO_AT=0.85|1|VOC zero point 85%
-B3|5 7 9|orientation_reward||1|START reverted
-B4|17|start_curriculum,orientation_reward|V2D_OBJECT_ORIENTATION_STD=0.8|1|orientation std 0.8
-B5|1|start_curriculum,orientation_reward||1|bridge-smoothed reference
-B4x|0 6 8 9 10 13 20 26|start_curriculum,orientation_reward|V2D_OBJECT_ORIENTATION_STD=0.8|8|orientation std 0.8 on the orientation-limited clips
+A|0 2 3 6 8 10 11 12 15 16 18 20 22 23 24 26 27 29|start_curriculum,orientation_reward,object_position|V2D_OBJECT_POSITION_STD=0.08|6||||object_position std 0.08 m
+B1|4 25|start_curriculum,orientation_reward,object_position|V2D_OBJECT_POSITION_STD=0.2 V2D_OBJECT_POSITION_WEIGHT=5.0|1||||object_position weight 5
+B2|14 19 28|start_curriculum,orientation_reward,voc_curriculum|V2D_VOC_ZERO_AT=0.85|1||||VOC zero point 85%
+B3|5 7 9|orientation_reward||1||||START reverted
+B4|17|start_curriculum,orientation_reward|V2D_OBJECT_ORIENTATION_STD=0.8|1||||orientation std 0.8
+B5|1|start_curriculum,orientation_reward||1||||bridge-smoothed reference
+B4x|0 6 8 9 10 13 20 26|start_curriculum,orientation_reward|V2D_OBJECT_ORIENTATION_STD=0.8|8||||orientation std 0.8 on the orientation-limited clips
+T1|0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29|start_curriculum,orientation_reward,object_position|V2D_OBJECT_POSITION_STD=0.08|8|t1_precision|tier1||Tier 1: the clean tier_1 references, precision recipe, one seed
+W3A|0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29|start_curriculum,orientation_reward,object_position|V2D_OBJECT_POSITION_STD=0.08|8|w3_bridge_v2|||wave 3: precision recipe on bridge_v2, seed 42
+W3B|0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29|start_curriculum,orientation_reward,object_position|V2D_OBJECT_POSITION_STD=0.08 V2D_SEED=43|8|w3_bridge_v2|||wave 3: the same recipe and tree, seed 43
+W3R|1 4 5 7 13 14 19 25 28|start_curriculum,orientation_reward,object_position,body_joint_position|V2D_OBJECT_POSITION_STD=0.08 V2D_OBJECT_POSITION_WEIGHT=5.0 V2D_BODY_JOINT_POSITION_WEIGHT=1.0|5|w3_regrasp||699998208|wave 3: the nine clips under 0.30, object over body, 700M steps
+T3-VALID|0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29|start_curriculum,orientation_reward,object_position|V2D_OBJECT_POSITION_STD=0.08|2|t3_recon|tier3|409600:409600|Tier 3: a valid entry on every clip at the insurance budget
+T3-FULL|3 24 18 12 27 8 22 15 20|start_curriculum,orientation_reward,object_position|V2D_OBJECT_POSITION_STD=0.08|3|t3_recon|tier3||Tier 3: full-length precision on as many clips as the credit buys
 EOF
 )
 
@@ -84,6 +97,8 @@ CAP="${V2D_CAP:-90}"
 BOX_CAP="${V2D_BOX_CAP:-11}"
 RATE=0.68
 EST_HOURS_PER_CLIP=4.4
+#: The budget every arm so far has trained to; a group's `steps` field is priced against it.
+STOCK_STEPS=349999104
 BRINGUP_HOURS=0.6
 total_cost=0
 total_boxes=0
@@ -91,9 +106,18 @@ total_clips=0
 plan=""
 
 mkdir -p "$ROOT"
-while IFS='|' read -r group clips flags envs boxes why; do
+while IFS='|' read -r group clips flags envs boxes stage tier steps why; do
   [ -n "$group" ] || continue
   selected "$group" || continue
+
+  # A clip list that arrives later: one line or one space-separated list of episode numbers.
+  if [ -f "$ROOT/clips_$group.txt" ]; then
+    clips="$(tr '\n' ' ' < "$ROOT/clips_$group.txt")"
+    printf '%s\n' "   $group takes its clips from $ROOT/clips_$group.txt: $clips" >&2
+  fi
+  # STEPS:SAVE, where the two can be equal -- a 409,600-step run checkpoints once, at the end.
+  case "$steps" in *:*) save="${steps#*:}" ;; *) save="" ;; esac
+  steps="${steps%%:*}"
 
   map="$ROOT/map_$group.txt"
   : > "$map"
@@ -107,16 +131,26 @@ while IFS='|' read -r group clips flags envs boxes why; do
   arm_flags_normalise "$flags" >/dev/null || exit 2
   slug="$(arm_flags_slug "$flags")"
   per_box=$(( (got + boxes - 1) / boxes ))
-  hours="$(awk -v c="$per_box" -v h="$EST_HOURS_PER_CLIP" -v b="$BRINGUP_HOURS" 'BEGIN{printf "%.1f", b + c*h}')"
+  # A longer budget costs proportionally longer: W3R's 700M steps is two clips' worth of GPU in
+  # one cell, and a plan that priced it as one would understate the arm by half.
+  hours="$(awk -v c="$per_box" -v h="$EST_HOURS_PER_CLIP" -v b="$BRINGUP_HOURS" \
+             -v s="${steps:-$STOCK_STEPS}" -v d="$STOCK_STEPS" \
+             'BEGIN{printf "%.1f", b + c*h*(s/d)}')"
   cost="$(awk -v n="$boxes" -v h="$hours" -v r="$RATE" 'BEGIN{printf "%.2f", n*h*r}')"
   total_cost="$(awk -v a="$total_cost" -v b="$cost" 'BEGIN{printf "%.2f", a+b}')"
   total_boxes=$(( total_boxes + boxes ))
   total_clips=$(( total_clips + got ))
 
-  plan="$plan$(printf '%-3s %2d clips  %d box(es) x %s clips  %5s h/box  $%6s  %s\n' \
+  plan="$plan$(printf '%-4s %2d clips  %d box(es) x %s clips  %5s h/box  $%6s  %s\n' \
     "$group" "$got" "$boxes" "$per_box" "$hours" "$cost" "$why")"$'\n'
+  [ -n "$stage$tier$steps" ] && plan="$plan$(printf '     %s%s%s\n' \
+    "${stage:+stage $S/$stage  }" "${tier:+tier $tier  }" \
+    "${steps:+steps $steps}${save:+ (checkpoint every $save)}")"$'\n'
 
   printf '%s\n' "$group $flags${slug:+ (slug $slug)} ${envs:-no env} -> $map" >&2
+  if [ -n "$stage" ] && [ ! -d "$S/$stage" ]; then
+    printf '%s\n' "   NOT STAGED YET: $group wants $S/$stage, which does not exist" >&2
+  fi
 done <<< "$ARM_GROUPS"
 
 echo
@@ -142,18 +176,29 @@ echo "   maps in $ROOT; staging and launching are separate -- this script only w
 STAGGER="${V2D_CREATE_STAGGER:-30}"
 GAP="${V2D_GROUP_GAP:-90}"
 
-while IFS='|' read -r group clips flags envs boxes why; do
+while IFS='|' read -r group clips flags envs boxes stage tier steps why; do
   [ -n "$group" ] || continue
   selected "$group" || continue
+  # STEPS:SAVE, where the two can be equal -- a 409,600-step run checkpoints once, at the end.
+  case "$steps" in *:*) save="${steps#*:}" ;; *) save="" ;; esac
+  steps="${steps%%:*}"
   map="$ROOT/map_$group.txt"
-  mount="sw_$group"
+  mount="${stage:-sw_$group}"
   got=$(grep -c '[^[:space:]]' "$map")
   per_box=$(( (got + boxes - 1) / boxes ))
 
-  echo "== staging $group ($got clips) into $S/$mount"
-  if [ "$DRY" = 1 ]; then
+  # A group with its own `stage` was built elsewhere -- t1_precision by stage_t2_combined.sh
+  # against the tier_1 retarget, w3_bridge_v2 and t3_recon by whoever owns that tree. It is used
+  # as it stands, and its absence is a refusal rather than a silent fall back to the briefs.
+  if [ -n "$stage" ]; then
+    [ -d "$S/$mount" ] || { echo "FATAL: $group: no staged tree at $S/$mount" >&2; exit 3; }
+    [ -f "$S/$mount.md5" ] || { echo "FATAL: $group: no manifest at $S/$mount.md5" >&2; exit 3; }
+    echo "== $group uses the tree already staged at $S/$mount"
+  elif [ "$DRY" = 1 ]; then
+    echo "== staging $group ($got clips) into $S/$mount"
     echo "   DRY: $REPO/brev/stage_t2_combined.sh --from-briefs --map $map --mount $mount"
   else
+    echo "== staging $group ($got clips) into $S/$mount"
     "$REPO/brev/stage_t2_combined.sh" --from-briefs --map "$map" --mount "$mount" \
       > "$ROOT/stage_$group.log" 2>&1 || {
         echo "FATAL: staging $group failed; see $ROOT/stage_$group.log" >&2
@@ -170,6 +215,9 @@ while IFS='|' read -r group clips flags envs boxes why; do
           --arm-flags "$flags" --boxes "$boxes" --clips-per-box "$per_box"
           --first "" --create-stagger "$STAGGER")
   [ -n "$envs" ] && launch+=(--arm-env "$envs")
+  [ -n "$tier" ] && launch+=(--tier "$tier")
+  [ -n "$steps" ] && launch+=(--steps "$steps")
+  [ -n "$save" ] && launch+=(--save-every "$save")
   if [ "$DRY" = 1 ]; then
     printf '   DRY: %s\n' "${launch[*]}"
   else

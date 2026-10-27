@@ -54,6 +54,7 @@ while [ $# -gt 0 ]; do
     --clips-per-box) MAX_CLIPS_PER_BOX="$2"; shift 2 ;;
     --type) TYPE="$2"; shift 2 ;;
     --steps) STEPS="$2"; shift 2 ;;
+    --save-every) SAVE_EVERY="$2"; shift 2 ;;
     --stage) STAGE="$2"; shift 2 ;;
     --map) MAP="$2"; shift 2 ;;
     --tier) TIER="$2"; shift 2 ;;
