@@ -11,13 +11,16 @@
     "ground_truth_read": false
   },
   "summary": {
-    "clips_landed": 1,
-    "clips_scored": 1,
-    "clips_adopted": 0,
-    "adopted": [],
+    "clips_landed": 3,
+    "clips_scored": 3,
+    "clips_adopted": 2,
+    "adopted": [
+      "e04",
+      "e17"
+    ],
     "undecidable": [],
-    "mean_kit_auc_change_on_landed_clips": -0.142487,
-    "clips_improved_on_kit_auc": 0
+    "mean_kit_auc_change_on_landed_clips": 0.019106,
+    "clips_improved_on_kit_auc": 1
   },
   "bars": {
     "part_a": {
@@ -38,8 +41,8 @@
       },
       "e04": {
         "bar": 0.147,
-        "new_kit_add_auc": null,
-        "beats_bar": null
+        "new_kit_add_auc": 0.14656,
+        "beats_bar": false
       },
       "e05": {
         "bar": 0.266,
@@ -63,8 +66,8 @@
       },
       "e17": {
         "bar": 0.247,
-        "new_kit_add_auc": null,
-        "beats_bar": null
+        "new_kit_add_auc": 0.447017,
+        "beats_bar": true
       },
       "e19": {
         "bar": 0.116,
@@ -93,19 +96,124 @@
       "e10"
     ],
     "B1": [
-      "e04"
+      "e25"
     ],
     "B2": [
       "e14"
     ],
     "B3": [
       "e05"
-    ],
-    "B4": [
-      "e17"
     ]
   },
   "clips": {
+    "e04": {
+      "arm": "B1",
+      "episode": 4,
+      "new": {
+        "cell": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/second_wave/run_B1/results/e04",
+        "checkpoint_dir": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/second_wave/run_B1/results/e04/policy_349999104",
+        "selected_environment_steps": 349999104,
+        "selected_checkpoint_sha256": "1b890b6429c487ead2561e3ea3510ac58fa2661f8c709cbea5d1dad2d70bb2e8",
+        "checkpoints_evaluated": 7,
+        "drop_free_checkpoints": 0,
+        "selection_reason": "every checkpoint drops; the one that held longest (330 frames), then the smallest mean distance to the input reference",
+        "mean_distance_to_own_reference_cm": 102.2471
+      },
+      "old": {
+        "cell": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t2_combined_run/results/e04",
+        "checkpoint_dir": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t2_combined_run/results/e04/policy_349999104",
+        "selected_environment_steps": 349999104,
+        "selected_checkpoint_sha256": "04a34a75a638fd8f80428adfbb03978c317a1787260d15e4f1168235a3347c0e",
+        "checkpoints_evaluated": 7,
+        "drop_free_checkpoints": 0,
+        "selection_reason": "every checkpoint drops; the one that held longest (386 frames), then the smallest mean distance to the input reference",
+        "mean_distance_to_own_reference_cm": 116.5476
+      },
+      "decision": {
+        "reference_used": "each rollout's own input reference, checked to be the same one",
+        "reference_from_old": false,
+        "references_agree": true,
+        "reference_max_gap_cm": 0.0,
+        "frames_new": 803,
+        "frames_old": 803,
+        "new_mean_distance_to_input_cm": 102.2471,
+        "old_mean_distance_to_input_cm": 116.5476,
+        "verdict": "adopt",
+        "verdict_reads_ground_truth": false
+      },
+      "new_kit_score": {
+        "kit_add_auc": 0.14655977584059776,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0,
+        "kit_mppe_cm": 102.95611923871742
+      },
+      "old_kit_score": {
+        "kit_add_auc": 0.1471824408468244,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0,
+        "kit_mppe_cm": 117.18662196925855
+      },
+      "record_kit_score": {
+        "kit_add_auc": 0.1471824408468244,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0,
+        "kit_mppe_cm": 117.18662196925855
+      }
+    },
+    "e17": {
+      "arm": "B4",
+      "episode": 17,
+      "new": {
+        "cell": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/second_wave/run_B4/results/e17",
+        "checkpoint_dir": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/second_wave/run_B4/results/e17/policy_349999104",
+        "selected_environment_steps": 349999104,
+        "selected_checkpoint_sha256": "894fe4d8cb322be1891581cf8e1d67dedf01154e91271de06adacfd4b6a54da1",
+        "checkpoints_evaluated": 7,
+        "drop_free_checkpoints": 3,
+        "selection_reason": "no drop, then the smallest mean distance to the input reference",
+        "mean_distance_to_own_reference_cm": 4.726
+      },
+      "old": {
+        "cell": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t2_combined_run/results/e17",
+        "checkpoint_dir": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t2_combined_run/results/e17/policy_299999232",
+        "selected_environment_steps": 299999232,
+        "selected_checkpoint_sha256": "3dbf5cd643e13df187855e997fdd8dd87a95c6d2d68a8ab1b2ec46276db1bafe",
+        "checkpoints_evaluated": 7,
+        "drop_free_checkpoints": 0,
+        "selection_reason": "every checkpoint drops; the one that held longest (399 frames), then the smallest mean distance to the input reference",
+        "mean_distance_to_own_reference_cm": 20.2483
+      },
+      "decision": {
+        "reference_used": "each rollout's own input reference, checked to be the same one",
+        "reference_from_old": false,
+        "references_agree": true,
+        "reference_max_gap_cm": 0.0,
+        "frames_new": 440,
+        "frames_old": 440,
+        "new_mean_distance_to_input_cm": 4.726,
+        "old_mean_distance_to_input_cm": 20.2483,
+        "verdict": "adopt",
+        "verdict_reads_ground_truth": false
+      },
+      "new_kit_score": {
+        "kit_add_auc": 0.4470170454545454,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 0.0,
+        "kit_mppe_cm": 5.151777299979456
+      },
+      "old_kit_score": {
+        "kit_add_auc": 0.2465909090909091,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0,
+        "kit_mppe_cm": 20.840625816200024
+      },
+      "record_kit_score": {
+        "kit_add_auc": 0.2465909090909091,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0,
+        "kit_mppe_cm": 20.840625816200024
+      }
+    },
     "e01": {
       "arm": "B5",
       "episode": 1,
