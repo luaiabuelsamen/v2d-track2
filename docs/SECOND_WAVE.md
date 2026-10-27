@@ -204,3 +204,99 @@ reference change and none of them touches selection.
 
 z-drop stays the registered submission rule. Switching to `latest_drop_free` for +0.0038 would
 trade a pre-registered rule for noise a quarter the size of a single clip's checkpoint spread.
+
+---
+
+# Pre-registration: the staged second wave (2026-10-27)
+
+Written before launch, as the record the arms are judged against. **Staged, not launched.**
+Budget **$88.25** of the $90 cap, 11 boxes of 11, every box 13.8 h or less against a 24 h
+authority. Plan: `brev/second_wave.sh`. Baseline for every arm is the shipping recipe that
+produced each clip's record — START + ORI (std 0.3) + FING + CLEAN, z-drop selection, seed 42,
+349,999,104 steps, support per clip — so each arm is **one variable against a number we already
+hold** (`results/metrics_deep_dive.json`, `results/t2_combined_run_record.json`).
+
+Groups never share a box. A box applies one patch set to every clip it takes, so two arms on one
+box would be two variables on one cell; each group gets its own stage dir, map, run dir and
+box-name prefix.
+
+## The arms
+
+| group | clips | the one change | targets | boxes | cost |
+|---|---|---|---|---|---|
+| **A** | 18 at ≥0.30: e00 e02 e03 e06 e08 e10 e11 e12 e15 e16 e18 e20 e22 e23 e24 e26 e27 e29 | `object_position_std` 0.2 → 0.08 m | **MP-SR**, then AUC | 6 × 3 | $56.30 |
+| **B1** | e04 e25 | `object_position` weight 1 → 5 | keep the object at all | 1 × 2 | $6.39 |
+| **B2** | e14 e19 e28 | VOC spring zero point 60% → 85% | survive first contact | 1 × 3 | $9.38 |
+| **B3** | e05 e07 e09 | revert the START patch | recover late in the clip | 1 × 3 | $9.38 |
+| **B4** | e17 | orientation std 0.3 → 0.8 | angle, where 0.3 is inert | 1 × 1 | $3.40 |
+| **B5** | e01 | bridge-smoothed reference instead of raw | a reference it can track | 1 × 1 | $3.40 |
+
+**e13 and e21 are deliberately not run.** Both sit within 0.03 of their own reference ceiling
+(0.159 vs 0.193, 0.206 vs 0.204), so no policy change can win there, and the $6 is better unspent.
+
+Why each arm, in one line, from `docs/METRICS_DEEP_DIVE.md`:
+
+- **A** — MP-SR passes on 5 of 30 and eleven more clips miss on position alone by under 1.5 cm,
+  while `exp(-|Δp|²/0.2²)` is 0.978 at 3 cm and 0.975 at 1 cm: the reward is flat exactly where a
+  quarter of the rank sum is decided. At std 0.08 it is 0.855 at 1 cm and 0.249 at 3 cm.
+- **B1** — e25 and e04 are the pantomime pair (fractions 0.72 and 0.31, palm-to-object excess 74
+  and 106 cm). Neither reward channel reaches them — perfect orientation is worth +0.085 and
+  +0.098 — because the object is metres away, so the object term has to outweigh body tracking
+  (weight 5) rather than be shaped better.
+- **B2** — all three are knocked over early (first loss at frames 243, 133, 118 of ~1000) and the
+  policy performs the rest without the object. The VOC spring stops carrying it at 60%; this moves
+  the hand-off to 85% and spends the saved assist on the part they fail.
+- **B3** — all three track to within 4.7–14.6 cm and then lose the object late (frames 269, 310,
+  854). With `reset.reset_voc_scale=0.0` and first-frame starts, late training almost never visits
+  the states they fail in. This is the arm that tests whether START is costing us the tail.
+- **B4** — e17 holds at 53.4° mean orientation error, where the std-0.3 term contributes 3.6e-04
+  of its maximum. At 0.8 it contributes 0.33.
+- **B5** — e01 is the one clip staged on the raw reference, because the smoother lowered its input
+  *ceiling*. It is also the only clip whose policy never settles (past the gate on 63% of frames,
+  recovering each time). Ceiling is a scoring property; trainability is not.
+
+## The bars, fixed now
+
+- **Part A adopted only if** MP-SR passes on **≥ 9** of those 18 clips (from 5), **and** no clip
+  falls more than 0.05 kit AUC below its record. Both conditions, on the kit scorer.
+- **Part B, per clip adopted only if** its new kit AUC beats that clip's record:
+  e01 0.200, e04 0.147, e05 0.266, e07 0.251, e09 0.245, e14 0.109, e17 0.247, e19 0.116,
+  e25 0.134, e28 0.089.
+- Ties go to the first wave. An arm that is not adopted costs nothing but its own boxes.
+
+## The rule for the final entry — no truth reads
+
+Per clip, independently: run `v2d pick-checkpoint` on the new rollouts exactly as before, then
+**take the new rollout only if its selected checkpoint sits closer to the INPUT reference than the
+old selected checkpoint does.** That is the z-drop rule's own tie-break, it reads only the noisy
+reference the policies trained against, and it never touches Tier 1. Otherwise the clip keeps its
+first-wave rollout, which is already on the board.
+
+**One caveat this rule needs, stated now.** It compares two rollouts by distance to *the* input
+reference, which assumes both trained against the same one. That holds for every arm except **B5**,
+where the whole point is that e01's reference changed. For e01 the comparison is made against the
+reference the **shipped** entry used — the raw one — so the two numbers are commensurable and the
+new arm is not flattered by being scored against its own easier target.
+
+The bars above decide what we *learn*; this rule decides what we *submit*, and they are allowed to
+disagree. A clip can beat its record on kit AUC and still not be taken, because kit AUC reads truth
+and the submission rule may not.
+
+## Arms that are not cleanly implementable today
+
+**B1 as written is two variables, and half of it is blocked.** The instruction pairs
+`object_position` weight ×5 with "fingers re-solved with the palm pushed out of the mesh by the
+measured penetration". The finger solve is interp's (hand-grasp) and needs a new parquet we cannot
+produce here; the request is filed at
+`~/projects/_ops/briefs/v2d_second_wave_finger_requests.txt`. Two changes at once would also break
+the one-variable rule every other arm follows. **Staged as weight ×5 alone**, which is available
+now and attributable; if the parquet lands before the go, it belongs in a later wave as its own arm.
+
+**B5 is blocked on the same session.** e01's finger parquet carries the raw object trajectory,
+because the first wave's clean retarget fell back to raw for that clip. The smoothed pose exists
+(`v2d-clean-refs/bridge_v1`, orientation differs by up to 18.77°, position identical), but the
+grasp has to be re-solved against it, which is interp's. **B5 is staged and will not launch without
+that parquet**; without it e01 keeps its first-wave rollout, at a cost of one clip and one box.
+
+Everything else — A, B2, B3, B4 — is implemented, unit-tested against the real upstream text
+(`tests/test_patch_second_wave.py`, 24 tests) and needs nothing from anyone.

@@ -7,6 +7,12 @@
 # any order; ARM_FLAGS_ORDER below is the canonical order, so the same SET of flags always produces
 # the same slug, the same overrides and the same summary line, whatever order they were written in.
 #
+# The order is also load-bearing for one pair: patch_start_curriculum.py verifies the stock
+# thresholds line before it touches anything, so it must run BEFORE patch_voc_curriculum.py
+# rewrites that line. start_curriculum therefore stays first and voc_curriculum last. Reordering
+# them turns a working arm into a refused patch and a dead cell -- tests/test_patch_second_wave.py
+# pins both directions.
+#
 # Sourced by the run scripts. arm_flags_normalise / _slug / _overrides are pure and are unit-tested
 # on the Jetson; arm_flags_apply additionally needs run() and CID (the flash_chord container).
 #
@@ -15,7 +21,7 @@
 # is the only way to know the box is running the code we think it is. A cell either carries the
 # change or dies before training, which is the opposite of the failure that cost us three cells.
 
-ARM_FLAGS_ORDER="start_curriculum orientation_reward finger_targets"
+ARM_FLAGS_ORDER="start_curriculum orientation_reward finger_targets object_position voc_curriculum"
 
 # arm_flags_patch_script <flag>  -- flag names are the experiment's vocabulary, file names are the
 # patch's, and they are kept apart on purpose: renaming a script must not rename an arm on the
@@ -25,6 +31,8 @@ arm_flags_patch_script() {
     start_curriculum)   echo "patch_start_curriculum.py" ;;
     orientation_reward) echo "patch_object_orientation.py" ;;
     finger_targets)     echo "patch_finger_targets.py" ;;
+    object_position)    echo "patch_object_position.py" ;;
+    voc_curriculum)     echo "patch_voc_curriculum.py" ;;
     *) return 2 ;;
   esac
 }
@@ -73,6 +81,8 @@ arm_flags_slug() {
       start_curriculum)   slug="${slug}-sc" ;;
       orientation_reward) slug="${slug}-or" ;;
       finger_targets)     slug="${slug}-ft" ;;
+      object_position)    slug="${slug}-op" ;;
+      voc_curriculum)     slug="${slug}-vc" ;;
     esac
   done <<< "$flags"
   printf '%s' "$slug"
@@ -100,6 +110,8 @@ arm_flags_overrides() {
       start_curriculum)   out="$out reset.reset_voc_scale=0.0" ;;
       orientation_reward) ;;  # the weight and std live in the config the patch edits
       finger_targets)     ;;  # whatever it needs is the patch's business
+      object_position)    ;;  # std and weight live in the config and curriculum the patch edits
+      voc_curriculum)     ;;  # the thresholds live in the curriculum the patch edits
     esac
   done <<< "$flags"
   printf '%s' "${out# }"
@@ -129,9 +141,18 @@ arm_flags_apply() {
       return 1
     fi
     args=""
-    if [ "$flag" = orientation_reward ] && [ -n "${V2D_OBJECT_ORIENTATION_STD:-}" ]; then
-      args="--std ${V2D_OBJECT_ORIENTATION_STD}"
-    fi
+    case "$flag" in
+      orientation_reward)
+        [ -n "${V2D_OBJECT_ORIENTATION_STD:-}" ] && args="--std ${V2D_OBJECT_ORIENTATION_STD}" ;;
+      object_position)
+        # Two knobs, one patch: Part A moves the std alone, the tail arm moves the weight alone.
+        # Both are passed explicitly so the applied arm is readable in the cell log.
+        [ -n "${V2D_OBJECT_POSITION_STD:-}" ] && args="--std ${V2D_OBJECT_POSITION_STD}"
+        [ -n "${V2D_OBJECT_POSITION_WEIGHT:-}" ] \
+          && args="$args --weight ${V2D_OBJECT_POSITION_WEIGHT}" ;;
+      voc_curriculum)
+        [ -n "${V2D_VOC_ZERO_AT:-}" ] && args="--zero-at ${V2D_VOC_ZERO_AT}" ;;
+    esac
     if [ "${DRY_RUN:-0}" = 1 ]; then
       echo "arm flags: $label | would apply $(basename "$script") $args" >&2
       continue

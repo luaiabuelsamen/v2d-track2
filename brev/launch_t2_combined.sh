@@ -19,6 +19,8 @@ cd /home/jetson3/projects/v2d-challenge
 GO=0
 ONLY_BOX=0                    # --add-box N: one replacement box joining a run already in flight
 BOXES=8
+BOX_PREFIX="v2d-t2-b"      # one prefix per arm group; two groups must not share a box name
+OUT_OVERRIDE=""
 MAX_REPLACEMENTS=6            # extra creates a run may spend on boxes that fail during bring-up
 MAX_CLIPS_PER_BOX=4
 TYPE=massedcompute_A6000_plus
@@ -46,6 +48,8 @@ while [ $# -gt 0 ]; do
     --steps) STEPS="$2"; shift 2 ;;
     --stage) STAGE="$2"; shift 2 ;;
     --map) MAP="$2"; shift 2 ;;
+    --out) OUT_OVERRIDE="$2"; shift 2 ;;
+    --name-prefix) BOX_PREFIX="$2"; shift 2 ;;
     --arm-flags) ARM_FLAGS="$2"; shift 2 ;;
     --std) STD="$2"; shift 2 ;;
     --first) FIRST="$2"; shift 2 ;;
@@ -57,7 +61,9 @@ done
 
 export V2D_SCRATCH="$S"
 REPO=/home/jetson3/projects/v2d-challenge
-OUT="$S/t2_combined_run"
+# One run dir and one box-name prefix per arm group: two groups running at once must not share a
+# queue, a claims dir, a results tree or a box name.
+OUT="${OUT_OVERRIDE:-$S/t2_combined_run}"
 RESULTS="$OUT/results"
 RUN_ID="t2-$(date -u +%Y%m%dT%H%M%SZ)-$$"
 # shellcheck source=brev/arm_flags.sh
@@ -163,7 +169,7 @@ fi
 if [ "$ONLY_BOX" != 0 ]; then
   UNCLAIMED=$(comm -23 <(awk '{printf "e%02d\n", $1}' "$QUEUE" | sort) \
                        <(ls "$OUT/claims" 2>/dev/null | sort) | tr '\n' ' ')
-  echo "== adding v2d-t2-b$(printf '%02d' "$ONLY_BOX") to the run in $OUT"
+  echo "== adding $BOX_PREFIX$(printf '%02d' "$ONLY_BOX") to the run in $OUT"
   echo "   unclaimed now  : ${UNCLAIMED:-none}"
   echo "   it will take   : up to $MAX_CLIPS_PER_BOX clips, ~$HOURS_PER_BOX h, \$$(awk -v h="$HOURS_PER_BOX" -v r="$RATE_USD_PER_HOUR" 'BEGIN{printf "%.2f", h*r}')"
   budget_ok_for_hours "$HOURS_PER_BOX" "one replacement box" || exit 3
@@ -255,7 +261,7 @@ run_clip() {
 
 run_box() {
   local INDEX="$1"
-  local NAME="v2d-t2-b$(printf '%02d' "$INDEX")"
+  local NAME="$BOX_PREFIX$(printf '%02d' "$INDEX")"
   local LOG="$OUT/${NAME}.log"
   {
     echo "=== $NAME ($(date -u +%FT%TZ)) ==="
@@ -355,7 +361,7 @@ run_box() {
 if [ "$ONLY_BOX" != 0 ]; then
   box_name_reserve "$OUT/boxnames" "$ONLY_BOX" \
     || echo "   (name $ONLY_BOX was already handed out in this run; continuing, it is your call)"
-  echo "adding one box; log in $OUT/v2d-t2-b$(printf '%02d' "$ONLY_BOX").log"
+  echo "adding one box; log in $OUT/$BOX_PREFIX$(printf '%02d' "$ONLY_BOX").log"
   run_box "$ONLY_BOX" &
   wait
   echo "== replacement box done"
@@ -389,20 +395,20 @@ box_slot() {
     # It failed. Everything below decides whether another box would have anything to do.
     left="$(unclaimed_clips)"
     if [ "$left" = 0 ]; then
-      echo "slot $slot: v2d-t2-b$(printf '%02d' "$index") failed, but every clip is claimed; not replacing"
+      echo "slot $slot: $BOX_PREFIX$(printf '%02d' "$index") failed, but every clip is claimed; not replacing"
       return 1
     fi
-    if ! budget_ok_for_hours "$HOURS_PER_BOX" "a replacement for the failed v2d-t2-b$(printf '%02d' "$index")"; then
-      echo "slot $slot: v2d-t2-b$(printf '%02d' "$index") failed and the budget will not fund a replacement"
+    if ! budget_ok_for_hours "$HOURS_PER_BOX" "a replacement for the failed $BOX_PREFIX$(printf '%02d' "$index")"; then
+      echo "slot $slot: $BOX_PREFIX$(printf '%02d' "$index") failed and the budget will not fund a replacement"
       return 1
     fi
     replacements=$((replacements + 1))
-    echo "slot $slot: v2d-t2-b$(printf '%02d' "$index") failed with $left clips unclaimed; replacing it (attempt $((replacements + 1)))"
+    echo "slot $slot: $BOX_PREFIX$(printf '%02d' "$index") failed with $left clips unclaimed; replacing it (attempt $((replacements + 1)))"
     sleep 30
   done
 }
 
-echo "launching up to $BOXES boxes; per-box logs in $OUT/v2d-t2-b*.log"
+echo "launching up to $BOXES boxes; per-box logs in $OUT/$BOX_PREFIX*.log"
 echo "failed boxes are replaced automatically, up to $MAX_BOX_NAMES boxes in total"
 for i in $(seq 1 "$BOXES"); do
   box_slot "$i" &
