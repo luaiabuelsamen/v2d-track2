@@ -443,9 +443,25 @@ def _cell(value: float | None, digits: int = 4) -> str:
     return "—" if value is None else f"{value:.{digits}f}"
 
 
+def pending_arms(record: dict[str, Any]) -> dict[str, list[str]]:
+    """Per clip, the arms that still owe it a rollout.
+
+    The chain is recomputed from scratch every pass, so a clip whose B4x rollout lands before its
+    Part A rollout is judged against the board and can read "B4x ships" -- and then flip when Part
+    A arrives and B4x is re-judged against it. That is the rule working, not a bug, but a reader
+    cannot tell a settled verdict from a provisional one without this.
+    """
+    waiting: dict[str, list[str]] = {}
+    for arm, tags in record["clips_awaiting_results"].items():
+        for tag in tags:
+            waiting.setdefault(tag, []).append(arm)
+    return {tag: sorted(arms) for tag, arms in waiting.items()}
+
+
 def render(record: dict[str, Any]) -> str:
     """The whole table, rewritten from the JSON each pass so the file is never half a run old."""
     summary, bar = record["summary"], record["bars"]
+    pending = pending_arms(record)
     expected = 36  # 28 in the registered wave plus B4x's 8
     lines = [
         "# Second wave, as it lands",
@@ -476,6 +492,10 @@ def render(record: dict[str, Any]) -> str:
             )
             mp = ("pass" if new_score["kit_maniptrans_sr"] > 0 else "fail") if new_score else "—"
             ships = "**ships**" if clip["ships"]["arm"] == candidate["arm"] else ""
+            if ships and tag in pending:
+                # Provisional: another arm still owes this clip a rollout, and it is judged
+                # against whatever is winning when it lands.
+                ships = f"ships, pending {' '.join(pending[tag])}"
             lines.append(
                 f"| {tag} | {candidate['arm']} | {_cell(_auc(old_score))} "
                 f"| {_cell(_auc(new_score))} | {delta} | {mp} "
@@ -484,8 +504,11 @@ def render(record: dict[str, Any]) -> str:
                 f"| {decision['verdict']} | {ships} |"
             )
         if clip["ships"]["arm"] == "first wave":
+            mark = "**ships (board)**"
+            if tag in pending:
+                mark = f"ships (board), pending {' '.join(pending[tag])}"
             lines.append(
-                f"| {tag} | — | {_cell(_auc(old_score))} | — | — | — | — | — | **ships (board)** |"
+                f"| {tag} | — | {_cell(_auc(old_score))} | — | — | — | — | — | {mark} |"
             )
     part_a = bar["part_a"]
     lines += [

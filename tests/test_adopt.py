@@ -20,6 +20,7 @@ from v2d.select.adopt import (
     compare,
     load_trajectory,
     main,
+    pending_arms,
     render,
     selected_checkpoint,
 )
@@ -457,3 +458,18 @@ def test_the_table_shows_one_row_per_candidate_and_marks_the_winner(tmp_path):
     assert len(rows) == 2
     assert "**ships**" in next(row for row in rows if "| A |" in row)
     assert "**ships**" not in next(row for row in rows if "| B4x |" in row)
+
+
+def test_a_clip_another_arm_still_owes_is_marked_provisional(tmp_path):
+    """B4x's e08 can land before Part A's; the table must not read as settled."""
+    old = tmp_path / "old"
+    part_a, b4x = tmp_path / "A", tmp_path / "B4x"
+    write_cell(old / "e08", achieved_x=[0.05] * 5, reference_x=[0.0] * 5, auc=0.44)
+    (part_a / "e08").mkdir(parents=True)  # claimed, still training
+    write_cell(b4x / "e08", achieved_x=[0.02] * 5, reference_x=[0.0] * 5, auc=0.50)
+    record = compare({"A": part_a, "B4x": b4x}, old, reference_from_old=set())
+    assert record["clips"]["e08"]["ships"]["arm"] == "B4x"
+    assert pending_arms(record) == {"e08": ["A"]}
+    row = next(line for line in render(record).splitlines() if line.startswith("| e08 |"))
+    assert "ships, pending A" in row
+    assert "**ships**" not in row
