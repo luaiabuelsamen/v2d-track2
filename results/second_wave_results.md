@@ -6,7 +6,7 @@ registered rule and reads only the noisy input reference; the kit columns are Ti
 truth and are reported, never used to decide. A clip two arms re-ran has one row per arm,
 each judged against the incumbent at that moment, and **ships** marks the winner.
 
-13 clips landed of 36 expected, 13 candidate rollouts, 10 clips replaced (A 6, B1 2, B2 1, B4 1).
+15 clips landed of 36 expected, 15 candidate rollouts, 12 clips replaced (A 7, B1 2, B2 2, B4 1).
 
 | clip | arm | record AUC | new AUC | Δ AUC | MP-SR | input dist cm, incumbent → new | verdict | ships |
 |---|---|---|---|---|---|---|---|---|
@@ -22,14 +22,16 @@ each judged against the incumbent at that moment, and **ships** marks the winner
 | e06 | A | 0.4730 | 0.4758 | 0.0029 | pass | 2.50 → 2.08 | adopt | ships, pending B4x |
 | e08 | A | 0.4431 | 0.6654 | 0.2223 | pass | 3.91 → 2.08 | adopt | ships, pending B4x |
 | e10 | A | 0.3147 | 0.4794 | 0.1647 | pass | 4.22 → 2.72 | adopt | ships, pending B4x |
+| e11 | A | 0.3315 | 0.4676 | 0.1360 | fail | 5.59 → 3.90 | adopt | **ships** |
 | e14 | B2 | 0.1091 | 0.2055 | 0.0964 | fail | 47.49 → 5.91 | adopt | **ships** |
 | e16 | A | 0.3890 | 0.5639 | 0.1749 | fail | 4.63 → 2.71 | adopt | **ships** |
 | e17 | B4 | 0.2466 | 0.4470 | 0.2004 | fail | 20.25 → 4.73 | adopt | **ships** |
+| e19 | B2 | 0.1163 | 0.1163 | 0.0000 | fail | 57.16 → 57.16 | adopt | **ships** |
 | e25 | B1 | 0.1335 | 0.1334 | -0.0001 | fail | 82.99 → 74.11 | adopt | **ships** |
 
 ## The pre-registered bars
 
-- **Part A** (7/18 scored): MP-SR passes on **5**, bar is 9 (was 5); clips more than 0.05 AUC below their record: e02
+- **Part A** (8/18 scored): MP-SR passes on **5**, bar is 9 (was 5); clips more than 0.05 AUC below their record: e02
 - **Part B**, per clip against its own record:
   - e01 [B5]: bar 0.200, new 0.0576 (below)
   - e04 [B1]: bar 0.147, new 0.1466 (below)
@@ -38,10 +40,10 @@ each judged against the incumbent at that moment, and **ships** marks the winner
   - e09: bar 0.245, new — (waiting)
   - e14 [B2]: bar 0.109, new 0.2055 (beats)
   - e17 [B4]: bar 0.247, new 0.4470 (beats)
-  - e19: bar 0.116, new — (waiting)
+  - e19 [B2]: bar 0.116, new 0.1163 (beats)
   - e25 [B1]: bar 0.134, new 0.1334 (below)
   - e28: bar 0.089, new — (waiting)
 
-Mean kit AUC of the shipping rollout over the clips landed so far: **0.4083** (not comparable to the 30-clip 0.3908 until every clip is in).
+Mean kit AUC of the shipping rollout over the clips landed so far: **0.3928** (not comparable to the 30-clip 0.3908 until every clip is in).
 
-Still training or not yet selected — A: e11 e12 e15 e18 e20 e22; B2: e19; B3: e07; B4x: e00 e06 e08 e09 e10 e13.
+Still training or not yet selected — A: e12 e15 e18 e20 e22; B2: e28; B3: e07; B4x: e00 e06 e08 e09 e10 e13.
