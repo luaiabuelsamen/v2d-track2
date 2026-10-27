@@ -1,6 +1,33 @@
 # STATUS — v2d (NVIDIA V2D Challenge, Track 2)
 
-## Submitted — the credit condition is met
+## Submitted — the real entry is on the Tier 2 board
+
+**The Tier 2 entry is on all four Tier 2 leaderboards and scored, 2026-10-27 05:18 UTC, eight days
+before the freeze.** The 30-clip combined run, one upload, four competitions:
+
+| leaderboard | submission | public score | our local score |
+|---|---|---|---|
+| `tier2-auc` | 57690108 | **0.39076** | 0.39076336 |
+| `tier2-sp-sr` | 57690112 | **0.56666** | 0.56666667 |
+| `tier2-mp-sr` | 57690116 | **0.16666** | 0.16666667 |
+| `tier2-mppe` | 57690120 | **17.35839** | 17.35839727 |
+
+Ahead of the CHORD baseline's published Tier 2 board average on all four (0.374 / 0.533 / 0.067 /
+20.5 cm), most clearly on MP-SR at 2.5x. CSV sha256 `3a410393…`, 22,989 rows over 30 episodes, one
+z-drop-selected checkpoint per episode and 30 distinct checkpoint digests; `main` pushed at
+`e8ffe8f`, which contains the `189773f` in the entry's own provenance rows; four of five daily
+submissions left on each competition. Record: `results/tier2_submission.json`,
+`results/tier2_entry.json`.
+
+**The host scorer is now proven twice, on both tiers, to five decimals.** Every later decision can
+be made locally without spending an upload to find out where we stand.
+
+It is a shipping run, not an attribution run: START, ORI, FING and CLEAN moved together, so the
+score cannot be split between them. Twelve clips are still under 0.30 AUC and carry the whole
+deficit — `docs/SECOND_WAVE.md` triages them into five failure modes and prices the one-variable
+tests, $30 for all four at one seed against $141.78 left of the $230.
+
+## The Tier 1 insurance entry — the credit condition was met here
 
 **The Tier 1 entry is on all four Tier 1 leaderboards and scored, 2026-10-24, eleven days before
 the freeze.** One upload, four competitions, every one COMPLETE:
@@ -24,9 +51,9 @@ entry -- 409,600 env steps per clip is about 1/850th of the full recipe, both su
 exactly zero -- and that is fine, because it is insurance.
 
 Goal: A valid Track 2 submission before the freeze (this keeps the $250 Brev credit), then the best Tier 2 rank-sum we can reach in 11 days, and a frozen released measurement whatever the rank.
-Finish line: Tier 1 insurance submission accepted; Tier 2 submitted; results/ frozen; README + short tech report; every number traceable to a committed results file.
+Finish line: ~~Tier 1 insurance submission accepted~~; ~~Tier 2 submitted~~; results/ frozen; README + short tech report; every number traceable to a committed results file.
 Deadline: leaderboard freeze 2026-11-04 17:00 EST (internal cutoff 12:00 EST that day)
-Milestone: **a valid Track 2 submission is in and scored, so the $250 Brev credit is secured.** Gate G1 passed long since (all 60 clips retargeted on CPU at 0.0 mm). **Brev is live**: three probe attempts, two real bugs found and fixed, the hardware confirmed, ~$0.22 spent of a $2 cap. The reference cleaner now has a **known-answer gate, and the original cleaner failed it** -- a gated variant that passes is built and scored. Code is one package with one CLI, ruff/format clean, 76 tests. Observability is live to W&B and a private Hugging Face repo.
+Milestone: **both tiers are submitted and scored; the competitive entry is Tier 2 at AUC 0.39076, ahead of the published baseline on all four metrics.** Gate G1 passed long since (all 60 clips retargeted on CPU at 0.0 mm). **Brev is live**: three probe attempts, two real bugs found and fixed, the hardware confirmed, ~$0.22 spent of a $2 cap. The reference cleaner now has a **known-answer gate, and the original cleaner failed it** -- a gated variant that passes is built and scored. Code is one package with one CLI, ruff/format clean, 76 tests. Observability is live to W&B and a private Hugging Face repo.
 Done (2026-10-27 01:57 UTC): **the 30-clip Tier 2 run with the combined recipe finished, all 30
 clips trained to 349,999,104 steps, pulled, kit-scored and selected** --
 `results/t2_combined_run_record.json`, `docs/T2_COMBINED_RUN.md`.

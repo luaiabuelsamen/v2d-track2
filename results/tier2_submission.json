@@ -1,0 +1,113 @@
+{
+  "code_commit_now_resolves": "yes. origin/main is e8ffe8fb135681045c452997fa75869f915f53c2 and the packed commit 189773fe190a845afa728e3666dfeea5ff4f4618 is an ancestor of it, so the provenance URL in all 22,989 rows points at pushed code. This was the one gap flagged when it was packed.",
+  "code_commit_url": "https://github.com/luaiabuelsamen/v2d-track2/commit/189773fe190a845afa728e3666dfeea5ff4f4618",
+  "csv_bytes": 11839854,
+  "csv_sha256": "3a410393e203a9ec30f54d85655d6f7924122ca44c6b991de8140e7a77c5e013",
+  "episodes": 30,
+  "public_vs_local": {
+    "add_auc": {
+      "agrees_to": "5 decimals",
+      "local": 0.3907633575535539,
+      "public": "0.39076"
+    },
+    "maniptrans_sr": {
+      "agrees_to": "5 decimals",
+      "local": 0.16666666666666666,
+      "public": "0.16666"
+    },
+    "mppe_cm": {
+      "agrees_to": "5 decimals",
+      "local": 17.358397274531093,
+      "public": "17.35839"
+    },
+    "spider_sr": {
+      "agrees_to": "5 decimals",
+      "local": 0.5666666666666667,
+      "public": "0.56666"
+    }
+  },
+  "quota_after": "4 submissions left today on each of the four",
+  "recipe": {
+    "arm_flags": [
+      "start_curriculum",
+      "orientation_reward",
+      "finger_targets",
+      "clean_references"
+    ],
+    "checkpoint_every": 49999872,
+    "environment_steps": 349999104,
+    "object_orientation_std": 0.3,
+    "reset_voc_scale": 0.0,
+    "scene_support": "per clip, true iff that clip's support USDA has primitives (14 of 30)",
+    "seed": 42,
+    "world_count_eval": 1,
+    "world_count_train": 2048
+  },
+  "references": "interp's finger parquets on tetool's bridge_v1 clean retarget, 30/30 clips",
+  "rows": 22989,
+  "selection": {
+    "distinct_checkpoints": 30,
+    "note": "a different checkpoint_sha256 per episode, which the provenance rules allow and the kit's packer confirmed ('30 distinct checkpoints ... expected for per-sequence policies')",
+    "rule": "z-drop, the registered submission rule (v2d pick-checkpoint); reads only the input reference, never Tier 1 truth",
+    "selected_steps_in_play": [
+      "49M",
+      "99M",
+      "149M",
+      "199M",
+      "249M",
+      "299M",
+      "349M"
+    ]
+  },
+  "submissions": {
+    "add_auc": {
+      "public_score": "0.39076",
+      "ref": 57690108,
+      "slug": "v2d-challenge-track2-tier2-auc",
+      "state": "COMPLETE"
+    },
+    "maniptrans_sr": {
+      "public_score": "0.16666",
+      "ref": 57690116,
+      "slug": "v2d-challenge-track2-tier2-mp-sr",
+      "state": "COMPLETE"
+    },
+    "mppe_cm": {
+      "public_score": "17.35839",
+      "ref": 57690120,
+      "slug": "v2d-challenge-track2-tier2-mppe",
+      "state": "COMPLETE"
+    },
+    "spider_sr": {
+      "public_score": "0.56666",
+      "ref": 57690112,
+      "slug": "v2d-challenge-track2-tier2-sp-sr",
+      "state": "COMPLETE"
+    }
+  },
+  "vs_published_baseline": {
+    "caveat": "our numbers are host-side kit scores on our own selection, not a board submission, and the board average is over its own 30 clips. Ahead on all four, most clearly on MP-SR.",
+    "chord": {
+      "add_auc": 0.374,
+      "maniptrans_sr": 0.067,
+      "mppe_cm": 20.5,
+      "spider_sr": 0.533
+    },
+    "ours": {
+      "add_auc": 0.390763,
+      "maniptrans_sr": 0.166667,
+      "mppe_cm": 17.358397,
+      "spider_sr": 0.566667
+    },
+    "what": "the CHORD baseline's published Tier 2 board average, for scale only"
+  },
+  "vs_tier1_entry": {
+    "note": "the Tier 1 entry was insurance at 409,600 steps per clip with both success rates exactly zero. This is the real entry: 349,999,104 steps per clip, SP-SR 0.567 and MP-SR 0.167 where Tier 1 had 0.0.",
+    "tier1_add_auc": 0.13434706677529462,
+    "tier2_add_auc": 0.3907633575535539
+  },
+  "what": "the Tier 2 entry: the 30-clip combined run, submitted to all four Tier 2 leaderboards and scored",
+  "what_it_is_not": "an attribution run. START, ORI, FING and CLEAN moved together, so the entry cannot say which of them earned the score; docs/SECOND_WAVE.md prices the one-variable tests that would. Twelve clips are still under 0.30 AUC and carry the whole deficit.",
+  "when": "2026-10-27 05:18 UTC, one upload, four competitions",
+  "why_it_matters": "the leaderboard reproduces all four local numbers to five decimals for the second time, now on Tier 2 and on real trained policies rather than the Tier 1 stand-in. The host scorer is therefore trustworthy for every later decision, so the remaining budget can be spent on experiments instead of on uploads to find out where we stand."
+}
