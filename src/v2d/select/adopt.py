@@ -22,6 +22,14 @@ Every other clip is checked rather than assumed: the two rollouts' reference col
 within `--tolerance`, and a clip whose references disagree without `--reference-from-old` is
 reported `undecidable` instead of being quietly decided on two different yardsticks.
 
+**More than one candidate per clip.** B4x re-runs six clips that Part A also re-ran and one that
+B3 re-ran, so a clip can have two new rollouts. They are decided as a chain, in the order the
+`--group` flags are given: the incumbent starts as the shipped rollout, each candidate is judged
+against the incumbent *of that moment*, and a candidate that wins becomes the incumbent for the
+next one. The alternative -- judging every candidate against the shipped rollout -- would let a
+clip "adopt" twice and leave which one ships undefined. The earlier code keyed clips by tag alone,
+so a second candidate silently replaced the first in the record; that is the bug this chain fixes.
+
     v2d adopt-check --old $S/t2_combined_run/results \
       --group A=$S/second_wave/run_A/results --group B5=$S/second_wave/run_B5/results \
       --record results/t2_combined_run_record.json --reference-from-old e01 \
@@ -37,6 +45,9 @@ from typing import Any
 
 import numpy as np
 import pyarrow.parquet as pq
+
+# The follow-up arm, which is the one that can share a clip with another arm.
+B4X_ARM = "B4x"
 
 # Two rollouts count as tracking the same input if their reference columns agree to 1 cm. The
 # references we expect to be identical are identical (a finger solve copies the object columns
@@ -191,50 +202,79 @@ def compare(
     record: dict[str, Any] | None = None,
     tolerance_m: float = REFERENCE_TOLERANCE_M,
 ) -> dict[str, Any]:
-    clips: dict[str, Any] = {}
+    """Decide every clip, chaining candidates in the order their groups were given."""
+    candidates: dict[str, list[tuple[str, dict[str, Any]]]] = {}
     waiting: dict[str, list[str]] = {}
-    for arm, results in sorted(groups.items()):
+    for arm, results in groups.items():
         if not results.is_dir():
             waiting[arm] = []
             continue
         for cell in sorted(results.glob("e[0-9][0-9]")):
             tag = cell.name
-            new = selected_checkpoint(results, tag)
-            if new is None:
+            found = selected_checkpoint(results, tag)
+            if found is None:
                 waiting.setdefault(arm, []).append(tag)
-                continue
-            old = selected_checkpoint(old_results, tag)
-            if old is None:
-                raise SystemExit(
-                    f"FATAL: {tag} has a second-wave rollout but no first-wave selection under "
-                    f"{old_results}. The rule compares against what is on the board; with nothing "
-                    "to compare against there is no decision to make."
-                )
-            entry: dict[str, Any] = {
-                "arm": arm,
-                "episode": int(tag[1:]),
-                "new": new,
-                "old": old,
-                "decision": decide(
-                    new,
-                    old,
-                    reference_from_old=tag in reference_from_old,
-                    tolerance_m=tolerance_m,
-                ),
-                "new_kit_score": kit_score(Path(new["checkpoint_dir"])),
-                "old_kit_score": kit_score(Path(old["checkpoint_dir"])),
-            }
-            if record is not None:
-                clip = record["clips"].get(tag)
-                entry["record_kit_score"] = clip["selected_kit_score"] if clip else None
-            clips[tag] = entry
+            else:
+                candidates.setdefault(tag, []).append((arm, found))
+
+    clips: dict[str, Any] = {}
+    for tag, found in sorted(candidates.items()):
+        shipped = selected_checkpoint(old_results, tag)
+        if shipped is None:
+            raise SystemExit(
+                f"FATAL: {tag} has a second-wave rollout but no first-wave selection under "
+                f"{old_results}. The rule compares against what is on the board; with nothing "
+                "to compare against there is no decision to make."
+            )
+        entry: dict[str, Any] = {
+            "episode": int(tag[1:]),
+            "shipped": shipped,
+            "shipped_kit_score": kit_score(Path(shipped["checkpoint_dir"])),
+            "candidates": [],
+        }
+        if record is not None:
+            clip = record["clips"].get(tag)
+            entry["record_kit_score"] = clip["selected_kit_score"] if clip else None
+
+        # The chain. Each candidate is judged against the incumbent of that moment, so a clip
+        # that two arms re-ran cannot "adopt" twice and leave the winner undefined.
+        incumbent_arm, incumbent = "first wave", shipped
+        for arm, new in found:
+            decision = decide(
+                new,
+                incumbent,
+                reference_from_old=tag in reference_from_old,
+                tolerance_m=tolerance_m,
+            )
+            decision["judged_against"] = incumbent_arm
+            won = decision["verdict"] == "adopt"
+            entry["candidates"].append(
+                {
+                    "arm": arm,
+                    "cell": new,
+                    "kit_score": kit_score(Path(new["checkpoint_dir"])),
+                    "decision": decision,
+                    "became_incumbent": won,
+                }
+            )
+            if won:
+                incumbent_arm, incumbent = arm, new
+        entry["ships"] = {
+            "arm": incumbent_arm,
+            "selected_environment_steps": incumbent["selected_environment_steps"],
+            "selected_checkpoint_sha256": incumbent["selected_checkpoint_sha256"],
+            "checkpoint_dir": incumbent["checkpoint_dir"],
+        }
+        clips[tag] = entry
 
     return {
-        "what": "per clip, whether the second wave's rollout replaces the one on the board",
+        "what": "per clip, which rollout ships: the board's, or an arm that beat it on the input",
         "rule": {
             "source": "docs/SECOND_WAVE.md, 'The rule for the final entry — no truth reads'",
             "decided_on": "mean distance from the z-drop-selected checkpoint to the input",
-            "tie_break": "a tie keeps the first-wave rollout",
+            "tie_break": "a tie keeps the incumbent",
+            "chain": "candidates are judged in --group order against the incumbent of that moment",
+            "group_order": list(groups),
             "reference_tolerance_m": tolerance_m,
             "reference_from_old": sorted(reference_from_old),
             "ground_truth_read": False,
@@ -251,62 +291,151 @@ def _auc(score: dict[str, float] | None) -> float | None:
 
 
 def summarise(clips: dict[str, Any]) -> dict[str, Any]:
-    scored = {tag: clip for tag, clip in clips.items() if clip["new_kit_score"]}
-    adopted = [tag for tag, clip in clips.items() if clip["decision"]["verdict"] == "adopt"]
+    scored = [c for clip in clips.values() for c in clip["candidates"] if c["kit_score"]]
+    replaced = {
+        tag: clip["ships"]["arm"]
+        for tag, clip in clips.items()
+        if clip["ships"]["arm"] != "first wave"
+    }
+    by_arm: dict[str, int] = {}
+    for arm in replaced.values():
+        by_arm[arm] = by_arm.get(arm, 0) + 1
     summary: dict[str, Any] = {
         "clips_landed": len(clips),
-        "clips_scored": len(scored),
-        "clips_adopted": len(adopted),
-        "adopted": sorted(adopted),
+        "candidates_landed": sum(len(clip["candidates"]) for clip in clips.values()),
+        "candidates_scored": len(scored),
+        "clips_replaced": len(replaced),
+        "ships_by_arm": dict(sorted(by_arm.items())),
+        "replaced": dict(sorted(replaced.items())),
         "undecidable": sorted(
-            tag for tag, clip in clips.items() if clip["decision"]["verdict"] == "undecidable"
+            tag
+            for tag, clip in clips.items()
+            for c in clip["candidates"]
+            if c["decision"]["verdict"] == "undecidable"
         ),
     }
     gains = [
-        _auc(clip["new_kit_score"]) - clip["record_kit_score"]["kit_add_auc"]
-        for clip in scored.values()
-        if clip.get("record_kit_score")
+        c["kit_score"]["kit_add_auc"] - clip["record_kit_score"]["kit_add_auc"]
+        for clip in clips.values()
+        for c in clip["candidates"]
+        if c["kit_score"] and clip.get("record_kit_score")
     ]
     if gains:
-        summary["mean_kit_auc_change_on_landed_clips"] = round(sum(gains) / len(gains), 6)
-        summary["clips_improved_on_kit_auc"] = sum(1 for gain in gains if gain > 0)
+        summary["mean_kit_auc_change_per_candidate"] = round(sum(gains) / len(gains), 6)
+        summary["candidates_improving_on_kit_auc"] = sum(1 for gain in gains if gain > 0)
+    # What the entry would score if it were repacked now: the shipping rollout of every clip we
+    # hold, which is the number that actually matters.
+    held = [(clip["ships"], clip) for clip in clips.values()]
+    shipping_aucs = []
+    for ships, clip in held:
+        if ships["arm"] == "first wave":
+            score = clip.get("record_kit_score") or clip["shipped_kit_score"]
+        else:
+            score = next(c["kit_score"] for c in clip["candidates"] if c["arm"] == ships["arm"])
+        if score:
+            shipping_aucs.append(score["kit_add_auc"])
+    if shipping_aucs:
+        summary["mean_kit_auc_of_shipping_rollouts_on_landed_clips"] = round(
+            sum(shipping_aucs) / len(shipping_aucs), 6
+        )
     return summary
+
+
+def candidate_of(clip: dict[str, Any], arm: str) -> dict[str, Any] | None:
+    """One clip's candidate from a named arm, or None if that arm has not landed it."""
+    for candidate in clip["candidates"]:
+        if candidate["arm"] == arm:
+            return candidate
+    return None
+
+
+def best_kit_auc_held(clip: dict[str, Any], *, excluding: str) -> tuple[float | None, str]:
+    """The best kit AUC we hold for a clip, and where it came from, ignoring one arm.
+
+    This is B4x's bar, and it is the honest one: six of its clips are Part A clips, and Part A has
+    already lifted e08 from 0.4431 to 0.6654. A B4x arm judged against the first-wave *record*
+    could clear its bar at 0.50 and still be worse than the rollout we hold.
+    """
+    best, source = None, "nothing scored yet"
+    record = clip.get("record_kit_score")
+    if record:
+        best, source = record["kit_add_auc"], "first wave"
+    for candidate in clip["candidates"]:
+        if candidate["arm"] == excluding or not candidate["kit_score"]:
+            continue
+        auc = candidate["kit_score"]["kit_add_auc"]
+        if best is None or auc > best:
+            best, source = auc, candidate["arm"]
+    return best, source
 
 
 def bars(clips: dict[str, Any]) -> dict[str, Any]:
     """The pre-registered bars, reported as they stand. Reporting, not deciding."""
-    part_a = {tag: clip for tag, clip in clips.items() if tag in PART_A_CLIPS}
-    scored_a = {tag: clip for tag, clip in part_a.items() if clip["new_kit_score"]}
-    passes = sum(1 for clip in scored_a.values() if clip["new_kit_score"]["kit_maniptrans_sr"] > 0)
+    part_a: dict[str, Any] = {}
+    for tag in PART_A_CLIPS:
+        clip = clips.get(tag)
+        candidate = candidate_of(clip, "A") if clip else None
+        if candidate and candidate["kit_score"]:
+            part_a[tag] = (clip, candidate)
+    passes = sum(
+        1 for _, candidate in part_a.values() if candidate["kit_score"]["kit_maniptrans_sr"] > 0
+    )
     regressions = sorted(
         tag
-        for tag, clip in scored_a.items()
+        for tag, (clip, candidate) in part_a.items()
         if clip.get("record_kit_score")
-        and clip["new_kit_score"]["kit_add_auc"]
+        and candidate["kit_score"]["kit_add_auc"]
         < clip["record_kit_score"]["kit_add_auc"] - PART_A_MAX_AUC_REGRESSION
     )
     part_b = {}
     for tag, bar in sorted(PART_B_BARS.items()):
         clip = clips.get(tag)
-        if clip is None or not clip["new_kit_score"]:
+        # The registered wave's own arm for this clip, never B4x -- B4x has its own bar below.
+        candidate = None
+        if clip:
+            for item in clip["candidates"]:
+                if item["arm"] != B4X_ARM:
+                    candidate = item
+                    break
+        if candidate is None or not candidate["kit_score"]:
             part_b[tag] = {"bar": bar, "new_kit_add_auc": None, "beats_bar": None}
             continue
-        auc = clip["new_kit_score"]["kit_add_auc"]
-        part_b[tag] = {"bar": bar, "new_kit_add_auc": round(auc, 6), "beats_bar": bool(auc > bar)}
+        auc = candidate["kit_score"]["kit_add_auc"]
+        part_b[tag] = {
+            "arm": candidate["arm"],
+            "bar": bar,
+            "new_kit_add_auc": round(auc, 6),
+            "beats_bar": bool(auc > bar),
+        }
+    # B4x: the bar is the best rollout held for that clip when it is judged, not the record.
+    part_b4x = {}
+    for tag, clip in sorted(clips.items()):
+        candidate = candidate_of(clip, B4X_ARM)
+        if candidate is None:
+            continue
+        bar, source = best_kit_auc_held(clip, excluding=B4X_ARM)
+        auc = candidate["kit_score"]["kit_add_auc"] if candidate["kit_score"] else None
+        part_b4x[tag] = {
+            "bar": None if bar is None else round(bar, 6),
+            "bar_from": source,
+            "new_kit_add_auc": None if auc is None else round(auc, 6),
+            "beats_bar": None if (auc is None or bar is None) else bool(auc > bar),
+        }
     return {
         "part_a": {
             "clips": len(PART_A_CLIPS),
-            "clips_scored": len(scored_a),
+            "clips_scored": len(part_a),
             "maniptrans_passes_before": PART_A_MANIPTRANS_BEFORE,
             "maniptrans_passes_now": passes,
             "maniptrans_bar": PART_A_MANIPTRANS_BAR,
             "clips_below_record_by_more_than": PART_A_MAX_AUC_REGRESSION,
             "clips_regressed": regressions,
             "met": bool(passes >= PART_A_MANIPTRANS_BAR and not regressions)
-            if len(scored_a) == len(PART_A_CLIPS)
+            if len(part_a) == len(PART_A_CLIPS)
             else None,
         },
         "part_b": part_b,
+        "part_b4x": part_b4x,
     }
 
 
@@ -317,37 +446,47 @@ def _cell(value: float | None, digits: int = 4) -> str:
 def render(record: dict[str, Any]) -> str:
     """The whole table, rewritten from the JSON each pass so the file is never half a run old."""
     summary, bar = record["summary"], record["bars"]
+    expected = 36  # 28 in the registered wave plus B4x's 8
     lines = [
         "# Second wave, as it lands",
         "",
         "Written by `brev/second_wave_puller.sh` as each clip finishes, from",
-        "`v2d adopt-check` (`results/second_wave_adoption.json`). The **adopt** column is the",
+        "`v2d adopt-check` (`results/second_wave_adoption.json`). The **verdict** column is the",
         "registered rule and reads only the noisy input reference; the kit columns are Tier 1",
-        "truth and are reported, never used to decide.",
+        "truth and are reported, never used to decide. A clip two arms re-ran has one row per arm,",
+        "each judged against the incumbent at that moment, and **ships** marks the winner.",
         "",
-        f"{summary['clips_landed']} of 28 clips landed, {summary['clips_scored']} kit-scored, "
-        f"{summary['clips_adopted']} adopted.",
+        f"{summary['clips_landed']} clips landed of {expected} expected, "
+        f"{summary['candidates_landed']} candidate rollouts, "
+        f"{summary['clips_replaced']} clips replaced "
+        f"({', '.join(f'{arm} {n}' for arm, n in summary['ships_by_arm'].items()) or 'none yet'}).",
         "",
-        "| clip | arm | record AUC | new AUC | Δ AUC | MP-SR rec → new | input dist cm, old → new "
-        "| adopt |",
-        "|---|---|---|---|---|---|---|---|",
+        "| clip | arm | record AUC | new AUC | Δ AUC | MP-SR | input dist cm, incumbent → new "
+        "| verdict | ships |",
+        "|---|---|---|---|---|---|---|---|---|",
     ]
     for tag, clip in sorted(record["clips"].items()):
-        new, old = clip["new_kit_score"], clip.get("record_kit_score")
-        decision = clip["decision"]
-        delta = _cell(new["kit_add_auc"] - old["kit_add_auc"], 4) if new and old else "—"
-        mp = (
-            f"{'pass' if old and old['kit_maniptrans_sr'] > 0 else 'fail'} → "
-            f"{'pass' if new and new['kit_maniptrans_sr'] > 0 else 'fail'}"
-            if new
-            else "—"
-        )
-        lines.append(
-            f"| {tag} | {clip['arm']} | {_cell(_auc(old))} | {_cell(_auc(new))} | {delta} | {mp} "
-            f"| {decision['old_mean_distance_to_input_cm']:.2f} → "
-            f"{decision['new_mean_distance_to_input_cm']:.2f} "
-            f"| **{decision['verdict']}** |"
-        )
+        old_score = clip.get("record_kit_score")
+        for candidate in clip["candidates"]:
+            new_score, decision = candidate["kit_score"], candidate["decision"]
+            delta = (
+                _cell(new_score["kit_add_auc"] - old_score["kit_add_auc"], 4)
+                if new_score and old_score
+                else "—"
+            )
+            mp = ("pass" if new_score["kit_maniptrans_sr"] > 0 else "fail") if new_score else "—"
+            ships = "**ships**" if clip["ships"]["arm"] == candidate["arm"] else ""
+            lines.append(
+                f"| {tag} | {candidate['arm']} | {_cell(_auc(old_score))} "
+                f"| {_cell(_auc(new_score))} | {delta} | {mp} "
+                f"| {decision['old_mean_distance_to_input_cm']:.2f} → "
+                f"{decision['new_mean_distance_to_input_cm']:.2f} "
+                f"| {decision['verdict']} | {ships} |"
+            )
+        if clip["ships"]["arm"] == "first wave":
+            lines.append(
+                f"| {tag} | — | {_cell(_auc(old_score))} | — | — | — | — | — | **ships (board)** |"
+            )
     part_a = bar["part_a"]
     lines += [
         "",
@@ -364,9 +503,30 @@ def render(record: dict[str, Any]) -> str:
     ]
     for tag, item in bar["part_b"].items():
         verdict = {True: "beats", False: "below", None: "waiting"}[item["beats_bar"]]
+        arm = f" [{item['arm']}]" if item.get("arm") else ""
         lines.append(
-            f"  - {tag}: bar {item['bar']:.3f}, new {_cell(item['new_kit_add_auc'], 4)} ({verdict})"
+            f"  - {tag}{arm}: bar {item['bar']:.3f}, new "
+            f"{_cell(item['new_kit_add_auc'], 4)} ({verdict})"
         )
+    if bar["part_b4x"]:
+        lines += [
+            "",
+            "- **B4x**, per clip against the best rollout held when it was judged — not the "
+            "first-wave record, because six of its clips are Part A clips:",
+        ]
+        for tag, item in bar["part_b4x"].items():
+            verdict = {True: "beats", False: "below", None: "waiting"}[item["beats_bar"]]
+            lines.append(
+                f"  - {tag}: bar {_cell(item['bar'], 4)} (from {item['bar_from']}), new "
+                f"{_cell(item['new_kit_add_auc'], 4)} ({verdict})"
+            )
+    if "mean_kit_auc_of_shipping_rollouts_on_landed_clips" in summary:
+        lines += [
+            "",
+            "Mean kit AUC of the shipping rollout over the clips landed so far: "
+            f"**{summary['mean_kit_auc_of_shipping_rollouts_on_landed_clips']:.4f}** "
+            "(not comparable to the 30-clip 0.3908 until every clip is in).",
+        ]
     if record["clips_awaiting_results"]:
         waiting = "; ".join(
             f"{arm}: {' '.join(tags) if tags else 'nothing pulled yet'}"
@@ -411,6 +571,7 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("--markdown", type=Path, help="also write the human table here")
     args = parser.parse_args(argv)
 
+    # Insertion order IS the chain order, so the flags are read in the order they were given.
     groups: dict[str, Path] = {}
     for item in args.group:
         if "=" not in item:
@@ -447,15 +608,17 @@ def main(argv: list[str] | None = None) -> None:
         args.markdown.write_text(render(result))
 
     for tag, clip in sorted(result["clips"].items()):
-        decision = clip["decision"]
-        new = clip["new_kit_score"]
         old = clip.get("record_kit_score")
-        print(
-            f"{tag} [{clip['arm']}] "
-            f"record {_cell(_auc(old))} -> new {_cell(_auc(new))}  "
-            f"input {decision['old_mean_distance_to_input_cm']:.2f} -> "
-            f"{decision['new_mean_distance_to_input_cm']:.2f} cm  {decision['verdict']}"
-        )
+        for candidate in clip["candidates"]:
+            decision = candidate["decision"]
+            print(
+                f"{tag} [{candidate['arm']}] "
+                f"record {_cell(_auc(old))} -> new {_cell(_auc(candidate['kit_score']))}  "
+                f"input {decision['old_mean_distance_to_input_cm']:.2f} -> "
+                f"{decision['new_mean_distance_to_input_cm']:.2f} cm  {decision['verdict']}"
+                f" (vs {decision['judged_against']})"
+            )
+        print(f"{tag} ships: {clip['ships']['arm']}")
     print(json.dumps(result["summary"], indent=2))
     print(f"wrote {args.out}" + (f" and {args.markdown}" if args.markdown else ""))
 

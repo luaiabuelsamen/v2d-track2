@@ -106,29 +106,37 @@ def two_waves(tmp_path: Path, *, new_x, old_x, reference_x, new_reference_x=None
     return new_results, old_results
 
 
+def only(record, tag="e10", arm=None):
+    """A clip's single candidate, or the one from a named arm."""
+    candidates = record["clips"][tag]["candidates"]
+    if arm is None:
+        assert len(candidates) == 1, [c["arm"] for c in candidates]
+        return candidates[0]
+    return next(c for c in candidates if c["arm"] == arm)
+
+
 def test_closer_to_the_input_reference_is_adopted(tmp_path):
     new, old = two_waves(tmp_path, new_x=[0.01] * 5, old_x=[0.05] * 5, reference_x=[0.0] * 5)
     record = compare({"A": new}, old, reference_from_old=set())
-    decision = record["clips"]["e10"]["decision"]
+    decision = only(record)["decision"]
     assert decision["verdict"] == "adopt"
     assert decision["new_mean_distance_to_input_cm"] == 1.0
     assert decision["old_mean_distance_to_input_cm"] == 5.0
+    assert record["clips"]["e10"]["ships"]["arm"] == "A"
 
 
 def test_further_from_the_input_reference_keeps_the_board(tmp_path):
     new, old = two_waves(tmp_path, new_x=[0.05] * 5, old_x=[0.01] * 5, reference_x=[0.0] * 5)
-    assert (
-        compare({"A": new}, old, reference_from_old=set())["clips"]["e10"]["decision"]["verdict"]
-        == "keep"
-    )
+    record = compare({"A": new}, old, reference_from_old=set())
+    assert only(record)["decision"]["verdict"] == "keep"
+    assert record["clips"]["e10"]["ships"]["arm"] == "first wave"
 
 
 def test_a_tie_keeps_the_first_wave(tmp_path):
     new, old = two_waves(tmp_path, new_x=[0.03] * 5, old_x=[0.03] * 5, reference_x=[0.0] * 5)
-    assert (
-        compare({"A": new}, old, reference_from_old=set())["clips"]["e10"]["decision"]["verdict"]
-        == "keep"
-    )
+    record = compare({"A": new}, old, reference_from_old=set())
+    assert only(record)["decision"]["verdict"] == "keep"
+    assert record["clips"]["e10"]["ships"]["arm"] == "first wave"
 
 
 def test_the_verdict_ignores_the_kit_score(tmp_path):
@@ -141,10 +149,11 @@ def test_the_verdict_ignores_the_kit_score(tmp_path):
     write_cell(old_results / "e10", achieved_x=[0.01] * 5, reference_x=[0.0] * 5, auc=0.10)
     write_cell(new_results / "e10", achieved_x=[0.05] * 5, reference_x=[0.0] * 5, auc=0.90)
     record = compare({"A": new_results}, old_results, reference_from_old=set())
-    clip = record["clips"]["e10"]
-    assert clip["decision"]["verdict"] == "keep"
-    assert clip["decision"]["verdict_reads_ground_truth"] is False
-    assert clip["new_kit_score"]["kit_add_auc"] == 0.90
+    candidate = only(record)
+    assert candidate["decision"]["verdict"] == "keep"
+    assert candidate["decision"]["verdict_reads_ground_truth"] is False
+    assert candidate["kit_score"]["kit_add_auc"] == 0.90
+    assert record["clips"]["e10"]["ships"]["arm"] == "first wave"
 
 
 def test_a_changed_reference_is_undecidable_unless_registered(tmp_path):
@@ -156,11 +165,12 @@ def test_a_changed_reference_is_undecidable_unless_registered(tmp_path):
         new_reference_x=[0.40] * 5,
     )
     record = compare({"B5": new}, old, reference_from_old=set())
-    decision = record["clips"]["e10"]["decision"]
+    decision = only(record)["decision"]
     assert decision["verdict"] == "undecidable"
     assert decision["references_agree"] is False
     assert decision["reference_max_gap_cm"] == 40.0
     assert record["summary"]["undecidable"] == ["e10"]
+    assert record["clips"]["e10"]["ships"]["arm"] == "first wave"
 
 
 def test_a_registered_clip_is_measured_against_the_shipped_reference(tmp_path):
@@ -172,7 +182,7 @@ def test_a_registered_clip_is_measured_against_the_shipped_reference(tmp_path):
         reference_x=[0.0] * 5,
         new_reference_x=[0.40] * 5,
     )
-    decision = compare({"B5": new}, old, reference_from_old={"e10"})["clips"]["e10"]["decision"]
+    decision = only(compare({"B5": new}, old, reference_from_old={"e10"}))["decision"]
     # 1 cm from its own reference, 41 cm from the shipped one. The rule reads the shipped one.
     assert decision["new_mean_distance_to_input_cm"] == 41.0
     assert decision["verdict"] == "keep"
@@ -188,7 +198,7 @@ def test_references_within_a_millimetre_count_as_the_same_input(tmp_path):
         reference_x=[0.0] * 5,
         new_reference_x=[0.00109] * 5,
     )
-    decision = compare({"B5": new}, old, reference_from_old=set())["clips"]["e10"]["decision"]
+    decision = only(compare({"B5": new}, old, reference_from_old=set()))["decision"]
     assert decision["references_agree"] is True
     assert decision["verdict"] == "adopt"
 
@@ -317,10 +327,10 @@ def test_main_writes_the_json_and_the_table(tmp_path):
         ]
     )
     record = json.loads(out.read_text())
-    assert record["clips"]["e10"]["decision"]["verdict"] == "adopt"
+    assert only(record)["decision"]["verdict"] == "adopt"
     assert record["rule"]["ground_truth_read"] is False
     text = markdown.read_text()
-    assert "| e10 | A |" in text and "**adopt**" in text
+    assert "| e10 | A |" in text and "**ships**" in text
     # Rewritten whole each pass, so a second run leaves one table rather than two.
     main(
         [
@@ -343,3 +353,107 @@ def test_the_table_survives_a_clip_that_is_not_scored_yet(tmp_path):
     write_cell(old_results / "e10", achieved_x=[0.05] * 3, reference_x=[0.0] * 3)
     text = render(compare({"A": new_results}, old_results, reference_from_old=set()))
     assert "| e10 | A | — | — | — | — |" in text
+
+
+# ---------------------------------------------------------------- two arms on the same clip
+def test_the_second_arm_is_judged_against_the_first_not_against_the_board(tmp_path):
+    """The collision B4x creates: six of its clips are Part A clips.
+
+    Part A lifts e10 from 5 cm to 2 cm from the input, so it takes the board. B4x then comes in at
+    3 cm -- better than the board, worse than Part A -- and must lose, because the question is
+    what ships, not what beats the original.
+    """
+    old = tmp_path / "old"
+    part_a, b4x = tmp_path / "A", tmp_path / "B4x"
+    write_cell(old / "e10", achieved_x=[0.05] * 5, reference_x=[0.0] * 5, auc=0.40)
+    write_cell(part_a / "e10", achieved_x=[0.02] * 5, reference_x=[0.0] * 5, auc=0.60)
+    write_cell(b4x / "e10", achieved_x=[0.03] * 5, reference_x=[0.0] * 5, auc=0.95)
+    record = compare({"A": part_a, "B4x": b4x}, old, reference_from_old=set())
+    clip = record["clips"]["e10"]
+    assert [c["arm"] for c in clip["candidates"]] == ["A", "B4x"]
+    assert only(record, arm="A")["decision"]["verdict"] == "adopt"
+    assert only(record, arm="A")["decision"]["judged_against"] == "first wave"
+    b4x_candidate = only(record, arm="B4x")
+    assert b4x_candidate["decision"]["judged_against"] == "A"
+    assert b4x_candidate["decision"]["verdict"] == "keep"
+    # Its kit AUC is the best of the three and it still does not ship.
+    assert b4x_candidate["kit_score"]["kit_add_auc"] == 0.95
+    assert clip["ships"]["arm"] == "A"
+    assert record["summary"]["ships_by_arm"] == {"A": 1}
+
+
+def test_a_later_arm_that_wins_takes_the_clip(tmp_path):
+    old = tmp_path / "old"
+    part_a, b4x = tmp_path / "A", tmp_path / "B4x"
+    write_cell(old / "e10", achieved_x=[0.05] * 5, reference_x=[0.0] * 5, auc=0.40)
+    write_cell(part_a / "e10", achieved_x=[0.04] * 5, reference_x=[0.0] * 5, auc=0.45)
+    write_cell(b4x / "e10", achieved_x=[0.01] * 5, reference_x=[0.0] * 5, auc=0.50)
+    record = compare({"A": part_a, "B4x": b4x}, old, reference_from_old=set())
+    assert record["clips"]["e10"]["ships"]["arm"] == "B4x"
+    assert record["summary"]["ships_by_arm"] == {"B4x": 1}
+
+
+def test_neither_arm_winning_leaves_the_board_in_place(tmp_path):
+    old = tmp_path / "old"
+    part_a, b4x = tmp_path / "A", tmp_path / "B4x"
+    write_cell(old / "e10", achieved_x=[0.01] * 5, reference_x=[0.0] * 5, auc=0.40)
+    write_cell(part_a / "e10", achieved_x=[0.04] * 5, reference_x=[0.0] * 5, auc=0.90)
+    write_cell(b4x / "e10", achieved_x=[0.05] * 5, reference_x=[0.0] * 5, auc=0.95)
+    record = compare({"A": part_a, "B4x": b4x}, old, reference_from_old=set())
+    assert record["clips"]["e10"]["ships"]["arm"] == "first wave"
+    assert record["summary"]["ships_by_arm"] == {}
+    assert record["summary"]["clips_replaced"] == 0
+
+
+def test_the_b4x_bar_is_the_best_rollout_held_not_the_first_wave_record(tmp_path):
+    """e08's real case: record 0.4431, Part A 0.6654. A B4x at 0.50 must read as 'below'."""
+    old = tmp_path / "old"
+    part_a, b4x = tmp_path / "A", tmp_path / "B4x"
+    write_cell(old / "e08", achieved_x=[0.05] * 5, reference_x=[0.0] * 5, auc=0.4431)
+    write_cell(part_a / "e08", achieved_x=[0.02] * 5, reference_x=[0.0] * 5, auc=0.6654)
+    write_cell(b4x / "e08", achieved_x=[0.03] * 5, reference_x=[0.0] * 5, auc=0.50)
+    record = {"clips": {"e08": {"selected_kit_score": {"kit_add_auc": 0.4431}}}}
+    bars = compare({"A": part_a, "B4x": b4x}, old, reference_from_old=set(), record=record)["bars"][
+        "part_b4x"
+    ]
+    assert bars["e08"]["bar"] == 0.6654
+    assert bars["e08"]["bar_from"] == "A"
+    assert bars["e08"]["beats_bar"] is False
+
+
+def test_the_b4x_bar_falls_back_to_the_record_when_no_other_arm_ran_the_clip(tmp_path):
+    """e13 is B4x's only clip with no wave-2 rollout, so its bar is the first-wave record."""
+    old, b4x = tmp_path / "old", tmp_path / "B4x"
+    write_cell(old / "e13", achieved_x=[0.05] * 5, reference_x=[0.0] * 5, auc=0.1594)
+    write_cell(b4x / "e13", achieved_x=[0.02] * 5, reference_x=[0.0] * 5, auc=0.20)
+    record = {"clips": {"e13": {"selected_kit_score": {"kit_add_auc": 0.1594}}}}
+    bars = compare({"B4x": b4x}, old, reference_from_old=set(), record=record)["bars"]["part_b4x"]
+    assert bars["e13"]["bar"] == 0.1594
+    assert bars["e13"]["bar_from"] == "first wave"
+    assert bars["e13"]["beats_bar"] is True
+
+
+def test_part_b_reads_the_registered_arm_and_never_b4x(tmp_path):
+    """e09 is a B3 clip and a B4x clip; its Part B bar is about B3."""
+    old = tmp_path / "old"
+    b3, b4x = tmp_path / "B3", tmp_path / "B4x"
+    write_cell(old / "e09", achieved_x=[0.05] * 5, reference_x=[0.0] * 5, auc=0.245)
+    write_cell(b3 / "e09", achieved_x=[0.04] * 5, reference_x=[0.0] * 5, auc=0.20)
+    write_cell(b4x / "e09", achieved_x=[0.01] * 5, reference_x=[0.0] * 5, auc=0.90)
+    bars = compare({"B3": b3, "B4x": b4x}, old, reference_from_old=set())["bars"]["part_b"]
+    assert bars["e09"]["arm"] == "B3"
+    assert bars["e09"]["new_kit_add_auc"] == 0.20
+    assert bars["e09"]["beats_bar"] is False
+
+
+def test_the_table_shows_one_row_per_candidate_and_marks_the_winner(tmp_path):
+    old = tmp_path / "old"
+    part_a, b4x = tmp_path / "A", tmp_path / "B4x"
+    write_cell(old / "e10", achieved_x=[0.05] * 5, reference_x=[0.0] * 5, auc=0.40)
+    write_cell(part_a / "e10", achieved_x=[0.02] * 5, reference_x=[0.0] * 5, auc=0.60)
+    write_cell(b4x / "e10", achieved_x=[0.03] * 5, reference_x=[0.0] * 5, auc=0.95)
+    text = render(compare({"A": part_a, "B4x": b4x}, old, reference_from_old=set()))
+    rows = [line for line in text.splitlines() if line.startswith("| e10 |")]
+    assert len(rows) == 2
+    assert "**ships**" in next(row for row in rows if "| A |" in row)
+    assert "**ships**" not in next(row for row in rows if "| B4x |" in row)

@@ -157,10 +157,15 @@ state_fingerprint() {
 
 decide_and_commit() {
   local ARM_GROUPS=() ARM
+  # $ARMS is ordered deliberately: B4x last, because it is judged against the others' winners.
   for ARM in $ARMS; do
     [ -d "$WAVE/run_$ARM/results" ] && ARM_GROUPS+=(--group "$ARM=$WAVE/run_$ARM/results")
   done
   [ "${#ARM_GROUPS[@]}" -gt 0 ] || return 0
+  # Group order IS the chain order: the registered wave's arms first, then B4x, which re-runs six
+  # Part A clips and one B3 clip. A B4x rollout therefore has to beat what Part A or B3 put on the
+  # board, not the first-wave record it would also beat (docs/SECOND_WAVE.md).
+  #
   # e01 is the one clip whose reference changed, so it is measured against the reference the
   # shipped entry used. docs/SECOND_WAVE.md registers that caveat; adopt-check enforces it.
   run_v2d adopt-check "${ARM_GROUPS[@]}" \
