@@ -21,13 +21,13 @@
 #       e00 e06 e08 e09 e10 e13 e20                8 boxes, 1 clip each, ~$27.20
 #       e26                                        e21 dropped: already above its ceiling
 #
-#   CR  contact-role reward (docs/ARM_CR.md)       the eight clips under 0.30
-#       e01 e04 e05 e07 e09 e19 e25 e28            4 boxes, 2 clips each, ~$25.57
+#   CR  contact-role reward (docs/ARM_CR.md)       six of the eight clips under 0.30
+#       e04 e05 e07 e09 e19 e25                    3 boxes, 2 clips each, ~$19.18
 #
-# CR is four boxes of two rather than three of three for one reason worth writing down: the cost
-# model prices a group by its FULLEST box, so 8 clips over 3 boxes is 3 clips per box ($28.15, over
-# the $27 cap) while 8 over 4 is 2 per box ($25.57, under it) -- and it finishes in 9.4 h instead
-# of 13.8. Dropping a clip from 8 to 7 over 3 boxes would have saved nothing at all.
+# e01 and e28 are deliberately not run: the roles measure 43 contact-role frames of 747 and 12 of
+# 988, so the arm's two terms apply to about 1% of e28 and 6% of e01 and cannot move either clip
+# (results/contact_roles.json). Two clips per box, not three: the cost model prices a group by its
+# FULLEST box, so six over three boxes is 2 per box at $19.18 and finishes in 9.4 h.
 #
 # e13 and e21 are deliberately not run: both sit within 0.03 of their own reference ceiling, so
 # there is nothing a policy change can win there (docs/METRICS_DEEP_DIVE.md).
@@ -85,7 +85,7 @@ W3B|0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28
 W3R|1 4 5 7 13 14 19 25 28|start_curriculum,orientation_reward,object_position,body_joint_position|V2D_OBJECT_POSITION_STD=0.08 V2D_OBJECT_POSITION_WEIGHT=5.0 V2D_BODY_JOINT_POSITION_WEIGHT=1.0|5|w3_regrasp||699998208|wave 3: the nine clips under 0.30, object over body, 700M steps
 T3-VALID|0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29|start_curriculum,orientation_reward,object_position|V2D_OBJECT_POSITION_STD=0.08|2|t3_recon|tier3|409600:409600|Tier 3: a valid entry on every clip at the insurance budget
 T3-FULL|3 24 18 12 27 8 22 15 20|start_curriculum,orientation_reward,object_position|V2D_OBJECT_POSITION_STD=0.08|3|t3_recon|tier3||Tier 3: full-length precision on as many clips as the credit buys
-CR|1 4 5 7 9 19 25 28|start_curriculum,orientation_reward,contact_role|V2D_CONTACT_ROLES=/v2d/assets/cr_refs/contact_roles|4|cr_refs|||contact-role reward on the eight clips under 0.30
+CR|4 5 7 9 19 25|start_curriculum,orientation_reward,contact_role|V2D_CONTACT_ROLES=/v2d/assets/cr_refs/contact_roles|3|cr_refs|||contact-role reward on the six clips the roles can reach
 EOF
 )
 
