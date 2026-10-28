@@ -1,42 +1,55 @@
 # STATUS — v2d (NVIDIA V2D Challenge, Track 2)
 
-## The second wave is whole: 30 of 30, packed, kit-validated, waiting on the submit word
+## Submitted — the wave-2 entry is on all eight Track 2 leaderboards
 
-**Both CSVs are packed and validated here, nothing uploaded.** e29 — the one episode the
-2026-10-28 reboot took — was re-rolled on arm A's own recipe and came back at kit AUC **0.6270**,
-above both the rollout that was lost (0.5638) and the first wave's (0.5929), so the entry is now
-better than the one that existed before the loss:
+**Uploaded 2026-10-28, seven days before the freeze: one upload per tier, both tiers scored, every
+public score matching what was measured here.**
 
-| | AUC | SP-SR | MP-SR | MPPE cm |
-|---|---|---|---|---|
-| on the Tier 2 boards now | 0.3908 | 0.5667 | 0.1667 | 17.36 |
-| **wave-2 ships (packed, not uploaded)** | **0.46523** | **0.66667** | **0.46667** | **14.128** |
-| on the Tier 1 board now (insurance) | 0.1343 | 0.0 | 0.0 | 74.20 |
+| board | submission | public | board before this upload |
+|---|---|---|---|
+| `tier2-auc` | 57742766 | **0.46522** | 0.39076 |
+| `tier2-sp-sr` | 57742768 | **0.66666** | 0.56666 |
+| `tier2-mp-sr` | 57742770 | **0.46666** | 0.16666 |
+| `tier2-mppe` | 57742773 | **14.12760** | 17.35839 |
+| `tier1-auc` | 57742805 | **0.46522** | 0.13430 |
+| `tier1-sp-sr` | 57742806 | **0.66666** | 0.0 |
+| `tier1-mp-sr` | 57742808 | **0.46666** | 0.0 |
+| `tier1-mppe` | 57742811 | **14.12760** | 74.20 |
 
-MP-SR goes from 5 clips of 30 to 14. 22,989 rows, 30 episodes, **30 checkpoint digests recomputed
-from the surviving safetensors and matched**, 30 distinct, 30/30 frame counts matching the
-pre-reboot record. Ships by arm: A 16, A re-rolled 1, first wave 7, B1 2, B2 2, B4 1, B4x 1.
+Three of four metrics match the local score exactly to the five decimals the board prints; Tier 2
+and Tier 1 AUC come back 0.46522 where ours truncates to 0.46523, one unit in the fifth decimal.
+Both tiers carry the same 22,989 rows — the kit CSV has no tier field, so the files are
+byte-identical (`9997634267c66726961720f30724756389b50ee31f1f0040751364f2fb9b4305`) and the tier is
+only which competition they went to. On Tier 1, which has no input constraint, that is worth
+**+0.33 AUC** over the 409,600-step insurance entry it replaces, and MP-SR goes 0 → 14 clips of 30.
 
-The Tier 2 and Tier 1 CSVs are **byte-identical**, sha256
-`9997634267c66726961720f30724756389b50ee31f1f0040751364f2fb9b4305` — correct, not a packing bug:
-the kit CSV carries no tier field, so the same predictions are the same bytes and the tier is only
-which competition they go to. On Tier 1, which has no input constraint, these predictions are worth
-about +0.33 AUC over the insurance entry.
+Against the CHORD baseline's published Tier 2 board average (0.374 / 0.533 / 0.067 / 20.5 cm):
+ahead on all four, and MP-SR is 7× it. Four submissions left today on each of the eight.
 
-Every row quotes `0260cd8ce5c81c9e4280e2ec5b34bba59609f98b`, which **is** `origin/main` — the push
-gate is cleared. Nothing is running: `brev ls` is empty, the A29 box deleted itself after writing
-its run record. A29 cost **$2.73** (4.01 observed box-hours at $0.68) against a $3.40 projection.
+Record: `results/wave2_submission.json` (receipts, per-board local-vs-public, ships by arm).
+Every row quotes `0260cd8ce5c81c9e4280e2ec5b34bba59609f98b`, which is `origin/main`.
 
-The packed entry no longer lives only in the scratchpad: `/home/jetson3/projects/v2d-entry-wave2`
-holds both CSVs, both pack records and the restage record on the home disk, which is what the
-reboot could not reach. Record: `results/tier2_entry_wave2.json` (the lost e29 row is preserved
-under `lost_in_the_reboot`); recovery: `docs/RECOVERY_2026-10-28.md`; plan: `docs/FINAL_PLAN.md`.
+### How the entry was assembled
+
+30 of 30 clips decided under the registered z-drop pick plus input-only adoption — **no ground
+truth was read to choose anything that shipped**. Ships by arm: A 16, A re-rolled 1, first wave 7,
+B1 2, B2 2, B4 1, B4x 1. 30 checkpoint digests, all 30 distinct and all recomputed from the
+surviving safetensors and matched; 30/30 frame counts matching the pre-reboot record.
+
+e29 is a **re-roll, not a recovery**: the 2026-10-28 reboot wiped the scratchpad and that one
+rollout existed nowhere else, so it was re-run on arm A's own recipe and came back at kit AUC
+0.6270 against the lost rollout's 0.5638 — luck, recorded as luck in
+`docs/RECOVERY_2026-10-28.md` and in the entry record's `lost_in_the_reboot` field. A29 cost $2.73.
 
 The selection rule's measured price: six clips hold a rollout that kit-scores higher than the one
-that ships, rejected for sitting further from the noisy input — 0.0103 of mean AUC, the cost of a
+that shipped, rejected for sitting further from the noisy input — 0.0103 of mean AUC, the cost of a
 rule that reads no ground truth.
 
-## Submitted — the real entry is on the Tier 2 board
+The packed entry, both CSVs, both pack records, the restage record and both Kaggle receipts are on
+the home disk at `/home/jetson3/projects/v2d-entry-wave2`, which is what the reboot could not
+reach. No instances are running; `brev ls` is empty.
+
+## Superseded — the first-wave entry, on the boards 2026-10-27 until wave 2 replaced it
 
 **The Tier 2 entry is on all four Tier 2 leaderboards and scored, 2026-10-27 05:18 UTC, eight days
 before the freeze.** The 30-clip combined run, one upload, four competitions:

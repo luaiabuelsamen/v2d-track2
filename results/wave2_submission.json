@@ -1,0 +1,115 @@
+{
+ "code_commit_is_pushed": "yes, it IS origin/main as of the upload",
+ "code_commit_url": "https://github.com/luaiabuelsamen/v2d-track2/commit/0260cd8ce5c81c9e4280e2ec5b34bba59609f98b",
+ "e29": {
+  "kit_add_auc_lost": 0.563838329764454,
+  "kit_add_auc_shipped": 0.6270074946466809,
+  "note": "re-rolled after the 2026-10-28 scratchpad loss took the original rollout; same recipe, same rule, a different rollout. docs/RECOVERY_2026-10-28.md"
+ },
+ "episodes": 30,
+ "kept_on_the_home_disk": "/home/jetson3/projects/v2d-entry-wave2",
+ "nothing_held_back": "one upload per tier, the same 22,989 rows in both; the kit CSV carries no tier field, so the Tier 1 and Tier 2 files are byte-identical and the tier is only which competition the rows went to",
+ "quota_after": "4 submissions left today on each of the eight",
+ "rows": 22989,
+ "selection_rule": "the registered z-drop pick per clip, then input-only adoption; no ground truth was read to choose anything that shipped",
+ "ships_by_arm": {
+  "A": 16,
+  "A (re-rolled 2026-10-28)": 1,
+  "B1": 2,
+  "B2": 2,
+  "B4": 1,
+  "B4x": 1,
+  "first wave": 7
+ },
+ "tiers": {
+  "tier1": {
+   "boards": {
+    "add_auc": {
+     "agrees_to": "to 1.1e-05 -- the board prints 0.46522 where truncating ours gives 0.46523; one unit in the 5th decimal, float noise in the AUC trapezoid, and the other metrics on this upload match exactly",
+     "board_before_this_upload": "0.13430",
+     "local": 0.4652308920037085,
+     "public": "0.46522",
+     "public_minus_local": -1.089200370846255e-05,
+     "slug": "v2d-challenge-track2-tier1-auc",
+     "submission": 57742805
+    },
+    "maniptrans_sr": {
+     "agrees_to": "exactly, to the 5 decimals the board prints",
+     "board_before_this_upload": "0.0",
+     "local": 0.4666666666666667,
+     "public": "0.46666",
+     "public_minus_local": -6.66666666665483e-06,
+     "slug": "v2d-challenge-track2-tier1-mp-sr",
+     "submission": 57742808
+    },
+    "mppe_cm": {
+     "agrees_to": "exactly, to the 5 decimals the board prints",
+     "board_before_this_upload": "74.20",
+     "local": 14.127600524426901,
+     "public": "14.12760",
+     "public_minus_local": -5.244269019044623e-07,
+     "slug": "v2d-challenge-track2-tier1-mppe",
+     "submission": 57742811
+    },
+    "spider_sr": {
+     "agrees_to": "exactly, to the 5 decimals the board prints",
+     "board_before_this_upload": "0.0",
+     "local": 0.6666666666666666,
+     "public": "0.66666",
+     "public_minus_local": -6.666666666599319e-06,
+     "slug": "v2d-challenge-track2-tier1-sp-sr",
+     "submission": 57742806
+    }
+   },
+   "csv_bytes": 11841335,
+   "csv_sha256": "9997634267c66726961720f30724756389b50ee31f1f0040751364f2fb9b4305",
+   "note": "the same predictions as Tier 2. Tier 1 has no input constraint, so feeding these policies the noisy Tier 2 input is a handicap we accepted knowingly rather than an advantage; it replaces the 409,600-step insurance entry.",
+   "receipt": "/home/jetson3/projects/v2d-entry-wave2/receipt_tier1.json"
+  },
+  "tier2": {
+   "boards": {
+    "add_auc": {
+     "agrees_to": "to 1.1e-05 -- the board prints 0.46522 where truncating ours gives 0.46523; one unit in the 5th decimal, float noise in the AUC trapezoid, and the other metrics on this upload match exactly",
+     "board_before_this_upload": "0.39076",
+     "local": 0.4652308920037085,
+     "public": "0.46522",
+     "public_minus_local": -1.089200370846255e-05,
+     "slug": "v2d-challenge-track2-tier2-auc",
+     "submission": 57742766
+    },
+    "maniptrans_sr": {
+     "agrees_to": "exactly, to the 5 decimals the board prints",
+     "board_before_this_upload": "0.16666",
+     "local": 0.4666666666666667,
+     "public": "0.46666",
+     "public_minus_local": -6.66666666665483e-06,
+     "slug": "v2d-challenge-track2-tier2-mp-sr",
+     "submission": 57742770
+    },
+    "mppe_cm": {
+     "agrees_to": "exactly, to the 5 decimals the board prints",
+     "board_before_this_upload": "17.35839",
+     "local": 14.127600524426901,
+     "public": "14.12760",
+     "public_minus_local": -5.244269019044623e-07,
+     "slug": "v2d-challenge-track2-tier2-mppe",
+     "submission": 57742773
+    },
+    "spider_sr": {
+     "agrees_to": "exactly, to the 5 decimals the board prints",
+     "board_before_this_upload": "0.56666",
+     "local": 0.6666666666666666,
+     "public": "0.66666",
+     "public_minus_local": -6.666666666599319e-06,
+     "slug": "v2d-challenge-track2-tier2-sp-sr",
+     "submission": 57742768
+    }
+   },
+   "csv_bytes": 11841335,
+   "csv_sha256": "9997634267c66726961720f30724756389b50ee31f1f0040751364f2fb9b4305",
+   "receipt": "/home/jetson3/projects/v2d-entry-wave2/receipt_tier2.json"
+  }
+ },
+ "uploaded_utc": "2026-10-28T16:30:41Z",
+ "what": "the wave-2 entry, uploaded to all eight Track 2 leaderboards on 2026-10-28"
+}
