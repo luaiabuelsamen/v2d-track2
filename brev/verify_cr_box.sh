@@ -51,8 +51,10 @@ PROCS="$(sshq "pgrep -fc train_flash_sac")"
 say "gpu ${UTIL:-?}%  train processes ${PROCS:-0}"
 
 # --- 3. the step counter, twice, GAP seconds apart ----------------------------------------------
+# `training progress: 10,500,096/349,999,104 environment steps (3.0%); 22,843 env steps/s; ...`
 steps() {
-  sshq "grep -ho 'elapsed_steps=[0-9]*' ~/t2_results/$TAG/train.log 2>/dev/null | tail -1 | cut -d= -f2"
+  sshq "grep -ho 'progress: [0-9,]*' ~/t2_results/$TAG/train.log 2>/dev/null | tail -1 \
+    | sed 's/progress: //; s/,//g'"
 }
 FIRST="$(steps)"
 sleep "$GAP"
@@ -62,10 +64,15 @@ say "steps ${FIRST:-none} -> ${SECOND:-none} over ${GAP}s"
 # --- 4. the new term, from the run's own offline W&B summary -------------------------------------
 # W&B runs offline on the box, and its summary file carries the last value of every logged metric,
 # which is the cheapest place to read a single term without parsing the .wandb stream.
-TERM="$(sshq "cat /dev/null; docker exec -i \$(docker ps -q | head -1) bash -lc \
-  \"grep -ho '\\\"[a-z_/]*contact_role_palm[a-z_/]*\\\": *[-0-9.eE+]*' \
-  /workspace/outputs/$TAG/wandb/offline-run-*/files/wandb-summary.json 2>/dev/null | tail -2\" \
-  < /dev/null")"
+# Through the .wandb stream, not files/wandb-summary.json: offline W&B only writes the summary
+# when the run closes, so while training is alive the summary file is empty or absent.
+READER="$(dirname "${BASH_SOURCE[0]}")/read_wandb_terms.py"
+scp -q -o ConnectTimeout=20 "$READER" "$NAME:/tmp/read_wandb_terms.py" 2>/dev/null
+TERM="$(sshq "CID=\$(docker ps -q | head -1); \
+  docker exec -i \$CID bash -lc 'cat > /tmp/read_wandb_terms.py' < /tmp/read_wandb_terms.py; \
+  docker exec -i \$CID bash -lc 'python /tmp/read_wandb_terms.py \
+    \"/workspace/outputs/$TAG/wandb/offline-run-*/run-*.wandb\" 2>/dev/null' < /dev/null \
+  | grep -E 'contact_role_palm|contact_consistency'")"
 if [ -z "$TERM" ]; then
   say "WARN: no contact_role_palm in the offline W&B summary yet (it appears at the first log step)"
 else
