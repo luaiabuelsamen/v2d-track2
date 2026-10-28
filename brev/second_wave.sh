@@ -21,6 +21,11 @@
 #       e00 e06 e08 e09 e10 e13 e20                8 boxes, 1 clip each, ~$27.20
 #       e26                                        e21 dropped: already above its ceiling
 #
+#   A29 arm A, one clip, to replace what a reboot took   e29   1 box, ~$3.40
+#       The 2026-10-28 reboot wiped the scratchpad and e29's rollout and checkpoint existed only
+#       there (docs/RECOVERY_2026-10-28.md). Same recipe, same selection rule; it is a re-roll, so
+#       it will not reproduce the lost rollout bit for bit.
+#
 #   CR  contact-role reward (docs/ARM_CR.md)       six of the eight clips under 0.30
 #       e04 e05 e07 e09 e19 e25                    3 boxes, 2 clips each, ~$19.18
 #
@@ -85,6 +90,7 @@ W3B|0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28
 W3R|1 4 5 7 13 14 19 25 28|start_curriculum,orientation_reward,object_position,body_joint_position|V2D_OBJECT_POSITION_STD=0.08 V2D_OBJECT_POSITION_WEIGHT=5.0 V2D_BODY_JOINT_POSITION_WEIGHT=1.0|5|w3_regrasp||699998208|wave 3: the nine clips under 0.30, object over body, 700M steps
 T3-VALID|0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29|start_curriculum,orientation_reward,object_position|V2D_OBJECT_POSITION_STD=0.08|2|t3_recon|tier3|409600:409600|Tier 3: a valid entry on every clip at the insurance budget
 T3-FULL|3 24 18 12 27 8 22 15 20|start_curriculum,orientation_reward,object_position|V2D_OBJECT_POSITION_STD=0.08|3|t3_recon|tier3||Tier 3: full-length precision on as many clips as the credit buys
+A29|29|start_curriculum,orientation_reward,object_position|V2D_OBJECT_POSITION_STD=0.08|1|a29_refs|||re-roll e29 on arm A after the 2026-10-28 scratchpad loss
 CR|4 5 7 9 19 25|start_curriculum,orientation_reward,contact_role|V2D_CONTACT_ROLES=/v2d/assets/cr_refs/contact_roles|3|cr_refs|||contact-role reward on the six clips the roles can reach
 EOF
 )
