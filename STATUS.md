@@ -1,29 +1,40 @@
 # STATUS — v2d (NVIDIA V2D Challenge, Track 2)
 
-## The second wave is in, packed and waiting on a push
+## The second wave is whole: 30 of 30, packed, kit-validated, waiting on the submit word
 
-**30 of 30 clips decided, both CSVs packed and kit-validated here, nothing uploaded.** The
-final-candidate entry assembled under the registered z-drop + input-only adoption rule:
+**Both CSVs are packed and validated here, nothing uploaded.** e29 — the one episode the
+2026-10-28 reboot took — was re-rolled on arm A's own recipe and came back at kit AUC **0.6270**,
+above both the rollout that was lost (0.5638) and the first wave's (0.5929), so the entry is now
+better than the one that existed before the loss:
 
 | | AUC | SP-SR | MP-SR | MPPE cm |
 |---|---|---|---|---|
 | on the Tier 2 boards now | 0.3908 | 0.5667 | 0.1667 | 17.36 |
-| **wave-2 ships (packed, not uploaded)** | **0.4631** | **0.6667** | **0.4667** | **14.14** |
+| **wave-2 ships (packed, not uploaded)** | **0.46523** | **0.66667** | **0.46667** | **14.128** |
 | on the Tier 1 board now (insurance) | 0.1343 | 0.0 | 0.0 | 74.20 |
 
-MP-SR goes from 5 clips of 30 to 14. The Tier 2 and Tier 1 CSVs are byte-identical (sha256
-`ae4e2d12…`, 22,989 rows, 30 episodes, 30 distinct checkpoint digests), so the same predictions
-are worth about +0.33 AUC on Tier 1, which has no input constraint. Ships by arm: A 17, first wave
-7, B1 2, B2 2, B4 1, B4x 1. Record: `results/tier2_entry_wave2.json`; plan:
-`docs/FINAL_PLAN.md`.
+MP-SR goes from 5 clips of 30 to 14. 22,989 rows, 30 episodes, **30 checkpoint digests recomputed
+from the surviving safetensors and matched**, 30 distinct, 30/30 frame counts matching the
+pre-reboot record. Ships by arm: A 16, A re-rolled 1, first wave 7, B1 2, B2 2, B4 1, B4x 1.
+
+The Tier 2 and Tier 1 CSVs are **byte-identical**, sha256
+`9997634267c66726961720f30724756389b50ee31f1f0040751364f2fb9b4305` — correct, not a packing bug:
+the kit CSV carries no tier field, so the same predictions are the same bytes and the tier is only
+which competition they go to. On Tier 1, which has no input constraint, these predictions are worth
+about +0.33 AUC over the insurance entry.
+
+Every row quotes `0260cd8ce5c81c9e4280e2ec5b34bba59609f98b`, which **is** `origin/main` — the push
+gate is cleared. Nothing is running: `brev ls` is empty, the A29 box deleted itself after writing
+its run record. A29 cost **$2.73** (4.01 observed box-hours at $0.68) against a $3.40 projection.
+
+The packed entry no longer lives only in the scratchpad: `/home/jetson3/projects/v2d-entry-wave2`
+holds both CSVs, both pack records and the restage record on the home disk, which is what the
+reboot could not reach. Record: `results/tier2_entry_wave2.json` (the lost e29 row is preserved
+under `lost_in_the_reboot`); recovery: `docs/RECOVERY_2026-10-28.md`; plan: `docs/FINAL_PLAN.md`.
 
 The selection rule's measured price: six clips hold a rollout that kit-scores higher than the one
 that ships, rejected for sitting further from the noisy input — 0.0103 of mean AUC, the cost of a
 rule that reads no ground truth.
-
-**The one gate is a push.** Every row quotes `e8ffe8f`, which is `origin/main`; every commit since
-is local, and no submission should come from unpushed code. No instances are running (`brev ls`
-empty, b17 deleted itself after e26).
 
 ## Submitted — the real entry is on the Tier 2 board
 

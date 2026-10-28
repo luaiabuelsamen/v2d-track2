@@ -567,14 +567,22 @@
   {
    "episode": 29,
    "tag": "e29",
-   "ships_from": "A",
-   "selected_environment_steps": 299999232,
-   "checkpoint_sha256": "6aae74dc2974a8b27a1b6ecf5f0e5f51835836179299cc3ad572bcee052edb72",
+   "ships_from": "A (re-rolled 2026-10-28)",
+   "selected_environment_steps": 349999104,
+   "checkpoint_sha256": "2383145003217205219b3dcded9bde10cd5b4501c8017164d91104e517b0e94d",
    "frames": 467,
    "frame_reference_root": "/home/jetson3/projects/v2d-clean-refs/bridge_v1",
    "frame_reference_is_released_input": false,
-   "kit_add_auc": 0.563838329764454,
-   "first_wave_kit_add_auc": 0.5928800856531049
+   "kit_add_auc": 0.6270074946466809,
+   "first_wave_kit_add_auc": 0.5928800856531049,
+   "checkpoint_dir": "/home/jetson3/projects/v2d-challenge/ship_ckpts_wave2/e29/policy_349999104",
+   "lost_in_the_reboot": {
+    "note": "the rollout this row replaced existed only in the wiped scratchpad; this is a re-roll of the same recipe and selection rule, not the same rollout",
+    "ships_from": "A",
+    "selected_environment_steps": 299999232,
+    "checkpoint_sha256": "6aae74dc2974a8b27a1b6ecf5f0e5f51835836179299cc3ad572bcee052edb72",
+    "kit_add_auc": 0.563838329764454
+   }
   }
  ],
  "upload": {
@@ -587,5 +595,12 @@
    "python submit/v2d_submit.py /tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t2_entry_wave2/pack_tier2/track2_tier2.csv --track track_2_tier2 -m '<message>'",
    "python submit/v2d_submit.py /tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t2_entry_wave2/pack_tier1/track2_tier1.csv --track track_2_tier1 -m '<message>'"
   ]
+ },
+ "e29_rerolled": {
+  "why": "the 2026-10-28 reboot wiped /tmp/claude-1000, and e29's rollout and checkpoint existed only there",
+  "run_record": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/second_wave/run_A29/results/run_record.json",
+  "selection_rule": "no drop, then the smallest mean distance to the input reference",
+  "kit_add_auc_before": 0.563838329764454,
+  "kit_add_auc_after": 0.6270074946466809
  }
 }
