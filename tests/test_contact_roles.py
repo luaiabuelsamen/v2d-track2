@@ -220,14 +220,21 @@ def test_the_written_file_carries_its_provenance(tmp_path: Path) -> None:
         assert json.loads(str(data["provenance"]))["fill_gap_frames"] == 10
 
 
-def test_the_staged_roles_match_the_clips_the_arm_runs() -> None:
-    """The CR row's clip list and the roles on disk have to be the same eight clips."""
+def test_every_clip_the_arm_runs_has_a_roles_file() -> None:
+    """The invariant, not a clip list: a CR clip without roles would train the stub silently.
+
+    This asserted the original eight and so failed the moment the arm was cut to six, which is the
+    wrong shape for a test -- the clip list is Luai's to change, while "every clip in the row has
+    roles on disk" is what must hold whatever he picks.
+    """
     table = (REPO / "brev/second_wave.sh").read_text()
     row = next(line for line in table.splitlines() if line.startswith("CR|"))
     clips = {f"e{int(ep):02d}" for ep in row.split("|")[1].split()}
-    assert clips == {"e01", "e04", "e05", "e07", "e09", "e19", "e25", "e28"}
+    assert clips, "the CR row names no clips"
+    for tag in clips:
+        assert (REPO / f"results/contact_roles/{tag}.npz").is_file(), f"{tag} has no roles file"
     record = REPO / "results/contact_roles.json"
     if record.is_file():
-        assert set(json.loads(record.read_text())["clips"]) == clips
+        assert clips <= set(json.loads(record.read_text())["clips"])
     assert row.split("|")[3] == "V2D_CONTACT_ROLES=/v2d/assets/cr_refs/contact_roles"
     assert re.search(r"\|cr_refs\|", row)

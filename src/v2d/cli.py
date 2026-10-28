@@ -163,6 +163,10 @@ FORWARDED: dict[str, tuple[str, str]] = {
         "v2d.submit.rebase_assets",
         "rewrite a motion parquet's absolute asset paths for another machine",
     ),
+    "restage-entry": (
+        "v2d.submit.restage",
+        "rebuild the entry's trees from the surviving checkpoints",
+    ),
     "contact-roles": (
         "v2d.arms.contact_roles",
         "per-hand contact roles for arm CR, smoothed and distance-gated",
