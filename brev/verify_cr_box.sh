@@ -11,7 +11,10 @@ set -uo pipefail
 
 NAME="${1:?usage: verify_cr_box.sh <box> [--gap SECONDS]}"
 shift || true
-GAP=60
+# The trainer logs "training progress" once per 1% of the budget -- 3,500,032 steps, about 2.5
+# minutes at the 22.8k steps/s these boxes run at -- so a 60 s gap reads the same number twice on a
+# perfectly healthy box and calls it stalled. The default has to be longer than one log interval.
+GAP=210
 while [ $# -gt 0 ]; do
   case "$1" in
     --gap) GAP="$2"; shift 2 ;;
@@ -68,13 +71,14 @@ say "steps ${FIRST:-none} -> ${SECOND:-none} over ${GAP}s"
 # when the run closes, so while training is alive the summary file is empty or absent.
 READER="$(dirname "${BASH_SOURCE[0]}")/read_wandb_terms.py"
 scp -q -o ConnectTimeout=20 "$READER" "$NAME:/tmp/read_wandb_terms.py" 2>/dev/null
-TERM="$(sshq "CID=\$(docker ps -q | head -1); \
-  docker exec -i \$CID bash -lc 'cat > /tmp/read_wandb_terms.py' < /tmp/read_wandb_terms.py; \
-  docker exec -i \$CID bash -lc 'python /tmp/read_wandb_terms.py \
-    \"/workspace/outputs/$TAG/wandb/offline-run-*/run-*.wandb\" 2>/dev/null' < /dev/null \
-  | grep -E 'contact_role_palm|contact_consistency'")"
+TERM="$(ssh -n -o ConnectTimeout=40 -o BatchMode=yes "$NAME" \
+  'CID=$(docker ps -q | head -1);
+   docker exec -i $CID bash -lc "cat > /tmp/read_wandb_terms.py" < /tmp/read_wandb_terms.py;
+   docker exec -i $CID bash -lc "python /tmp/read_wandb_terms.py \"/workspace/outputs/t2_'"$TAG"'/wandb/offline-run-*/run-*.wandb\"" < /dev/null' \
+  2>/dev/null | grep -E 'contact_role_palm|contact_consistency')"
 if [ -z "$TERM" ]; then
-  say "WARN: no contact_role_palm in the offline W&B summary yet (it appears at the first log step)"
+  say "WARN: no contact_role_palm logged yet -- the first W&B history record lands a minute or two
+                 after the kernels finish compiling; re-run then rather than reading this as a failure"
 else
   printf '%s\n' "$TERM" | sed "s/^/$(printf '%-16s' "$NAME") term: /"
 fi
@@ -87,15 +91,30 @@ if [ -z "$FIRST" ] || [ -z "$SECOND" ]; then
 elif [ "$SECOND" -le "$FIRST" ]; then
   say "FAIL: step counter did not advance"; FAIL=1
 fi
+# Numerically, not by pattern: the value arrives as a quoted JSON string, and a regex that
+# "proved" 0.0178 was zero is worse than no check -- it is a check that reports the wrong answer.
 case "$TERM" in
+  "")
+    say "FAIL: could not read contact_role_palm at all -- not the same thing as reading a good one"
+    FAIL=1 ;;
   *contact_role_palm*)
-    # non-zero AND finite: a term stuck at 0 means the roles never loaded, nan means the gap maths
-    # is wrong, and both are reasons not to pay for 9 more hours of it.
-    if printf '%s\n' "$TERM" | grep -qiE 'nan|inf'; then
-      say "FAIL: contact_role_palm is not finite"; FAIL=1
-    elif ! printf '%s\n' "$TERM" | grep -qE ': *-?[0-9]*[1-9][0-9]*(\.[0-9]*)?|: *-?0\.[0-9]*[1-9]'; then
-      say "FAIL: contact_role_palm is zero everywhere"; FAIL=1
-    fi ;;
+    VALUE="$(printf '%s\n' "$TERM" | grep contact_role_palm | tail -1 \
+      | sed 's/.*: *"*//; s/"*,*$//')"
+    # nan and inf are tested as TEXT first: this awk coerces "nan" to 0, so a numeric-only test
+    # reports a NaN term as merely zero and the operator fixes the wrong thing.
+    VERDICT="$(awk -v v="$VALUE" 'BEGIN{
+      lower = tolower(v)
+      if (lower ~ /nan|inf/) { print "not finite"; exit }
+      if (v+0 > 1e30 || v+0 < -1e30) { print "not finite"; exit }
+      if (v+0 == 0) { print "zero" } else { print "ok" }
+    }')"
+    case "$VERDICT" in
+      ok) say "contact_role_palm = $VALUE (non-zero, finite)" ;;
+      zero) say "FAIL: contact_role_palm is zero ($VALUE) -- the roles did not load"; FAIL=1 ;;
+      *) say "FAIL: contact_role_palm is not finite ($VALUE)"; FAIL=1 ;;
+    esac ;;
+  *)
+    say "FAIL: no contact_role_palm in the term read"; FAIL=1 ;;
 esac
-[ "$FAIL" = 0 ] && say "OK: $TAG training, gpu ${UTIL}%, steps advancing, term non-zero and finite"
+[ "$FAIL" = 0 ] && say "OK: $TAG training, gpu ${UTIL}%, steps advancing, contact_role_palm non-zero and finite"
 exit "$FAIL"
