@@ -1,0 +1,294 @@
+{
+ "what": "per-hand contact roles for arm CR, from the reference the arm trains on",
+ "reference": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t2_clean/tier2/whole_body/soma",
+ "fill_gap_frames": 10,
+ "max_palm_to_surface_cm": 8.0,
+ "out": "results/contact_roles",
+ "clips": {
+  "e01": {
+   "frames": 747,
+   "hands": [
+    {
+     "side": "left",
+     "flagged_frames": 39,
+     "after_gap_fill": 43,
+     "gap_frames_filled": 4,
+     "contact_role_frames": 43,
+     "frames_dropped_as_too_far": 0,
+     "palm_to_surface_cm_while_flagged": {
+      "min": 0.31,
+      "median": 1.82,
+      "max": 4.53
+     }
+    },
+    {
+     "side": "right",
+     "flagged_frames": 0,
+     "after_gap_fill": 0,
+     "gap_frames_filled": 0,
+     "contact_role_frames": 0,
+     "frames_dropped_as_too_far": 0,
+     "palm_to_surface_cm_while_flagged": {
+      "min": null,
+      "median": null,
+      "max": null
+     }
+    }
+   ],
+   "frames_with_any_contact_role": 43,
+   "frames_with_both_hands": 0,
+   "object": "vacuum",
+   "reference": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t2_clean/tier2/whole_body/soma"
+  },
+  "e04": {
+   "frames": 803,
+   "hands": [
+    {
+     "side": "left",
+     "flagged_frames": 360,
+     "after_gap_fill": 382,
+     "gap_frames_filled": 22,
+     "contact_role_frames": 277,
+     "frames_dropped_as_too_far": 105,
+     "palm_to_surface_cm_while_flagged": {
+      "min": 0.36,
+      "median": 5.94,
+      "max": 12.24
+     }
+    },
+    {
+     "side": "right",
+     "flagged_frames": 277,
+     "after_gap_fill": 302,
+     "gap_frames_filled": 25,
+     "contact_role_frames": 193,
+     "frames_dropped_as_too_far": 109,
+     "palm_to_surface_cm_while_flagged": {
+      "min": 0.63,
+      "median": 6.79,
+      "max": 19.28
+     }
+    }
+   ],
+   "frames_with_any_contact_role": 372,
+   "frames_with_both_hands": 98,
+   "object": "baseball_bat",
+   "reference": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t2_clean/tier2/whole_body/soma"
+  },
+  "e05": {
+   "frames": 1003,
+   "hands": [
+    {
+     "side": "left",
+     "flagged_frames": 390,
+     "after_gap_fill": 415,
+     "gap_frames_filled": 25,
+     "contact_role_frames": 378,
+     "frames_dropped_as_too_far": 37,
+     "palm_to_surface_cm_while_flagged": {
+      "min": 1.32,
+      "median": 6.02,
+      "max": 11.32
+     }
+    },
+    {
+     "side": "right",
+     "flagged_frames": 381,
+     "after_gap_fill": 392,
+     "gap_frames_filled": 11,
+     "contact_role_frames": 348,
+     "frames_dropped_as_too_far": 44,
+     "palm_to_surface_cm_while_flagged": {
+      "min": 0.58,
+      "median": 4.39,
+      "max": 13.6
+     }
+    }
+   ],
+   "frames_with_any_contact_role": 552,
+   "frames_with_both_hands": 174,
+   "object": "big_black_box",
+   "reference": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t2_clean/tier2/whole_body/soma"
+  },
+  "e07": {
+   "frames": 896,
+   "hands": [
+    {
+     "side": "left",
+     "flagged_frames": 0,
+     "after_gap_fill": 0,
+     "gap_frames_filled": 0,
+     "contact_role_frames": 0,
+     "frames_dropped_as_too_far": 0,
+     "palm_to_surface_cm_while_flagged": {
+      "min": null,
+      "median": null,
+      "max": null
+     }
+    },
+    {
+     "side": "right",
+     "flagged_frames": 693,
+     "after_gap_fill": 697,
+     "gap_frames_filled": 4,
+     "contact_role_frames": 696,
+     "frames_dropped_as_too_far": 1,
+     "palm_to_surface_cm_while_flagged": {
+      "min": 0.26,
+      "median": 1.79,
+      "max": 8.5
+     }
+    }
+   ],
+   "frames_with_any_contact_role": 696,
+   "frames_with_both_hands": 0,
+   "object": "iron",
+   "reference": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t2_clean/tier2/whole_body/soma"
+  },
+  "e09": {
+   "frames": 870,
+   "hands": [
+    {
+     "side": "left",
+     "flagged_frames": 408,
+     "after_gap_fill": 457,
+     "gap_frames_filled": 49,
+     "contact_role_frames": 445,
+     "frames_dropped_as_too_far": 12,
+     "palm_to_surface_cm_while_flagged": {
+      "min": 0.22,
+      "median": 3.22,
+      "max": 11.61
+     }
+    },
+    {
+     "side": "right",
+     "flagged_frames": 371,
+     "after_gap_fill": 408,
+     "gap_frames_filled": 37,
+     "contact_role_frames": 386,
+     "frames_dropped_as_too_far": 22,
+     "palm_to_surface_cm_while_flagged": {
+      "min": 0.07,
+      "median": 1.68,
+      "max": 11.19
+     }
+    }
+   ],
+   "frames_with_any_contact_role": 445,
+   "frames_with_both_hands": 386,
+   "object": "big_red_bowl",
+   "reference": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t2_clean/tier2/whole_body/soma"
+  },
+  "e19": {
+   "frames": 886,
+   "hands": [
+    {
+     "side": "left",
+     "flagged_frames": 135,
+     "after_gap_fill": 180,
+     "gap_frames_filled": 45,
+     "contact_role_frames": 159,
+     "frames_dropped_as_too_far": 21,
+     "palm_to_surface_cm_while_flagged": {
+      "min": 0.26,
+      "median": 2.63,
+      "max": 11.98
+     }
+    },
+    {
+     "side": "right",
+     "flagged_frames": 100,
+     "after_gap_fill": 108,
+     "gap_frames_filled": 8,
+     "contact_role_frames": 103,
+     "frames_dropped_as_too_far": 5,
+     "palm_to_surface_cm_while_flagged": {
+      "min": 0.48,
+      "median": 4.45,
+      "max": 9.98
+     }
+    }
+   ],
+   "frames_with_any_contact_role": 262,
+   "frames_with_both_hands": 0,
+   "object": "cane",
+   "reference": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t2_clean/tier2/whole_body/soma"
+  },
+  "e25": {
+   "frames": 859,
+   "hands": [
+    {
+     "side": "left",
+     "flagged_frames": 301,
+     "after_gap_fill": 314,
+     "gap_frames_filled": 13,
+     "contact_role_frames": 177,
+     "frames_dropped_as_too_far": 137,
+     "palm_to_surface_cm_while_flagged": {
+      "min": 1.91,
+      "median": 6.67,
+      "max": 15.38
+     }
+    },
+    {
+     "side": "right",
+     "flagged_frames": 420,
+     "after_gap_fill": 438,
+     "gap_frames_filled": 18,
+     "contact_role_frames": 298,
+     "frames_dropped_as_too_far": 140,
+     "palm_to_surface_cm_while_flagged": {
+      "min": 0.51,
+      "median": 6.58,
+      "max": 13.63
+     }
+    }
+   ],
+   "frames_with_any_contact_role": 456,
+   "frames_with_both_hands": 19,
+   "object": "cyan_water_bottle",
+   "reference": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t2_clean/tier2/whole_body/soma"
+  },
+  "e28": {
+   "frames": 988,
+   "hands": [
+    {
+     "side": "left",
+     "flagged_frames": 29,
+     "after_gap_fill": 33,
+     "gap_frames_filled": 4,
+     "contact_role_frames": 0,
+     "frames_dropped_as_too_far": 33,
+     "palm_to_surface_cm_while_flagged": {
+      "min": 8.22,
+      "median": 9.12,
+      "max": 10.29
+     }
+    },
+    {
+     "side": "right",
+     "flagged_frames": 12,
+     "after_gap_fill": 12,
+     "gap_frames_filled": 0,
+     "contact_role_frames": 12,
+     "frames_dropped_as_too_far": 0,
+     "palm_to_surface_cm_while_flagged": {
+      "min": 5.37,
+      "median": 5.65,
+      "max": 6.04
+     }
+    }
+   ],
+   "frames_with_any_contact_role": 12,
+   "frames_with_both_hands": 0,
+   "object": "squeegee",
+   "reference": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t2_clean/tier2/whole_body/soma"
+  }
+ },
+ "totals": {
+  "gap_frames_filled": 265,
+  "frames_dropped_as_too_far": 666,
+  "contact_role_frames": 3515
+ }
+}

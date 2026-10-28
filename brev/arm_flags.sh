@@ -7,11 +7,13 @@
 # any order; ARM_FLAGS_ORDER below is the canonical order, so the same SET of flags always produces
 # the same slug, the same overrides and the same summary line, whatever order they were written in.
 #
-# The order is also load-bearing for one pair: patch_start_curriculum.py verifies the stock
+# The order is also load-bearing for two pairs. patch_start_curriculum.py verifies the stock
 # thresholds line before it touches anything, so it must run BEFORE patch_voc_curriculum.py
-# rewrites that line. start_curriculum therefore stays first and voc_curriculum last. Reordering
-# them turns a working arm into a refused patch and a dead cell -- tests/test_patch_second_wave.py
-# pins both directions.
+# rewrites that line: start_curriculum therefore stays first and voc_curriculum last. And
+# patch_object_orientation.py anchors its term names on the tuple ending in `force_closure`, which
+# patch_contact_role.py appends two more names to, so orientation_reward must run BEFORE
+# contact_role. Reordering either pair turns a working arm into a refused patch and a dead cell --
+# tests/test_patch_second_wave.py and tests/test_patch_contact_role.py pin both directions.
 #
 # Sourced by the run scripts. arm_flags_normalise / _slug / _overrides are pure and are unit-tested
 # on the Jetson; arm_flags_apply additionally needs run() and CID (the flash_chord container).
@@ -21,7 +23,7 @@
 # is the only way to know the box is running the code we think it is. A cell either carries the
 # change or dies before training, which is the opposite of the failure that cost us three cells.
 
-ARM_FLAGS_ORDER="start_curriculum orientation_reward finger_targets object_position body_joint_position voc_curriculum"
+ARM_FLAGS_ORDER="start_curriculum orientation_reward finger_targets object_position body_joint_position contact_role voc_curriculum"
 
 # arm_flags_patch_script <flag>  -- flag names are the experiment's vocabulary, file names are the
 # patch's, and they are kept apart on purpose: renaming a script must not rename an arm on the
@@ -33,6 +35,7 @@ arm_flags_patch_script() {
     finger_targets)     echo "patch_finger_targets.py" ;;
     object_position)    echo "patch_object_position.py" ;;
     body_joint_position) echo "patch_body_joint_position.py" ;;
+    contact_role)       echo "patch_contact_role.py" ;;
     voc_curriculum)     echo "patch_voc_curriculum.py" ;;
     *) return 2 ;;
   esac
@@ -84,6 +87,7 @@ arm_flags_slug() {
       finger_targets)     slug="${slug}-ft" ;;
       object_position)    slug="${slug}-op" ;;
       body_joint_position) slug="${slug}-bj" ;;
+      contact_role)       slug="${slug}-cr" ;;
       voc_curriculum)     slug="${slug}-vc" ;;
     esac
   done <<< "$flags"
@@ -114,6 +118,10 @@ arm_flags_overrides() {
       finger_targets)     ;;  # whatever it needs is the patch's business
       object_position)    ;;  # std and weight live in the config and curriculum the patch edits
       body_joint_position) ;;  # weight and std live in the config and curriculum the patch edits
+      # The weights and the std live in the config the patch edits; the ROLES are data, read at
+      # training time from $V2D_CONTACT_ROLES inside the container, which run_tier2_full.sh puts
+      # into the train command because docker exec does not inherit the box's environment.
+      contact_role)       ;;
       voc_curriculum)     ;;  # the thresholds live in the curriculum the patch edits
     esac
   done <<< "$flags"
@@ -174,6 +182,13 @@ arm_flags_apply() {
           && args="--weight ${V2D_BODY_JOINT_POSITION_WEIGHT}"
         [ -n "${V2D_BODY_JOINT_POSITION_STD:-}" ] \
           && args="$args --std ${V2D_BODY_JOINT_POSITION_STD}" ;;
+      contact_role)
+        [ -n "${V2D_CONTACT_ROLE_WEIGHT:-}" ] && args="--weight ${V2D_CONTACT_ROLE_WEIGHT}"
+        [ -n "${V2D_CONTACT_ROLE_STD:-}" ] && args="$args --std ${V2D_CONTACT_ROLE_STD}"
+        [ -n "${V2D_CONTACT_CONSISTENCY_WEIGHT:-}" ] \
+          && args="$args --consistency-weight ${V2D_CONTACT_CONSISTENCY_WEIGHT}"
+        [ -n "${V2D_BODY_WEIGHT_IN_CONTACT:-}" ] \
+          && args="$args --body-weight-in-contact ${V2D_BODY_WEIGHT_IN_CONTACT}" ;;
       voc_curriculum)
         [ -n "${V2D_VOC_ZERO_AT:-}" ] && args="--zero-at ${V2D_VOC_ZERO_AT}" ;;
     esac

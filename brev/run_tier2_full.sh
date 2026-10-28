@@ -90,7 +90,15 @@ while read -r EP SEQ <&3; do
   # W&B runs offline on the box (no key, no network) into /workspace/$RUN_DIR/wandb; the run dir is
   # copied next to the checkpoints below and synced from a laptop with `wandb sync -e <entity>`.
   # Checkpoint upload stays off so the offline dir does not carry a second copy of every policy.
-  run "cd /workspace && WANDB_MODE=offline python scripts/train_flash_sac.py \
+  # Environment the TRAINING PROCESS reads, written into the command rather than exported: this
+  # runs through `docker exec`, which does not inherit the box's environment, so an arm whose data
+  # is read at runtime (arm CR's contact roles) would otherwise silently fall back to its stub.
+  TRAIN_ENV=""
+  if [ -n "${V2D_CONTACT_ROLES:-}" ]; then
+    TRAIN_ENV="V2D_CONTACT_ROLES='${V2D_CONTACT_ROLES}' V2D_CLIP_TAG='${TAG}' "
+    say "[$INDEX/$TOTAL] $TAG: contact roles from ${V2D_CONTACT_ROLES}"
+  fi
+  run "cd /workspace && ${TRAIN_ENV}WANDB_MODE=offline python scripts/train_flash_sac.py \
     experiment=g1_recon_body_flash_sac \"task.parquet='${PARQUET}'\" \
     training.total_environment_steps=${STEPS} \
     training.checkpoint.save_interval_environment_steps=${SAVE_EVERY} \

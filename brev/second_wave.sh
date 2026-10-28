@@ -14,11 +14,20 @@
 #   B4  orientation std 0.3 -> 0.8                 e17        angle, where 0.3 is inert
 #   B5  bridge-smoothed reference instead of raw   e01        a reference it can track
 #
-# And one follow-up, staged after B4 won e17 by +0.2004 and asked for by name, never by default:
+# And two follow-ups, asked for by name, never by default. B4x was staged after B4 won e17 by
+# +0.2004; CR is the contact-role reward, the first arm that adds a reward term of our own:
 #
 #   B4x orientation std 0.3 -> 0.8                 the orientation-limited clips
 #       e00 e06 e08 e09 e10 e13 e20                8 boxes, 1 clip each, ~$27.20
 #       e26                                        e21 dropped: already above its ceiling
+#
+#   CR  contact-role reward (docs/ARM_CR.md)       the eight clips under 0.30
+#       e01 e04 e05 e07 e09 e19 e25 e28            4 boxes, 2 clips each, ~$25.57
+#
+# CR is four boxes of two rather than three of three for one reason worth writing down: the cost
+# model prices a group by its FULLEST box, so 8 clips over 3 boxes is 3 clips per box ($28.15, over
+# the $27 cap) while 8 over 4 is 2 per box ($25.57, under it) -- and it finishes in 9.4 h instead
+# of 13.8. Dropping a clip from 8 to 7 over 3 boxes would have saved nothing at all.
 #
 # e13 and e21 are deliberately not run: both sit within 0.03 of their own reference ceiling, so
 # there is nothing a policy change can win there (docs/METRICS_DEEP_DIVE.md).
@@ -76,6 +85,7 @@ W3B|0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28
 W3R|1 4 5 7 13 14 19 25 28|start_curriculum,orientation_reward,object_position,body_joint_position|V2D_OBJECT_POSITION_STD=0.08 V2D_OBJECT_POSITION_WEIGHT=5.0 V2D_BODY_JOINT_POSITION_WEIGHT=1.0|5|w3_regrasp||699998208|wave 3: the nine clips under 0.30, object over body, 700M steps
 T3-VALID|0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29|start_curriculum,orientation_reward,object_position|V2D_OBJECT_POSITION_STD=0.08|2|t3_recon|tier3|409600:409600|Tier 3: a valid entry on every clip at the insurance budget
 T3-FULL|3 24 18 12 27 8 22 15 20|start_curriculum,orientation_reward,object_position|V2D_OBJECT_POSITION_STD=0.08|3|t3_recon|tier3||Tier 3: full-length precision on as many clips as the credit buys
+CR|1 4 5 7 9 19 25 28|start_curriculum,orientation_reward,contact_role|V2D_CONTACT_ROLES=/v2d/assets/cr_refs/contact_roles|4|cr_refs|||contact-role reward on the eight clips under 0.30
 EOF
 )
 
@@ -191,8 +201,12 @@ while IFS='|' read -r group clips flags envs boxes stage tier steps why; do
   # against the tier_1 retarget, w3_bridge_v2 and t3_recon by whoever owns that tree. It is used
   # as it stands, and its absence is a refusal rather than a silent fall back to the briefs.
   if [ -n "$stage" ]; then
-    [ -d "$S/$mount" ] || { echo "FATAL: $group: no staged tree at $S/$mount" >&2; exit 3; }
-    [ -f "$S/$mount.md5" ] || { echo "FATAL: $group: no manifest at $S/$mount.md5" >&2; exit 3; }
+    builder=""
+    [ "$group" = CR ] && builder=" -- build it with brev/stage_cr.sh"
+    [ -d "$S/$mount" ] \
+      || { echo "FATAL: $group: no staged tree at $S/$mount$builder" >&2; exit 3; }
+    [ -f "$S/$mount.md5" ] \
+      || { echo "FATAL: $group: no manifest at $S/$mount.md5$builder" >&2; exit 3; }
     echo "== $group uses the tree already staged at $S/$mount"
   elif [ "$DRY" = 1 ]; then
     echo "== staging $group ($got clips) into $S/$mount"
