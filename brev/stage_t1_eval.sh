@@ -164,7 +164,12 @@ for path in files:
                 if not local.exists():
                     print(f"MISSING LOCALLY {seq}: {local}")
                     bad += 1
-    usda = path.parents[2] / "reconstructed_stage" / f"{seq}_support.usda"
+    # _discover_support_surface's rule: from the parquet, walk to the nearest sequence_id=
+    # ancestor, then <that>.parent.parent/reconstructed_stage/<seq>_support.usda. From this
+    # parquet the parents are [0] robot_name=g1, [1] sequence_id=, [2] soma, [3] whole_body --
+    # so it is parents[3], and checking parents[2] silently reports every clip as unsupported,
+    # which is the failure this check exists to catch.
+    usda = path.parents[3] / "reconstructed_stage" / f"{seq}_support.usda"
     supported += usda.exists()
 print(f"verified {len(files)} staged parquets, {supported} with a support USDA, {bad} problem(s)")
 raise SystemExit(1 if bad or len(files) != 30 else 0)
