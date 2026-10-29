@@ -129,7 +129,26 @@ teardown() {
 step "3  create box"                   -- ~/.local/bin/brev create "$NAME" --type "$INSTANCE_TYPE"
 [[ $GO == 1 ]] && CREATED=1
 wait_ssh() {
+  # A FAILURE row never boots, so polling SSH against it burns the full 20 minutes for nothing --
+  # which is exactly what the two strong-four boxes did. Read the STATUS *column*; the BUILD column
+  # on a FAILURE row is empty, so a check that waits for BUILD to say something sits through the
+  # whole poll. A box that has stopped being listed is also never coming back.
+  local missing=0 row status
   for _ in $(seq 1 80); do
+    row=$(~/.local/bin/brev ls 2>/dev/null | sed 's/^ //' | awk -v b="$NAME" '$1==b')
+    status=$(echo "$row" | awk '{print $2}')
+    case "$status" in
+      FAILURE|CREATE_FAILED|DELETING|TERMINATED)
+        echo "!! $NAME is $status -- it will never accept SSH. Check the instance-type catalog" >&2
+        echo "   before blaming provisioning: a delisted type fails every create at once." >&2
+        return 4 ;;
+    esac
+    if [ -z "$row" ]; then
+      missing=$((missing + 1))
+      [ "$missing" -ge 6 ] && { echo "!! $NAME is not listed on six consecutive polls" >&2; return 4; }
+    else
+      missing=0
+    fi
     ~/.local/bin/brev refresh >/dev/null 2>&1
     ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout=20 -o BatchMode=yes "$NAME" true \
       >/dev/null 2>&1 && return 0
