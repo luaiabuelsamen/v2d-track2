@@ -134,16 +134,19 @@
    "gain_pct": 11.02,
    "captured_pct": 71
   },
-  "summed_d_mppe_cm": -89.41,
-  "effect_on_30_clip_mean_cm": -2.98,
-  "summed_d_auc": 0.0223,
-  "effect_on_30_clip_mean_auc": 0.00074,
-  "spend_bar_cm": -5.0,
-  "remaining": {
-   "e25": "68.93 cm headroom",
-   "e29": "25.65 cm headroom"
+  "e25": {
+   "d_mppe_cm": -5.91,
+   "d_auc": 0.0019,
+   "gain_pct": 15.38,
+   "captured_pct": 9
   },
-  "position": "-2.98 cm of the -5 cm spending bar, and now genuinely live: e25 alone is -2.30 cm on the mean at full capture, which would clear it. At 60% capture the batch lands at -4.35 cm and the bar fails. AUC is up +0.00074 on the mean with no metric down, so the UPLOAD test looks safe either way -- and at -2.98 cm Tier 3 MPPE is already 48.88, under maniphys.ai's 49.94, which is 6th -> 5th."
+  "summed_d_mppe_cm": -95.32,
+  "effect_on_30_clip_mean_cm": -3.18,
+  "summed_d_auc": 0.0242,
+  "spend_bar_cm": -5.0,
+  "verdict_determined_before_e29_finished": "The -5 cm spending bar CANNOT be cleared. e29 is the only clip left and holds 25.65 cm of headroom, so even at 100% capture the batch reaches -120.97 cm summed = -4.03 cm on the 30-clip mean, short of -5. Recorded at 20:42 UTC while e29 was still training, because the arithmetic is closed either way and waiting would only make it look like a judgement call.",
+  "consequence": "No further Tier 3 fine-tune box, which is what the bar was for. The $2.61 of credit left would have bought one 3-clip box at ~$1.56; on this evidence it should not.",
+  "the_upload_test_is_separate_and_passes": "AUC is up 0.0242 summed with no metric down, so the entry already on the board (v4, 48.883) is improved again by e25's -0.20 cm on the mean. A final upload collects e25 and e29 together."
  },
  "second_correction_2026_10_29_20_12": {
   "what_i_claimed_at_19_42": "that capture tracks the SIZE of the input gain -- 96% gain -> ~100% capture, 49% -> 51%, 6% -> 9%, which looked close to an identity.",
@@ -188,5 +191,6 @@
    ]
   },
   "note_on_my_own_process": "This is the second correction to the same claim in one afternoon. The first called it binary, the second called it proportional, and both were over-reading a small sample at the moment the data arrived. What survives both is narrow and worth keeping: a large input gain predicts a large realised gain, and nothing below that threshold predicts anything."
- }
+ },
+ "what_the_batch_taught_about_the_arm": "Five clips, 284 cm of headroom offered, 95-121 cm collected: a batch-level capture rate of about 34%, far below the 54% lock-on rate would suggest, because the clips that locked on this time did so weakly. The sub-57% band stayed uninformative exactly as the corrected reading says: gains of 6, 11, 15 and 49% produced captures of 9, 71, 9 and 51%. Headroom remains the only lever and it is a noisy one -- the honest expected value of a clip is about a third of its headroom, not half."
 }
