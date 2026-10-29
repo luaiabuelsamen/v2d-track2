@@ -30,13 +30,27 @@ cp "$SHIPPED_ROLLOUTS"/episode_*.parquet "$SHIPPED_ROLLOUTS"/episode_*.json "$OU
 ADOPTED=$("$PY" -c "import json,sys; print(' '.join(json.load(open(sys.argv[1]))['adopted']))" "$ADOPTION")
 echo "adopted from the fine-tune: ${ADOPTED:-none}"
 
-# Each adopted clip's rollout comes from the box that produced it. Generation 2 wins over
-# generation 1 when both adopted, because gen 2 is only adopted against gen 1.
+# Each adopted clip's rollout comes from the box that produced it.
+#
+# The generation-2 chain is held OUT of this search and consulted only for clips its own adoption
+# record names. Directory order is not evidence: when ws_chain was simply appended to the list it
+# became the last match and therefore the winner, and the entry silently shipped gen-2 e00 (0.8078)
+# and e12 (0.8013) in place of the gen-1 rollouts that scored 0.8654 and 0.8839 -- a rollout that
+# had LOST its own comparison, chosen because its directory sorted later.
+CHAIN_ADOPTION=$REPO/results/t1_chain_adoption.json
+CHAIN_ADOPTED=""
+if [ -s "$CHAIN_ADOPTION" ]; then
+  CHAIN_ADOPTED=$("$PY" -c "import json,sys; print(' '.join(json.load(open(sys.argv[1]))['adopted']))" "$CHAIN_ADOPTION")
+fi
+echo "adopted from the generation-2 chain: ${CHAIN_ADOPTED:-none}"
 for TAG in $ADOPTED; do
   EP=$((10#${TAG#e})); F=$(printf 'episode_%06d' "$EP"); SRC=""
-  for d in ws_tier1 t1f_1 t1f_2c t1f_3c ws_s4a ws_s4b ws_chain; do
+  for d in ws_tier1 t1f_1 t1f_2c t1f_3c ws_s4a ws_s4b; do
     [ -s "$S/$d/results/rollouts/$F.parquet" ] && SRC=$S/$d/results/rollouts
   done
+  case " $CHAIN_ADOPTED " in
+    *" $TAG "*) [ -s "$S/ws_chain/results/rollouts/$F.parquet" ] && SRC=$S/ws_chain/results/rollouts ;;
+  esac
   [ -n "$SRC" ] || { echo "FATAL: $TAG adopted but no Tier 1 rollout found" >&2; exit 3; }
   cp "$SRC/$F.parquet" "$SRC/$F.json" "$OUT/results/"
   echo "   $TAG <- ${SRC#$S/}"

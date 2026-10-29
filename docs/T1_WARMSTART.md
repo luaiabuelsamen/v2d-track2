@@ -278,3 +278,24 @@ what makes a gain *possible* (the fine-tune resumes from 300M, so a clip whose z
 earlier is being re-run through training it already declined), not what makes one happen.
 
 Still open: e09 on v2d-t1f-2c, and the generation-2 chain at 3 of 5.
+
+## Packing bug, found and fixed 2026-10-29 13:30 UTC — worth +0.0019 for free
+
+The packed entry read 0.50838 while the per-clip tally read 0.51030, and I had written that gap off
+as the kit packer's rigid refit. It was not. Scoring the packed CSV **per episode** showed e00 at
+0.8078 and e12 at 0.8013 — the *generation-2* numbers, not gen-1's 0.8654 and 0.8839.
+
+Cause: adding `ws_chain` to the packer's rollout search list made it the last directory in the
+loop, and the loop keeps the last match. So the entry shipped two rollouts that had **lost** their
+own comparison, chosen purely because their directory sorted later. The comment above the loop even
+asserted the opposite — "generation 2 wins ... because gen 2 is only adopted against gen 1" — which
+was true of the rule and false of the code.
+
+Fix: the chain is held out of the search and consulted only for clips named in
+`results/t1_chain_adoption.json`, which records the gen-2 comparison explicitly (0 of 2 adopted).
+**Entry v2 now packs at AUC 0.51030 / SP-SR 0.6667 / MP-SR 0.5000 / MPPE 13.9635**, matching the
+per-clip tally to five decimals, and sits 0.00008 under CHORD's 0.51038.
+
+The general lesson, which has now cost twice in this project: *directory order is not evidence.*
+A file count was taken for a progress count earlier today and deleted a box with two clips unrun;
+here a directory position was taken for an adoption decision.

@@ -1,0 +1,41 @@
+{
+ "what": "Generation-2 chain adoption: a 400M-step rollout ships only if it beats its own gen-1 rollout.",
+ "rule": "same no-regression gates as tools/t1/adopt.py, but the baseline is the gen-1 fine-tune, not the shipped rollout",
+ "bar": "docs/T1_CHAIN.md registered at least two adoptions for the arm to be worth repeating",
+ "clips": {
+  "e00": {
+   "gen1": {
+    "add_auc": 0.86544,
+    "spider_sr": 1.0,
+    "maniptrans_sr": 1.0,
+    "mppe_cm": 1.57826
+   },
+   "gen2": {
+    "add_auc": 0.80784,
+    "spider_sr": 1.0,
+    "maniptrans_sr": 1.0,
+    "mppe_cm": 1.86457
+   },
+   "delta_auc": -0.0576,
+   "adopted": false
+  },
+  "e12": {
+   "gen1": {
+    "add_auc": 0.88393,
+    "spider_sr": 1.0,
+    "maniptrans_sr": 1.0,
+    "mppe_cm": 1.18175
+   },
+   "gen2": {
+    "add_auc": 0.80134,
+    "spider_sr": 1.0,
+    "maniptrans_sr": 1.0,
+    "mppe_cm": 1.60845
+   },
+   "delta_auc": -0.08259,
+   "adopted": false
+  }
+ },
+ "adopted": [],
+ "verdict": "0 of 2 adopted; the arm fails its bar and NO gen-2 rollout may enter the entry"
+}
