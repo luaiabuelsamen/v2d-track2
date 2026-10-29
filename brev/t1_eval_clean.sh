@@ -30,6 +30,15 @@ INSTANCE_TYPE=${INSTANCE_TYPE:-massedcompute_A6000_plus}
 RATE_USD_PER_HOUR=${RATE_USD_PER_HOUR:-0.68}
 BOX_DEADLINE_H=${BOX_DEADLINE_H:-2.5}
 WATCHDOG_H=${WATCHDOG_H:-3.2}
+# Hooks, so a second job that is "create a box, upload a staged tree, run one script per clip,
+# pull, delete" reuses this driver instead of forking it. Four attempts' worth of fixes live in
+# here (SSH refusals, docker exec eating the plan, the EXIT trap deleting a kept box), and a fork
+# would not inherit the next one.
+EXPECT_CLIPS=${EXPECT_CLIPS:-30}          # preflight: refs and checkpoints both have to match
+BOX_SCRIPT=${BOX_SCRIPT:-t1_eval_box.sh}  # the per-clip runner, uploaded and run on the box
+BOX_ENV=${BOX_ENV:-}                      # extra VAR=VAL passed to it (no spaces in values)
+EXTRA_UPLOADS=${EXTRA_UPLOADS:-}          # whitespace-separated repo-relative files it sources
+WORK_LABEL=${WORK_LABEL:-evaluations}
 MAX_USD=$(awk -v h="$WATCHDOG_H" -v r="$RATE_USD_PER_HOUR" 'BEGIN{printf "%.2f", h*r}')
 LOG=$OUT/driver.log
 mkdir -p "$OUT"
@@ -58,11 +67,11 @@ step() {
 say "Preflight (free)"
 PRE_OK=1
 STAGED=$(find "$ASSETS" -name data.parquet 2>/dev/null | wc -l)
-printf '   %-15s %s\n' "staged refs" "$STAGED/30 clean Tier 1 parquets in $ASSETS"
-[[ $STAGED == 30 ]] || { echo "   staged refs     INCOMPLETE -- run brev/stage_t1_eval.sh first"; PRE_OK=0; }
+printf '   %-15s %s\n' "staged refs" "$STAGED/$EXPECT_CLIPS parquets in $ASSETS"
+[[ $STAGED == "$EXPECT_CLIPS" ]] || { echo "   staged refs     INCOMPLETE -- stage first"; PRE_OK=0; }
 CKPTS=$(find "$ASSETS/ckpt" -name policy.safetensors 2>/dev/null | wc -l)
-printf '   %-15s %s\n' "checkpoints" "$CKPTS/30"
-[[ $CKPTS == 30 ]] || PRE_OK=0
+printf '   %-15s %s\n' "checkpoints" "$CKPTS/$EXPECT_CLIPS"
+[[ $CKPTS == "$EXPECT_CLIPS" ]] || PRE_OK=0
 [[ -f "$ASSETS/MD5SUMS" ]] && printf '   %-15s %s\n' "manifest" "$(wc -l < "$ASSETS/MD5SUMS") lines" \
   || { echo "   manifest        MISSING"; PRE_OK=0; }
 [[ -f "$PLAN" ]] && printf '   %-15s %s\n' "plan" "$(grep -c . "$PLAN") clips" \
@@ -126,9 +135,14 @@ upload() {
   # Everything the box runner sources or calls, or it dies on the box with "No such file or
   # directory" after the image has already been paid for -- which is how the first wave of the
   # 30-clip run was lost.
+  local extra=()
+  for f in $EXTRA_UPLOADS; do
+    [[ -f "$REPO_ROOT/$f" ]] || { echo "!! EXTRA_UPLOADS: no $REPO_ROOT/$f" >&2; return 1; }
+    extra+=("$REPO_ROOT/$f")
+  done
   scp -o ServerAliveInterval=30 "$REPO_ROOT/brev/gate_on_instance.sh" \
-      "$REPO_ROOT/brev/t1_eval_box.sh" "$REPO_ROOT/brev/arm_flags.sh" \
-      "$REPO_ROOT/brev/patch_object_orientation.py" "$NAME":~/ || return 1
+      "$REPO_ROOT/brev/$BOX_SCRIPT" "$REPO_ROOT/brev/arm_flags.sh" \
+      "$REPO_ROOT/brev/patch_object_orientation.py" "${extra[@]}" "$NAME":~/ || return 1
 }
 step "5  upload assets + runners"      -- upload
 # The manifest gate, on the box, before any GPU time is spent on a tree that travelled badly.
@@ -143,11 +157,13 @@ set -uo pipefail
 R=$HOME/t1_eval_results
 mkdir -p "$R"; rm -f "$R/FINISHED" "$R/FAILED"
 bash ~/gate_on_instance.sh build > "$R/build.log" 2>&1 || { echo build >"$R/FAILED"; exit 1; }
-PLAN=~/t1_plan.txt DEADLINE_H=__DEADLINE__ bash ~/t1_eval_box.sh > "$R/run.log" 2>&1 \
+PLAN=~/t1_plan.txt OUT="$R" DEADLINE_H=__DEADLINE__ __BOXENV__ bash ~/__BOXSCRIPT__ > "$R/run.log" 2>&1 \
   || { echo evaluate >"$R/FAILED"; exit 1; }
 touch "$R/FINISHED"
 EOS
 sed -i s/__DEADLINE__/'"$BOX_DEADLINE_H"'/ ~/t1_runner.sh
+sed -i s@__BOXSCRIPT__@'"$BOX_SCRIPT"'@ ~/t1_runner.sh
+sed -i s@__BOXENV__@'"$BOX_ENV"'@ ~/t1_runner.sh
 setsid nohup bash ~/t1_runner.sh </dev/null >/dev/null 2>&1 &
 echo started'
 }
@@ -162,7 +178,7 @@ wait_remote() {
       return 1
     fi
     sleep 120; waited=$((waited + 120))
-    rssh 'echo "  progress: $(ls ~/t1_eval_results/rollouts/*.parquet 2>/dev/null | wc -l)/30 clips"' || true
+    rssh 'echo "  progress: $(ls ~/t1_eval_results/rollouts/*.parquet 2>/dev/null | wc -l)/'"$EXPECT_CLIPS"' clips"' || true
   done
   echo "!! remote run did not finish inside ${limit}s" >&2; return 1
 }
@@ -171,7 +187,7 @@ step "7  start build+eval detached"    -- start_remote
 # A failure here used to fall through to "pull" and "delete", which pulled nothing and deleted the
 # evidence: the first run died on every clip with an unexpected-keyword error and still tore the
 # box down. Keep the box, inside the backstop, and say how to look.
-if ! step "8  wait for the 30 evaluations" -- wait_remote; then
+if ! step "8  wait for the $EXPECT_CLIPS $WORK_LABEL" -- wait_remote; then
   if [[ $GO == 1 ]]; then
     # Disarm first: `exit` fires the EXIT trap, which calls teardown, which deletes the box this
     # branch exists to keep. That bug ate the evidence from the second attempt.
