@@ -5,18 +5,21 @@
  "adopted": [
   "e00",
   "e06",
+  "e08",
   "e12",
+  "e15",
   "e16",
   "e22",
   "e23",
   "e24",
-  "e26"
+  "e26",
+  "e27"
  ],
- "clips_scored": 18,
+ "clips_scored": 23,
  "packed": {
-  "add_auc": 0.5103,
+  "add_auc": 0.52688,
   "maniptrans_sr": 0.5,
-  "mppe_cm": 13.9635,
+  "mppe_cm": 13.90142,
   "spider_sr": 0.66667
  },
  "shipped_board": {
@@ -26,7 +29,8 @@
   "mppe_cm": 14.128
  },
  "chord_tier1_baseline_auc": 0.51038,
- "note": "Improves all four boards against what is uploaded, and now sits 0.00008 under CHORD's 0.51038. The earlier packed figure of 0.50838 was a bug, not a packing artifact: ws_chain was appended to the packer's rollout search and became the last match, so the entry shipped the generation-2 e00 (0.8078) and e12 (0.8013) in place of the gen-1 rollouts that scored 0.8654 and 0.8839 -- rollouts that had lost their own comparison, chosen on directory order. The packer now reads results/t1_chain_adoption.json, which records 0 of 2 gen-2 adoptions.",
+ "note": "Improves all four boards against what is uploaded and clears CHORD's 0.51038 by +0.0165. The strong-four arm (e03 e08 e15 e27) added three adoptions: e08 +0.258, e15 +0.160, e27 +0.079; e03 came back 0.750 against its 0.781 record and was rejected. The earlier 0.50838 figure was a packer bug, not a packing artifact: ws_chain was appended to the rollout search and became the last match, so the entry shipped the generation-2 e00 (0.8078) and e12 (0.8013) in place of gen-1 rollouts that scored 0.8654 and 0.8839. The packer now reads results/t1_chain_adoption.json.",
  "not_uploaded_because": "git push origin main is still blocked, and the entry names a commit URL",
- "gen2_excluded_by": "results/t1_chain_adoption.json"
+ "gen2_excluded_by": "results/t1_chain_adoption.json",
+ "tier1_finetune_headroom": "Closed. All 7 clips never fine-tuned (e05 0.266, e07 0.251, e14 0.206, e13 0.159, e25 0.133, e19 0.116, e28 0.089) sit below 0.30, and the measured rule is that 0 of 4 clips below 0.35 adopted while 11 of 19 above it did. Every clip above the line has now been run, so there is no cheap Tier 1 gain left."
 }

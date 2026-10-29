@@ -109,3 +109,41 @@ first version of the waiter checked only for a running training, which left a ra
 poll interval; it now stands down for the owner and acts only when nothing else can.
 
 This is a cold-box defect, so **the Tier 3 launch will hit it too** and the same waiter applies.
+
+## Result, 2026-10-29 15:20 UTC — the arm worked, 3 of 4 adopted
+
+Both boxes ran clean after the build race was recovered, finished both of their clips, pulled and
+deleted themselves at 15:18 and 15:20. Warm start confirmed in each training log, not inferred:
+
+```
+warm start: actor from /v2d/assets/ckpt/e03/policy.safetensors, steps set to 299,999,232,
+curriculum stage ... voc_scale=0.0, immediate_first_frame_probability=0.5,
+critic cold, actor rate x0.1 for the first 2,000 updates
+... completed 349999104 environment steps
+```
+
+| clip | shipped | fine-tuned | delta | adopted |
+|------|---------|-----------|-------|---------|
+| e03 | 0.7806 | 0.7502 | −0.0304 | no |
+| e08 | 0.6654 | **0.9236** | **+0.2582** | yes |
+| e15 | 0.6653 | **0.8254** | **+0.1601** | yes |
+| e27 | 0.7795 | **0.8584** | **+0.0789** | yes |
+
+Every one keeps SP-SR and MP-SR at 1.000, so the no-regression clause cost nothing again.
+
+**Against the registration:** the bar was "at least one clip adopts" and the projection was about
++0.012 on the entry mean, to about 0.520. Three adopted and the entry mean went **0.51030 →
+0.52688**, +0.0166. That is the first packed Tier 1 entry to clear CHORD's **0.51038**, by +0.0165.
+The projection was built from the measured 8-of-15 strong-clip rate; the realised 3 of 4 beat it,
+which is the expected spread on four samples and not evidence of anything new.
+
+**This closes Tier 1 fine-tuning.** The seven clips never fine-tuned are e05 0.266, e07 0.251,
+e14 0.206, e13 0.159, e25 0.133, e19 0.116, e28 0.089 — every one below 0.30, and the measured rule
+is that **0 of 4 clips below 0.35 adopted while 11 of 19 above it did**. Every clip above the line
+has now been run, so no further box buys an adoption at better than coin-flip odds, and the credit
+is better spent on Tier 3, which still scores zero because nothing is uploaded.
+
+**One bug on my side, with no cost:** the warm-start watcher grepped `~/t1_eval_results/run.log`
+while the line is written to `train_eXX.log`, so it timed out after 40 polls and reported nothing
+on two runs that were in fact correct. A watcher that cannot see its signal is indistinguishable
+from a failure it should have caught; the evidence above came from the pulled logs instead.

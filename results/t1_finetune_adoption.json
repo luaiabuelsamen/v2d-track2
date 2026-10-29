@@ -1,21 +1,24 @@
 {
  "what": "Tier 1 adoption of the warm-start fine-tune, under the registered no-regression rule",
  "rule": "AUC improves and no other board regresses; legal because Tier 1's permitted input is the configured scoring reference",
- "clips_scored": 19,
+ "clips_scored": 23,
  "adopted": [
   "e00",
   "e06",
+  "e08",
   "e12",
+  "e15",
   "e16",
   "e22",
   "e23",
   "e24",
-  "e26"
+  "e26",
+  "e27"
  ],
  "entry_mean_auc": {
   "shipped": 0.46523,
-  "after_adoption": 0.5103,
-  "gain": 0.04507
+  "after_adoption": 0.52688,
+  "gain": 0.06165
  },
  "chord_tier1_baseline": 0.51038,
  "clips": {
@@ -70,6 +73,23 @@
    "ships_final_checkpoint": false,
    "adopted": false
   },
+  "e03": {
+   "shipped": {
+    "add_auc": 0.78065,
+    "spider_sr": 1.0,
+    "maniptrans_sr": 1.0,
+    "mppe_cm": 2.65689
+   },
+   "fine_tuned": {
+    "add_auc": 0.75024,
+    "spider_sr": 1.0,
+    "maniptrans_sr": 1.0,
+    "mppe_cm": 2.80014
+   },
+   "delta_auc": -0.03041,
+   "ships_final_checkpoint": false,
+   "adopted": false
+  },
   "e04": {
    "shipped": {
     "add_auc": 0.14656,
@@ -102,6 +122,23 @@
    },
    "delta_auc": 0.30414,
    "ships_final_checkpoint": true,
+   "adopted": true
+  },
+  "e08": {
+   "shipped": {
+    "add_auc": 0.66543,
+    "spider_sr": 1.0,
+    "maniptrans_sr": 1.0,
+    "mppe_cm": 1.83521
+   },
+   "fine_tuned": {
+    "add_auc": 0.92364,
+    "spider_sr": 1.0,
+    "maniptrans_sr": 1.0,
+    "mppe_cm": 1.42516
+   },
+   "delta_auc": 0.25821,
+   "ships_final_checkpoint": false,
    "adopted": true
   },
   "e09": {
@@ -170,6 +207,23 @@
    },
    "delta_auc": 0.09357,
    "ships_final_checkpoint": true,
+   "adopted": true
+  },
+  "e15": {
+   "shipped": {
+    "add_auc": 0.6653,
+    "spider_sr": 1.0,
+    "maniptrans_sr": 1.0,
+    "mppe_cm": 2.7926
+   },
+   "fine_tuned": {
+    "add_auc": 0.82544,
+    "spider_sr": 1.0,
+    "maniptrans_sr": 1.0,
+    "mppe_cm": 1.88403
+   },
+   "delta_auc": 0.16014,
+   "ships_final_checkpoint": false,
    "adopted": true
   },
   "e16": {
@@ -323,6 +377,23 @@
    },
    "delta_auc": 0.00729,
    "ships_final_checkpoint": true,
+   "adopted": true
+  },
+  "e27": {
+   "shipped": {
+    "add_auc": 0.77954,
+    "spider_sr": 1.0,
+    "maniptrans_sr": 1.0,
+    "mppe_cm": 2.48487
+   },
+   "fine_tuned": {
+    "add_auc": 0.85841,
+    "spider_sr": 1.0,
+    "maniptrans_sr": 1.0,
+    "mppe_cm": 1.94115
+   },
+   "delta_auc": 0.07887,
+   "ships_final_checkpoint": false,
    "adopted": true
   },
   "e29": {
