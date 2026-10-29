@@ -39,10 +39,24 @@ the input only. Tier 1 fine-tuning is now **closed**: every clip above the 0.35 
 adoption happens has been run, and all seven never run sit below 0.30, where 0 of 4 have ever
 adopted.
 
-**Still open for the Nov 4 2026 5:00 p.m. EST freeze:** accept the `Nvidia-V2D-Challenge` GitHub
-invite, confirm the registration form, and pick the final two submissions per board. One Tier 3
-box (`v2d-t3s6-a`, clips e06 e12 e17) is training on the last ~$5 of Brev credit; if it adopts,
-Tier 3 gets a second upload.
+**Still open, and all of it is yours rather than mine** — for the Nov 4 2026 5:00 p.m. EST freeze:
+
+1. Accept the `Nvidia-V2D-Challenge` GitHub invite (the repo is private; a judge resolving the
+   provenance URL in every submitted row needs access).
+2. Confirm the registration form is complete.
+3. Check whether the challenge requires designating final submissions per board. Kaggle shows no
+   separate final-submission deadline and no private split (`privateScore` is empty on every
+   board), so the best public submission should stand on its own — but that is worth confirming
+   with the organisers rather than assumed.
+
+**No further GPU work is justified, and that is a measured statement rather than a budget excuse.**
+$2.61 of credit remains, enough for one 3-clip box at ~$1.56, and it should not be spent: Tier 3
+fine-tuning is out of material (only 2 of the 13 untried clips have any headroom, 8.57 cm between
+them — `docs/T3_MPPE_PUSH.md`), Tier 2 sits at our own cleaner's reference ceiling with the only
+free route to beating it refuted on 0 of 29 clips (`docs/TRACK_WHAT.md`), and the cheapest Tier 1
+item needs ~$21. If a credit top-up arrives, `docs/TO_THE_TOP.md` says where it goes: **~$36 on
+Tier 1's eleven weak clips, worth about +19 rank points**, five times the return per dollar of
+anything else on the page.
 
 ## Live, 2026-10-29 10:20 UTC: the Tier 1 fine-tune is working
 
