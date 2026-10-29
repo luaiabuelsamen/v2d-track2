@@ -23,7 +23,7 @@
 # is the only way to know the box is running the code we think it is. A cell either carries the
 # change or dies before training, which is the opposite of the failure that cost us three cells.
 
-ARM_FLAGS_ORDER="start_curriculum orientation_reward finger_targets object_position body_joint_position contact_role voc_curriculum"
+ARM_FLAGS_ORDER="start_curriculum orientation_reward finger_targets object_position body_joint_position contact_role voc_curriculum warm_start"
 
 # arm_flags_patch_script <flag>  -- flag names are the experiment's vocabulary, file names are the
 # patch's, and they are kept apart on purpose: renaming a script must not rename an arm on the
@@ -37,6 +37,10 @@ arm_flags_patch_script() {
     body_joint_position) echo "patch_body_joint_position.py" ;;
     contact_role)       echo "patch_contact_role.py" ;;
     voc_curriculum)     echo "patch_voc_curriculum.py" ;;
+    # Last in the order on purpose: it edits config.py/runner.py/learner.py, which no other patch
+    # touches, but a run that warm-starts must have its OBJECTIVE patches already in place so the
+    # fine-tune optimises the same reward the actor was trained on.
+    warm_start)         echo "patch_warm_start.py" ;;
     *) return 2 ;;
   esac
 }
@@ -89,6 +93,7 @@ arm_flags_slug() {
       body_joint_position) slug="${slug}-bj" ;;
       contact_role)       slug="${slug}-cr" ;;
       voc_curriculum)     slug="${slug}-vc" ;;
+      warm_start)         slug="${slug}-ws" ;;
     esac
   done <<< "$flags"
   printf '%s' "$slug"
@@ -191,6 +196,8 @@ arm_flags_apply() {
           && args="$args --body-weight-in-contact ${V2D_BODY_WEIGHT_IN_CONTACT}" ;;
       voc_curriculum)
         [ -n "${V2D_VOC_ZERO_AT:-}" ] && args="--zero-at ${V2D_VOC_ZERO_AT}" ;;
+      warm_start)
+        : ;;  # no patch-time arguments: the actor path and start step are run-time config keys
     esac
     if [ "${DRY_RUN:-0}" = 1 ]; then
       echo "arm flags: $label | would apply $(basename "$script") $args" >&2

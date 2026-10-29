@@ -86,9 +86,12 @@ second seed.
 ## Pre-registered bar, written before launch
 
 **The pilot is 3 clips, and the comparison is against the SAME input reference**, because
-fine-tuning and changing the input are two variables and this run only tests one. Clips **e03,
-e09, e18** — one table clip that scores well (0.7806), one that ships from a tail arm (e09), one
-floor clip (e18) — fine-tuned on the clean Tier 1 reference and then evaluated on the clean Tier 1
+fine-tuning and changing the input are two variables and this run only tests one. Clips **e11,
+e16, e18**, and they are all arm-A ships on purpose: the pilot's recipe is arm A's, so a clip that
+shipped from a tail arm — e09 trained at orientation std 0.8 — would change the reward as well as
+the reference, which is two variables. The three span the range: e11 is the weakest arm-A clip
+(0.4676, table), e16 is middling (0.5639, table), e18 is strong (0.7385, floor), so the bar tests
+both halves — gain where there is headroom, and no damage where there is not. Fine-tuned on the clean Tier 1 reference and then evaluated on the clean Tier 1
 reference, against the shipped actor evaluated on that same reference, which is what the Tier 1
 eval box is producing tonight.
 
