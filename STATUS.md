@@ -28,8 +28,9 @@ buy: the eleven weak Tier 1 clips full-length on clean references, ~$36, for 12t
 
 Every public score agrees with the local kit score to five decimals, so the local scorer is a
 faithful stand-in and nothing has to be guessed from the board. Receipts and per-board submission
-ids are in `results/tier1_submission_v2.json` and `results/tier3_submission_v2.json`; the code
-commit named by all 22,989 rows of each entry is `6eb90dc`, pushed and resolvable on `origin/main`.
+ids are in `results/tier1_submission_v2.json` (commit `6eb90dc`) and
+`results/tier3_submission_v4.json` (commit `75ac3e8`), superseding the v2 and v3 Tier 3 records
+beside them; every commit named in a submitted row is pushed and resolvable on `origin/main`.
 
 Tier 1 moved because of warm-start fine-tuning (`docs/T1_STRONG4.md`, `docs/WARM_START.md`): 11 of
 23 fine-tuned clips adopted under a rule that requires AUC to improve and forbids any other board
