@@ -58,3 +58,36 @@ at least 5 cm and no board falls.** The entry is only re-uploaded if that holds.
 only strong-four clip that was rejected), and a 150 cm pass-1 error may mean the reconstruction
 itself is wrong rather than the policy. If both come back unadopted, the remaining credit should
 not buy more of this arm.
+
+## Correction, 17:40 UTC — "worst MPPE" was the wrong selection and four of six clips were wrong
+
+Before launching I compared each staged reference against the clean Tier 1 trajectory by content,
+and the six clips chosen by worst pass-1 MPPE came back 47-415 cm from truth. That is the whole
+plan falling over: **MPPE is scored against truth, and the fine-tune moves the policy toward the
+reconstruction.** Where the reconstruction is itself far from truth, tracking it better moves the
+achieved trajectory *away* from the score. A high pass-1 MPPE does not say the policy is bad; it
+can equally mean the input is bad, and then there is nothing to win.
+
+The right quantity is **headroom = pass-1 MPPE − reconstruction floor**, where the floor is the
+reconstruction's own mean object-position error against truth — what a perfect policy would score
+(`$S/t3_headroom.json`). It behaves as a predictor on the three clips already measured: e06 had
+66.8 cm of headroom and gained 73.2 cm; e12 had −6.4 cm and gained 4.0 cm.
+
+Of the original six, only e03 (135 cm) and e25 (69 cm) had headroom. **e04 (−47), e19 (−183) and
+e10 (−15) have negative headroom — their policies already beat the reconstruction**, and
+fine-tuning them toward it would have made MPPE worse while the input-only rule happily adopted
+them, because that rule measures distance to the input, not to truth. e02 had 6 cm, which does not
+pay for a box.
+
+**Revised clips, by headroom, excluding the eleven already tried** (e00 e06 e08 e12 e17 e18 e21
+e22 e23 e24 e26): **e03 135.4, e25 68.9, e01 28.5, e20 25.7, e29 25.7, e16 25.6** — 309.8 cm of
+headroom in total. Staged and verified: 6/6 parquets, 6 with a support USDA, 42-file manifest,
+every object trajectory **0.0000 cm from the reconstruction** and 47-415 cm from clean Tier 1.
+
+**Honest revision of the expectation.** Total headroom across *every* untouched clip is ~363 cm,
+i.e. about **−12 cm on the 30-clip mean** even if every clip were perfectly fixed. So Tier 3 MPPE
+can reach roughly **42-46 cm from 54.44**, which is 4th or 5th of 10 — **first place at 31.3 cm is
+not reachable with this arm at any price**, and the Tier 3 AUC gap of 0.0825 needs +2.48 of summed
+AUC where a good clip yields +0.04. At 4 of 7 adopting historically, expect 3-4 of these 6 to
+adopt. The bar stays: **mean MPPE must fall by at least 5 cm and no board may fall**, or the entry
+is not re-uploaded.
