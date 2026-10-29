@@ -1,0 +1,26 @@
+{
+ "question": "The four metrics are four separate Kaggle competitions and the kit's submitter has an --only flag, so a different file could in principle be sent to each board, per-clip optimised for that metric. On Tier 1 that would even be legal to decide on truth, because the permitted input IS the configured scoring reference. Is it worth anything?",
+ "answer": "No. Measured, not argued.",
+ "method": "For all 30 clips, took the best rollout per metric across every Tier 1 tree on disk: the wave-2 ships, the 23 warm-start fine-tunes, and the 30-clip cold-swap clean-input eval.",
+ "current_entry": {
+  "mppe_cm": 13.901,
+  "maniptrans_sr": 0.5,
+  "spider_sr": 0.66667
+ },
+ "per_metric_optimal": {
+  "mppe_cm": 13.898,
+  "maniptrans_sr": 0.5,
+  "spider_sr": 0.66667
+ },
+ "gain": {
+  "mppe_cm": 0.003,
+  "maniptrans_sr": 0.0,
+  "spider_sr": 0.0
+ },
+ "only_clip_that_moves": {
+  "clip": "e01",
+  "mppe_cm": "43.67 -> 43.57, from its fine-tune"
+ },
+ "why_it_is_empty": "The seven clips sitting 0.85-2.15 cm from the MP-SR gate have no rollout in any tree that crosses it -- their fine-tunes all made MPPE worse (e02 4.57 -> 35.05 cm, e21 4.79 -> 10.34, e29 3.85 -> 8.72) and the cold-swap arm is worse still. There is nothing to select; the centimetre has to be earned by a better policy.",
+ "conclusion": "Keep one file per tier on all four of its boards, as the kit's submitter does by default. This also means the single-file discipline costs us nothing, so there is no judgement call to make about whether per-metric files would be within the spirit of the challenge."
+}
