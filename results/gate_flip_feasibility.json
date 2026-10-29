@@ -1,0 +1,13 @@
+{
+ "what": "Can the remaining $2.61 buy a Tier 1 gate flip? Checked 2026-10-29 21:30 UTC.",
+ "why_it_looked_promising": "Two gate flips are worth +1 rank point on tier1-mp-sr and the SP-SR flip would pass two teams tied at 0.70. Seven clips sit 0.85-2.15 cm from the 3 cm MP-SR gate, and a warm-start run costs ~$0.50/clip, so three clips fit the stranded credit.",
+ "one_flip_is_not_enough": "Kaggle breaks ties by submission time and the teams above us submitted earlier, so matching 0.53333 on MP-SR or 0.70000 on SP-SR leaves us below them. A rank point needs TWO flips, not one -- which doubles what the credit has to buy.",
+ "why_reward_retuning_will_not_do_it": {
+  "the_std_is_already_tuned_for_this_gate": "brev/patch_object_position.py's own table: at std 0.08 the reward is 0.855 at 1 cm, 0.249 at 3 cm and 0.021 at 5 cm. The shipping recipe uses 0.08. So these clips were already trained with the gradient concentrated in exactly the band they are failing in.",
+  "tightening_further_removes_the_signal": "A clip sitting at 4-5 cm already earns ~0.02 of the term at std 0.08. Tightening to 0.03 makes it ~0, which is the classic too-peaked reward: no gradient where the policy actually is. The plausible direction of that change is worse.",
+  "raising_the_weight_was_already_tried": "Second wave arm B1 ran object_position weight x5 on e04 and e25. Both adopted on the input-only rule and both were neutral against truth: kit dAUC -0.0006 and -0.0001."
+ },
+ "verdict": "Do not spend it. The expected value is negative-to-zero: the one lever cheap enough (reward retuning on a warm start) has a mechanism argument against it and a two-clip null result behind it, and a rank point needs two successes rather than one.",
+ "what_would_work_and_what_it_costs": "Full-length training on the clean Tier 1 reference for the seven near-miss clips with a terminal-accuracy objective -- about $3/clip, $21 for all seven. That is the first thing to buy with any top-up, and unlike the warm start it is not fighting a 50M-step budget that starts from a policy already settled into its error.",
+ "process_note": "I nearly spent the credit on this. What stopped it was reading the table inside the patch I was about to re-run, which already contained the argument against going tighter."
+}
