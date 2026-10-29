@@ -105,3 +105,31 @@ Two contract details that were settled by reading rather than by spending:
   there is no released input to fit the rigid transform against, so both `rollout-to-npz` and the
   kit packer are pointed at `$S/t3/npz_world` — which is in `released_track2_world` by
   construction, anchored at frame 0 with a 0.0000 cm residual on all 30 clips.
+
+## A prediction, registered before pass 1 returns
+
+The clean-Tier-1 experiment measured what happens when a shipped actor is driven by a reference it
+was not trained on: AUC **0.465 → 0.289**, and that swap was *tiny* — the clean Tier 1 track sits
+about 1 cm from the `t2_clean` reference these actors trained against. The Tier 3 reconstruction is
+far further away: mean position error **66 cm**, with 20 of 30 clips losing the object outright.
+
+So the honest prediction is that pass 1 scores **below** the raw reconstruction's 0.228, somewhere
+in 0.10–0.20, and that the ten well-tracked clips carry almost all of it. Stating it now matters
+for three reasons:
+
+1. **It does not change whether pass 1 is worth running.** Our Tier 3 today is *nothing*. Any valid
+   entry is the whole gain, and this is the only route with honest provenance — the raw
+   reconstruction cannot supply `eval_code_sha256`, because no evaluator ran.
+2. **It is what pass 2 is for.** If the actors are degraded by a reference they never saw, the fix
+   is to adapt them to it rather than swap references under them, which is exactly what the
+   warm-start patch does. The clean-Tier-1 result is therefore the argument *for* pass 2, not a
+   reason to doubt it.
+3. **It makes a cheap sanity check possible.** If pass 1 comes back uniformly near zero —
+   including on e26, e18 and e08, whose reconstructions track to a few centimetres — that is not a
+   policy result, it is a broken pipeline, and the box should be read before anything is packed.
+   A spread that tracks reconstruction quality is the signature of a working pipeline.
+
+Point 3 also supersedes most of the value of the still-owed two-clip Tier 2-input control: a
+broken eval image depresses every clip uniformly, so a score spread that correlates with
+reconstruction quality is itself evidence the image is sound. The control stays available on the
+pass-2 box, where it costs two extra evaluations on a box already paid for.
