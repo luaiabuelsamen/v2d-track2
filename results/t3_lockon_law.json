@@ -119,22 +119,74 @@
   "e01": {
    "d_mppe_cm": -2.42,
    "d_auc": 0.0088,
-   "locked_on": false
+   "gain_pct": 6.3,
+   "captured_pct": 9
   },
   "e03": {
    "d_mppe_cm": -68.84,
    "d_auc": 0.002,
-   "locked_on": true,
+   "gain_pct": 48.78,
    "captured_pct": 51
   },
-  "summed_d_mppe_cm": -71.26,
-  "effect_on_30_clip_mean_cm": -2.38,
-  "bar": -5.0,
-  "remaining": [
-   "e16 (25.6 cm headroom)",
-   "e25 (68.9)",
-   "e29 (25.7)"
-  ],
-  "honest_position": "-2.38 cm of the -5 cm bar with 120 cm of headroom left in three clips. At the historical 54% lock-on rate and e03's 51% capture that projects to about -1.2 cm more, i.e. -3.6 cm total, which FAILS. It clears only if e25 locks on hard: 68.9 cm at full capture is -2.3 cm on the mean by itself."
+  "e16": {
+   "d_mppe_cm": -18.15,
+   "d_auc": 0.0115,
+   "gain_pct": 11.02,
+   "captured_pct": 71
+  },
+  "summed_d_mppe_cm": -89.41,
+  "effect_on_30_clip_mean_cm": -2.98,
+  "summed_d_auc": 0.0223,
+  "effect_on_30_clip_mean_auc": 0.00074,
+  "spend_bar_cm": -5.0,
+  "remaining": {
+   "e25": "68.93 cm headroom",
+   "e29": "25.65 cm headroom"
+  },
+  "position": "-2.98 cm of the -5 cm spending bar, and now genuinely live: e25 alone is -2.30 cm on the mean at full capture, which would clear it. At 60% capture the batch lands at -4.35 cm and the bar fails. AUC is up +0.00074 on the mean with no metric down, so the UPLOAD test looks safe either way -- and at -2.98 cm Tier 3 MPPE is already 48.88, under maniphys.ai's 49.94, which is 6th -> 5th."
+ },
+ "second_correction_2026_10_29_20_12": {
+  "what_i_claimed_at_19_42": "that capture tracks the SIZE of the input gain -- 96% gain -> ~100% capture, 49% -> 51%, 6% -> 9%, which looked close to an identity.",
+  "what_falsified_it": "e16: input gain only +11.02% (77.65 -> 69.09 cm) yet it captured 71% of its headroom (MPPE 67.24 -> 49.09 cm, -18.15 of a possible 25.57). e03 gained 49% and captured 51%; e16 gained 11% and captured 71%. The ordering is broken, so capture is not a function of input gain.",
+  "the_honest_statement": "A high input gain is sufficient but not necessary. Above about 57% gain, 6 of 6 clips captured 98-117% of their headroom -- that half is solid. Below 57% the gain carries almost no information: gains of 6%, 11% and 49% produced captures of 9%, 71% and 51%. So the rule is one-directional, and I am not proposing a third functional form on nine points.",
+  "gain_vs_capture_all_clips_pct": {
+   "e21": [
+    96.36,
+    98
+   ],
+   "e22": [
+    96.35,
+    100
+   ],
+   "e06": [
+    91.52,
+    110
+   ],
+   "e23": [
+    86.46,
+    108
+   ],
+   "e00": [
+    83.66,
+    117
+   ],
+   "e26": [
+    57.05,
+    111
+   ],
+   "e03": [
+    48.78,
+    51
+   ],
+   "e16": [
+    11.02,
+    71
+   ],
+   "e01": [
+    6.3,
+    9
+   ]
+  },
+  "note_on_my_own_process": "This is the second correction to the same claim in one afternoon. The first called it binary, the second called it proportional, and both were over-reading a small sample at the moment the data arrived. What survives both is narrow and worth keeping: a large input gain predicts a large realised gain, and nothing below that threshold predicts anything."
  }
 }
