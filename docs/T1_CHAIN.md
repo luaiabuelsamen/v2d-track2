@@ -95,3 +95,20 @@ about 2 box-hours, ~$1.35, on a question the first two clips had already answere
 
 Adoption is unaffected either way: a gen-2 clip only ships if it beats its gen-1 rollout, and
 neither did.
+
+## What the chain result rules out elsewhere, 2026-10-29 13:20 UTC
+
+The chain is the control for "can we buy score with more steps on the reference we already used",
+and the answer is no. That closes off the obvious Tier 2 move without spending anything:
+
+* **Tier 2 cannot be improved by re-training on bridge_v1.** The wave-2 policies were trained
+  0 -> 350M on exactly that reference, so a fine-tune onto it is more of the same final stage — the
+  thing that cost e00 0.058 and e12 0.083. A Tier 2 gain would need a *different* legal reference.
+* **bridge_v2 does not exist.** `~/projects/_ops/briefs/clean_refs_path.txt` still points at
+  `v2d-clean-refs/bridge_v1`; the v2 tree tetool was staging never landed. So there is no new Tier 2
+  reference to fine-tune onto, and nothing to buy there with the remaining credit.
+
+Tier 1 and Tier 3 both *did* gain from the fine-tune because in both cases the reference changed:
+Tier 1 to the released clean trajectory, Tier 3 to our own video reconstruction. The mechanism is
+re-fitting to a new reference, not extra training. That is why the last of the credit goes to
+Tier 3 (0.25059, the weakest board, 21 clips never fine-tuned) and not to Tier 2.

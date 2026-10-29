@@ -5,7 +5,7 @@
 Everything below is measured, kit-validated and preflighted. Nothing can reach a board without
 these two actions, and the Nov 4 2026 5:00 p.m. EST freeze is the deadline.
 
-**1. Push.** `git push origin main` — 50 commits ahead of `origin/main` (e8ffe8f), private repo
+**1. Push.** `git push origin main` — 55 commits ahead of `origin/main` (e8ffe8f), private repo
 `luaiabuelsamen/v2d-track2`. All three entries name a commit URL for provenance; the warm-start
 code that produced the improved rollouts is in the unpushed commits, so uploading before the push
 is a real provenance mismatch, not a formality.
