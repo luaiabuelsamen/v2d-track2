@@ -250,3 +250,21 @@ def test_the_runner_refuses_a_chain_that_would_train_backwards() -> None:
     )
     assert done.returncode == 2, done.stdout + done.stderr
     assert "nothing to train" in done.stderr
+
+
+def test_the_remote_helper_does_not_mask_its_exit_status():
+    """`rssh 'test -s f'` must report what the remote test said.
+
+    The helper used to pipe ssh through `grep -v Pseudo` to drop the "Pseudo-terminal will not be
+    allocated" notice. That made the pipeline's exit status grep's own, and grep with no matching
+    output exits 1 -- so every remote `test` came back false. A waiter built on
+    `if rssh 'test -s <rollout>'` never fired, and a box went on to train a clip that had been
+    deliberately dropped from its queue. `-T -n` removes the notice at the source instead.
+    """
+    import pathlib
+
+    for name in ("finish_box.sh", "prune_queue.sh"):
+        text = pathlib.Path("brev", name).read_text()
+        helper = next(line for line in text.splitlines() if line.startswith("rssh()"))
+        assert "grep" not in helper, f"{name}: rssh pipes through grep and masks its exit status"
+        assert "-T" in helper and "-n" in helper, f"{name}: rssh needs -T -n to suppress the notice"

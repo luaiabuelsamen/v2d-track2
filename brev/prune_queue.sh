@@ -9,7 +9,12 @@
 set -uo pipefail
 S=/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad
 BOX=$1; PLAN=$2; WAIT_FOR=$3   # e.g. v2d-t1f-2c  .../plan_pruned.txt  episode_000012
-rssh() { timeout 120 ssh -o BatchMode=yes -o ConnectTimeout=20 "$BOX" "$@" 2>/dev/null | grep -v Pseudo; }
+# -T -n stops the "Pseudo-terminal will not be allocated" notice at the source. The earlier
+# version piped through `grep -v Pseudo`, which made the PIPELINE's exit status grep's own:
+# grep with no matching output returns 1, so every remote `test`/`kill` read as failure. A
+# chain-box waiter built on `if rssh 'test -s ...'` therefore never fired, and the box ran a
+# clip that had been deliberately dropped.
+rssh() { timeout 120 ssh -T -n -o BatchMode=yes -o ConnectTimeout=20 "$BOX" "$@" 2>/dev/null; }
 
 for i in $(seq 1 240); do
   if [ -n "$(rssh "ls ~/t1_eval_results/rollouts/$WAIT_FOR.parquet 2>/dev/null")" ]; then

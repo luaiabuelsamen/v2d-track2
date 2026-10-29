@@ -13,7 +13,12 @@ BOX=$1; DIR=$2; RESTART_ENV=${3:-}
 # carried no WS_START, which would have rewound the actor 50M steps and redone training it had
 # already had -- a rollout from a different arm wearing this one's name. Guessing a recipe is
 # worse than not restarting, so without this argument a dead runner is reported and left dead.
-rssh() { timeout 120 ssh -o BatchMode=yes -o ConnectTimeout=20 "$BOX" "$@" 2>/dev/null | grep -v Pseudo; }
+# -T -n stops the "Pseudo-terminal will not be allocated" notice at the source. The earlier
+# version piped through `grep -v Pseudo`, which made the PIPELINE's exit status grep's own:
+# grep with no matching output returns 1, so every remote `test`/`kill` read as failure. A
+# chain-box waiter built on `if rssh 'test -s ...'` therefore never fired, and the box ran a
+# clip that had been deliberately dropped.
+rssh() { timeout 120 ssh -T -n -o BatchMode=yes -o ConnectTimeout=20 "$BOX" "$@" 2>/dev/null; }
 
 # `brev ls` answers short or empty under concurrent calls -- three of these watchers starting at
 # once was enough, and each one promptly declared its live box "already gone" and exited. A
