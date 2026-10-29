@@ -23,13 +23,15 @@
    "v2d-t1s4-b (FAILURE, never booted)": 40,
    "v2d-t1s4-a2 (measured 13:28-15:18)": 110,
    "v2d-t1s4-b2 (measured 13:30-15:20)": 110,
-   "v2d-t3s6-a (projected, 3 clips)": 150
+   "v2d-t3s6-a (measured 15:29-17:57)": 148,
+   "v2d-t3m-a (projected 18:00-21:35)": 215
   },
-  "dollars": 13.2
+  "dollars": 15.62
  },
- "total_projected_dollars": 25.35,
+ "total_projected_dollars": 27.77,
  "credit_at_last_email": 30.38,
- "credit_remaining_projected": 5.03,
- "what_that_buys": "Tier 3 box a (e06 e12 e17) is launched on the measured figure. Box b (e15 e16 e27) is held until box a's first clip is scored: at $1.70 a box both would fit the projection, but spending on the second before the first says anything buys nothing if the arm is a dud, and there is no deadline pressure -- the freeze is Nov 4.",
- "measured_cost_per_box": "The strong-four boxes did bring-up, a cold image build, a 49 MB upload, two 50M-step fine-tunes and two evaluations in 110 minutes = $1.25/box, against the $2.25 the estimate used. So a 3-clip Tier 3 box is about $1.70, not $2.25."
+ "credit_remaining_projected": 2.61,
+ "what_that_buys": "About $0.95 at $0.68/h, i.e. under 1.5 box-hours -- not enough for one fine-tune clip end to end (bring-up plus image build alone is ~25 min before any training). So v2d-t3m-a is the last GPU work this credit can fund, and every remaining item in docs/TO_THE_TOP.md needs a top-up.",
+ "measured_cost_per_box": "The strong-four boxes did bring-up, a cold image build, a 49 MB upload, two 50M-step fine-tunes and two evaluations in 110 minutes = $1.25/box, against the $2.25 the estimate used. So a 3-clip Tier 3 box is about $1.70, not $2.25.",
+ "what_the_last_two_boxes_bought": "v2d-t3s6-a ($1.68): e06 and e12 adopted, Tier 3 v3 at 0.25197 / 51.864. v2d-t3m-a ($2.44 projected): e03 -68.84 cm, e16 -18.15, e01 -2.42, Tier 3 v4 at 0.25271 / 48.883 and the MPPE board 6th -> 5th. So ~$4.12 bought one rank point and a measured characterisation of the arm (results/t3_lockon_law.json)."
 }
