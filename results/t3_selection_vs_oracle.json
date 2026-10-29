@@ -1,0 +1,37 @@
+{
+ "what": "Does the input-only selection rule cost us anything on Tier 3? Measured against an oracle.",
+ "why_it_matters": "On Tier 3 the permitted input is our own reconstruction, not the scoring reference, so a per-clip choice may not read truth. The rule (tools/t3/adopt.py) picks on distance to the reconstruction alone. This is the price of that discipline, now that all 11 fine-tuned clips have been kit-scored against truth as well.",
+ "clips": 11,
+ "input_only_rule": {
+  "summed_d_auc": 0.5892,
+  "mean_d_auc": 0.01964,
+  "summed_d_mppe_cm": -307.39,
+  "mean_d_mppe_cm": -10.25,
+  "adopted": [
+   "e00",
+   "e06",
+   "e12",
+   "e21",
+   "e22",
+   "e23",
+   "e26"
+  ]
+ },
+ "oracle_auc_rule": {
+  "summed_d_auc": 0.6296,
+  "mean_d_auc": 0.02099,
+  "summed_d_mppe_cm": -295.5,
+  "mean_d_mppe_cm": -9.85,
+  "extra_adoptions": [
+   "e18",
+   "e20"
+  ]
+ },
+ "cost_of_refusing_truth": {
+  "mean_auc": 0.00135,
+  "mean_mppe_cm": 0.4,
+  "note": "The sign on MPPE is the interesting part: the input-only rule is BETTER on MPPE (-10.25 vs -9.85 cm), because the two clips an AUC oracle would add (e18, e20) each worsen MPPE (+0.44 and +11.45 cm) for +0.025 and +0.015 of AUC. Choosing on truth AUC would have traded a board away."
+ },
+ "agreement": "8 of 9 gen-1 clips, and 2 of 2 in the second batch: the rule's only disagreement with truth is e18, worth +0.0249 AUC and -0.44 cm MPPE -- a wash.",
+ "conclusion": "The discipline is free. This is the fourth independent check: the same held on Tier 1, where no clip was ever rejected while a success gate improved. We keep the registered rule and do not read truth to choose."
+}
