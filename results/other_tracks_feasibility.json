@@ -1,0 +1,25 @@
+{
+ "what": "Could we enter Track 1 or Track 3, where we score nothing at all? Checked 2026-10-29 21:25 UTC.",
+ "why_it_was_worth_asking": "We are entered only in Track 2's twelve boards. Track 1 has five boards and Track 3 has six, and on all eleven we score zero -- which on a sum-of-ranks objective is the largest single block of unclaimed ground anywhere.",
+ "track_3_egocentric": {
+  "requires": [
+   "a policy checkpoint per scored episode, 20 episodes",
+   "one reconstructed triangle mesh per (episode, object), in the same body coordinates as the rollout poses",
+   "the five pose metrics plus CD-O on the meshes"
+  ],
+  "verdict": "Out of reach",
+  "why": "It is a different dataset -- 20 holdout episodes of EGOCENTRIC video under track_3/evaluation, not our 30 multiview Track 2 clips -- so nothing we hold transfers. It needs 20 trained policies (~$60 at measured rates) and object MESH reconstruction, which our pipeline never does: for Track 2 we use the released meshes."
+ },
+ "track_1_reconstruction": {
+  "requires": [
+   "MHR body parameters per episode: pose [T,136], scales [68], shape [45]",
+   "per-frame object rotation and translation, positive object scale",
+   "an object triangle mesh per episode"
+  ],
+  "verdict": "Out of reach, but closer than Track 3",
+  "why": "No policy is needed, which is why it was worth checking -- Track 1 is pure reconstruction and we have a reconstruction pipeline. But it wants a parametric HUMAN body fit (MHR), and ours retargets to a Unitree G1 robot instead; and it wants a reconstructed object mesh, which we never produce. So we hold the object-pose half (MoGe plus FoundationPose) and neither the body-parameter half nor the mesh half.",
+  "what_it_would_take": "An MHR fitter or the kit's own mesh-to-MHR converter (tools/track1/MESH_TO_MHR_PARAMS.md) applied to a human mesh reconstruction we do not have, plus object mesh reconstruction. That is new capability, not a re-run, and it is not deliverable before the Nov 4 freeze on $2.61."
+ },
+ "the_honest_conclusion": "Eleven unclaimed boards exist and none is reachable, for a specific reason each: Track 3 is a different dataset needing 20 policies and meshes, Track 1 needs a human body model and a mesh reconstructor we never built. Recording it so the next person does not have to re-derive it -- and so that 'we only entered Track 2' reads as a measured choice rather than an oversight.",
+ "if_credit_and_time_both_arrived": "Track 1 before Track 3: no policies to train, and the object half of its input is already built. The missing piece is a body fit, and the kit ships the converter for it."
+}
