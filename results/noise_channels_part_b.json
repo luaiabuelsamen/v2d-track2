@@ -1,0 +1,839 @@
+{
+  "what": "which channels the policy should track and how hard (docs/TRACK_WHAT.md)",
+  "git_sha": "a8407776729b9320a103f80645bd26e396bba8dd",
+  "inputs": {
+    "dataset_root": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/data",
+    "tier1_root": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t1_clean/motion/tier1",
+    "tier2_root": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t2_raw"
+  },
+  "part_b_grasp_rigidity": {
+    "definition": {
+      "rigid": "position spread < 2.0 cm AND orientation spread < 10.0 deg, every hand in contact",
+      "spread": "position: sqrt of the summed per-axis variance; orientation: mean geodesic angle from the mean rotation, both over that hand's contact frames",
+      "two_handed": "both hands in contact for >= 20% of held frames"
+    },
+    "clips_measured": 29,
+    "rigid_clips": 0,
+    "not_rigid_clips": 29,
+    "rigid_clips_within_contact_segment": 0,
+    "one_handed": {
+      "clips": 11,
+      "rigid": 0,
+      "median_position_spread_cm": 7.007579702130016,
+      "median_orientation_spread_deg": 21.58285524296556
+    },
+    "two_handed": {
+      "clips": 18,
+      "rigid": 0,
+      "median_position_spread_cm": 8.13247209306607,
+      "median_orientation_spread_deg": 56.54946360932958
+    },
+    "per_clip": {
+      "0": {
+        "object": "2026-06-04_14-16-23_tall_bar_stool_tip_up_04_object",
+        "object_mesh_radius_cm": 59.881967306137085,
+        "held_frames": 454,
+        "both_hands_fraction_of_held": 0.7312775330396476,
+        "two_handed": true,
+        "sides": {
+          "left": {
+            "frames": 339,
+            "position_spread_cm": 23.987112919989816,
+            "orientation_spread_deg": 57.89321039993633,
+            "contact_segments": 2,
+            "within_segment_position_spread_cm": 13.06961014455277,
+            "within_segment_orientation_spread_deg": 24.747305859000853,
+            "rigid": false,
+            "rigid_within_segment": false
+          },
+          "right": {
+            "frames": 447,
+            "position_spread_cm": 26.021922735958608,
+            "orientation_spread_deg": 46.359428019661365,
+            "contact_segments": 1,
+            "within_segment_position_spread_cm": 26.021922735958608,
+            "within_segment_orientation_spread_deg": 46.359428019661365,
+            "rigid": false,
+            "rigid_within_segment": false
+          }
+        },
+        "rigid_grasp": false
+      },
+      "1": {
+        "object": "2026-05-18_17-06-21_vacuum_left_lean_02_object",
+        "object_mesh_radius_cm": 60.89029908180237,
+        "held_frames": 374,
+        "both_hands_fraction_of_held": 0.045454545454545456,
+        "two_handed": false,
+        "sides": {
+          "left": {
+            "frames": 362,
+            "position_spread_cm": 43.63918110207637,
+            "orientation_spread_deg": 60.47621766338719,
+            "contact_segments": 14,
+            "within_segment_position_spread_cm": 9.321264253917912,
+            "within_segment_orientation_spread_deg": 9.242909976875175,
+            "rigid": false,
+            "rigid_within_segment": false
+          },
+          "right": {
+            "frames": 29,
+            "position_spread_cm": 9.008397409040061,
+            "orientation_spread_deg": 16.121456253715266,
+            "contact_segments": 1,
+            "within_segment_position_spread_cm": 9.008397409040061,
+            "within_segment_orientation_spread_deg": 16.121456253715266,
+            "rigid": false,
+            "rigid_within_segment": false
+          }
+        },
+        "rigid_grasp": false
+      },
+      "2": {
+        "object": "2026-06-02_10-04-42_blue_easter_basket_place_10_object",
+        "object_mesh_radius_cm": 16.29980057477951,
+        "held_frames": 602,
+        "both_hands_fraction_of_held": 0.0,
+        "two_handed": false,
+        "sides": {
+          "left": {
+            "frames": 432,
+            "position_spread_cm": 3.522024176404211,
+            "orientation_spread_deg": 18.834874441756426,
+            "contact_segments": 1,
+            "within_segment_position_spread_cm": 3.522024176404211,
+            "within_segment_orientation_spread_deg": 18.834874441756426,
+            "rigid": false,
+            "rigid_within_segment": false
+          },
+          "right": {
+            "frames": 170,
+            "position_spread_cm": 5.901994760914447,
+            "orientation_spread_deg": 21.58285524296556,
+            "contact_segments": 1,
+            "within_segment_position_spread_cm": 5.901994760914447,
+            "within_segment_orientation_spread_deg": 21.58285524296556,
+            "rigid": false,
+            "rigid_within_segment": false
+          }
+        },
+        "rigid_grasp": false
+      },
+      "3": {
+        "object": "2026-04-27_11-50-10_contigo_coffee_mug_handle_table_05_object",
+        "object_mesh_radius_cm": 12.678790092468262,
+        "held_frames": 551,
+        "both_hands_fraction_of_held": 0.0,
+        "two_handed": false,
+        "sides": {
+          "right": {
+            "frames": 551,
+            "position_spread_cm": 2.3127693998587087,
+            "orientation_spread_deg": 28.989003297919872,
+            "contact_segments": 5,
+            "within_segment_position_spread_cm": 1.879345217479247,
+            "within_segment_orientation_spread_deg": 11.85765892055103,
+            "rigid": false,
+            "rigid_within_segment": false
+          }
+        },
+        "rigid_grasp": false
+      },
+      "4": {
+        "object": "2026-04-24_11-40-52_baseball_bat_rotate_05_object",
+        "object_mesh_radius_cm": 28.806385397911072,
+        "held_frames": 599,
+        "both_hands_fraction_of_held": 0.6994991652754591,
+        "two_handed": true,
+        "sides": {
+          "left": {
+            "frames": 463,
+            "position_spread_cm": 6.414080427369314,
+            "orientation_spread_deg": 91.27990309341345,
+            "contact_segments": 12,
+            "within_segment_position_spread_cm": 4.5047454744589075,
+            "within_segment_orientation_spread_deg": 37.55623029072721,
+            "rigid": false,
+            "rigid_within_segment": false
+          },
+          "right": {
+            "frames": 555,
+            "position_spread_cm": 6.523137427781911,
+            "orientation_spread_deg": 89.26162221690055,
+            "contact_segments": 5,
+            "within_segment_position_spread_cm": 5.303363452473938,
+            "within_segment_orientation_spread_deg": 52.97512171513826,
+            "rigid": false,
+            "rigid_within_segment": false
+          }
+        },
+        "rigid_grasp": false
+      },
+      "5": {
+        "object": "2026-03-18_19-36-56_g1_box_rotate_01_object",
+        "object_mesh_radius_cm": 52.312588691711426,
+        "held_frames": 716,
+        "both_hands_fraction_of_held": 0.7779329608938548,
+        "two_handed": true,
+        "sides": {
+          "left": {
+            "frames": 601,
+            "position_spread_cm": 33.9908895995327,
+            "orientation_spread_deg": 85.17488263695434,
+            "contact_segments": 9,
+            "within_segment_position_spread_cm": 6.276405531329446,
+            "within_segment_orientation_spread_deg": 8.537232519133251,
+            "rigid": false,
+            "rigid_within_segment": false
+          },
+          "right": {
+            "frames": 672,
+            "position_spread_cm": 41.28484824041566,
+            "orientation_spread_deg": 80.27958107157771,
+            "contact_segments": 5,
+            "within_segment_position_spread_cm": 23.03356537969235,
+            "within_segment_orientation_spread_deg": 27.979836402508585,
+            "rigid": false,
+            "rigid_within_segment": false
+          }
+        },
+        "rigid_grasp": false
+      },
+      "6": {
+        "object": "2026-06-01_11-26-44_monitor_rotate_05_object",
+        "object_mesh_radius_cm": 39.36701416969299,
+        "held_frames": 346,
+        "both_hands_fraction_of_held": 0.9393063583815029,
+        "two_handed": true,
+        "sides": {
+          "left": {
+            "frames": 329,
+            "position_spread_cm": 5.990373635370597,
+            "orientation_spread_deg": 20.267003862985845,
+            "contact_segments": 1,
+            "within_segment_position_spread_cm": 5.990373635370597,
+            "within_segment_orientation_spread_deg": 20.267003862985845,
+            "rigid": false,
+            "rigid_within_segment": false
+          },
+          "right": {
+            "frames": 342,
+            "position_spread_cm": 4.564267863828165,
+            "orientation_spread_deg": 26.354906863540386,
+            "contact_segments": 1,
+            "within_segment_position_spread_cm": 4.564267863828165,
+            "within_segment_orientation_spread_deg": 26.354906863540386,
+            "rigid": false,
+            "rigid_within_segment": false
+          }
+        },
+        "rigid_grasp": false
+      },
+      "7": {
+        "object": "2026-05-29_15-20-43_iron_round_table_02_object",
+        "object_mesh_radius_cm": 17.012813687324524,
+        "held_frames": 697,
+        "both_hands_fraction_of_held": 0.0,
+        "two_handed": false,
+        "sides": {
+          "right": {
+            "frames": 697,
+            "position_spread_cm": 3.674054567388642,
+            "orientation_spread_deg": 14.436606794654391,
+            "contact_segments": 1,
+            "within_segment_position_spread_cm": 3.674054567388642,
+            "within_segment_orientation_spread_deg": 14.436606794654391,
+            "rigid": false,
+            "rigid_within_segment": false
+          }
+        },
+        "rigid_grasp": false
+      },
+      "8": {
+        "object": "2026-06-05_15-08-08_skinny_wood_chair_push_10_object",
+        "object_mesh_radius_cm": 61.04124188423157,
+        "held_frames": 250,
+        "both_hands_fraction_of_held": 0.984,
+        "two_handed": true,
+        "sides": {
+          "left": {
+            "frames": 250,
+            "position_spread_cm": 7.220151352088348,
+            "orientation_spread_deg": 13.771332114316156,
+            "contact_segments": 1,
+            "within_segment_position_spread_cm": 7.220151352088348,
+            "within_segment_orientation_spread_deg": 13.771332114316156,
+            "rigid": false,
+            "rigid_within_segment": false
+          },
+          "right": {
+            "frames": 246,
+            "position_spread_cm": 7.726202902017768,
+            "orientation_spread_deg": 13.694318707837867,
+            "contact_segments": 1,
+            "within_segment_position_spread_cm": 7.726202902017768,
+            "within_segment_orientation_spread_deg": 13.694318707837867,
+            "rigid": false,
+            "rigid_within_segment": false
+          }
+        },
+        "rigid_grasp": false
+      },
+      "9": {
+        "object": "2026-06-04_16-45-04_big_red_bowl_under_skinny_wood_chair_03_object",
+        "object_mesh_radius_cm": 17.163144052028656,
+        "held_frames": 603,
+        "both_hands_fraction_of_held": 0.9601990049751243,
+        "two_handed": true,
+        "sides": {
+          "left": {
+            "frames": 585,
+            "position_spread_cm": 5.593568766056723,
+            "orientation_spread_deg": 96.38599117923624,
+            "contact_segments": 2,
+            "within_segment_position_spread_cm": 5.044992664272042,
+            "within_segment_orientation_spread_deg": 76.81925484497927,
+            "rigid": false,
+            "rigid_within_segment": false
+          },
+          "right": {
+            "frames": 597,
+            "position_spread_cm": 6.652126829181518,
+            "orientation_spread_deg": 88.64184691343407,
+            "contact_segments": 3,
+            "within_segment_position_spread_cm": 3.1789251675281425,
+            "within_segment_orientation_spread_deg": 26.90887519261817,
+            "rigid": false,
+            "rigid_within_segment": false
+          }
+        },
+        "rigid_grasp": false
+      },
+      "10": {
+        "object": "2026-05-01_11-36-40_white_desk_lower_to_ground_10_object",
+        "object_mesh_radius_cm": 86.37971878051758,
+        "held_frames": 492,
+        "both_hands_fraction_of_held": 0.8434959349593496,
+        "two_handed": true,
+        "sides": {
+          "left": {
+            "frames": 426,
+            "position_spread_cm": 25.489087951040474,
+            "orientation_spread_deg": 52.707414454057805,
+            "contact_segments": 5,
+            "within_segment_position_spread_cm": 5.639569104000305,
+            "within_segment_orientation_spread_deg": 2.1730822107092704,
+            "rigid": false,
+            "rigid_within_segment": false
+          },
+          "right": {
+            "frames": 481,
+            "position_spread_cm": 26.42274133922936,
+            "orientation_spread_deg": 44.28477493574753,
+            "contact_segments": 1,
+            "within_segment_position_spread_cm": 26.385310606260088,
+            "within_segment_orientation_spread_deg": 44.54929753855877,
+            "rigid": false,
+            "rigid_within_segment": false
+          }
+        },
+        "rigid_grasp": false
+      },
+      "11": {
+        "object": "2026-04-24_13-56-58_light_blue_book_pick_place_09_object",
+        "object_mesh_radius_cm": 16.311347484588623,
+        "held_frames": 792,
+        "both_hands_fraction_of_held": 0.9393939393939394,
+        "two_handed": true,
+        "sides": {
+          "left": {
+            "frames": 770,
+            "position_spread_cm": 5.6105958371897175,
+            "orientation_spread_deg": 84.58376339956077,
+            "contact_segments": 4,
+            "within_segment_position_spread_cm": 4.740740959864809,
+            "within_segment_orientation_spread_deg": 21.83489174442917,
+            "rigid": false,
+            "rigid_within_segment": false
+          },
+          "right": {
+            "frames": 766,
+            "position_spread_cm": 6.814538681940747,
+            "orientation_spread_deg": 85.58706759330893,
+            "contact_segments": 4,
+            "within_segment_position_spread_cm": 4.132815397130912,
+            "within_segment_orientation_spread_deg": 21.04384930797508,
+            "rigid": false,
+            "rigid_within_segment": false
+          }
+        },
+        "rigid_grasp": false
+      },
+      "12": {
+        "object": "2026-04-25_17-20-04_black_platform_turn_05_object",
+        "object_mesh_radius_cm": 52.872514724731445,
+        "held_frames": 441,
+        "both_hands_fraction_of_held": 0.8639455782312925,
+        "two_handed": true,
+        "sides": {
+          "left": {
+            "frames": 440,
+            "position_spread_cm": 21.429139161421997,
+            "orientation_spread_deg": 72.51816157823686,
+            "contact_segments": 1,
+            "within_segment_position_spread_cm": 21.429139161421997,
+            "within_segment_orientation_spread_deg": 72.51816157823686,
+            "rigid": false,
+            "rigid_within_segment": false
+          },
+          "right": {
+            "frames": 382,
+            "position_spread_cm": 26.07646708732714,
+            "orientation_spread_deg": 64.91103782525556,
+            "contact_segments": 3,
+            "within_segment_position_spread_cm": 9.199345320660896,
+            "within_segment_orientation_spread_deg": 30.025107318518057,
+            "rigid": false,
+            "rigid_within_segment": false
+          }
+        },
+        "rigid_grasp": false
+      },
+      "13": {
+        "object": "2026-06-09_10-19-09_snack_box_desk_through_06_object",
+        "object_mesh_radius_cm": 28.664615750312805,
+        "held_frames": 359,
+        "both_hands_fraction_of_held": 0.9164345403899722,
+        "two_handed": true,
+        "sides": {
+          "left": {
+            "frames": 352,
+            "position_spread_cm": 11.142645226223042,
+            "orientation_spread_deg": 57.29783299424339,
+            "contact_segments": 2,
+            "within_segment_position_spread_cm": 9.041237195097668,
+            "within_segment_orientation_spread_deg": 22.29030869716678,
+            "rigid": false,
+            "rigid_within_segment": false
+          },
+          "right": {
+            "frames": 336,
+            "position_spread_cm": 8.990568172558424,
+            "orientation_spread_deg": 55.80109422441577,
+            "contact_segments": 5,
+            "within_segment_position_spread_cm": 2.570371046181744,
+            "within_segment_orientation_spread_deg": 3.6967154310524415,
+            "rigid": false,
+            "rigid_within_segment": false
+          }
+        },
+        "rigid_grasp": false
+      },
+      "14": {
+        "object": "2026-05-28_14-44-09_round_table_flip_08_object",
+        "object_mesh_radius_cm": 70.50830721855164,
+        "held_frames": 833,
+        "both_hands_fraction_of_held": 0.8115246098439376,
+        "two_handed": true,
+        "sides": {
+          "left": {
+            "frames": 770,
+            "position_spread_cm": 33.18287922223587,
+            "orientation_spread_deg": 97.18149611463038,
+            "contact_segments": 8,
+            "within_segment_position_spread_cm": 9.587318588713176,
+            "within_segment_orientation_spread_deg": 14.465554830283505,
+            "rigid": false,
+            "rigid_within_segment": false
+          },
+          "right": {
+            "frames": 739,
+            "position_spread_cm": 33.91083508365421,
+            "orientation_spread_deg": 96.43636240596626,
+            "contact_segments": 7,
+            "within_segment_position_spread_cm": 15.267302486727372,
+            "within_segment_orientation_spread_deg": 27.651347372132317,
+            "rigid": false,
+            "rigid_within_segment": false
+          }
+        },
+        "rigid_grasp": false
+      },
+      "15": {
+        "object": "2026-05-06_11-06-15_wet_floor_sign_pick_place_ground_08_object",
+        "object_mesh_radius_cm": 38.166144490242004,
+        "held_frames": 475,
+        "both_hands_fraction_of_held": 0.0,
+        "two_handed": false,
+        "sides": {
+          "right": {
+            "frames": 475,
+            "position_spread_cm": 8.684575890497287,
+            "orientation_spread_deg": 17.866788203401196,
+            "contact_segments": 3,
+            "within_segment_position_spread_cm": 3.536655286601737,
+            "within_segment_orientation_spread_deg": 7.9994739557394405,
+            "rigid": false,
+            "rigid_within_segment": false
+          }
+        },
+        "rigid_grasp": false
+      },
+      "16": {
+        "object": "2026-03-12_15-06-36_spray_bottle_left_desk_ground_02_object",
+        "object_mesh_radius_cm": 16.028642654418945,
+        "held_frames": 198,
+        "both_hands_fraction_of_held": 0.0,
+        "two_handed": false,
+        "sides": {
+          "left": {
+            "frames": 198,
+            "position_spread_cm": 7.1307478537210045,
+            "orientation_spread_deg": 41.0669229479055,
+            "contact_segments": 5,
+            "within_segment_position_spread_cm": 2.0651098516043165,
+            "within_segment_orientation_spread_deg": 11.710109377209935,
+            "rigid": false,
+            "rigid_within_segment": false
+          }
+        },
+        "rigid_grasp": false
+      },
+      "17": {
+        "object": "2026-05-01_17-04-55_traffic_cone_ground_table_02_object",
+        "object_mesh_radius_cm": 30.09621500968933,
+        "held_frames": 223,
+        "both_hands_fraction_of_held": 0.9506726457399103,
+        "two_handed": true,
+        "sides": {
+          "left": {
+            "frames": 216,
+            "position_spread_cm": 7.897047884755905,
+            "orientation_spread_deg": 67.39958261673551,
+            "contact_segments": 2,
+            "within_segment_position_spread_cm": 5.667962816727069,
+            "within_segment_orientation_spread_deg": 34.11984780855048,
+            "rigid": false,
+            "rigid_within_segment": false
+          },
+          "right": {
+            "frames": 219,
+            "position_spread_cm": 7.893185965277852,
+            "orientation_spread_deg": 65.23156855057655,
+            "contact_segments": 1,
+            "within_segment_position_spread_cm": 7.893185965277852,
+            "within_segment_orientation_spread_deg": 65.23156855057655,
+            "rigid": false,
+            "rigid_within_segment": false
+          }
+        },
+        "rigid_grasp": false
+      },
+      "18": {
+        "object": "2026-05-06_10-00-19_blue_trash_can_drag_sideways_08_object",
+        "object_mesh_radius_cm": 53.405964374542236,
+        "held_frames": 381,
+        "both_hands_fraction_of_held": 0.8871391076115486,
+        "two_handed": true,
+        "sides": {
+          "left": {
+            "frames": 338,
+            "position_spread_cm": 12.48375793881505,
+            "orientation_spread_deg": 41.47940042083909,
+            "contact_segments": 2,
+            "within_segment_position_spread_cm": 9.53333099080199,
+            "within_segment_orientation_spread_deg": 18.635591702491766,
+            "rigid": false,
+            "rigid_within_segment": false
+          },
+          "right": {
+            "frames": 381,
+            "position_spread_cm": 11.278546418182875,
+            "orientation_spread_deg": 43.43156562125746,
+            "contact_segments": 2,
+            "within_segment_position_spread_cm": 10.021267332502212,
+            "within_segment_orientation_spread_deg": 17.40131718451642,
+            "rigid": false,
+            "rigid_within_segment": false
+          }
+        },
+        "rigid_grasp": false
+      },
+      "19": {
+        "object": "2026-05-19_10-19-48_cane_swing_05_object",
+        "object_mesh_radius_cm": 58.48333239555359,
+        "held_frames": 698,
+        "both_hands_fraction_of_held": 0.025787965616045846,
+        "two_handed": false,
+        "sides": {
+          "left": {
+            "frames": 399,
+            "position_spread_cm": 8.715959491872669,
+            "orientation_spread_deg": 11.544438612663429,
+            "contact_segments": 1,
+            "within_segment_position_spread_cm": 8.715959491872669,
+            "within_segment_orientation_spread_deg": 11.544438612663429,
+            "rigid": false,
+            "rigid_within_segment": false
+          },
+          "right": {
+            "frames": 317,
+            "position_spread_cm": 15.423323239954529,
+            "orientation_spread_deg": 17.245440827634688,
+            "contact_segments": 1,
+            "within_segment_position_spread_cm": 15.423323239954529,
+            "within_segment_orientation_spread_deg": 17.245440827634688,
+            "rigid": false,
+            "rigid_within_segment": false
+          }
+        },
+        "rigid_grasp": false
+      },
+      "20": {
+        "object": "2026-06-08_16-57-34_rice_cooker_clockwise_04_object",
+        "object_mesh_radius_cm": 16.01795256137848,
+        "held_frames": 335,
+        "both_hands_fraction_of_held": 0.0,
+        "two_handed": false,
+        "sides": {
+          "right": {
+            "frames": 335,
+            "position_spread_cm": 3.1841430565027973,
+            "orientation_spread_deg": 72.17970152411237,
+            "contact_segments": 1,
+            "within_segment_position_spread_cm": 3.1841430565027973,
+            "within_segment_orientation_spread_deg": 72.17970152411237,
+            "rigid": false,
+            "rigid_within_segment": false
+          }
+        },
+        "rigid_grasp": false
+      },
+      "21": {
+        "object": "2026-04-29_11-53-57_tall_bar_stool_pull_08_object",
+        "object_mesh_radius_cm": 59.881967306137085,
+        "held_frames": 448,
+        "both_hands_fraction_of_held": 0.9665178571428571,
+        "two_handed": true,
+        "sides": {
+          "left": {
+            "frames": 440,
+            "position_spread_cm": 8.143255737129953,
+            "orientation_spread_deg": 13.536373254127636,
+            "contact_segments": 3,
+            "within_segment_position_spread_cm": 7.326736700399648,
+            "within_segment_orientation_spread_deg": 10.188891426330914,
+            "rigid": false,
+            "rigid_within_segment": false
+          },
+          "right": {
+            "frames": 441,
+            "position_spread_cm": 8.493225010384462,
+            "orientation_spread_deg": 13.456645249160257,
+            "contact_segments": 3,
+            "within_segment_position_spread_cm": 6.908125961406197,
+            "within_segment_orientation_spread_deg": 11.825453351619808,
+            "rigid": false,
+            "rigid_within_segment": false
+          }
+        },
+        "rigid_grasp": false
+      },
+      "22": {
+        "object": "2026-05-22_16-52-36_step_ladder_drag_03_object",
+        "object_mesh_radius_cm": 41.00501537322998,
+        "held_frames": 428,
+        "both_hands_fraction_of_held": 0.0,
+        "two_handed": false,
+        "sides": {
+          "right": {
+            "frames": 428,
+            "position_spread_cm": 5.450383370435365,
+            "orientation_spread_deg": 16.48834886113459,
+            "contact_segments": 2,
+            "within_segment_position_spread_cm": 3.778358970823911,
+            "within_segment_orientation_spread_deg": 10.09747406666704,
+            "rigid": false,
+            "rigid_within_segment": false
+          }
+        },
+        "rigid_grasp": false
+      },
+      "23": {
+        "object": "2026-06-03_15-08-03_toy_stroller_back_forth_ground_04_object",
+        "object_mesh_radius_cm": 33.58074426651001,
+        "held_frames": 794,
+        "both_hands_fraction_of_held": 0.9974811083123426,
+        "two_handed": true,
+        "sides": {
+          "left": {
+            "frames": 794,
+            "position_spread_cm": 3.115907608367877,
+            "orientation_spread_deg": 6.587440456531523,
+            "contact_segments": 1,
+            "within_segment_position_spread_cm": 3.115907608367877,
+            "within_segment_orientation_spread_deg": 6.587440456531523,
+            "rigid": false,
+            "rigid_within_segment": false
+          },
+          "right": {
+            "frames": 792,
+            "position_spread_cm": 3.5709136059042073,
+            "orientation_spread_deg": 7.828196378512438,
+            "contact_segments": 1,
+            "within_segment_position_spread_cm": 3.5709136059042073,
+            "within_segment_orientation_spread_deg": 7.828196378512438,
+            "rigid": false,
+            "rigid_within_segment": false
+          }
+        },
+        "rigid_grasp": false
+      },
+      "24": {
+        "object": "2026-05-29_15-43-20_watering_can_pour_right_02_object",
+        "object_mesh_radius_cm": 19.382822513580322,
+        "held_frames": 517,
+        "both_hands_fraction_of_held": 0.0,
+        "two_handed": false,
+        "sides": {
+          "right": {
+            "frames": 517,
+            "position_spread_cm": 5.096391454896876,
+            "orientation_spread_deg": 28.52046210404959,
+            "contact_segments": 1,
+            "within_segment_position_spread_cm": 5.096391454896876,
+            "within_segment_orientation_spread_deg": 28.52046210404959,
+            "rigid": false,
+            "rigid_within_segment": false
+          }
+        },
+        "rigid_grasp": false
+      },
+      "25": {
+        "object": "2026-03-20_11-59-57_cyan_water_bottle_rotate_01_object",
+        "object_mesh_radius_cm": 17.60002374649048,
+        "held_frames": 691,
+        "both_hands_fraction_of_held": 0.18523878437047755,
+        "two_handed": false,
+        "sides": {
+          "left": {
+            "frames": 375,
+            "position_spread_cm": 7.007579702130016,
+            "orientation_spread_deg": 104.37995814753336,
+            "contact_segments": 5,
+            "within_segment_position_spread_cm": 5.1560335982210335,
+            "within_segment_orientation_spread_deg": 40.99695292797985,
+            "rigid": false,
+            "rigid_within_segment": false
+          },
+          "right": {
+            "frames": 444,
+            "position_spread_cm": 8.820695382743448,
+            "orientation_spread_deg": 99.98870779090531,
+            "contact_segments": 6,
+            "within_segment_position_spread_cm": 3.9912112567627727,
+            "within_segment_orientation_spread_deg": 25.605214730322512,
+            "rigid": false,
+            "rigid_within_segment": false
+          }
+        },
+        "rigid_grasp": false
+      },
+      "26": {
+        "object": "2026-06-05_16-05-08_skateboard_rotate_ground_10_object",
+        "object_mesh_radius_cm": 40.777572989463806,
+        "held_frames": 264,
+        "both_hands_fraction_of_held": 0.9053030303030303,
+        "two_handed": true,
+        "sides": {
+          "left": {
+            "frames": 239,
+            "position_spread_cm": 7.377023115279374,
+            "orientation_spread_deg": 80.34200219888376,
+            "contact_segments": 2,
+            "within_segment_position_spread_cm": 6.864919493542119,
+            "within_segment_orientation_spread_deg": 49.874320521912544,
+            "rigid": false,
+            "rigid_within_segment": false
+          },
+          "right": {
+            "frames": 264,
+            "position_spread_cm": 8.121688449002187,
+            "orientation_spread_deg": 81.48215739218644,
+            "contact_segments": 1,
+            "within_segment_position_spread_cm": 8.121688449002187,
+            "within_segment_orientation_spread_deg": 81.48215739218644,
+            "rigid": false,
+            "rigid_within_segment": false
+          }
+        },
+        "rigid_grasp": false
+      },
+      "27": {
+        "object": "2026-05-01_11-15-05_woven_basket_ground_desk_10_object",
+        "object_mesh_radius_cm": 18.155530095100403,
+        "held_frames": 291,
+        "both_hands_fraction_of_held": 0.9553264604810997,
+        "two_handed": true,
+        "sides": {
+          "left": {
+            "frames": 289,
+            "position_spread_cm": 3.3822021794461117,
+            "orientation_spread_deg": 12.399724193972824,
+            "contact_segments": 1,
+            "within_segment_position_spread_cm": 3.3822021794461117,
+            "within_segment_orientation_spread_deg": 12.399724193972824,
+            "rigid": false,
+            "rigid_within_segment": false
+          },
+          "right": {
+            "frames": 280,
+            "position_spread_cm": 3.636889618621305,
+            "orientation_spread_deg": 9.892406130864828,
+            "contact_segments": 2,
+            "within_segment_position_spread_cm": 3.535696553162019,
+            "within_segment_orientation_spread_deg": 7.374149894181495,
+            "rigid": false,
+            "rigid_within_segment": false
+          }
+        },
+        "rigid_grasp": false
+      },
+      "28": {
+        "object": "2026-05-19_11-27-07_squeegee_sweep_away_from_you_03__object",
+        "object_mesh_radius_cm": 97.1506655216217,
+        "held_frames": 730,
+        "both_hands_fraction_of_held": 0.6616438356164384,
+        "two_handed": true,
+        "sides": {
+          "left": {
+            "frames": 522,
+            "position_spread_cm": 21.046753191830238,
+            "orientation_spread_deg": 31.899635233008965,
+            "contact_segments": 7,
+            "within_segment_position_spread_cm": 6.18749273429156,
+            "within_segment_orientation_spread_deg": 8.498781587975,
+            "rigid": false,
+            "rigid_within_segment": false
+          },
+          "right": {
+            "frames": 691,
+            "position_spread_cm": 28.7725287166519,
+            "orientation_spread_deg": 36.0337166842214,
+            "contact_segments": 8,
+            "within_segment_position_spread_cm": 4.860342522405899,
+            "within_segment_orientation_spread_deg": 9.13625693475445,
+            "rigid": false,
+            "rigid_within_segment": false
+          }
+        },
+        "rigid_grasp": false
+      },
+      "29": {
+        "object": "2026-06-05_18-27-40_rolling_luggage_left_foot_push_06_object",
+        "held_frames": 0,
+        "verdict": "too few held frames to measure"
+      }
+    }
+  }
+}
