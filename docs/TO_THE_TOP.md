@@ -69,6 +69,33 @@ roles) plus ~$12 for a 5-clip warm-start pilot at 50M steps. **Not started: the 
 work and there is $5 left**, but it is the only idea on the table that could close a 0.10 AUC gap
 rather than a 0.02 one.
 
+## The sharpest target for any future method work: seven clips, 1-2 cm each
+
+Tier 1 MP-SR is a hard gate at 3 cm / 30 deg, we pass 15 of 30, and first place passes 28. The
+per-clip MPPE of the current entry says the gate is close on seven clips:
+
+| clip | MPPE cm | to the 3 cm gate | AUC |
+|---|---|---|---|
+| e29 | 3.85 | 0.85 | 0.6270 |
+| e11 | 3.97 | 0.97 | 0.4676 |
+| e02 | 4.57 | 1.57 | 0.4263 |
+| e21 | 4.79 | 1.79 | 0.2061 |
+| e09 | 4.89 | 1.89 | 0.3003 |
+| e13 | 4.98 | 1.98 | 0.1594 |
+| e17 | 5.15 | 2.15 | 0.4470 |
+
+**Each flip is worth +0.0333 of MP-SR, so all seven are +0.233 — from 0.500 to 0.733, which is
+about 4th-5th on that board from 11th.** They need one to two centimetres, not a new policy: these
+are clips the policy already tracks to within 5 cm for the whole clip. Three more clips (e07 at
+10.89 cm, e05 at 14.63, and e16/e09/e13 on the orientation side) sit near the looser SP-SR gate.
+
+The warm start cannot do it — all seven were tried and rejected, and their fine-tunes made MPPE
+*worse* (e02 4.57 → 35.05 cm, e21 4.79 → 10.34, e29 3.85 → 8.72). **A useful negative: across all
+twelve rejected Tier 1 clips, not one would have improved a success gate, so the AUC-must-improve
+clause has never cost us a board point.** What these clips want is a terminal-accuracy objective —
+tighter position/orientation tracking in the last stage of the curriculum, or the contact-role
+reward of `docs/ARM_CR.md`, which was built and smoke-tested but never run to completion.
+
 ## What not to spend on
 
 - **More Tier 1 warm starts.** Closed on measurement: every clip above the 0.35 adoption line has
