@@ -1,0 +1,160 @@
+{
+ "what": "Tier 3 fine-tune: 50M warm-start steps per clip onto our own video reconstruction.",
+ "status": "7 of 10 clips landed; e20 e21 e29 still training",
+ "recipe": "warm start from each clip's shipped wave-2 actor, cold critic, actor LR x0.1 for 2,000 updates, 299,999,232 -> 349,999,104 steps, seed 42, support per clip, arm-A rewards",
+ "means_over_landed": {
+  "pass1": 0.37103,
+  "fine_tuned_raw": 0.4006,
+  "after_adoption": 0.44226
+ },
+ "registered_bar": {
+  "clause_1_ten_clip_mean_above": 0.3395,
+  "reconstruction_ceiling_on_these_ten": 0.4368,
+  "status": "partial; decided when all ten land"
+ },
+ "adoption_rule": "input-only: the fine-tuned rollout ships only if it has no z-drop and sits closer to the reconstruction it was driven by. No truth is read.",
+ "the_rule_validated_itself_here": "On these seven the rule adopted e00 e22 e23 e26 and rejected e08 e18 e24. Those are, in truth, the four largest gains (+0.086 +0.165 +0.124 +0.124) and the three it rejected include the only serious loss (e08 -0.307). It turned a raw +0.0296 into +0.0712 without reading truth.",
+ "do_not_extend_this_to_the_other_twenty": "Pass 1 showed the policy already BEATS its input on the 20 badly-reconstructed clips (0.1787 vs 0.1236). There, 'closer to the input' means closer to a wrong trajectory, so the input-only rule is anti-correlated with truth and would adopt damage. The rule is only safe where the reconstruction is better than the policy, which is exactly the ten clips chosen.",
+ "clips": {
+  "e00": {
+   "pass1": {
+    "add_auc": 0.40657,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 23.26055
+   },
+   "fine_tuned": {
+    "add_auc": 0.49229,
+    "spider_sr": 1.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 4.93702
+   },
+   "input_mean_err_cm": {
+    "pass1": 25.536,
+    "fine_tuned": 4.173
+   },
+   "adopted": true,
+   "ships_auc": 0.49229
+  },
+  "e08": {
+   "pass1": {
+    "add_auc": 0.55985,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 18.46365
+   },
+   "fine_tuned": {
+    "add_auc": 0.25265,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 20.52159
+   },
+   "input_mean_err_cm": {
+    "pass1": 20.1,
+    "fine_tuned": 22.36
+   },
+   "adopted": false,
+   "ships_auc": 0.55985
+  },
+  "e18": {
+   "pass1": {
+    "add_auc": 0.32481,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 31.21895
+   },
+   "fine_tuned": {
+    "add_auc": 0.34972,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 31.66211
+   },
+   "input_mean_err_cm": {
+    "pass1": 31.132,
+    "fine_tuned": 31.281
+   },
+   "adopted": false,
+   "ships_auc": 0.32481
+  },
+  "e22": {
+   "pass1": {
+    "add_auc": 0.34449,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 77.43961
+   },
+   "fine_tuned": {
+    "add_auc": 0.50939,
+    "spider_sr": 1.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 4.61552
+   },
+   "input_mean_err_cm": {
+    "pass1": 76.411,
+    "fine_tuned": 2.787
+   },
+   "adopted": true,
+   "ships_auc": 0.50939
+  },
+  "e23": {
+   "pass1": {
+    "add_auc": 0.30266,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 35.32195
+   },
+   "fine_tuned": {
+    "add_auc": 0.42633,
+    "spider_sr": 1.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 5.81493
+   },
+   "input_mean_err_cm": {
+    "pass1": 35.92,
+    "fine_tuned": 4.863
+   },
+   "adopted": true,
+   "ships_auc": 0.42633
+  },
+  "e24": {
+   "pass1": {
+    "add_auc": 0.20805,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 14.57866
+   },
+   "fine_tuned": {
+    "add_auc": 0.1987,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 16.70589
+   },
+   "input_mean_err_cm": {
+    "pass1": 16.138,
+    "fine_tuned": 18.968
+   },
+   "adopted": false,
+   "ships_auc": 0.20805
+  },
+  "e26": {
+   "pass1": {
+    "add_auc": 0.45077,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 5.4244
+   },
+   "fine_tuned": {
+    "add_auc": 0.57511,
+    "spider_sr": 1.0,
+    "maniptrans_sr": 1.0,
+    "mppe_cm": 2.33865
+   },
+   "input_mean_err_cm": {
+    "pass1": 6.265,
+    "fine_tuned": 2.691
+   },
+   "adopted": true,
+   "ships_auc": 0.57511
+  }
+ }
+}

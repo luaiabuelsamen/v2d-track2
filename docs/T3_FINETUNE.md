@@ -70,3 +70,34 @@ improved mean position error by **0.13 cm**, from 66.44 to 66.31. The diagnosis
 like a pure filtering problem — 10 jumps over 20 cm against a 6.7 cm median. It was not: the large
 errors are sustained mis-registration, not outliers. The cleaner is kept because it is cheap and
 correct, but it is not a lever.
+
+## Result, 7 of 10 clips (2026-10-29 09:50 UTC)
+
+| clip | pass 1 | fine-tuned | Δ truth | input err, pass 1 → ft | adopted |
+|---|---|---|---|---|---|
+| e00 | 0.40657 | 0.49229 | **+0.0857** | 25.54 → 4.17 cm | yes |
+| e08 | 0.55985 | 0.25265 | −0.3072 | 20.10 → 22.36 cm | no |
+| e18 | 0.32481 | 0.34972 | +0.0249 | 31.13 → 31.28 cm | no |
+| e22 | 0.34449 | 0.50939 | **+0.1649** | 76.41 → 2.79 cm | yes |
+| e23 | 0.30266 | 0.42633 | **+0.1237** | 35.92 → 4.86 cm | yes |
+| e24 | 0.20805 | 0.19870 | −0.0094 | 16.14 → 18.97 cm | no |
+| e26 | 0.45077 | 0.57511 | **+0.1244** | 6.26 → 2.69 cm | yes |
+| **mean** | **0.37103** | **0.40060** | +0.0296 | | **0.44226 after adoption** |
+
+Clause 1 of the bar (ten-clip mean above 0.3395) is already clear on seven, by 0.10.
+
+**The input-only rule validated itself.** It adopted the four largest true gains and rejected the
+only serious loss, having read nothing but each rollout's own `reference_*` columns. Raw +0.0296
+becomes **+0.0712** after adoption. That is the first direct evidence that the rule we must use on
+Tier 2 and Tier 3 — where truth may not be read — is not merely safe but selective.
+
+**I was wrong to call 0.4368 a ceiling.** The after-adoption mean passes it. The reconstruction's
+own score is not an upper bound on a policy driven by it: where the reconstruction is physically
+impossible, a policy that cannot reproduce it lands *closer to truth* than its own input. e22 is the
+case — input error 76 cm, and the fine-tuned rollout scores 0.509.
+
+**Do not extend this arm to the other twenty clips.** On those, pass 1 showed the policy already
+beats its input (0.1787 vs 0.1236), so "closer to the input" means closer to a wrong trajectory and
+the input-only rule becomes anti-correlated with truth. It would adopt damage, and it would do so
+while reading nothing that could reveal the mistake. The rule is safe only where the reconstruction
+is better than the policy, which is the ten clips this arm runs.

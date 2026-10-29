@@ -1,0 +1,139 @@
+{
+ "what": "Tier 3 fine-tune adoption, decided on the reconstruction input alone",
+ "verdict_reads_ground_truth": false,
+ "drop_gate_m": 0.1,
+ "adopted": [
+  "e00",
+  "e22",
+  "e23",
+  "e26"
+ ],
+ "clips": [
+  {
+   "clip": "e00",
+   "old": {
+    "mean_input_err_cm": 25.536,
+    "max_input_err_cm": 50.214,
+    "first_loss_frame": 299,
+    "drop": true,
+    "frames": 778
+   },
+   "new": {
+    "mean_input_err_cm": 4.173,
+    "max_input_err_cm": 9.378,
+    "first_loss_frame": null,
+    "drop": false,
+    "frames": 778
+   },
+   "adopt": true
+  },
+  {
+   "clip": "e08",
+   "old": {
+    "mean_input_err_cm": 20.1,
+    "max_input_err_cm": 58.957,
+    "first_loss_frame": 65,
+    "drop": true,
+    "frames": 708
+   },
+   "new": {
+    "mean_input_err_cm": 22.36,
+    "max_input_err_cm": 57.511,
+    "first_loss_frame": 65,
+    "drop": true,
+    "frames": 708
+   },
+   "adopt": false
+  },
+  {
+   "clip": "e18",
+   "old": {
+    "mean_input_err_cm": 31.132,
+    "max_input_err_cm": 66.047,
+    "first_loss_frame": 308,
+    "drop": true,
+    "frames": 858
+   },
+   "new": {
+    "mean_input_err_cm": 31.281,
+    "max_input_err_cm": 74.007,
+    "first_loss_frame": 344,
+    "drop": true,
+    "frames": 858
+   },
+   "adopt": false
+  },
+  {
+   "clip": "e22",
+   "old": {
+    "mean_input_err_cm": 76.411,
+    "max_input_err_cm": 188.898,
+    "first_loss_frame": 245,
+    "drop": true,
+    "frames": 719
+   },
+   "new": {
+    "mean_input_err_cm": 2.787,
+    "max_input_err_cm": 9.402,
+    "first_loss_frame": null,
+    "drop": false,
+    "frames": 719
+   },
+   "adopt": true
+  },
+  {
+   "clip": "e23",
+   "old": {
+    "mean_input_err_cm": 35.92,
+    "max_input_err_cm": 129.502,
+    "first_loss_frame": 365,
+    "drop": true,
+    "frames": 946
+   },
+   "new": {
+    "mean_input_err_cm": 4.863,
+    "max_input_err_cm": 37.087,
+    "first_loss_frame": 927,
+    "drop": true,
+    "frames": 946
+   },
+   "adopt": true
+  },
+  {
+   "clip": "e24",
+   "old": {
+    "mean_input_err_cm": 16.138,
+    "max_input_err_cm": 27.38,
+    "first_loss_frame": 41,
+    "drop": true,
+    "frames": 748
+   },
+   "new": {
+    "mean_input_err_cm": 18.968,
+    "max_input_err_cm": 34.404,
+    "first_loss_frame": 41,
+    "drop": true,
+    "frames": 748
+   },
+   "adopt": false
+  },
+  {
+   "clip": "e26",
+   "old": {
+    "mean_input_err_cm": 6.265,
+    "max_input_err_cm": 23.97,
+    "first_loss_frame": 425,
+    "drop": true,
+    "frames": 669
+   },
+   "new": {
+    "mean_input_err_cm": 2.691,
+    "max_input_err_cm": 8.647,
+    "first_loss_frame": null,
+    "drop": false,
+    "frames": 669
+   },
+   "adopt": true
+  }
+ ]
+}
