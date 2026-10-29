@@ -177,3 +177,21 @@ compute, not the entry.
 | | boxes | clips/box | GPU-h | at $0.68 |
 |---|---|---|---|---|
 | remaining 27 clips | 3 | 9 sequential | ~18.5 | **~$12.60** |
+
+### The third clip, and the completed pilot
+
+| clip | shipped AUC | fine-tuned AUC | ΔAUC | shipped MPPE | fine-tuned MPPE | verdict |
+|---|---|---|---|---|---|---|
+| e00 | 0.5178 | **0.8654** | **+0.3477** | 2.04 | **1.58** | adopt |
+| e11 | 0.4676 | 0.3883 | −0.0793 | 3.97 | 4.44 | reject |
+| e24 | 0.8942 | **0.9567** | **+0.0625** | 1.56 | **1.01** | adopt |
+
+Three-clip mean AUC: **0.62651 shipped → 0.73681 fine-tuned → 0.76324 after adoption.** Clause 1 of
+the bar asked for a mean above 0.62651 and got 0.73681. Both adoptions also *improve* MPPE and keep
+every success gate, so they are not AUC-for-MPPE trades of the kind the per-clip-best exercise
+exposed.
+
+Record: `results/t1_warmstart_pilot.json`. The two adoptions alone are worth **+0.0137** on the
+30-clip Tier 1 mean. The pilot's average per-clip adoption gain is **+0.1367**; at that rate across
+30 clips Tier 1 reaches roughly 0.60, and at half that rate it still clears the **0.51038** CHORD
+baseline we currently sit below.

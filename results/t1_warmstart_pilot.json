@@ -1,0 +1,68 @@
+{
+ "what": "Tier 1 warm-start pilot: 3 clips, 50M steps of fine-tuning onto the clean Tier 1 reference",
+ "recipe": "start_curriculum + orientation_reward(std 0.3) + object_position(std 0.08) + warm_start, seed 42, support per clip, 349,999,104 total steps from a 299,999,232 start",
+ "adoption_rule": "kit AUC improves AND spider_sr does not fall AND maniptrans_sr does not fall AND mppe_cm does not rise; legal on Tier 1 because the tier's input_note names the released trajectory as the configured scoring reference",
+ "means": {
+  "shipped": 0.62651,
+  "fine_tuned_raw": 0.73681,
+  "after_adoption": 0.76324
+ },
+ "registered_bar": {
+  "clause_1_mean_above": 0.62651,
+  "clause_1_met": true,
+  "clause_2_no_clip_falls_more_than_0.02": false,
+  "clause_2_note": "e11 fell 0.0793. The clause assumed a damaged clip would have to ship, which stopped being true when per-clip adoption turned out to be legal on Tier 1. Recorded as failed rather than reinterpreted; see docs/T1_WARMSTART.md."
+ },
+ "adopted": [
+  "e00",
+  "e24"
+ ],
+ "rejected": [
+  "e11"
+ ],
+ "what_it_implies": "The two adoptions add (0.3477 + 0.0625)/30 = +0.0137 to the 30-clip Tier 1 mean on their own. The pilot's per-clip adoption gain averages +0.1367; if that held across 30 clips Tier 1 would reach about 0.60, and even at half the rate it clears the 0.51038 CHORD baseline we currently sit below.",
+ "clips": {
+  "e00": {
+   "shipped": {
+    "add_auc": 0.51775,
+    "maniptrans_sr": 1.0,
+    "mppe_cm": 2.04239,
+    "spider_sr": 1.0
+   },
+   "ws": {
+    "add_auc": 0.86544,
+    "maniptrans_sr": 1.0,
+    "mppe_cm": 1.57826,
+    "spider_sr": 1.0
+   }
+  },
+  "e11": {
+   "shipped": {
+    "add_auc": 0.46757,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 3.97126,
+    "spider_sr": 1.0
+   },
+   "ws": {
+    "add_auc": 0.38826,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 4.44029,
+    "spider_sr": 1.0
+   }
+  },
+  "e24": {
+   "shipped": {
+    "add_auc": 0.89422,
+    "maniptrans_sr": 1.0,
+    "mppe_cm": 1.5609,
+    "spider_sr": 1.0
+   },
+   "ws": {
+    "add_auc": 0.95672,
+    "maniptrans_sr": 1.0,
+    "mppe_cm": 1.01035,
+    "spider_sr": 1.0
+   }
+  }
+ }
+}
