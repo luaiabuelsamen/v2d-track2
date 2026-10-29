@@ -40,6 +40,25 @@ than ours almost everywhere. Our individual ceiling is there — e08 scores 0.92
 the leader's whole-entry MPPE is 2.78 cm — but we reach it on about six clips, not thirty. No
 amount of credit spent on the current recipe closes 0.367.
 
+## Priced in rank points, which is the actual objective
+
+`README.md` records the rule: **final rank is the sum of per-metric ranks**, so a board where we
+sit 11th of 22 is worth as much to fix as one where we sit 3rd. Our rank sum over the twelve
+boards is **87**. Reasoning in AUC points, as the rest of this document originally did, understates
+Tier 1 badly — it is our weakest tier on all four of its boards *and* its boards have the most
+teams, so there is more room there than anywhere else.
+
+| candidate | cost | rank points |
+|---|---|---|
+| **Tier 1's eleven weak clips, full-length on clean references** | **$36** | **+19** (auc 12→6, mppe 11→7, sp-sr 12→8, mp-sr 11→6) |
+| Tier 2 dual-reference objective | a patch + ~$12 pilot | +8 (auc 5→3, mppe 4→2, both SRs 5→3) |
+| The seven MP-SR near-misses, 1-2 cm each | method work, no credit | +7 (mp-sr 11→4) |
+| Tier 3 MPPE push | $2.30, training now | +1 (mppe 6→5) |
+
+**So $36 of credit is worth about +19 rank points and nothing else comes close** — roughly five
+rank points per ten dollars, against the one point the last $2.30 buys. If a top-up arrives, it
+goes to the eleven weak Tier 1 clips before anything else on this page.
+
 ## The three things worth buying, cheapest first
 
 **1. Tier 3 MPPE, ~$2.30 — launching now.** Five clips with real headroom (e03 e25 e01 e29 e16).
