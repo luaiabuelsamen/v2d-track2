@@ -36,6 +36,9 @@ MOTION="$S/t1_clean/motion/tier1"
 OUT="$S/t1_eval/assets"
 CKPTS="$REPO/ship_ckpts_wave2"
 MAP="$S/tier2_episode_map.txt"
+#: Restrict to a subset, as "0,3". Used for the control arm: the SAME clips re-evaluated on the
+#: Tier 2 reference they trained on, which is what makes the Tier 1 comparison one-variable.
+EPISODES=""
 DATA="$S/data"
 TIER1="$DATA/track_2/tier_1_multiview_caption"
 
@@ -45,6 +48,7 @@ while [ $# -gt 0 ]; do
     --out) OUT="$2"; shift 2 ;;
     --map) MAP="$2"; shift 2 ;;
     --checkpoints) CKPTS="$2"; shift 2 ;;
+    --episodes) EPISODES="$2"; shift 2 ;;
     *) echo "unknown argument: $1" >&2; exit 2 ;;
   esac
 done
@@ -61,12 +65,13 @@ run_v2d() {
 
 rm -rf "$OUT"
 mkdir -p "$OUT"
-: > "$S/t1_eval/sources.txt"
+SOURCES="${OUT%/}.sources.txt"
+: > "$SOURCES"
 FAIL=0
 STAGED=0
 
 # What each checkpoint expects, from the checkpoint. Printed as "ep stage seq steps".
-PLAN="$S/t1_eval/plan.txt"
+PLAN="${OUT%/}.plan.txt"
 $PY - "$CKPTS" > "$PLAN" <<'PYEOF' || exit 3
 import json, struct, sys
 from pathlib import Path
@@ -98,6 +103,9 @@ PYEOF
 
 while read -r EP STAGE SEQ POLICY_DIR SUPPORT; do
   [ -n "${EP:-}" ] || continue
+  if [ -n "$EPISODES" ]; then
+    case ",$EPISODES," in *",$EP,"*) ;; *) continue ;; esac
+  fi
   TAG="$(printf 'e%02d' "$EP")"
   SRC="$MOTION/whole_body/soma/sequence_id=${SEQ}/robot_name=g1/data.parquet"
   if [ ! -s "$SRC" ]; then
@@ -127,15 +135,21 @@ while read -r EP STAGE SEQ POLICY_DIR SUPPORT; do
   # The checkpoint travels with its clip, under the name the box's runner expects.
   mkdir -p "$OUT/ckpt/$TAG"
   cp "$CKPTS/$TAG/$POLICY_DIR/policy.safetensors" "$OUT/ckpt/$TAG/policy.safetensors"
-  printf '%s %s %s %s %s\n' "$EP" "$TAG" "$STAGE" "$SEQ" "$SUPPORT" >> "$S/t1_eval/sources.txt"
+  printf '%s %s %s %s %s\n' "$EP" "$TAG" "$STAGE" "$SEQ" "$SUPPORT" >> "$SOURCES"
   STAGED=$((STAGED + 1))
 done < "$PLAN"
 
-echo "staged $STAGED of 30 clips"
-[ "$STAGED" = 30 ] || { echo "FATAL: $STAGED of 30 staged" >&2; FAIL=1; }
+if [ -n "$EPISODES" ]; then
+  WANT="$(printf '%s' "$EPISODES" | tr ',' '\n' | grep -c .)"
+  echo "staged $STAGED of $WANT clips (subset $EPISODES)"
+  [ "$STAGED" = "$WANT" ] || { echo "FATAL: $STAGED of $WANT staged" >&2; FAIL=1; }
+else
+  echo "staged $STAGED of 30 clips"
+  [ "$STAGED" = 30 ] || { echo "FATAL: $STAGED of 30 staged" >&2; FAIL=1; }
+fi
 
 # Prove the tree by the trainer's own discovery rule, not by having been careful above.
-OUT="$OUT" $PY - <<'PYEOF' || FAIL=1
+OUT="$OUT" EXPECTED="${STAGED}" $PY - <<'PYEOF' || FAIL=1
 import glob, os, pathlib
 import pyarrow.parquet as pq
 
@@ -171,8 +185,9 @@ for path in files:
     # which is the failure this check exists to catch.
     usda = path.parents[3] / "reconstructed_stage" / f"{seq}_support.usda"
     supported += usda.exists()
+expected = int(os.environ.get("EXPECTED", "30"))
 print(f"verified {len(files)} staged parquets, {supported} with a support USDA, {bad} problem(s)")
-raise SystemExit(1 if bad or len(files) != 30 else 0)
+raise SystemExit(1 if bad or len(files) != expected else 0)
 PYEOF
 
 # The manifest LAST, and its line count checked, because the box gates on it.
@@ -185,4 +200,5 @@ echo "manifest $LINES lines, $FILES files"
 [ "$FAIL" = 0 ] || { echo "STAGING FAILED" >&2; exit 3; }
 # The CONTENTS go into ~/v2d_assets on the box, not a t1_eval/ subdirectory: each checkpoint
 # records /v2d/assets/<stage>/... with no prefix, and the evaluator reads that path verbatim.
+echo "plan: $SOURCES"
 echo "OK: $OUT ($(du -sh "$OUT" | cut -f1)) -- its contents mount at /v2d/assets/"

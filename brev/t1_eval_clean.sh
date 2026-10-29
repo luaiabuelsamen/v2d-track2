@@ -23,7 +23,7 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 export V2D_SCRATCH="${V2D_SCRATCH:-/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad}"
 S=$V2D_SCRATCH
 ASSETS=${ASSETS:-$S/t1_eval/assets}
-PLAN=${PLAN:-$S/t1_eval/sources.txt}
+PLAN=${PLAN:-$S/t1_eval/assets.sources.txt}
 OUT=${OUT:-$S/t1_eval/results}
 NAME=${NAME:-v2d-t1eval-01}
 INSTANCE_TYPE=${INSTANCE_TYPE:-massedcompute_A6000_plus}
@@ -35,6 +35,18 @@ LOG=$OUT/driver.log
 mkdir -p "$OUT"
 
 say() { printf '\n== %s\n' "$*"; }
+# This instance type refuses sessions intermittently -- "kex_exchange_identification: Connection
+# closed by remote host" killed a whole run after the 1 GB upload had already succeeded. Every
+# remote call goes through here.
+rssh() {
+  local i
+  for i in 1 2 3 4 5 6; do
+    ssh -o BatchMode=yes -o ConnectTimeout=30 -o ServerAliveInterval=30 "$NAME" "$1" && return 0
+    sleep $((i * 15))
+  done
+  echo "!! ssh to $NAME kept failing: $1" >&2
+  return 1
+}
 step() {
   local desc=$1; shift; [[ ${1:-} == -- ]] && shift
   printf '   %-34s %s\n' "$desc" "$*"
@@ -122,15 +134,48 @@ step "5  upload assets + runners"      -- upload
 # The manifest gate, on the box, before any GPU time is spent on a tree that travelled badly.
 step "6  verify the manifest on the box" -- ssh -o BatchMode=yes "$NAME" \
        'cd ~/v2d_assets && md5sum -c --quiet MD5SUMS && echo "manifest ok: $(wc -l < MD5SUMS) files"'
-step "7  build image + start container" -- ssh -o ServerAliveInterval=30 "$NAME" \
-       'bash ~/gate_on_instance.sh build 2>&1 | tail -20'
+# Detached on the box, with a marker, then polled: the work outlives any ssh session, which is
+# the only way to survive this instance type's refusals. Same shape as the Tier 3 runner.
+start_remote() {
+  rssh 'cat > ~/t1_runner.sh <<"EOS"
+#!/usr/bin/env bash
+set -uo pipefail
+R=$HOME/t1_eval_results
+mkdir -p "$R"; rm -f "$R/FINISHED" "$R/FAILED"
+bash ~/gate_on_instance.sh build > "$R/build.log" 2>&1 || { echo build >"$R/FAILED"; exit 1; }
+PLAN=~/t1_plan.txt DEADLINE_H=__DEADLINE__ bash ~/t1_eval_box.sh > "$R/run.log" 2>&1 \
+  || { echo evaluate >"$R/FAILED"; exit 1; }
+touch "$R/FINISHED"
+EOS
+sed -i s/__DEADLINE__/'"$BOX_DEADLINE_H"'/ ~/t1_runner.sh
+setsid nohup bash ~/t1_runner.sh </dev/null >/dev/null 2>&1 &
+echo started'
+}
+wait_remote() {
+  local waited=0 limit
+  limit=$(awk -v h="$BOX_DEADLINE_H" 'BEGIN{printf "%d", h*3600 + 1800}')
+  while [ "$waited" -lt "$limit" ]; do
+    if rssh 'test -f ~/t1_eval_results/FINISHED' 2>/dev/null; then return 0; fi
+    if rssh 'test -f ~/t1_eval_results/FAILED' 2>/dev/null; then
+      rssh 'echo "stage: $(cat ~/t1_eval_results/FAILED)"; tail -25 ~/t1_eval_results/run.log 2>/dev/null \
+            || tail -25 ~/t1_eval_results/build.log' >&2
+      return 1
+    fi
+    sleep 120; waited=$((waited + 120))
+    rssh 'echo "  progress: $(ls ~/t1_eval_results/rollouts/*.parquet 2>/dev/null | wc -l)/30 clips"' || true
+  done
+  echo "!! remote run did not finish inside ${limit}s" >&2; return 1
+}
+step "7  start build+eval detached"    -- start_remote
 
 # A failure here used to fall through to "pull" and "delete", which pulled nothing and deleted the
 # evidence: the first run died on every clip with an unexpected-keyword error and still tore the
 # box down. Keep the box, inside the backstop, and say how to look.
-if ! step "8  evaluate 30 clips"       -- ssh -o ServerAliveInterval=30 "$NAME" \
-       "PLAN=~/t1_plan.txt DEADLINE_H=$BOX_DEADLINE_H bash ~/t1_eval_box.sh"; then
+if ! step "8  wait for the 30 evaluations" -- wait_remote; then
   if [[ $GO == 1 ]]; then
+    # Disarm first: `exit` fires the EXIT trap, which calls teardown, which deletes the box this
+    # branch exists to keep. That bug ate the evidence from the second attempt.
+    CREATED=0; trap - EXIT INT TERM
     echo "!! evaluation failed. The box $NAME is KEPT (backstop deletes it at ${WATCHDOG_H} h)." >&2
     echo "   Look with:  ssh $NAME 'tail -40 ~/t1_eval_results/eval_*.log'" >&2
     exit 3
@@ -144,6 +189,7 @@ step "9  pull results"                 -- rsync -a -e "ssh -o ServerAliveInterva
 if [[ $GO == 1 ]]; then
   PULLED=$(find "$OUT/rollouts" -name 'episode_*.parquet' 2>/dev/null | wc -l)
   if [[ $PULLED == 0 ]]; then
+    CREATED=0; trap - EXIT INT TERM
     echo "!! pulled 0 rollouts; KEEPING $NAME so the run can be inspected or resumed" >&2
     exit 3
   fi

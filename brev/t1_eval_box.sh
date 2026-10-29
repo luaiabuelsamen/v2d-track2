@@ -16,7 +16,7 @@
 set -uo pipefail
 
 PLAN="${PLAN:-$HOME/t1_plan.txt}"
-OUT="$HOME/t1_eval_results"
+OUT="${OUT:-$HOME/t1_eval_results}"
 DEADLINE_H="${DEADLINE_H:-2.5}"
 START=$(date +%s)
 mkdir -p "$OUT/rollouts"
