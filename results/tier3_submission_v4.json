@@ -1,0 +1,69 @@
+{
+ "what": "tier3 submission v4, uploaded 2026-10-29 20:13 UTC -- the MPPE push",
+ "csv": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t3_entry_now/track2_tier3.csv",
+ "csv_sha256": "1f29d3d33b47e837fd4c8b93e6c5632289327de6c2553f5ea24c81f08b424ef2",
+ "csv_bytes": 11842072,
+ "code_commit_url": "https://github.com/luaiabuelsamen/v2d-track2/commit/75ac3e8afb680f37a9435e837fa931f348760f6e",
+ "kaggle_submission_refs": {
+  "auc": 57781763,
+  "sp_sr": 57781765,
+  "mp_sr": 57781768,
+  "mppe": 57781770
+ },
+ "local_score": {
+  "add_auc": 0.25271,
+  "spider_sr": 0.16666,
+  "maniptrans_sr": 0.03333,
+  "mppe_cm": 48.88335
+ },
+ "public_score": {
+  "add_auc": "0.25271",
+  "spider_sr": "0.16666",
+  "maniptrans_sr": "0.03333",
+  "mppe_cm": "48.88335"
+ },
+ "local_vs_public": "agrees to 5 decimals on all four",
+ "rank_effect": {
+  "tier3_mppe": "6th -> 5th, confirmed on the live board: us 48.88335, maniphys.ai 49.93762. 4th is nima arki at 42.30.",
+  "tier3_auc": "3rd, held (0.25197 -> 0.25271)"
+ },
+ "adopted_10_of_30": [
+  "e00",
+  "e01",
+  "e03",
+  "e06",
+  "e12",
+  "e16",
+  "e21",
+  "e22",
+  "e23",
+  "e26"
+ ],
+ "the_three_new_clips": {
+  "e03": {
+   "mppe_cm": [
+    150.88,
+    82.04
+   ],
+   "d": -68.84
+  },
+  "e16": {
+   "mppe_cm": [
+    67.24,
+    49.09
+   ],
+   "d": -18.15
+  },
+  "e01": {
+   "mppe_cm": [
+    39.52,
+    37.1
+   ],
+   "d": -2.42
+  }
+ },
+ "rule_used": "input-only adoption at a 2% relative input-gain margin, applied uniformly to all 30 clips (docs/T3_MPPE_PUSH.md). No ground truth entered any verdict. The upload test -- better on at least one metric and worse on none -- was declared before e16, e25 and e29 finished training, separately from the arm's -5 cm spending bar.",
+ "verified_before_claiming": "The rank claim rests on the packed entry scoring 48.8834, not on summing per-clip deltas; the two agreed, but the packed file is what was measured.",
+ "quota_after": "2 submissions left today on each Tier 3 board",
+ "still_training": "e25 (68.9 cm headroom) and e29 (25.7 cm) decide only the spending bar now"
+}
