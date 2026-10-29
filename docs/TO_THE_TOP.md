@@ -52,12 +52,20 @@ teams, so there is more room there than anywhere else.
 |---|---|---|
 | **Tier 1's eleven weak clips, full-length on clean references** | **$36** | **+19** (auc 12→6, mppe 11→7, sp-sr 12→8, mp-sr 11→6) |
 | Tier 2 dual-reference objective | a patch + ~$12 pilot | +8 (auc 5→3, mppe 4→2, both SRs 5→3) |
-| The seven MP-SR near-misses, 1-2 cm each | method work, no credit | +7 (mp-sr 11→4) |
+| The seven MP-SR near-misses, 1-2 cm each | a reward patch **plus ~$21** (7 clips x 4.4 box-h) | +7 (mp-sr 11→4) |
 | Tier 3 MPPE push | $2.30, training now | +1 (mppe 6→5) |
 
 **So $36 of credit is worth about +19 rank points and nothing else comes close** — roughly five
 rank points per ten dollars, against the one point the last $2.30 buys. If a top-up arrives, it
 goes to the eleven weak Tier 1 clips before anything else on this page.
+
+To correct an earlier version of this table: the MP-SR row is **not** free. Writing the objective
+costs nothing, but the seven clips need full-length training to use it — the warm start was already
+tried on all seven and made their MPPE *worse* — so about $21 of GPU. Nothing on this page is
+reachable without credit except the analysis itself. And no post-processing shortcut exists either:
+the trajectory has to be the policy's own rollout, which the provenance columns
+(`checkpoint_sha256`, `eval_script_sha256`) attest, so nudging a submitted trajectory toward the
+reference would be fabricating a result rather than earning one.
 
 ## The three things worth buying, cheapest first
 
