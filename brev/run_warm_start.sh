@@ -21,11 +21,21 @@ PLAN="${PLAN:-$HOME/ws_plan.txt}"
 OUT="${OUT:-$HOME/ws_results}"
 STEPS="${STEPS:-349999104}"
 SAVE_EVERY="${SAVE_EVERY:-49999872}"
+# Where the warm start pretends the actor already is. The patch defaults this to 299,999,232 in
+# the YAML, which is right for a generation-1 fine-tune off a 350M checkpoint. A generation-2
+# chain starts from a checkpoint that is ITSELF at 349,999,104, so it has to be told, or the
+# curriculum and the step counter would rewind 50M and the run would redo training the actor has
+# already had.
+WS_START="${WS_START:-}"
 SEED="${SEED:-42}"
 DEADLINE_H="${DEADLINE_H:-3.0}"
 # warm_start is appended here rather than asked for, so a caller cannot request this runner and
 # forget the one patch that makes it a fine-tune instead of a 50M-step run from scratch.
 ARM_FLAGS="${ARM_FLAGS:-start_curriculum,orientation_reward,object_position},warm_start"
+if [ -n "$WS_START" ] && [ "$WS_START" -ge "$STEPS" ] 2>/dev/null; then
+  echo "FATAL: WS_START=$WS_START is not below STEPS=$STEPS; there would be nothing to train" >&2
+  exit 2
+fi
 START=$(date +%s)
 mkdir -p "$OUT/rollouts"
 
@@ -99,6 +109,7 @@ while read -r EP TAG STAGE SEQ SUPPORT ACTOR <&3; do
     experiment=g1_recon_body_flash_sac \"task.parquet='${PARQUET}'\" \
     training.warm_start_actor_path='${ACTOR}' \
     training.total_environment_steps=${STEPS} \
+    ${WS_START:+training.warm_start_environment_steps=${WS_START}} \
     training.checkpoint.save_interval_environment_steps=${SAVE_EVERY} \
     $SUPPORT_FLAG $ARM_OVERRIDES logging.mode=offline logging.upload_checkpoints=false \
     logging.project=v2d-warm-start logging.run_name=ws_${TAG} \

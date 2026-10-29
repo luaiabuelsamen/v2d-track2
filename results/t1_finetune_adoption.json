@@ -1,16 +1,18 @@
 {
  "what": "Tier 1 adoption of the warm-start fine-tune, under the registered no-regression rule",
  "rule": "AUC improves and no other board regresses; legal because Tier 1's permitted input is the configured scoring reference",
- "clips_scored": 9,
+ "clips_scored": 12,
  "adopted": [
   "e00",
   "e12",
+  "e16",
+  "e22",
   "e24"
  ],
  "entry_mean_auc": {
   "shipped": 0.46523,
-  "after_adoption": 0.48202,
-  "gain": 0.01679
+  "after_adoption": 0.49118,
+  "gain": 0.02595
  },
  "chord_tier1_baseline": 0.51038,
  "clips": {
@@ -65,6 +67,23 @@
    "ships_final_checkpoint": false,
    "adopted": false
   },
+  "e04": {
+   "shipped": {
+    "add_auc": 0.14656,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 102.95612
+   },
+   "fine_tuned": {
+    "add_auc": 0.14617,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 121.63098
+   },
+   "delta_auc": -0.00039,
+   "ships_final_checkpoint": true,
+   "adopted": false
+  },
   "e10": {
    "shipped": {
     "add_auc": 0.47938,
@@ -116,6 +135,23 @@
    "ships_final_checkpoint": true,
    "adopted": true
   },
+  "e16": {
+   "shipped": {
+    "add_auc": 0.56394,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 3.78388
+   },
+   "fine_tuned": {
+    "add_auc": 0.64688,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 1.0,
+    "mppe_cm": 2.91447
+   },
+   "delta_auc": 0.08294,
+   "ships_final_checkpoint": true,
+   "adopted": true
+  },
   "e20": {
    "shipped": {
     "add_auc": 0.71485,
@@ -149,6 +185,23 @@
    "delta_auc": 0.01678,
    "ships_final_checkpoint": true,
    "adopted": false
+  },
+  "e22": {
+   "shipped": {
+    "add_auc": 0.66864,
+    "spider_sr": 1.0,
+    "maniptrans_sr": 1.0,
+    "mppe_cm": 2.20965
+   },
+   "fine_tuned": {
+    "add_auc": 0.86031,
+    "spider_sr": 1.0,
+    "maniptrans_sr": 1.0,
+    "mppe_cm": 1.57344
+   },
+   "delta_auc": 0.19167,
+   "ships_final_checkpoint": true,
+   "adopted": true
   },
   "e24": {
    "shipped": {

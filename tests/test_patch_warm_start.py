@@ -214,3 +214,39 @@ def test_the_report_is_accepted_fresh_and_again(tree: Path, capsys) -> None:
     again = capsys.readouterr().out
     assert "already carries the warm-start keys" in again
     assert accepted(again), again
+
+
+# ---------------------------------------------------------------- the chain knob
+RUNNER = Path(__file__).parents[1] / "brev/run_warm_start.sh"
+
+
+def test_the_runner_passes_the_warm_start_origin_only_when_asked() -> None:
+    """A generation-2 chain starts from a checkpoint already at 349,999,104.
+
+    The patch defaults `warm_start_environment_steps` to 299,999,232, which is right off a 350M
+    checkpoint and wrong off a fine-tuned one -- the counter and curriculum would rewind 50M and
+    redo training the actor has already had. `WS_START` overrides it, and must stay absent from
+    the command line when unset so generation 1 keeps the documented default.
+    """
+    body = RUNNER.read_text()
+    assert '${WS_START:+training.warm_start_environment_steps=${WS_START}}' in body
+    assert 'WS_START="${WS_START:-}"' in body
+
+
+def test_the_runner_refuses_a_chain_that_would_train_backwards() -> None:
+    import subprocess
+
+    done = subprocess.run(
+        ["bash", str(RUNNER)],
+        capture_output=True,
+        text=True,
+        env={
+            "PATH": "/usr/bin:/bin",
+            "HOME": "/nonexistent",
+            "WS_START": "349999104",
+            "STEPS": "349999104",
+        },
+        check=False,
+    )
+    assert done.returncode == 2, done.stdout + done.stderr
+    assert "nothing to train" in done.stderr
