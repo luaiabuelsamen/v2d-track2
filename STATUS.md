@@ -1,5 +1,64 @@
 # STATUS — v2d (NVIDIA V2D Challenge, Track 2)
 
+## Where the last free 0.1 of score is: Tier 3, which we have never submitted
+
+The final score is a weighted combination of all three tiers, and our Tier 3 is **nothing at all**.
+That is the largest gain still available, and most of it is already paid for.
+
+| tier | submitted | AUC | note |
+|---|---|---|---|
+| Tier 2 | yes | **0.46523** | the wave-2 entry |
+| Tier 1 | yes | **0.46523** | the same file; byte-identical, Tier 1 has no input constraint |
+| Tier 3 | **no** | — | reconstruction done; needs a policy rollout for honest provenance |
+
+All twelve Track 2 boards are joined, including all four Tier 3, so the upload path is open.
+
+### Tier 3, reconstructed (2026-10-28)
+
+All 30 clips reconstructed from the released video with NVIDIA's own modules (geocalib → moge →
+grounding_dino → a prompt converter we wrote → sam2 → foundation_pose), then placed in the released
+world by **one** rigid transform taken from frame 0, which is what FAQ PR 207 permits. Frame-0
+residual is 0.0000 cm and 0.000° on all 30, which is also what proves the quaternion convention is
+right: `Transform3d` is imported from upstream rather than reimplemented.
+
+Scored raw against truth: **AUC 0.228 / SP-SR 0.333 / MP-SR 0.033 / MPPE 66.6 cm** over the full
+22,989-frame grid. Quality is bimodal, not uniformly poor: 10 clips track to under 5° and 16 cm
+(e00 e08 e18 e20 e21 e22 e23 e24 e26 e29); 20 lose the object.
+
+**It cannot be submitted as it stands.** The kit's packer tolerates an empty `checkpoint_sha256`
+but requires a non-empty `eval_code_sha256` (`tools/pack_submission.py:420-445`), and a
+reconstruction is not an evaluator run, so there is no honest value for that field. The tier's own
+note says to drive a policy from the reconstruction, which is both the rules-clean route and the
+one that supplies real provenance. Record: `results/t3_reconstruction.json`.
+
+Rules check, settled rather than assumed: Tier 3's configured `data_root` (`track_2/baseline`) is
+not released to participants — the hub has only `tier_1_multiview_caption` and
+`tier_2_synthetic_noise`. The support USDAs in those two are **byte-identical**, so the scene
+assets are tier-invariant released data; what Tier 3 withholds is the *trajectory*, and ours came
+from video.
+
+### Clean Tier 1 input makes these policies worse (2026-10-28)
+
+Tier 1 permits the clean multi-view trajectory, so all 30 shipped actors were re-evaluated on it.
+Mean AUC **fell 0.46523 → 0.28937**, SP-SR 0.667 → 0.138, and only e06 and e28 improved. Frame
+checks were at or below 1.7e-05 cm, so this is not a conversion artefact: each actor learned to
+track one specific trajectory, so a cleaner but different one is a distribution shift. **No Tier 1
+resubmission follows**, and the right way to use a new reference is to fine-tune onto it
+(`brev/patch_warm_start.py`), not to swap it cold. Record: `results/t1_clean_input_eval.json`.
+Still owed: a 2-clip Tier 2-input control through the same eval image, to rule out the image.
+
+### Eligibility
+
+Done: valid Tier 1 and Tier 2 submissions; `LICENSE` (Apache-2.0, as the kit's rules require of a
+winner); `docs/TECHNICAL_REPORT.md`; all twelve boards joined.
+
+**Needs Luai, not me:** accept the `Nvidia-V2D-Challenge` GitHub invite (pending since
+2026-10-25 — until it is accepted the organisers cannot open the commit URL that every one of the
+22,989 rows quotes), and confirm the registration form was submitted. A Tier 3 submission is the
+third requirement and is in progress. `max_final_submissions: 2`, so the final two also have to be
+selected before the freeze: **November 4 2026, 5:00 p.m. EST**.
+
+
 ## Submitted — the wave-2 entry is on all eight Track 2 leaderboards
 
 **Uploaded 2026-10-28, seven days before the freeze: one upload per tier, both tiers scored, every
