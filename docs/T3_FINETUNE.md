@@ -101,3 +101,22 @@ beats its input (0.1787 vs 0.1236), so "closer to the input" means closer to a w
 the input-only rule becomes anti-correlated with truth. It would adopt damage, and it would do so
 while reading nothing that could reveal the mistake. The rule is safe only where the reconstruction
 is better than the policy, which is the ten clips this arm runs.
+
+## The plan file names a Tier 2 tree, and that is not a bug
+
+`assets.warmstart.txt` gives e22's stage as `sw_A`, which reads like the arm-A **Tier 2** reference
+and would mean this arm never used the reconstruction at all. It does not. `stage_t1_eval.sh` reads
+each actor's recorded reference path out of its safetensors metadata and writes the *new* reference
+at that path, so the trainer finds it with no override — the stage column is an in-container
+location, not a statement about content. Verified on e22's object trajectory rather than assumed:
+
+| compared | mean | max |
+|---|---|---|
+| what the T3 arm trained on vs the recon-solved retarget | **0.0000 cm** | 0.0000 cm |
+| what the T1 arm trains on vs the clean Tier 1 retarget | **0.0000 cm** | 0.0000 cm |
+| the two arms' references against each other | 4.6383 cm | 17.5975 cm |
+
+And the fine-tuned rollout's own `reference_*` columns are bit-identical to pass 1's across all 719
+frames, so the pass-1 comparison is one-variable. The 306 cm gap between those columns and
+`t3/npz_world` is a frame convention, which is what `rollout-to-npz --reference-npz` fits out; its
+residual came back at 8e-06 cm.
