@@ -59,7 +59,18 @@ o={f.name for f in dataclasses.fields(OptimizationConfig)}
 missing=({\"warm_start_actor_path\",\"warm_start_environment_steps\"}-t) | ({\"warm_start_actor_rate_multiplier\",\"warm_start_guard_updates\"}-o)
 raise SystemExit(f\"config is missing {missing}\" if missing else 0)
 "' || { echo "FATAL: the warm-start patch did not take; refusing to train" >&2; exit 2; }
-echo "warm-start keys present; overrides: ${ARM_OVERRIDES:-(none)}"
+
+# The dataclass check above is necessary and NOT sufficient, and the first pilot proved it: Hydra
+# validates an override against the composed DICT, not the dataclass, so a key present only on
+# TrainingConfig is refused with "not in struct" -- after the image build is paid for and once per
+# clip. So compose the config for real, with the override, and train nothing. Free, and it fails
+# here instead of nine seconds into every cell.
+say "preflight: can Hydra accept the warm-start override?"
+run "cd /workspace && python scripts/train_flash_sac.py experiment=g1_recon_body_flash_sac \
+  training.warm_start_actor_path=/dev/null --cfg job 2>&1 | grep -E 'warm_start_actor_path|not in struct' | head -4" \
+  | tee /dev/stderr | grep -q "warm_start_actor_path: /dev/null" \
+  || { echo "FATAL: Hydra will not accept training.warm_start_actor_path -- the YAML half of the patch is missing" >&2; exit 2; }
+echo "warm-start keys present and Hydra accepts the override; overrides: ${ARM_OVERRIDES:-(none)}"
 
 TOTAL="$(grep -c . "$PLAN")"
 INDEX=0

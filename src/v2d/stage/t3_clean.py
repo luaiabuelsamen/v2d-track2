@@ -66,7 +66,9 @@ def find_outliers(
     return bad
 
 
-def interpolate(position: np.ndarray, quat_xyzw: np.ndarray, bad: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+def interpolate(
+    position: np.ndarray, quat_xyzw: np.ndarray, bad: np.ndarray
+) -> tuple[np.ndarray, np.ndarray]:
     """Replace masked frames by linear interpolation in position and slerp in rotation."""
     if not bad.any():
         return position, quat_xyzw
@@ -123,23 +125,27 @@ def clean_episode(
         frame_index=np.asarray(blob["frame_index"], dtype=np.int64),
     )
     moved = np.linalg.norm(smoothed - flat[:, :3], axis=1) * 100.0
+    edges = np.diff(np.concatenate([[0], bad.view(np.int8), [0]]))
+    runs = edges.clip(min=0).sum()
     return {
         "episode": episode,
-        "frames": int(len(out)),
+        "frames": len(out),
         "outlier_frames": int(bad.sum()),
-        "outlier_runs": int(np.diff(np.concatenate([[0], bad.view(np.int8), [0]])).clip(min=0).sum()),
+        "outlier_runs": int(runs),
         "max_shift_cm": round(float(moved.max()), 3),
         "mean_shift_cm": round(float(moved.mean()), 3),
     }
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--npz-in", type=Path, required=True, help="episode_%06d.npz in released_track2_world")
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    parser.add_argument("--npz-in", type=Path, required=True, help="episode_%06d.npz, world frame")
     parser.add_argument("--npz-out", type=Path, required=True)
-    parser.add_argument("--jump-cm", type=float, default=20.0, help="step size that counts as a jump")
-    parser.add_argument("--reversal", type=float, default=0.5, help="how opposite the return must be (cosine)")
-    parser.add_argument("--max-run", type=int, default=12, help="longest outlier run that may be bridged")
+    parser.add_argument("--jump-cm", type=float, default=20.0, help="step size counting as a jump")
+    parser.add_argument("--reversal", type=float, default=0.5, help="how opposite the return is")
+    parser.add_argument("--max-run", type=int, default=12, help="longest run that may be bridged")
     parser.add_argument("--smooth", type=int, default=5, help="moving-average width on position")
     parser.add_argument("-o", "--out", type=Path, help="write the per-episode record here")
     args = parser.parse_args(argv)
@@ -159,7 +165,7 @@ def main(argv: list[str] | None = None) -> int:
         for f in files
     ]
     summary = {
-        "what": "Tier 3 reconstruction cleaned with no ground truth: jump rejection then light smoothing",
+        "what": "Tier 3 reconstruction cleaned with no ground truth: jumps rejected, then smoothed",
         "settings": {
             "jump_cm": args.jump_cm,
             "reversal": args.reversal,

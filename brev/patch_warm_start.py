@@ -145,10 +145,36 @@ RUNNER_EDITS: tuple[tuple[str, str], ...] = (
     ),
 )
 
+#: The dataclass is not what Hydra validates an override against. `configs/training/
+#: reference_flash_sac.yaml` is the `training` node, Hydra composes it as a plain dict and
+#: instantiates TrainingConfig from it via `_target_`, so a key that exists on the dataclass but
+#: not in this YAML is refused at the command line with "Key 'warm_start_actor_path' is not in
+#: struct, object_type=dict". That is exactly how the first pilot died: three clips, nine seconds
+#: each, after the image build was paid for. The runner's preflight imported the dataclass and was
+#: satisfied, which proved the wrong half.
+YAML_EDITS: tuple[tuple[str, str], ...] = (
+    (
+        "resume: false\ncheckpoint_path: null\n",
+        "resume: false\n"
+        "checkpoint_path: null\n"
+        "# Warm start: initialise the ACTOR from a deployable policy checkpoint. Present here and\n"
+        "# not only on the dataclass, because Hydra validates overrides against this dict.\n"
+        "warm_start_actor_path: null\n"
+        "warm_start_environment_steps: 299999232\n",
+    ),
+    (
+        "  residual_mean_learning_rate_multiplier: 1.0\n",
+        "  residual_mean_learning_rate_multiplier: 1.0\n"
+        "  warm_start_actor_rate_multiplier: 0.1\n"
+        "  warm_start_guard_updates: 2000\n",
+    ),
+)
+
 TARGETS: dict[str, tuple[tuple[str, str], ...]] = {
     "training/flash_sac/config.py": CONFIG_EDITS,
     "training/flash_sac/learner.py": LEARNER_EDITS,
     "training/flash_sac/runner.py": RUNNER_EDITS,
+    "configs/training/reference_flash_sac.yaml": YAML_EDITS,
 }
 
 #: Present in a tree that already carries the patch.

@@ -48,12 +48,30 @@ def apply(root: Path, *, check: bool = False) -> int:
     return module.main(argv)
 
 
-def test_it_patches_the_three_files_and_is_idempotent(tree: Path, capsys) -> None:
+def test_it_patches_the_four_files_and_is_idempotent(tree: Path, capsys) -> None:
     assert apply(tree) == 0
     first = capsys.readouterr().out
-    assert first.count("patched:") == 3
+    assert first.count("patched:") == 4
     assert apply(tree) == 0
-    assert capsys.readouterr().out.count("left alone:") == 3
+    assert capsys.readouterr().out.count("left alone:") == 4
+
+
+def test_the_yaml_carries_the_keys_because_hydra_validates_the_dict_not_the_dataclass(tree: Path) -> None:
+    """The failure this guards against: three clips died on "not in struct" after a paid build."""
+    apply(tree)
+    text = (tree / "configs/training/reference_flash_sac.yaml").read_text()
+    # training node: top level in this file, which IS the `training` group
+    assert "\nwarm_start_actor_path: null\n" in text
+    assert "\nwarm_start_environment_steps: 299999232\n" in text
+    # optimization node: one level in
+    assert "\n  warm_start_actor_rate_multiplier: 0.1\n" in text
+    assert "\n  warm_start_guard_updates: 2000\n" in text
+    # and the dataclass defaults must agree with the YAML, or an override behaves differently
+    # depending on which half is read
+    source = (tree / "training/flash_sac/config.py").read_text()
+    assert "warm_start_environment_steps: int = 299_999_232" in source
+    assert "warm_start_actor_rate_multiplier: float = 0.1" in source
+    assert "warm_start_guard_updates: int = 2_000" in source
 
 
 def test_check_changes_nothing(tree: Path) -> None:

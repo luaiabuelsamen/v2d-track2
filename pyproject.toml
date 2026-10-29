@@ -60,6 +60,7 @@ ignore = [
 # file exactly, so they cannot be rewrapped to fit our own line length.
 "brev/patch_object_orientation.py" = ["E501"]
 "brev/patch_contact_role.py" = ["E501"]
+"brev/patch_warm_start.py" = ["E501"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
