@@ -2,11 +2,29 @@
 
 ## All three tiers are on the board, 2026-10-29 15:52 UTC
 
-| tier | AUC | SP-SR | MP-SR | MPPE cm | was | reference |
-|---|---|---|---|---|---|---|
-| **Tier 1** | **0.52687** | 0.66666 | **0.50000** | **13.90141** | 0.46523 / 0.66667 / 0.46667 / 14.128 | CHORD 0.51038 — **we are +0.0165 past it** |
-| Tier 2 | 0.46523 | 0.66667 | 0.46667 | 14.128 | unchanged, and it is our best Tier 2 file | CHORD board average 0.374 / 0.533 / 0.067 / 20.5 |
-| **Tier 3** | **0.25059** | **0.16666** | **0.03333** | **54.43633** | **nothing — the tier scored zero** | no published baseline |
+| board | rank | us | 1st | gap |
+|---|---|---|---|---|
+| tier1-auc | 12/23 | 0.52687 | 0.89354 | 0.367 |
+| tier1-sp-sr | 12/22 | 0.66666 | 0.96666 | 0.300 |
+| tier1-mp-sr | 11/22 | 0.50000 | 0.93333 | 0.433 |
+| tier1-mppe | 11/22 | 13.90 cm | 2.78 | 11.1 cm |
+| tier2-auc | 5/18 | 0.46522 | 0.56768 | 0.102 |
+| tier2-sp-sr | 5/18 | 0.66666 | 0.80000 | 0.133 |
+| tier2-mp-sr | 5/18 | 0.46666 | 0.80000 | 0.333 |
+| tier2-mppe | **4/18** | 14.13 cm | 9.28 | 4.8 cm |
+| tier3-auc | **3/10** | 0.25059 | 0.33311 | 0.083 |
+| tier3-sp-sr | 7/10 | 0.16666 | 0.40000 | 0.233 |
+| tier3-mp-sr | 6/10 | 0.03333 | 0.10000 | 0.067 |
+| tier3-mppe | 6/10 | 54.44 cm | 31.34 | 23.1 cm |
+
+Tier 1 went 0.46523 → **0.52687** today, past CHORD's 0.51038; Tier 3 went from **no entry at all**
+to 3rd on AUC. Tier 2 is unchanged because the board already holds our best Tier 2 file.
+
+**`docs/TO_THE_TOP.md` is the costed answer to "what would first place take".** The short version:
+our nineteen best Tier 1 clips average 0.7228 while the leader's whole 30-clip entry averages
+0.89354, so lifting all eleven weak clips to 0.80 — better than our current average — reaches
+0.751 and about 5th. First place needs a better per-clip tracker, not more credit. What money does
+buy: the eleven weak Tier 1 clips full-length on clean references, ~$36, for 12th → 5th-8th.
 
 Every public score agrees with the local kit score to five decimals, so the local scorer is a
 faithful stand-in and nothing has to be guessed from the board. Receipts and per-board submission
