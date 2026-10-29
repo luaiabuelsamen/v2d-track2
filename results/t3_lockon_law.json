@@ -1,0 +1,57 @@
+{
+ "what": "What predicts the Tier 3 fine-tune's gain: it is binary, not graded",
+ "n_clips": 13,
+ "law": "A clip either LOCKS ON to its reference or it does not. If the fine-tune reduces the mean input error by >= 40%, it captures 98-117% of the headroom available to it. If the reduction is between 0 and 40%, it captures essentially nothing. If the input error grows, the clip gets worse. There is no middle band in 13 clips.",
+ "locked_on": {
+  "threshold_input_gain_pct": 40,
+  "clips": 6,
+  "detail": {
+   "e21": 96.36,
+   "e22": 96.35,
+   "e06": 91.52,
+   "e23": 86.46,
+   "e00": 83.66,
+   "e26": 57.05
+  },
+  "mean_d_mppe_cm": -50.56,
+  "mean_d_auc": 0.098,
+  "headroom_captured_pct": "98 to 117"
+ },
+ "did_not_lock_on": {
+  "clips": 3,
+  "detail": {
+   "e12": 39.63,
+   "e01": 6.3,
+   "e17": 0.56
+  },
+  "mean_d_mppe_cm": -2.75,
+  "mean_d_auc": -0.0008
+ },
+ "went_backwards": {
+  "clips": 4,
+  "detail": {
+   "e18": -0.48,
+   "e08": -11.24,
+   "e24": -17.54,
+   "e20": -29.09
+  }
+ },
+ "why_it_is_useful": "Lock-on is measured from the input alone, so it needs no truth and can be read on Tier 2 and Tier 3 where truth-based selection is not permitted. Headroom says how much a clip has to give and needs truth, so it may choose which clips to RUN; lock-on says whether the clip collected it and is legal to read when choosing which rollout to SHIP. Together they predict a clip's contribution before it is scored against truth.",
+ "historical_lock_on_rate": "7 of 13 clips (54%)",
+ "prediction_for_the_batch_in_flight": {
+  "clips": [
+   "e03",
+   "e16",
+   "e25",
+   "e29"
+  ],
+  "e01": "already in: did not lock on (+6.30%), -2.42 cm",
+  "headroom_cm": {
+   "e03": 135.36,
+   "e25": 68.93,
+   "e29": 25.65,
+   "e16": 25.57
+  },
+  "statement": "e03 holds 48% of the batch's 284 cm of headroom, so the pre-registered -5 cm bar turns almost entirely on whether e03 locks on. If it does, e03 alone is about -4.5 cm on the 30-clip mean and the bar clears; if it does not, the batch lands near -1 cm and the registered answer is no upload. Written at 19:10 UTC, before e03 finishes training at ~19:40."
+ }
+}
