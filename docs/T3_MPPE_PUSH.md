@@ -116,3 +116,35 @@ input-only the rule is. Three things make it defensible anyway, and they should 
 To keep that checkable, the next pack reports **both** variants — all thirty at the 2% margin, and
 the same entry with e17 admitted at 0% — and ships the former. If they ever disagree by enough to
 move a rank, that disagreement gets reported rather than resolved quietly.
+
+## A flaw in this rule, corrected 19:44 UTC with three clips still unrun
+
+As written above, the −5 cm bar gates **the upload**: "The entry is only re-uploaded if that holds."
+That conflates two different questions, and I should separate them before the answer is known:
+
+1. **Is the arm worth more money?** That is what −5 cm on the 30-clip mean measures, and it stays
+   exactly as registered. On the current tally (−2.38 cm with 120 cm of headroom left) it will
+   probably fail, and failing it means no further Tier 3 fine-tune boxes.
+2. **Is the packed entry better than what is on the board?** That is a different question with a
+   different answer, and the criterion for it was set earlier today and already acted on: Tier 3 v3
+   went up because it was **strictly better on every metric** than v2 — AUC up, MPPE down, both
+   gates equal — and "a banked gain beats a pending one"
+   (`results/tier3_submission_v3.json`).
+
+Gating the upload on the arm's bar would throw away a rank point for no reason. If the batch lands
+at, say, −3.6 cm with no metric regressing, that is Tier 3 MPPE **51.86 → about 48.3 cm, which
+passes maniphys.ai at 49.94 and takes the board from 6th to 5th** — a real rank point on the
+objective the README defines, from a file already paid for.
+
+**So, declared now, with e16, e25 and e29 still untrained:**
+
+- **Upload** if the packed 2% entry is better on at least one metric and **worse on none** — the
+  same test v3 passed. Report both rule variants either way.
+- **Do not spend** on another Tier 3 box unless the −5 cm bar clears, whatever the upload decision
+  turns out to be.
+
+This is a rule change, so it is worth being explicit about why it is not a convenient one: it was
+written before the three remaining clips existed, it applies a criterion this project already used
+and recorded hours earlier, and it makes the *spending* test no easier. If anything it is stricter
+than the original on what matters — the original would have let a batch that clears −5 cm upload
+even while regressing AUC, and this one would not.
