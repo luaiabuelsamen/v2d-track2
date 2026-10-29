@@ -25,28 +25,45 @@ actor's learning rate by 0.1 for the first 2,000 updates so a cold critic's earl
 walk a known-good actor off its policy. Budget 349,999,104 total, which leaves **49,999,872 steps**
 of fine-tuning — one seventh of a full run, and exactly one checkpoint interval, so the usual save
 cadence writes precisely one new checkpoint. Reference: the clean Tier 1 retarget
-(`$S/t1_clean/motion/tier1`, 30/30 at 0.0 mm rigid-fit residual). Everything else stock. Seed 42.
-Support per clip from the data.
+(`$S/t1_clean/motion/tier1`, 30/30 at 0.0 mm rigid-fit residual). Seed 42. Support per clip from
+the data.
+
+Recipe: `start_curriculum,orientation_reward,object_position,warm_start` with
+`V2D_OBJECT_POSITION_STD=0.08` and orientation std 0.3 — the code patches arm A carried. The other
+two parts of the shipping recipe are **reference** properties rather than patches and so travel with
+the new reference automatically: CLEAN was the bridge-smoothed Tier 2 tree, and FING was interp's
+re-solved finger parquets (there is no `patch_finger_targets.py`; the flag name maps to a file that
+does not exist). The clean Tier 1 retarget carries its own solved `hand_finger_joints`, so the
+fingers are present, from our own retarget rather than interp's.
 
 ## The pilot, and the bar
 
 Three clips chosen now for spread across the shipped range, not after seeing results:
 
-| clip | object | shipped (on the board) | clean-input eval | what fine-tuning has to beat |
-|---|---|---|---|---|
-| e24 | watering_can | 0.89422 | 0.76713 | 0.89422 |
-| e00 | tall_bar_stool | 0.51775 | 0.30631 | 0.51775 |
-| e09 | big_red_bowl | 0.30029 | 0.19878 | 0.30029 |
-| **mean** | | **0.57075** | **0.42407** | **0.57075** |
+| clip | object | arm | shipped (on the board) | clean-input eval | fine-tuning must beat |
+|---|---|---|---|---|---|
+| e24 | watering_can | A | 0.89422 | 0.76713 | 0.89422 |
+| e00 | tall_bar_stool | A | 0.51775 | 0.30631 | 0.51775 |
+| e11 | light_blue_book | A | 0.46757 | &mdash; | 0.46757 |
+| **mean** | | | **0.62651** | | **0.62651** |
+
+**Why all three come from arm A, which changed the clip set.** The first draft of this page used
+e24, e00 and e09 for spread. e09's shipped rollout comes from arm B4x, which was trained with
+orientation std **0.8**; e24 and e00 come from arm A at std **0.3**. Fine-tuning them under one
+recipe would have changed the reward for e09 as well as the reference, and the result could not then
+be attributed. All three clips now ship from arm A, so the recipe below matches what every pilot
+actor was trained on and the reference is the only variable. The cost is that the pilot contains no
+clip from the weak tail; the tail's failures are Tier 2 input failures and are a separate question.
 
 **Bar, registered:** the full 30-clip fine-tune is launched only if the three-clip mean kit AUC
-**beats 0.57075** and **no clip falls by more than 0.02** below its own shipped number. Ties go to
+**beats 0.62651** and **no clip falls by more than 0.02** below its own shipped number. Ties go to
 the shipped entry, which is already on the board. Per-clip adoption afterwards uses the same
 input-only z-drop rule as the wave-2 entry, against the **clean** reference, so no truth is read to
 decide what ships.
 
-**What a failure means, stated now:** if the three-clip mean lands between 0.42407 (the cold swap)
-and 0.57075 (shipped), fine-tuning works but 50M steps is not enough, and the honest read is that
+**What a failure means, stated now:** if the three-clip mean lands between the cold-swap level
+(0.42407 on the original clip set) and 0.62651 (shipped), fine-tuning works but 50M steps is not
+enough, and the honest read is that
 Tier 1 cannot be bought with the credit that remains. If it lands at or below 0.42407, the
 warm start is not transferring the actor at all and the run is a bug, not a result — the runner
 checks for the patch's `warm start: actor from` line and treats its absence as a failed fine-tune.
