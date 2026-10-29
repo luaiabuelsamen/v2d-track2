@@ -18,7 +18,11 @@ DATA=$S/data
 REFS=$S/t3/npz_world
 COMMIT="${COMMIT:-https://github.com/luaiabuelsamen/v2d-track2/commit/e8ffe8f}"
 OUT=${1:-$S/t3_entry_v2}
-ADOPTION=$REPO/results/t3_finetune.json
+# One file names every adopted clip AND the tree its rollout comes from. The Tier 1 packer taught
+# this: it searched a list of directories and kept the LAST match, so appending a tree silently
+# re-chose two clips by directory order and shipped the rollouts that had lost their own
+# comparison. Here the source is recorded per clip, so order cannot decide anything.
+ADOPTION=${ADOPTION:-$REPO/results/t3_adoption_merged.json}
 
 rm -rf "$OUT"; mkdir -p "$OUT/results"
 # 1. pass 1 for every clip ...
@@ -28,9 +32,12 @@ ADOPTED=$("$PY" -c "import json,sys; print(' '.join(json.load(open(sys.argv[1]))
 echo "adopted from the fine-tune: ${ADOPTED:-none}"
 for TAG in $ADOPTED; do
   EP=$((10#${TAG#e})); F=$(printf 'episode_%06d' "$EP")
-  SRC=""
-  for d in ws_t3a ws_t3b; do [ -s "$S/$d/results/rollouts/$F.parquet" ] && SRC=$S/$d/results/rollouts; done
-  [ -n "$SRC" ] || { echo "FATAL: $TAG adopted but no fine-tuned rollout found" >&2; exit 3; }
+  SRC=$("$PY" -c "
+import json, sys
+d = json.load(open(sys.argv[1])).get('source', {})
+print(d.get(sys.argv[2], ''))" "$ADOPTION" "$TAG")
+  [ -n "$SRC" ] || { echo "FATAL: $TAG is adopted but the record names no source tree" >&2; exit 3; }
+  [ -s "$SRC/$F.parquet" ] || { echo "FATAL: $TAG adopted from $SRC but $F.parquet is not there" >&2; exit 3; }
   cp "$SRC/$F.parquet" "$SRC/$F.json" "$OUT/results/"
   echo "   $TAG <- $SRC"
 done

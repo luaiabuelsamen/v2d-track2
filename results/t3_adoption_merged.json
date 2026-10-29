@@ -1,0 +1,67 @@
+{
+ "what": "every Tier 3 clip that ships a fine-tuned rollout, with the tree it comes from",
+ "verdict_reads_ground_truth": false,
+ "adopted": [
+  "e00",
+  "e06",
+  "e12",
+  "e21",
+  "e22",
+  "e23",
+  "e26"
+ ],
+ "source": {
+  "e00": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/ws_t3a/results/rollouts",
+  "e21": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/ws_t3a/results/rollouts",
+  "e22": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/ws_t3b/results/rollouts",
+  "e23": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/ws_t3b/results/rollouts",
+  "e26": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/ws_t3b/results/rollouts",
+  "e06": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/ws_t3s6a/results/rollouts",
+  "e12": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/ws_t3s6a/results/rollouts"
+ },
+ "batches": [
+  {
+   "batch": "results/t3_finetune.json",
+   "rollouts": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/ws_t3a/results/rollouts",
+   "adopted": [
+    "e00",
+    "e21",
+    "e22",
+    "e23",
+    "e26"
+   ],
+   "claimed_here": [
+    "e00",
+    "e21"
+   ]
+  },
+  {
+   "batch": "results/t3_finetune.json",
+   "rollouts": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/ws_t3b/results/rollouts",
+   "adopted": [
+    "e00",
+    "e21",
+    "e22",
+    "e23",
+    "e26"
+   ],
+   "claimed_here": [
+    "e22",
+    "e23",
+    "e26"
+   ]
+  },
+  {
+   "batch": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t3s6_adoption.json",
+   "rollouts": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/ws_t3s6a/results/rollouts",
+   "adopted": [
+    "e06",
+    "e12"
+   ],
+   "claimed_here": [
+    "e06",
+    "e12"
+   ]
+  }
+ ]
+}
