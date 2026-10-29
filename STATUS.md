@@ -52,11 +52,21 @@ Still owed: a 2-clip Tier 2-input control through the same eval image, to rule o
 Done: valid Tier 1 and Tier 2 submissions; `LICENSE` (Apache-2.0, as the kit's rules require of a
 winner); `docs/TECHNICAL_REPORT.md`; all twelve boards joined.
 
-**Needs Luai, not me:** accept the `Nvidia-V2D-Challenge` GitHub invite (pending since
-2026-10-25 — until it is accepted the organisers cannot open the commit URL that every one of the
-22,989 rows quotes), and confirm the registration form was submitted. A Tier 3 submission is the
-third requirement and is in progress. `max_final_submissions: 2`, so the final two also have to be
-selected before the freeze: **November 4 2026, 5:00 p.m. EST**.
+**Needs Luai, not me:**
+
+1. **Accept the `Nvidia-V2D-Challenge` GitHub invite**, pending since 2026-10-25. Until it is
+   accepted the organisers cannot open the commit URL that every one of the 22,989 rows quotes.
+2. **One push.** `origin/main` is at `0260cd8`, nineteen commits behind local `HEAD`, so none of
+   the Tier 3 code is on the remote. The audit checks a commit URL's *shape*, not whether it
+   resolves, so an unpushed sha would validate locally and 404 for a judge. The Tier 3 entry is
+   therefore packed and kit-validated against local `HEAD` but is **not submittable until that
+   commit is pushed** — it is one command and his word, not a decision I should make for him.
+3. **Confirm the registration form** was submitted.
+4. **Select the final two submissions** before the freeze — `max_final_submissions: 2`, and the
+   Kaggle API exposes no "selected" flag, so it is a UI action. Freeze: **November 4 2026,
+   5:00 p.m. EST**.
+
+A Tier 3 submission is the remaining score item and is in progress.
 
 
 ## Submitted — the wave-2 entry is on all eight Track 2 leaderboards
