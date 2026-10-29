@@ -42,9 +42,18 @@ were near zero.
 different `checkpoint_sha256` per episode. We pick, per clip, the latest checkpoint whose achieved
 object never leaves a 10 cm band around the *input* reference ("z-drop"). It reads only the input,
 never the truth, so it is reproducible by a reader who has no ground truth — and it is registered
-as the submission rule rather than chosen after the fact. It cost us something real: six clips
-hold a rollout that kit-scores higher than the one that ships, and we shipped the rule's pick
-anyway.
+as the submission rule rather than chosen after the fact. It cost us something real: 13 rollouts
+kit-score higher than the ones that ship, and we shipped the rule's picks anyway.
+
+**What selection is *not* worth is score, and an earlier draft of this section overstated it.**
+On four clips, measured with the evaluator's own metric, z-drop beat the final checkpoint by
++0.0705 (0.2745 against 0.2040), and that figure put selection second in this ranking. Across all
+30 clips with the kit scorer it is worth **+0.0010**: z-drop 0.3908, latest-drop-free 0.3946, final
+checkpoint 0.3898. An oracle that reads Tier 1 truth — the ceiling on *any* selection rule — reaches
+only 0.4201, so checkpoint selection cannot be worth more than +0.029 and no submittable rule
+collects even that (`docs/SECOND_WAVE.md`). The rule earns its place by being reproducible without
+ground truth, not by the points it adds. The 0.21 of headroom to the reference ceiling is a policy
+problem.
 
 **Reward shaping.** An object-orientation term (weight 1.0, std 0.3) added to `recon_body`, which
 has an `object_position_weight` but no orientation counterpart; a start-curriculum patch; tightened
