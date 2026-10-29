@@ -53,5 +53,26 @@
    "e16": 25.57
   },
   "statement": "e03 holds 48% of the batch's 284 cm of headroom, so the pre-registered -5 cm bar turns almost entirely on whether e03 locks on. If it does, e03 alone is about -4.5 cm on the 30-clip mean and the bar clears; if it does not, the batch lands near -1 cm and the registered answer is no upload. Written at 19:10 UTC, before e03 finishes training at ~19:40."
+ },
+ "is_lock_on_predictable_in_advance": {
+  "answer": "No. Nothing available before the run predicts it.",
+  "n": 13,
+  "spearman_rho_vs_lock_on": {
+   "reconstruction_floor_cm": -0.33,
+   "pass1_input_error_cm": 0.206,
+   "pass1_auc": 0.082,
+   "pass1_mppe_cm": 0.124,
+   "object_mesh_radius_cm": 0.041
+  },
+  "p_values": {
+   "reconstruction_floor_cm": 0.271,
+   "pass1_input_error_cm": 0.499,
+   "pass1_auc": 0.789,
+   "pass1_mppe_cm": 0.687,
+   "object_mesh_radius_cm": 0.893
+  },
+  "hands": "two-handed 5 of 9 locked on, one-handed 1 of 4 -- far too small to separate",
+  "counterexamples_that_kill_the_obvious_guesses": "A low reconstruction floor does not imply lock-on: e18 (3.88 cm), e08 (4.63) and e24 (8.94) all have excellent references and all went backwards. A high floor does not forbid it: e06 locked on at 26.21 cm. A large initial input error does not imply it either: e21 locked on from 116 cm while e17 did not from 99 cm.",
+  "planning_consequence": "The arm is a lottery with measured odds and a measured payoff: lock-on happens about 54% of the time (7 of 13) and, when it does, collects ~100% of that clip's headroom. So the expected value of running one clip is about 0.54 x its headroom, and the ONLY lever is to pick the clips with the most headroom -- which is how e03, e25, e01, e29 and e16 were chosen. No cleverer pre-selection is available, and about $0.40 per clip is the price of finding out."
  }
 }
