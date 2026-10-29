@@ -71,7 +71,8 @@ for tag in sorted(new):
     # No drop is the first condition; among no-drop rollouts, closer to the input wins.
     gain_pct = 0.0
     if o["mean_input_err_cm"] > 0:
-        gain_pct = 100.0 * (o["mean_input_err_cm"] - n["mean_input_err_cm"]) / o["mean_input_err_cm"]
+        before, after = o["mean_input_err_cm"], n["mean_input_err_cm"]
+        gain_pct = 100.0 * (before - after) / before
     better = (not n["drop"] and o["drop"]) or (
         n["drop"] == o["drop"] and gain_pct > MIN_GAIN_PCT
     )
