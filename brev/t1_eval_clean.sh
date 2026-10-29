@@ -163,7 +163,13 @@ touch "$R/FINISHED"
 EOS
 sed -i s/__DEADLINE__/'"$BOX_DEADLINE_H"'/ ~/t1_runner.sh
 sed -i s@__BOXSCRIPT__@'"$BOX_SCRIPT"'@ ~/t1_runner.sh
-sed -i s@__BOXENV__@'"$BOX_ENV"'@ ~/t1_runner.sh
+# QUOTED, and it has to be: BOX_ENV holds several VAR=VAL pairs separated by spaces, so an
+# unquoted sed expression splits and sed treats the remaining pairs as filenames. It then fails
+# while the placeholder survives, and the runner dies on `__BOXENV__: command not found` AFTER the
+# image build has already been paid for. That is exactly what happened on v2d-t1ws-01.
+sed -i "s@__BOXENV__@'"$BOX_ENV"'@" ~/t1_runner.sh
+grep -q __BOXENV__ ~/t1_runner.sh && { echo "FATAL: BOX_ENV never substituted" >&2; exit 3; }
+grep -q __BOXSCRIPT__ ~/t1_runner.sh && { echo "FATAL: BOX_SCRIPT never substituted" >&2; exit 3; }
 setsid nohup bash ~/t1_runner.sh </dev/null >/dev/null 2>&1 &
 echo started'
 }
