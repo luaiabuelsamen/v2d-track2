@@ -1,0 +1,30 @@
+{
+ "what": "tier3 submission v3, uploaded 2026-10-29 17:46 UTC",
+ "csv": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t3_entry_v3/track2_tier3.csv",
+ "csv_sha256": "257a301f8aceec66c463f2d3f0ec76f10ba5599b0974fa2ecfaaa284b2291a59",
+ "csv_bytes": 11843006,
+ "code_commit_url": "https://github.com/luaiabuelsamen/v2d-track2/commit/8e55e04d74c4562c44357f9cca27299d999f09fd",
+ "code_commit_pushed": true,
+ "kaggle_submission_refs": {
+  "auc": 57778557,
+  "sp_sr": 57778561,
+  "mp_sr": 57778563,
+  "mppe": 57778566
+ },
+ "local_score": {
+  "add_auc": 0.2519702927777046,
+  "spider_sr": 0.16666666666666666,
+  "maniptrans_sr": 0.03333333333333333,
+  "mppe_cm": 51.86398965403665
+ },
+ "public_score": {
+  "add_auc": "0.25197",
+  "spider_sr": "0.16666",
+  "maniptrans_sr": "0.03333",
+  "mppe_cm": "51.86398"
+ },
+ "local_vs_public": "agrees to 5 decimals on all four",
+ "change_from_v2": "e06 and e12 adopted on the input-only rule: AUC 0.25059 -> 0.25197, MPPE 54.43634 -> 51.86399 cm, both gates unchanged. Strictly better on every metric, so it was uploaded rather than held for the five-clip batch still training -- a banked gain beats a pending one, and the quota resets daily.",
+ "rank_effect": "None yet. tier3-auc stays 3rd of 10 (1st 0.33311); tier3-mppe stays 6th, because 5th is maniphys.ai at 49.94 cm and we are at 51.86. The five-clip MPPE push now training is what could cross that.",
+ "quota_after": "3 submissions left today on each Tier 3 board"
+}
