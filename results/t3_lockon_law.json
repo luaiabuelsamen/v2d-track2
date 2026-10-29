@@ -74,5 +74,67 @@
   "hands": "two-handed 5 of 9 locked on, one-handed 1 of 4 -- far too small to separate",
   "counterexamples_that_kill_the_obvious_guesses": "A low reconstruction floor does not imply lock-on: e18 (3.88 cm), e08 (4.63) and e24 (8.94) all have excellent references and all went backwards. A high floor does not forbid it: e06 locked on at 26.21 cm. A large initial input error does not imply it either: e21 locked on from 116 cm while e17 did not from 99 cm.",
   "planning_consequence": "The arm is a lottery with measured odds and a measured payoff: lock-on happens about 54% of the time (7 of 13) and, when it does, collects ~100% of that clip's headroom. So the expected value of running one clip is about 0.54 x its headroom, and the ONLY lever is to pick the clips with the most headroom -- which is how e03, e25, e01, e29 and e16 were chosen. No cleverer pre-selection is available, and about $0.40 per clip is the price of finding out."
+ },
+ "correction_2026_10_29_19_42": {
+  "what_i_claimed": "\"A clip either locks on or it does not ... There is no middle band in 13 clips.\"",
+  "what_falsified_it": "e03: input gain +48.78% (145.02 -> 74.28 cm), which is above the 40% threshold, yet it captured only 51% of its headroom (MPPE 150.88 -> 82.04 cm, -68.84 of a possible 135.36). Every earlier lock-on captured 98-117%.",
+  "the_relationship_as_it_now_stands": {
+   "e21": {
+    "gain_pct": 96.36,
+    "captured_pct": 98
+   },
+   "e22": {
+    "gain_pct": 96.35,
+    "captured_pct": 100
+   },
+   "e06": {
+    "gain_pct": 91.52,
+    "captured_pct": 110
+   },
+   "e23": {
+    "gain_pct": 86.46,
+    "captured_pct": 108
+   },
+   "e00": {
+    "gain_pct": 83.66,
+    "captured_pct": 117
+   },
+   "e26": {
+    "gain_pct": 57.05,
+    "captured_pct": 111
+   },
+   "e03": {
+    "gain_pct": 48.78,
+    "captured_pct": 51
+   },
+   "e01": {
+    "gain_pct": 6.3,
+    "captured_pct": 9
+   }
+  },
+  "revised_reading": "Capture tracks the SIZE of the input gain, it is not a step function. Above about 57% gain the clip collects essentially all of its headroom; e03 at 49% collected half and e01 at 6% collected a tenth. Calling it binary was an artefact of having no clip between 6% and 57% -- e03 landed in that gap and filled it. The useful part survives: input gain is measurable without truth and predicts the realised gain, now as a magnitude rather than a flag.",
+  "why_i_am_recording_this": "The binary claim was committed to a file 30 minutes before the clip that broke it finished training. Leaving it to stand would make every later number read as confirmation of a law that one of its own data points contradicts."
+ },
+ "running_tally_of_the_batch": {
+  "e01": {
+   "d_mppe_cm": -2.42,
+   "d_auc": 0.0088,
+   "locked_on": false
+  },
+  "e03": {
+   "d_mppe_cm": -68.84,
+   "d_auc": 0.002,
+   "locked_on": true,
+   "captured_pct": 51
+  },
+  "summed_d_mppe_cm": -71.26,
+  "effect_on_30_clip_mean_cm": -2.38,
+  "bar": -5.0,
+  "remaining": [
+   "e16 (25.6 cm headroom)",
+   "e25 (68.9)",
+   "e29 (25.7)"
+  ],
+  "honest_position": "-2.38 cm of the -5 cm bar with 120 cm of headroom left in three clips. At the historical 54% lock-on rate and e03's 51% capture that projects to about -1.2 cm more, i.e. -3.6 cm total, which FAILS. It clears only if e25 locks on hard: 68.9 cm at full capture is -2.3 cm on the mean by itself."
  }
 }
