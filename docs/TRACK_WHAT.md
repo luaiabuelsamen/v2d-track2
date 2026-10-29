@@ -64,3 +64,30 @@ is the corrupted one. That is why the cleaner stops at 0.4755 against a 0.6541 t
 So whatever the leader at 0.56768 is doing, it is not this. The remaining candidates are a learned
 prior over object trajectories (which needs training data and GPU) or physics-based inference during
 contact — and neither is reachable on the ~$2.70 of credit left.
+
+## Parts A, C and D: not run, and why
+
+Part B was the part that could change a decision, so it is the part that ran. The others are
+recorded here as deliberately skipped rather than forgotten:
+
+- **Part A (noise per channel, Tier 2 vs Tier 1, split by held and resting frames).** Needs the raw
+  Tier 2 retarget tree, which was deleted during the disk cleanup that kept us above the 20 GB
+  floor; regenerating it is ~4 min/clip x 30 on one worker (two workers OOM this 15 GB machine).
+  The headline figures it would produce are already measured in
+  `results/probe_support_root.json`: object pose 1.94 cm and 21.4° (15.8° tilt + 11.4° yaw), human
+  pose corrupted on the **root joint only** at 5.17°, translation 1.09 cm. Part A would add the
+  held-versus-resting split and the temporal character, which were wanted to choose reward weights
+  — and the shipping recipe's weights are long since fixed and submitted. So two hours of CPU buys
+  no decision.
+- **Part C (metric sensitivity per channel).** Needs four `v2d score` records built from references
+  with one noise channel removed at a time. The channel-removed references are oracle
+  constructions, so they can inform analysis but never a submission, and the one number that
+  mattered — what the noisy input itself scores — is in `README.md`'s input-ceiling table (0.4247
+  raw, 0.4755 cleaned).
+- **Part D (checkpoint-to-checkpoint variance of our own policies).** Superseded by
+  `docs/METRICS_DEEP_DIVE.md`, which did this over 30 clips rather than 4, and by
+  `results/t1_per_metric_selection.json`, which showed selection across every rollout tree we hold
+  is worth 0.003 cm.
+
+If a credit top-up revives method work on Tier 2, Part A is the first thing to run, because
+held-versus-resting is exactly what a dual-reference objective needs to weight.
