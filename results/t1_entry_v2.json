@@ -1,0 +1,43 @@
+{
+ "what": "Tier 1 entry v2: 25 clips from the wave-2 entry, 5 replaced by the warm-start fine-tune.",
+ "csv": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t1_entry_v2/track2_tier1.csv",
+ "csv_sha256": "fee3b160f6578dc46bd33aefe4efebf3f0d09f21260d649b6cbbc904bacb581e",
+ "csv_bytes": 11082693,
+ "rows": 22989,
+ "episodes": 30,
+ "built_by": "brev/pack_t1_entry.sh",
+ "kit_packer": "pass",
+ "kit_preflight": "Ready to submit",
+ "submittable": true,
+ "adopted": [
+  "e00",
+  "e12",
+  "e16",
+  "e22",
+  "e24"
+ ],
+ "selection": "no-regression on all four metrics (tools/t1/adopt.py). Legal on Tier 1 only: the tier's input_note names the released trajectory as the configured scoring reference.",
+ "frame_references": {
+  "clean_tier1_npz": 5,
+  "bridge_v1": 25,
+  "why_mixed": "the kit packer fits one rigid transform per episode from frame 0 of the recorded reference to frame 0 of the tree it is given, so a single tree would mis-convert whichever half of the entry it did not match. v2d frame-refs --assemble builds the per-clip tree and refuses an incomplete map."
+ },
+ "local_score": {
+  "add_auc": 0.49118,
+  "spider_sr": 0.66667,
+  "maniptrans_sr": 0.5,
+  "mppe_cm": 14.01502
+ },
+ "shipped_for_comparison": {
+  "add_auc": 0.46523,
+  "spider_sr": 0.66667,
+  "maniptrans_sr": 0.46667,
+  "mppe_cm": 14.128
+ },
+ "improves_on_all_four": true,
+ "chord_tier1_baseline": 0.51038,
+ "still_short_of_the_baseline_by": 0.0192,
+ "seven_clips_still_training": "e18 e06 e09 on v2d-t1f-2c; e23 e26 e29 on v2d-t1f-3c; all seven ship a final checkpoint, which is the group that gains. At the measured 5-of-8 adoption rate and +0.156 mean adopted gain, they project to about +0.023, i.e. ~0.514.",
+ "uploaded": false,
+ "blocked_on": "git push origin main. The CSV names commit/e8ffe8f, which resolves, but the warm-start code behind five of its rollouts is in unpushed commits (HEAD 4f70278)."
+}

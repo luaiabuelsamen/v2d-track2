@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+# Pack the Tier 1 entry from whichever rollout each clip ships, with the per-clip frame reference
+# that clip was actually driven by.
+#
+# The entry is mixed, and that is the whole reason this is a script rather than one packer call.
+# A clip the fine-tune did not improve ships its wave-2 rollout, which was driven by the
+# bridge-cleaned Tier 2 reference; a clip the fine-tune did improve ships a rollout driven by the
+# released CLEAN Tier 1 trajectory. The kit packer fits one rigid transform per episode from frame
+# 0 of the evaluator's recorded reference to frame 0 of whatever `--frame-references` names, so
+# pointing the whole entry at one tree would silently mis-convert half of it.
+#
+# `v2d frame-refs --assemble` builds that mixed tree from a per-clip map and refuses an incomplete
+# one. Adoption is decided by tools/t1/adopt.py under the no-regression rule, which may read the
+# kit score HERE and only here: Tier 1's own input_note names the released trajectory as the
+# configured scoring reference, so on this tier the permitted input is what we are scored against.
+set -euo pipefail
+S=${V2D_SCRATCH:-/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad}
+REPO=/home/jetson3/projects/v2d-challenge
+PY="$REPO/.venv311/bin/python"; V2D="$REPO/.venv311/bin/v2d"
+KIT=$S/kit_extract/v2d_submission_kit; DATA=$S/data
+SHIPPED_ROLLOUTS=$S/t2_entry_wave2/rollouts
+SHIPPED_REFS=$S/t2_entry_wave2/frame_refs
+CLEAN_REFS=$S/refs_tier1                      # the released Tier 1 trajectory as npz
+COMMIT="${COMMIT:-https://github.com/luaiabuelsamen/v2d-track2/commit/e8ffe8f}"
+OUT=${1:-$S/t1_entry_v2}
+ADOPTION=$REPO/results/t1_finetune_adoption.json
+
+rm -rf "$OUT"; mkdir -p "$OUT/results"
+cp "$SHIPPED_ROLLOUTS"/episode_*.parquet "$SHIPPED_ROLLOUTS"/episode_*.json "$OUT/results/"
+ADOPTED=$("$PY" -c "import json,sys; print(' '.join(json.load(open(sys.argv[1]))['adopted']))" "$ADOPTION")
+echo "adopted from the fine-tune: ${ADOPTED:-none}"
+
+# Each adopted clip's rollout comes from the box that produced it. Generation 2 wins over
+# generation 1 when both adopted, because gen 2 is only adopted against gen 1.
+for TAG in $ADOPTED; do
+  EP=$((10#${TAG#e})); F=$(printf 'episode_%06d' "$EP"); SRC=""
+  for d in ws_tier1 t1f_1 t1f_2c t1f_3c ws_chain; do
+    [ -s "$S/$d/results/rollouts/$F.parquet" ] && SRC=$S/$d/results/rollouts
+  done
+  [ -n "$SRC" ] || { echo "FATAL: $TAG adopted but no Tier 1 rollout found" >&2; exit 3; }
+  cp "$SRC/$F.parquet" "$SRC/$F.json" "$OUT/results/"
+  echo "   $TAG <- ${SRC#$S/}"
+done
+
+# the per-clip reference map: clean Tier 1 for what the fine-tune drove, bridge_v1 for the rest
+"$PY" - "$ADOPTION" "$CLEAN_REFS" "$SHIPPED_REFS" "$OUT/refmap.json" <<'PY'
+import json, sys
+adoption, clean, shipped, out = sys.argv[1:5]
+adopted = set(json.load(open(adoption))["adopted"])
+json.dump({f"e{i:02d}": (clean if f"e{i:02d}" in adopted else shipped) for i in range(30)},
+          open(out, "w"), indent=1)
+PY
+"$V2D" frame-refs --dataset-root "$DATA" --assemble "$OUT/refmap.json" --out "$OUT/frame_refs" \
+  -o "$OUT/frame_refs.json"
+
+COUNT=$(ls "$OUT"/results/episode_*.parquet | wc -l)
+[ "$COUNT" = 30 ] || { echo "FATAL: $COUNT episodes, expected 30" >&2; exit 3; }
+
+"$PY" -I "$KIT/tools/pack_submission.py" --track track_2_tier1 \
+  --results "$OUT/results" --dataset-root "$DATA" --frame-references "$OUT/frame_refs" \
+  --code-commit "$COMMIT" -o "$OUT/track2_tier1.csv" 2>&1 | tail -6
+"$PY" -I "$KIT/tools/preflight.py" --track track_2_tier1 \
+  --results "$OUT/results" --dataset-root "$DATA" --skip-kaggle 2>&1 | tail -6
+"$V2D" score --kit-root "$KIT" --dataset-root "$DATA" --tier tier1 \
+  --pred "csv:$OUT/track2_tier1.csv" -o "$OUT/track2_tier1.score.json" | tail -8
+echo
+echo "entry: $OUT/track2_tier1.csv"
