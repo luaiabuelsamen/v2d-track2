@@ -12,10 +12,10 @@
 | tier2-sp-sr | 5/18 | 0.66666 | 0.80000 | 0.133 |
 | tier2-mp-sr | 5/18 | 0.46666 | 0.80000 | 0.333 |
 | tier2-mppe | **4/18** | 14.13 cm | 9.28 | 4.8 cm |
-| tier3-auc | **3/10** | 0.25271 | 0.33311 | 0.080 |
-| tier3-sp-sr | 7/10 | 0.16666 | 0.40000 | 0.233 |
+| tier3-auc | **3/10** | 0.26781 | 0.33311 | 0.065 |
+| tier3-sp-sr | **5/10** | 0.20000 | 0.40000 | 0.200 |
 | tier3-mp-sr | 6/10 | 0.03333 | 0.10000 | 0.067 |
-| tier3-mppe | **5/10** | 48.88 cm | 31.34 | 17.5 cm |
+| tier3-mppe | **5/10** | 47.77 cm | 31.34 | 16.4 cm |
 
 Tier 1 went 0.46523 → **0.52687** today, past CHORD's 0.51038; Tier 3 went from **no entry at all**
 to 3rd on AUC. Tier 2 is unchanged because the board already holds our best Tier 2 file.

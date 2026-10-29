@@ -52,12 +52,20 @@ teams, so there is more room there than anywhere else.
 |---|---|---|
 | **Tier 1's eleven weak clips, full-length on clean references** | **$36** | **+19** (auc 12→6, mppe 11→7, sp-sr 12→8, mp-sr 11→6) |
 | Tier 2 dual-reference objective | a patch + ~$12 pilot | +8 (auc 5→3, mppe 4→2, both SRs 5→3) |
-| The seven MP-SR near-misses, 1-2 cm each | a reward patch **plus ~$21** (7 clips x 4.4 box-h) | +7 (mp-sr 11→4) |
+| The seven MP-SR near-misses, 1-2 cm each | a reward patch plus **~$3 per clip attempted** | **+1 to +2 from the FIRST success** (see below) |
 | Tier 3 MPPE push | $2.44, **done** | **+1, banked** (mppe 6→5, confirmed live at 48.883 vs 49.938) |
 
 **So $36 of credit is worth about +19 rank points and nothing else comes close** — roughly five
 rank points per ten dollars, against the one point the last $2.30 buys. If a top-up arrives, it
 goes to the eleven weak Tier 1 clips before anything else on this page.
+
+**The Tier 1 field is dense exactly where we sit, which changes this table's arithmetic**
+(`results/t1_rank_sensitivity.json`, pulled 21:20 UTC). The team immediately above us is
++0.01496 of AUC (wte09fl), −0.86 cm of MPPE (Rohit Pardeshi), +0.03333 of MP-SR — *one clip
+crossing the gate* — and +0.03334 of SP-SR, which is also one clip and passes **two** teams tied at
+0.70. So up to **+5 rank points sit within about one clip's worth of improvement**, and the MP-SR
+arm pays from its first success rather than needing all seven. That makes a terminal-accuracy
+objective the best-value method work left, at ~$3 per clip attempted rather than $21 up front.
 
 To correct an earlier version of this table: the MP-SR row is **not** free. Writing the objective
 costs nothing, but the seven clips need full-length training to use it — the warm start was already

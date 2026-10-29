@@ -1,0 +1,51 @@
+{
+ "what": "How close the Tier 1 neighbours are, and what that does to the value of a small gain",
+ "pulled": "2026-10-29 21:20 UTC, all four Tier 1 boards",
+ "us_and_the_team_immediately_above": {
+  "tier1-auc": {
+   "us": 0.52687,
+   "above": 0.54183,
+   "team": "wte09fl",
+   "gap": "+0.01496 of AUC"
+  },
+  "tier1-sp-sr": {
+   "us": 0.66666,
+   "above": 0.7,
+   "team": "wte09fl and CHORD Baseline, tied",
+   "gap": "+0.03334 = ONE clip crossing the gate, and it passes TWO teams"
+  },
+  "tier1-mp-sr": {
+   "us": 0.5,
+   "above": 0.53333,
+   "team": "wte09fl",
+   "gap": "+0.03333 = ONE clip crossing the gate"
+  },
+  "tier1-mppe": {
+   "us": 13.90141,
+   "above": 13.04419,
+   "team": "Rohit Pardeshi",
+   "gap": "-0.86 cm"
+  }
+ },
+ "the_point": "Every one of those is a small number. One clip crossing the 3 cm MP-SR gate is +1 rank; one clip crossing the 10 cm SP-SR gate is +2, because two teams are tied at 0.70. 0.86 cm of mean MPPE is +1, and 0.015 of AUC is +1. So up to +5 rank points sit within about one clip's worth of improvement -- not the 0.367 of AUC that separates us from first place, which is what I had been quoting as the Tier 1 story.",
+ "which_clips_are_that_close": {
+  "mp_sr_gate_3cm": {
+   "e29": 3.85,
+   "e11": 3.97,
+   "e02": 4.57,
+   "e21": 4.79,
+   "e09": 4.89,
+   "e13": 4.98,
+   "e17": 5.15
+  },
+  "sp_sr_gate_10cm": {
+   "e07": 10.89,
+   "e05": 14.63
+  },
+  "orientation_limited": {
+   "e16": "MPPE 2.91 cm and passes MP-SR at 30 deg, yet fails SP-SR at 0.5 rad = 28.6 deg, so its orientation error sits in that 1.4 deg band"
+  }
+ },
+ "why_the_warm_start_cannot_collect_it": "12 of 12 rejected Tier 1 clips came back WORSE on MPPE: e02 4.57 -> 35.05, e21 4.79 -> 10.34, e29 3.85 -> 8.72, e09 4.89 -> 11.66, e11 3.97 -> 4.44, e17 5.15 -> 5.29, e10 2.97 -> 6.13, e18 1.96 -> 4.39, e20 2.08 -> 3.10, e03 2.66 -> 2.80, e04 103 -> 122, and only e01 improved at all (43.67 -> 43.57). The arm trades position accuracy for reference tracking, which is the opposite of what a gate flip needs. So the remaining $2.61 cannot buy one of these, and that is a measurement, not a budget excuse.",
+ "what_this_changes_in_the_roadmap": "The MP-SR item in docs/TO_THE_TOP.md was costed at ~$21 for 7 clips and valued at +7 rank points, which implicitly needed most of them to work. The board says ONE flip is worth +1 to +2, so the arm pays from its first success and does not need all seven. That makes a terminal-accuracy objective (tighter position and orientation in the final curriculum stage, or the contact-role reward in docs/ARM_CR.md) the best-value method work left, at roughly $3 per clip attempted."
+}

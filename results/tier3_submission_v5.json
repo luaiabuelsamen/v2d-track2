@@ -1,0 +1,104 @@
+{
+ "what": "tier3 submission v5, uploaded 2026-10-29 21:17 UTC -- the MPPE push, complete",
+ "csv": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t3_entry_v5/track2_tier3.csv",
+ "csv_sha256": "3158bdb979ad723d8c78ac546eacde5a99f19f88c2656bf1744927c0b8f3b0cb",
+ "csv_bytes": 11840267,
+ "code_commit_url": "https://github.com/luaiabuelsamen/v2d-track2/commit/88110f2d1b50a0c58a2cb8aa3c78cf64873072c9",
+ "kaggle_submission_refs": {
+  "auc": 57782953,
+  "sp_sr": 57782955,
+  "mp_sr": 57782957,
+  "mppe": 57782959
+ },
+ "local_score": {
+  "add_auc": 0.26782,
+  "spider_sr": 0.2,
+  "maniptrans_sr": 0.03333,
+  "mppe_cm": 47.7718
+ },
+ "public_score": {
+  "add_auc": "0.26781",
+  "spider_sr": "0.20000",
+  "maniptrans_sr": "0.03333",
+  "mppe_cm": "47.77180"
+ },
+ "ranks_after": {
+  "tier3-auc": "3rd of 10 (1st 0.33311, 2nd 0.32937)",
+  "tier3-sp-sr": "5th, up from 7th -- 0.20000 clears three teams tied at 0.16666",
+  "tier3-mppe": "5th (4th is nima arki at 42.30)",
+  "tier3-mp-sr": "6th, unchanged at 1 of 30"
+ },
+ "adopted_12_of_30": [
+  "e00",
+  "e01",
+  "e03",
+  "e06",
+  "e12",
+  "e16",
+  "e21",
+  "e22",
+  "e23",
+  "e25",
+  "e26",
+  "e29"
+ ],
+ "the_batch": {
+  "e29": {
+   "auc": [
+    0.23983,
+    0.69098
+   ],
+   "mppe_cm": [
+    30.89,
+    3.46
+   ],
+   "sp_sr": [
+    0,
+    1
+   ],
+   "captured_pct": 107,
+   "note": "the clip of the day: it flipped the SP-SR gate"
+  },
+  "e03": {
+   "mppe_cm": [
+    150.88,
+    82.04
+   ],
+   "captured_pct": 51
+  },
+  "e16": {
+   "mppe_cm": [
+    67.24,
+    49.09
+   ],
+   "captured_pct": 71
+  },
+  "e25": {
+   "mppe_cm": [
+    124.13,
+    118.22
+   ],
+   "captured_pct": 9
+  },
+  "e01": {
+   "mppe_cm": [
+    39.52,
+    37.1
+   ],
+   "captured_pct": 9
+  }
+ },
+ "spend_bar": "FAILED as predicted. The batch moved mean MPPE 51.864 -> 47.772, i.e. -4.09 cm against the registered -5 cm. At 20:42, before e29 ran, I recorded that the bar could reach at most -4.03 cm; e29 overcaptured slightly so the actual is -4.09, and it still fails. No further Tier 3 box, and the arm is out of material anyway (8.57 cm of headroom across all 13 untried clips).",
+ "both_variants_as_promised": {
+  "shipped_2pct": {
+   "add_auc": 0.26782,
+   "mppe_cm": 47.772
+  },
+  "alternative_0pct": {
+   "add_auc": 0.26739,
+   "mppe_cm": 47.711
+  },
+  "difference": "e17 only: the 0% variant admits it, trading 0.00043 of AUC for 0.06 cm of MPPE"
+ },
+ "quota_after": "1 submission left today on each Tier 3 board"
+}
