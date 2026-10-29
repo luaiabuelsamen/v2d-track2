@@ -91,3 +91,28 @@ not reachable with this arm at any price**, and the Tier 3 AUC gap of 0.0825 nee
 AUC where a good clip yields +0.04. At 4 of 7 adopting historically, expect 3-4 of these 6 to
 adopt. The bar stays: **mean MPPE must fall by at least 5 cm and no board may fall**, or the entry
 is not re-uploaded.
+
+## Which rule the next entry uses, decided 18:02 UTC before any of the five clips exists
+
+The 2% margin creates a question I would rather settle now than after the data lands: does it apply
+only to the five new clips, or to all thirty?
+
+**It applies to all thirty.** One rule for the whole entry is easier to state and to check, and the
+rule reads nothing but each rollout's own reference columns, so applying it uniformly is still
+input-only and still legal on Tier 3.
+
+The consequence is that **e17 leaves the entry** — its input gain is 0.56%, under the margin. I am
+recording the awkward part rather than hiding it: **I already know e17's truth score**, and I know
+that dropping it happens to help AUC by 0.0004. So this decision is not untainted, however
+input-only the rule is. Three things make it defensible anyway, and they should be weighed together:
+
+1. The margin was registered *before* the five clips were pulled, on the argument that a 0.56%
+   improvement on a 99 cm error is noise — an argument that stands without any truth score.
+2. e17 is not in the entry that is currently on the board; v3 was packed before it landed. So this
+   is not a removal, it is a decision not to add.
+3. It is worth ±0.0004 of AUC and ∓0.06 cm of MPPE, which changes no rank on any board. Nothing
+   rides on it but the discipline.
+
+To keep that checkable, the next pack reports **both** variants — all thirty at the 2% margin, and
+the same entry with e17 admitted at 0% — and ships the former. If they ever disagree by enough to
+move a rank, that disagreement gets reported rather than resolved quietly.
