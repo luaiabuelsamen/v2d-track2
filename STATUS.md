@@ -1,5 +1,35 @@
 # STATUS — v2d (NVIDIA V2D Challenge, Track 2)
 
+## Live, 2026-10-29 10:20 UTC: the Tier 1 fine-tune is working
+
+Tier 1 is the one tier where we sit **below** the CHORD baseline, and the warm-start fine-tune is
+closing it. Three of nine scored clips adopt under the registered no-regression rule:
+
+| | AUC | note |
+|---|---|---|
+| shipped Tier 1 entry (on the boards) | 0.46523 | the Tier 2 file, byte-identical |
+| after adopting e00, e12, e24 | **0.48202** | `results/t1_finetune_adoption.json` |
+| CHORD Tier 1 baseline | 0.51038 | needs +0.0284 more |
+
+e00 **0.5178 → 0.8654**, e12 **0.7904 → 0.8839**, e24 **0.8942 → 0.9567**, each also improving
+MPPE and holding every success gate — not the AUC-for-MPPE trade that killed the per-clip-best
+entry. Ten clips are still training on four boxes; at the adopted clips' average gain of +0.168,
+five more adoptions would land Tier 1 at about 0.510.
+
+**Which clips it helps is predictable.** Every clip that gained ships its *final* checkpoint; every
+clip where z-drop had picked an earlier one lost, because the fine-tune re-runs exactly the late
+training stage that selection had rejected (e20 0.715 → 0.480). The three live Tier 1 boxes were
+re-queued onto final-checkpoint clips only, dropping 11 predicted-loss clips and about $4.80 that
+could not have changed the entry — adoption rejects a regression, so a predicted loss contributes
+nothing either way. See `docs/T1_WARMSTART.md`.
+
+**Tier 3 fine-tune, 7 of 10 clips:** pass 1 0.37103 → 0.40060 raw → **0.44226 after adoption**,
+clearing its registered 0.3395 bar. The input-only rule adopted the four largest true gains and
+rejected the only serious loss while reading no ground truth — the first direct evidence that the
+rule we are *required* to use on Tier 2 and Tier 3 is selective, not merely safe.
+
+Spend $14.37 of the $30.38 credit; four boxes live.
+
 ## Where the last free 0.1 of score is: Tier 3, which we have never submitted
 
 The final score is a weighted combination of all three tiers, and our Tier 3 is **nothing at all**.

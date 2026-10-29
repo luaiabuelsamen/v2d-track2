@@ -1,0 +1,171 @@
+{
+ "what": "Tier 1 adoption of the warm-start fine-tune, under the registered no-regression rule",
+ "rule": "AUC improves and no other board regresses; legal because Tier 1's permitted input is the configured scoring reference",
+ "clips_scored": 9,
+ "adopted": [
+  "e00",
+  "e12",
+  "e24"
+ ],
+ "entry_mean_auc": {
+  "shipped": 0.46523,
+  "after_adoption": 0.48202,
+  "gain": 0.01679
+ },
+ "chord_tier1_baseline": 0.51038,
+ "clips": {
+  "e00": {
+   "shipped": {
+    "add_auc": 0.51775,
+    "spider_sr": 1.0,
+    "maniptrans_sr": 1.0,
+    "mppe_cm": 2.04239
+   },
+   "fine_tuned": {
+    "add_auc": 0.86544,
+    "spider_sr": 1.0,
+    "maniptrans_sr": 1.0,
+    "mppe_cm": 1.57826
+   },
+   "delta_auc": 0.34769,
+   "ships_final_checkpoint": true,
+   "adopted": true
+  },
+  "e01": {
+   "shipped": {
+    "add_auc": 0.20013,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 43.66769
+   },
+   "fine_tuned": {
+    "add_auc": 0.18959,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 43.57249
+   },
+   "delta_auc": -0.01054,
+   "ships_final_checkpoint": false,
+   "adopted": false
+  },
+  "e02": {
+   "shipped": {
+    "add_auc": 0.42628,
+    "spider_sr": 1.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 4.5732
+   },
+   "fine_tuned": {
+    "add_auc": 0.36996,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 35.04839
+   },
+   "delta_auc": -0.05631,
+   "ships_final_checkpoint": false,
+   "adopted": false
+  },
+  "e10": {
+   "shipped": {
+    "add_auc": 0.47938,
+    "spider_sr": 1.0,
+    "maniptrans_sr": 1.0,
+    "mppe_cm": 2.97229
+   },
+   "fine_tuned": {
+    "add_auc": 0.47457,
+    "spider_sr": 1.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 6.12572
+   },
+   "delta_auc": -0.0048,
+   "ships_final_checkpoint": true,
+   "adopted": false
+  },
+  "e11": {
+   "shipped": {
+    "add_auc": 0.46757,
+    "spider_sr": 1.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 3.97126
+   },
+   "fine_tuned": {
+    "add_auc": 0.38826,
+    "spider_sr": 1.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 4.44029
+   },
+   "delta_auc": -0.07931,
+   "ships_final_checkpoint": false,
+   "adopted": false
+  },
+  "e12": {
+   "shipped": {
+    "add_auc": 0.79036,
+    "spider_sr": 1.0,
+    "maniptrans_sr": 1.0,
+    "mppe_cm": 2.0389
+   },
+   "fine_tuned": {
+    "add_auc": 0.88393,
+    "spider_sr": 1.0,
+    "maniptrans_sr": 1.0,
+    "mppe_cm": 1.18175
+   },
+   "delta_auc": 0.09357,
+   "ships_final_checkpoint": true,
+   "adopted": true
+  },
+  "e20": {
+   "shipped": {
+    "add_auc": 0.71485,
+    "spider_sr": 1.0,
+    "maniptrans_sr": 1.0,
+    "mppe_cm": 2.08308
+   },
+   "fine_tuned": {
+    "add_auc": 0.48011,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 1.0,
+    "mppe_cm": 3.10317
+   },
+   "delta_auc": -0.23474,
+   "ships_final_checkpoint": false,
+   "adopted": false
+  },
+  "e21": {
+   "shipped": {
+    "add_auc": 0.20612,
+    "spider_sr": 1.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 4.785
+   },
+   "fine_tuned": {
+    "add_auc": 0.2229,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 10.34028
+   },
+   "delta_auc": 0.01678,
+   "ships_final_checkpoint": true,
+   "adopted": false
+  },
+  "e24": {
+   "shipped": {
+    "add_auc": 0.89422,
+    "spider_sr": 1.0,
+    "maniptrans_sr": 1.0,
+    "mppe_cm": 1.56091
+   },
+   "fine_tuned": {
+    "add_auc": 0.95672,
+    "spider_sr": 1.0,
+    "maniptrans_sr": 1.0,
+    "mppe_cm": 1.01035
+   },
+   "delta_auc": 0.0625,
+   "ships_final_checkpoint": true,
+   "adopted": true
+  }
+ }
+}
