@@ -1,0 +1,23 @@
+{
+ "what": "Is the 2% input-gain margin a tuned number or a robust one?",
+ "measured_input_gain_per_adopted_clip_pct": {
+  "e21": 96.36,
+  "e22": 96.35,
+  "e06": 91.52,
+  "e23": 86.46,
+  "e00": 83.66,
+  "e26": 57.05,
+  "e12": 39.63,
+  "e17": 0.56
+ },
+ "rejected_clips_pct": {
+  "e18": -0.48,
+  "e08": -11.24,
+  "e24": -17.54,
+  "e20": -29.09
+ },
+ "finding": "The distribution is bimodal with an enormous gap: every genuine adoption gains 39.6% to 96.4% of its input error, the rejections all lose ground, and e17 sits alone at +0.56%. Any threshold between about 1% and 39% produces exactly the same twelve verdicts.",
+ "why_it_matters": "The margin is therefore not a tuned parameter and 2% was not chosen to produce a particular answer -- it could have been 5% or 30% with identical results. That is what makes the pre-registration meaningful rather than decorative.",
+ "effect_on_what_is_already_on_the_board": "None. All seven adoptions in the uploaded Tier 3 v3 entry clear the margin by at least a factor of 20, so the uniform rule does not retroactively invalidate anything submitted. Only e17, which was never in a submitted entry, is excluded.",
+ "command": "tools/t3/adopt.py <pass1> <finetune> --min-input-gain-pct 2 -o <out.json>"
+}
