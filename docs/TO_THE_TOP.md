@@ -131,6 +131,13 @@ reward of `docs/ARM_CR.md`, which was built and smoke-tested but never run to co
   gates. The gain comes from re-fitting to a *new* reference, never from more steps.
 - **Tier 2 re-uploads.** The board already holds our best Tier 2 file; the second-wave candidate
   scored 0.46313, worse.
+- **Re-deriving the object's orientation from the clean hand pose.** Refuted on 2026-10-29:
+  **0 of 29 clips** have a rigid grasp, median orientation spread 21.6° one-handed and 56.5°
+  two-handed against Tier 2's own 21.4° of orientation noise (`docs/TRACK_WHAT.md`). This also
+  revises the Tier 2 item above: our entry at 0.46522 is already close to our cleaner's own
+  reference ceiling of 0.4755, so **Tier 2 is reference-bound rather than policy-bound**, and a
+  dual-reference objective is worth trying precisely because it learns to leave the noisy channel
+  alone rather than trying to clean it.
 - **Negative-headroom Tier 3 clips** (e04 −47 cm, e19 −183, e14 −114, e27 −141). The policy there
   already beats the reconstruction, and the input-only rule would adopt a regression.
 
