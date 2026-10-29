@@ -133,3 +133,26 @@ Point 3 also supersedes most of the value of the still-owed two-clip Tier 2-inpu
 broken eval image depresses every clip uniformly, so a score spread that correlates with
 reconstruction quality is itself evidence the image is sound. The control stays available on the
 pass-2 box, where it costs two extra evaluations on a box already paid for.
+
+## Entry v2, after the fine-tune (2026-10-29 11:00 UTC)
+
+`brev/pack_t3_entry.sh` rebuilds the entry from whichever rollout each clip ships: 25 from pass 1,
+five replaced by the warm-start fine-tune under the input-only rule in `tools/t3/adopt.py`.
+
+| | AUC | SP-SR | MP-SR | MPPE |
+|---|---|---|---|---|
+| pass 1 (packed, never uploaded) | 0.23233 | 0.000 | 0.000 | 62.11 cm |
+| **entry v2** | **0.25059** | **0.1667** | **0.0333** | **54.44 cm** |
+
+Better on all four boards, which is what makes it an unambiguous replacement rather than a trade.
+SP-SR moving 0 → 5 clips is the headline: pass 1 passed no clip's 10 cm gate at all.
+
+Kit packer `pass`, kit preflight **"Ready to submit"**, 22,989 rows, 30 distinct checkpoint
+digests, and the packer's own frame check at a maximum residual of 2.72e-07 m / 1.60e-07 rad.
+Provenance columns are complete and uniform where the rules require it.
+
+**Still not uploaded, and the reason is provenance, not the file.** `code_commit_url` points at
+`commit/e8ffe8f`, which is pushed and resolvable — but the warm-start code that produced five of
+these thirty rollouts lives in commits after it that have never left this machine. A judge
+resolving that URL would not find the code that made the entry. `git push origin main` fixes it in
+one command; until then the provenance would be true of the file and false of the work.

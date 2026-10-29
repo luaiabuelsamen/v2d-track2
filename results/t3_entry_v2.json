@@ -1,0 +1,30 @@
+{
+ "what": "Tier 3 entry v2: 25 clips from pass 1, 5 replaced by the warm-start fine-tune.",
+ "csv": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t3_entry_v2/track2_tier3.csv",
+ "csv_sha256": "6ef70da2192b617271e58bc6b4d33c5cefa590585641e7b96bde469ee99f07da",
+ "csv_bytes": 11085354,
+ "rows": 22989,
+ "episodes": 30,
+ "built_by": "brev/pack_t3_entry.sh (the kit's own pack_submission.py and preflight.py)",
+ "kit_packer": "pass",
+ "kit_preflight": "Ready to submit",
+ "submittable": true,
+ "distinct_checkpoint_digests": 30,
+ "selection": "input-only: tools/t3/adopt.py, no ground truth read. Adopted e00 e21 e22 e23 e26",
+ "local_score": {
+  "add_auc": 0.25059,
+  "spider_sr": 0.16667,
+  "maniptrans_sr": 0.03333,
+  "mppe_cm": 54.43634
+ },
+ "pass1_for_comparison": {
+  "add_auc": 0.23233,
+  "spider_sr": 0.0,
+  "maniptrans_sr": 0.0,
+  "mppe_cm": 62.11033
+ },
+ "improves_on_all_four": true,
+ "frame_reference": "$S/t3/npz_world, our own reconstruction in released_track2_world; Tier 3 has input_path null so there is no released input to fit against. Packer residual max 2.72e-07 m / 1.60e-07 rad.",
+ "uploaded": false,
+ "the_one_thing_blocking_upload": "code_commit_url is https://github.com/luaiabuelsamen/v2d-track2/commit/e8ffe8f, which is pushed and resolvable -- but the warm-start code that produced 5 of these 30 rollouts lives in commits after it that are NOT pushed (HEAD is 19ff50c). A judge resolving that URL would not find the code that made the entry. `git push origin main` fixes it; until then the entry should not be uploaded, because the provenance would be true of the file and false of the work."
+}

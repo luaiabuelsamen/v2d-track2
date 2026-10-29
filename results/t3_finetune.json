@@ -1,20 +1,57 @@
 {
- "what": "Tier 3 fine-tune: 50M warm-start steps per clip onto our own video reconstruction.",
- "status": "7 of 10 clips landed; e20 e21 e29 still training",
- "recipe": "warm start from each clip's shipped wave-2 actor, cold critic, actor LR x0.1 for 2,000 updates, 299,999,232 -> 349,999,104 steps, seed 42, support per clip, arm-A rewards",
- "means_over_landed": {
-  "pass1": 0.37103,
-  "fine_tuned_raw": 0.4006,
-  "after_adoption": 0.44226
+ "what": "Tier 3 fine-tune, complete: 50M warm-start steps per clip onto our own video reconstruction.",
+ "clips_planned": [
+  "e00",
+  "e08",
+  "e18",
+  "e20",
+  "e21",
+  "e22",
+  "e23",
+  "e24",
+  "e26",
+  "e29"
+ ],
+ "clips_run": [
+  "e00",
+  "e08",
+  "e18",
+  "e20",
+  "e21",
+  "e22",
+  "e23",
+  "e24",
+  "e26"
+ ],
+ "e29": "lost. Committing brev/t1_eval_clean.sh while a launcher was executing it corrupted that shell's lazy read of the script and aborted it; v2d-t3ws-b was torn down at 4 of 5 clips. e29 ships its pass-1 rollout, so no score was lost against today's entry.",
+ "ten_clip_mean_auc": {
+  "pass1": 0.33953,
+  "after_adoption": 0.39432,
+  "registered_bar": 0.3395,
+  "bar_cleared": true
  },
- "registered_bar": {
-  "clause_1_ten_clip_mean_above": 0.3395,
-  "reconstruction_ceiling_on_these_ten": 0.4368,
-  "status": "partial; decided when all ten land"
+ "thirty_clip_entry": {
+  "pass1": {
+   "add_auc": 0.23233,
+   "spider_sr": 0.0,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 62.11033
+  },
+  "after_adoption": {
+   "add_auc": 0.25059,
+   "spider_sr": 0.16667,
+   "maniptrans_sr": 0.03333,
+   "mppe_cm": 54.43634
+  }
  },
- "adoption_rule": "input-only: the fine-tuned rollout ships only if it has no z-drop and sits closer to the reconstruction it was driven by. No truth is read.",
- "the_rule_validated_itself_here": "On these seven the rule adopted e00 e22 e23 e26 and rejected e08 e18 e24. Those are, in truth, the four largest gains (+0.086 +0.165 +0.124 +0.124) and the three it rejected include the only serious loss (e08 -0.307). It turned a raw +0.0296 into +0.0712 without reading truth.",
- "do_not_extend_this_to_the_other_twenty": "Pass 1 showed the policy already BEATS its input on the 20 badly-reconstructed clips (0.1787 vs 0.1236). There, 'closer to the input' means closer to a wrong trajectory, so the input-only rule is anti-correlated with truth and would adopt damage. The rule is only safe where the reconstruction is better than the policy, which is exactly the ten clips chosen.",
+ "adopted": [
+  "e00",
+  "e21",
+  "e22",
+  "e23",
+  "e26"
+ ],
+ "the_input_only_rule_scored_7_of_9": "It read only each rollout's own reference columns and got the sign right on 7 of the 9 clips re-run. Both misses (e18 +0.025, e20 +0.015) are gains it declined; it never once adopted a loss, including e08 at -0.307. Its errors are conservative by construction: a rollout that tracks its input better cannot be much worse against truth unless the input itself is bad, which is why this arm was confined to the ten clips the reconstruction tracks well.",
  "clips": {
   "e00": {
    "pass1": {
@@ -23,18 +60,159 @@
     "maniptrans_sr": 0.0,
     "mppe_cm": 23.26055
    },
+   "in_arm": true,
+   "re_run": true,
+   "adopted": true,
    "fine_tuned": {
     "add_auc": 0.49229,
     "spider_sr": 1.0,
     "maniptrans_sr": 0.0,
     "mppe_cm": 4.93702
    },
-   "input_mean_err_cm": {
+   "delta_auc": 0.08572,
+   "input_err_cm": {
     "pass1": 25.536,
     "fine_tuned": 4.173
    },
-   "adopted": true,
-   "ships_auc": 0.49229
+   "ships": {
+    "add_auc": 0.49228791773778924,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 4.937017489634672,
+    "spider_sr": 1.0
+   }
+  },
+  "e01": {
+   "pass1": {
+    "add_auc": 0.15981,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 39.52142
+   },
+   "in_arm": false,
+   "re_run": false,
+   "adopted": false,
+   "ships": {
+    "tag": "e01",
+    "add_auc": 0.15980589022757696,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 39.52141934588098,
+    "shipped_tier2_auc": 0.2001338688085676
+   }
+  },
+  "e02": {
+   "pass1": {
+    "add_auc": 0.1287,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 79.50027
+   },
+   "in_arm": false,
+   "re_run": false,
+   "adopted": false,
+   "ships": {
+    "tag": "e02",
+    "add_auc": 0.12869897959183674,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 79.50027136999724,
+    "shipped_tier2_auc": 0.4262755102040816
+   }
+  },
+  "e03": {
+   "pass1": {
+    "add_auc": 0.16181,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 150.88034
+   },
+   "in_arm": false,
+   "re_run": false,
+   "adopted": false,
+   "ships": {
+    "tag": "e03",
+    "add_auc": 0.16181177976952624,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 150.8803431322284,
+    "shipped_tier2_auc": 0.7806498079385403
+   }
+  },
+  "e04": {
+   "pass1": {
+    "add_auc": 0.1187,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 117.36986
+   },
+   "in_arm": false,
+   "re_run": false,
+   "adopted": false,
+   "ships": {
+    "tag": "e04",
+    "add_auc": 0.11869551681195517,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 117.36985778440953,
+    "shipped_tier2_auc": 0.14655977584059776
+   }
+  },
+  "e05": {
+   "pass1": {
+    "add_auc": 0.1197,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 63.00096
+   },
+   "in_arm": false,
+   "re_run": false,
+   "adopted": false,
+   "ships": {
+    "tag": "e05",
+    "add_auc": 0.11970338983050847,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 63.00095805108155,
+    "shipped_tier2_auc": 0.26601445663010964
+   }
+  },
+  "e06": {
+   "pass1": {
+    "add_auc": 0.31216,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 92.96254
+   },
+   "in_arm": false,
+   "re_run": false,
+   "adopted": false,
+   "ships": {
+    "tag": "e06",
+    "add_auc": 0.3121565934065934,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 92.96253797098016,
+    "shipped_tier2_auc": 0.47584706959706957
+   }
+  },
+  "e07": {
+   "pass1": {
+    "add_auc": 0.17759,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 52.14891
+   },
+   "in_arm": false,
+   "re_run": false,
+   "adopted": false,
+   "ships": {
+    "tag": "e07",
+    "add_auc": 0.17759486607142858,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 52.148909430483435,
+    "shipped_tier2_auc": 0.2508370535714286
+   }
   },
   "e08": {
    "pass1": {
@@ -43,18 +221,199 @@
     "maniptrans_sr": 0.0,
     "mppe_cm": 18.46365
    },
+   "in_arm": true,
+   "re_run": true,
+   "adopted": false,
    "fine_tuned": {
     "add_auc": 0.25265,
     "spider_sr": 0.0,
     "maniptrans_sr": 0.0,
     "mppe_cm": 20.52159
    },
-   "input_mean_err_cm": {
+   "delta_auc": -0.3072,
+   "input_err_cm": {
     "pass1": 20.1,
     "fine_tuned": 22.36
    },
+   "ships": {
+    "tag": "e08",
+    "add_auc": 0.5598516949152542,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 18.46364854895159,
+    "shipped_tier2_auc": 0.665430790960452
+   }
+  },
+  "e09": {
+   "pass1": {
+    "add_auc": 0.18096,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 48.87953
+   },
+   "in_arm": false,
+   "re_run": false,
    "adopted": false,
-   "ships_auc": 0.55985
+   "ships": {
+    "tag": "e09",
+    "add_auc": 0.18096264367816092,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 48.879527891679686,
+    "shipped_tier2_auc": 0.3002873563218391
+   }
+  },
+  "e10": {
+   "pass1": {
+    "add_auc": 0.22607,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 77.29745
+   },
+   "in_arm": false,
+   "re_run": false,
+   "adopted": false,
+   "ships": {
+    "tag": "e10",
+    "add_auc": 0.2260705289672544,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 77.29745225059406,
+    "shipped_tier2_auc": 0.4793765743073048
+   }
+  },
+  "e11": {
+   "pass1": {
+    "add_auc": 0.09354,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 49.05208
+   },
+   "in_arm": false,
+   "re_run": false,
+   "adopted": false,
+   "ships": {
+    "tag": "e11",
+    "add_auc": 0.09354166666666666,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 49.05208386423324,
+    "shipped_tier2_auc": 0.4675694444444445
+   }
+  },
+  "e12": {
+   "pass1": {
+    "add_auc": 0.30375,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 28.16603
+   },
+   "in_arm": false,
+   "re_run": false,
+   "adopted": false,
+   "ships": {
+    "tag": "e12",
+    "add_auc": 0.30375,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 28.166033976789794,
+    "shipped_tier2_auc": 0.790357142857143
+   }
+  },
+  "e13": {
+   "pass1": {
+    "add_auc": 0.13707,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 54.79112
+   },
+   "in_arm": false,
+   "re_run": false,
+   "adopted": false,
+   "ships": {
+    "tag": "e13",
+    "add_auc": 0.13706616052060738,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 54.791116866863696,
+    "shipped_tier2_auc": 0.1593682212581345
+   }
+  },
+  "e14": {
+   "pass1": {
+    "add_auc": 0.13954,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 32.89754
+   },
+   "in_arm": false,
+   "re_run": false,
+   "adopted": false,
+   "ships": {
+    "tag": "e14",
+    "add_auc": 0.1395392749244713,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 32.897544974871856,
+    "shipped_tier2_auc": 0.2055010070493454
+   }
+  },
+  "e15": {
+   "pass1": {
+    "add_auc": 0.24283,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 54.22926
+   },
+   "in_arm": false,
+   "re_run": false,
+   "adopted": false,
+   "ships": {
+    "tag": "e15",
+    "add_auc": 0.24283216783216782,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 54.22925869390917,
+    "shipped_tier2_auc": 0.6652972027972027
+   }
+  },
+  "e16": {
+   "pass1": {
+    "add_auc": 0.24987,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 67.24277
+   },
+   "in_arm": false,
+   "re_run": false,
+   "adopted": false,
+   "ships": {
+    "tag": "e16",
+    "add_auc": 0.24986897274633124,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 67.24277209697931,
+    "shipped_tier2_auc": 0.5639412997903563
+   }
+  },
+  "e17": {
+   "pass1": {
+    "add_auc": 0.2858,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 118.01857
+   },
+   "in_arm": false,
+   "re_run": false,
+   "adopted": false,
+   "ships": {
+    "tag": "e17",
+    "add_auc": 0.2857954545454545,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 118.01856886411986,
+    "shipped_tier2_auc": 0.4470170454545454
+   }
   },
   "e18": {
    "pass1": {
@@ -63,18 +422,105 @@
     "maniptrans_sr": 0.0,
     "mppe_cm": 31.21895
    },
+   "in_arm": true,
+   "re_run": true,
+   "adopted": false,
    "fine_tuned": {
     "add_auc": 0.34972,
     "spider_sr": 0.0,
     "maniptrans_sr": 0.0,
     "mppe_cm": 31.66211
    },
-   "input_mean_err_cm": {
+   "delta_auc": 0.02491,
+   "input_err_cm": {
     "pass1": 31.132,
     "fine_tuned": 31.281
    },
+   "ships": {
+    "tag": "e18",
+    "add_auc": 0.3248106060606061,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 31.218949997452455,
+    "shipped_tier2_auc": 0.738490675990676
+   }
+  },
+  "e19": {
+   "pass1": {
+    "add_auc": 0.11336,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 88.48267
+   },
+   "in_arm": false,
+   "re_run": false,
    "adopted": false,
-   "ships_auc": 0.32481
+   "ships": {
+    "tag": "e19",
+    "add_auc": 0.11336060948081264,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 88.48267335665571,
+    "shipped_tier2_auc": 0.11625282167042891
+   }
+  },
+  "e20": {
+   "pass1": {
+    "add_auc": 0.40981,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 35.40197
+   },
+   "in_arm": true,
+   "re_run": true,
+   "adopted": false,
+   "fine_tuned": {
+    "add_auc": 0.42529,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 46.85384
+   },
+   "delta_auc": 0.01548,
+   "input_err_cm": {
+    "pass1": 39.39,
+    "fine_tuned": 50.848
+   },
+   "ships": {
+    "tag": "e20",
+    "add_auc": 0.4098101265822785,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 35.40196904457976,
+    "shipped_tier2_auc": 0.7148508137432188
+   }
+  },
+  "e21": {
+   "pass1": {
+    "add_auc": 0.14851,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 115.32814
+   },
+   "in_arm": true,
+   "re_run": true,
+   "adopted": true,
+   "fine_tuned": {
+    "add_auc": 0.19773,
+    "spider_sr": 1.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 8.8489
+   },
+   "delta_auc": 0.04923,
+   "input_err_cm": {
+    "pass1": 116.094,
+    "fine_tuned": 4.227
+   },
+   "ships": {
+    "add_auc": 0.19773230088495575,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 8.848903203846351,
+    "spider_sr": 1.0
+   }
   },
   "e22": {
    "pass1": {
@@ -83,18 +529,26 @@
     "maniptrans_sr": 0.0,
     "mppe_cm": 77.43961
    },
+   "in_arm": true,
+   "re_run": true,
+   "adopted": true,
    "fine_tuned": {
     "add_auc": 0.50939,
     "spider_sr": 1.0,
     "maniptrans_sr": 0.0,
     "mppe_cm": 4.61552
    },
-   "input_mean_err_cm": {
+   "delta_auc": 0.1649,
+   "input_err_cm": {
     "pass1": 76.411,
     "fine_tuned": 2.787
    },
-   "adopted": true,
-   "ships_auc": 0.50939
+   "ships": {
+    "add_auc": 0.5093880389429764,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 4.615522570149649,
+    "spider_sr": 1.0
+   }
   },
   "e23": {
    "pass1": {
@@ -103,18 +557,26 @@
     "maniptrans_sr": 0.0,
     "mppe_cm": 35.32195
    },
+   "in_arm": true,
+   "re_run": true,
+   "adopted": true,
    "fine_tuned": {
     "add_auc": 0.42633,
     "spider_sr": 1.0,
     "maniptrans_sr": 0.0,
     "mppe_cm": 5.81493
    },
-   "input_mean_err_cm": {
+   "delta_auc": 0.12368,
+   "input_err_cm": {
     "pass1": 35.92,
     "fine_tuned": 4.863
    },
-   "adopted": true,
-   "ships_auc": 0.42633
+   "ships": {
+    "add_auc": 0.4263345665961945,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 5.814926642744191,
+    "spider_sr": 1.0
+   }
   },
   "e24": {
    "pass1": {
@@ -123,18 +585,47 @@
     "maniptrans_sr": 0.0,
     "mppe_cm": 14.57866
    },
+   "in_arm": true,
+   "re_run": true,
+   "adopted": false,
    "fine_tuned": {
     "add_auc": 0.1987,
     "spider_sr": 0.0,
     "maniptrans_sr": 0.0,
     "mppe_cm": 16.70589
    },
-   "input_mean_err_cm": {
+   "delta_auc": -0.00936,
+   "input_err_cm": {
     "pass1": 16.138,
     "fine_tuned": 18.968
    },
+   "ships": {
+    "tag": "e24",
+    "add_auc": 0.2080548128342246,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 14.578655336971824,
+    "shipped_tier2_auc": 0.8942179144385026
+   }
+  },
+  "e25": {
+   "pass1": {
+    "add_auc": 0.08644,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 124.13075
+   },
+   "in_arm": false,
+   "re_run": false,
    "adopted": false,
-   "ships_auc": 0.20805
+   "ships": {
+    "tag": "e25",
+    "add_auc": 0.08643771827706635,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 124.13075063804932,
+    "shipped_tier2_auc": 0.13344004656577416
+   }
   },
   "e26": {
    "pass1": {
@@ -143,18 +634,83 @@
     "maniptrans_sr": 0.0,
     "mppe_cm": 5.4244
    },
+   "in_arm": true,
+   "re_run": true,
+   "adopted": true,
    "fine_tuned": {
     "add_auc": 0.57511,
     "spider_sr": 1.0,
     "maniptrans_sr": 1.0,
     "mppe_cm": 2.33865
    },
-   "input_mean_err_cm": {
+   "delta_auc": 0.12435,
+   "input_err_cm": {
     "pass1": 6.265,
     "fine_tuned": 2.691
    },
-   "adopted": true,
-   "ships_auc": 0.57511
+   "ships": {
+    "add_auc": 0.5751121076233183,
+    "maniptrans_sr": 1.0,
+    "mppe_cm": 2.3386479401141207,
+    "spider_sr": 1.0
+   }
+  },
+  "e27": {
+   "pass1": {
+    "add_auc": 0.27246,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 70.82266
+   },
+   "in_arm": false,
+   "re_run": false,
+   "adopted": false,
+   "ships": {
+    "tag": "e27",
+    "add_auc": 0.2724557522123894,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 70.82266366149972,
+    "shipped_tier2_auc": 0.7793141592920354
+   }
+  },
+  "e28": {
+   "pass1": {
+    "add_auc": 0.06446,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 66.58232
+   },
+   "in_arm": false,
+   "re_run": false,
+   "adopted": false,
+   "ships": {
+    "tag": "e28",
+    "add_auc": 0.06446103238866396,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 66.58232138302171,
+    "shipped_tier2_auc": 0.08913208502024292
+   }
+  },
+  "e29": {
+   "pass1": {
+    "add_auc": 0.23983,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 30.89484
+   },
+   "in_arm": true,
+   "re_run": false,
+   "adopted": false,
+   "ships": {
+    "tag": "e29",
+    "add_auc": 0.2398286937901499,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 30.894841388077715,
+    "shipped_tier2_auc": 0.6270074946466809
+   }
   }
  }
 }
