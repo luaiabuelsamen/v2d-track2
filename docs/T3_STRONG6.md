@@ -45,7 +45,13 @@ reconstruction tree because the stager rewrites the file, so md5 proves nothing 
 **0.97-1.94 cm** from the clean Tier 1 retarget — it is the reconstruction, and it is not a clean
 reference wearing a Tier 3 label.
 
-Launch command, one per box, creates 20 s apart:
+**Revised on the spend projection (results/brev_spend_warmstart.json): ONE box, not two.** Projected
+credit remaining is $6.73, and two boxes at ~$4.50 would leave almost nothing for a recovery if a
+box failed bring-up at the measured ~1/3 create-failure rate. Box a (e06 e12 e17, the three
+strongest untouched clips, ~$2.25) launches first; box b launches only if box a adopts and the
+credit still covers it.
+
+Launch command:
 
     bash $S/launch_t3s6.sh a      # e06 e12 e17
     bash $S/launch_t3s6.sh b      # e15 e16 e27
