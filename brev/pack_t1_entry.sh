@@ -34,7 +34,7 @@ echo "adopted from the fine-tune: ${ADOPTED:-none}"
 # generation 1 when both adopted, because gen 2 is only adopted against gen 1.
 for TAG in $ADOPTED; do
   EP=$((10#${TAG#e})); F=$(printf 'episode_%06d' "$EP"); SRC=""
-  for d in ws_tier1 t1f_1 t1f_2c t1f_3c ws_chain; do
+  for d in ws_tier1 t1f_1 t1f_2c t1f_3c ws_s4a ws_s4b ws_chain; do
     [ -s "$S/$d/results/rollouts/$F.parquet" ] && SRC=$S/$d/results/rollouts
   done
   [ -n "$SRC" ] || { echo "FATAL: $TAG adopted but no Tier 1 rollout found" >&2; exit 3; }
