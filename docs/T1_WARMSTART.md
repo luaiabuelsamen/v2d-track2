@@ -237,3 +237,23 @@ Committing `brev/t1_eval_clean.sh` while a launcher was executing it corrupted t
 read of the file and aborted it at line 265. v2d-t3ws-b was deleted at 4 of its 5 clips and **e29's
 Tier 3 fine-tune was lost**. Adoption means no score was lost — e29 ships its pass-1 rollout — but
 a running script must not be rewritten underneath itself.
+
+## A file count is not a progress count (2026-10-29 10:45 UTC)
+
+`brev/finish_box.sh` decided a box was done by counting `*.parquet` in its rollouts directory
+against the number of lines in its plan. Pruning a queue leaves the old plan's rollouts behind, so
+on **v2d-t1f-1** the count read 3/3 as soon as its first new clip exported — e01 and e02 were
+leftovers — and the box was deleted with **e06 and e09 never run**. Both are final-checkpoint
+clips, which is to say both were predicted gains, so this cost score and not only money.
+
+It now counts the clips the plan *names* that have a rollout. The same bug was about to take e29 off
+v2d-t1f-3c, whose leftover is e20: three files, two planned clips done.
+
+**Recovered without a new box.** The staged pieces for a clip are self-contained — a sequence
+directory holding the object mesh, URDF and texture plus the robot parquet, a support USDA in
+`whole_body/reconstructed_stage/`, and the actor under `ckpt/eNN/` — so e06 and e09 were copied
+into v2d-t1f-2c's asset tree (66 MB), their md5 lines appended, the whole manifest re-verified at 77
+files, and the two plan lines appended to `~/t1_plan.txt`. Appending is safe while the runner is
+mid-clip: it walks the plan on fd 3 and has not reached EOF, so it picks the new lines up. That
+saved a bring-up and a 10-minute image build, about $1.60, and 2c now runs seven clips inside its
+6.5 h deadline with 1.3 h to spare.

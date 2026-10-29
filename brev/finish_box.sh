@@ -26,8 +26,13 @@ box_is_gone() {
 
 for i in $(seq 1 300); do
   if box_is_gone; then echo "$(date -u +%H:%M) $BOX is gone (three clean listings)"; exit 0; fi
+  # Count the clips THIS plan names that have a rollout -- not the files in the directory. A
+  # pruned queue leaves rollouts from the old plan behind, so a plain file count reached 3/3 on
+  # v2d-t1f-1 as soon as its first new clip exported (e01 and e02 were leftovers) and the box was
+  # deleted with e06 and e09 never run. Per-episode is the only count that means anything.
   WANT=$(rssh "grep -c . ~/t1_plan.txt")
-  HAVE=$(rssh "ls ~/t1_eval_results/rollouts/*.parquet 2>/dev/null | wc -l")
+  HAVE=$(rssh 'n=0; while read -r EP _rest; do [ -s "$HOME/t1_eval_results/rollouts/$(printf "episode_%06d.parquet" "$EP")" ] && n=$((n+1)); done < "$HOME/t1_plan.txt"; echo $n')
+
   RUNNING=$(rssh "ps -eo pid,args --no-headers | awk '\$2==\"bash\" && \$3==\"/home/shadeform/run_warm_start.sh\" {print \$1}' | wc -l")
   if [ -n "$WANT" ] && [ -n "$HAVE" ] && [ "$HAVE" -ge "$WANT" ] 2>/dev/null; then
     echo "$(date -u +%H:%M) $BOX finished $HAVE/$WANT -- final pull then delete"
