@@ -1,58 +1,49 @@
 #!/usr/bin/env bash
-# Tier 3 object reconstruction on ONE A6000: MegaPose RGB-only refiner tracking, all 30 clips.
+# Tier 3 object reconstruction on ONE A6000, end to end:
+#   create box -> build MegaPose -> refiner tracking for all 30 clips -> pull npz -> DELETE box
+#   -> kit score per clip against Tier 1 truth (on the Jetson, free) -> md5 manifest.
 #
-# DRY RUN BY DEFAULT. Without --go this prints the plan and the cost estimate and touches
-# nothing. It never creates, starts or stops a box: run it ON an instance someone else
-# launched, after Luai has approved the spend (no paid boxes without approval).
+# DRY RUN BY DEFAULT: without --go it runs only the free preflight, prints every step with its
+# exact command, and prints the estimate. It creates nothing and spends nothing.
 #
-# Inputs, prepared on the Jetson before the box exists (free; ~35 s per clip there):
-#   $CAM_DIR/camera_eNN.json  {"K": 3x3 full-res, "world_T_cam": 4x4}, from the frame-0 camera
-#       solve (ViTPose keypoints vs SOMA joints: Tier 1 on frame 0 as FAQ PR 207 allows, Tier 2
-#       human elsewhere). Produced by ws/hand's t3 camera step.
-#   $DATA  challenge dataset root holding track_2/tier_1_multiview_caption (meshes, meta, and
-#       frame 0 of observation.object.pose, the only Tier 1 pose read here).
+# The frame-0 camera solve is NOT done on the box. It is free on the Jetson
+# (brev/t3_camera.py, ~35 s per clip) and must exist before launch in $CAM_DIR.
 #
-# Method per clip (mirrors the Jetson M3T smoke test in ws/hand docs/TIER3_FEASIBILITY.md):
-#   1. init = cam_T_world @ Tier1 world_T_obj(frame 0)
-#   2. lock-on: LOCKON_ITERS refiner iterations on frame 0, then correct the camera so the
-#      locked frame-0 pose equals the Tier 1 frame-0 pose (alignment only, as the FAQ allows)
-#   3. track: per frame, N_ITERS refiner iterations from the previous pose (no coarse model)
-#   4. write $OUT/episode_NNNNNN.npz: pose_xyzw [T,1,7], coordinate_frame=released_track2_world
+# Per clip on the box (MegaPose megapose-1.0-RGB refiner only, no coarse model):
+#   init  = cam_T_world @ Tier1 world_T_obj(frame 0)   (FAQ PR 207: frame-0 alignment)
+#   lock  = LOCKON_ITERS refiner iterations on frame 0; then the camera is corrected so the
+#           locked pose equals the Tier 1 frame-0 pose (alignment only)
+#   track = N_ITERS refiner iterations per frame, from the previous pose
+#   write episode_NNNNNN.npz: pose_xyzw [T,1,7], coordinate_frame=released_track2_world
+# The box stops tracking new clips at its own deadline (BOX_DEADLINE_H), so results are pulled
+# before the money cap; clips it did not reach are reported as missing, never padded.
 #
-# Estimate (not measured on an A6000):
-#   frames            22,990 (30 clips, 440-1,003 each)
-#   refiner           66.5 ms per iteration on an RTX 3090 (GenFlow's MegaPose timing); A6000
-#                     taken as equal. N_ITERS=5 -> ~0.33 s/frame -> ~2.1 h
-#   lock-on           30 clips x 30 iterations -> < 2 min
-#   setup             image pull/build + weights + 686 MB of video: ~0.5-0.75 h
-#   total             ~2.75-3 h, budget 4 h with margin
-#   cost at $0.68/h   ~$1.90-2.05 expected, $2.72 at the 4 h cap
+# Spend control, in order:
+#   1. budget_guard.sh refuses before create if MAX_USD would breach the shared cap
+#   2. a detached backstop (backstop_watchdog.sh) deletes the box at WATCHDOG_H no matter what
+#   3. the EXIT trap deletes it on every exit path, then records billed minutes in the ledger
 #
-# Known risk: the MegaPose weights host (www.paris.inria.fr) timed out on 2026-10-27 and the
-# LAAS and BOP mirrors return 404 for refiner-rgb-653307694. The script checks the weights
-# BEFORE anything long runs and stops if it cannot get them.
-#
-# The Jetson smoke test of the same structure with M3T's region tracker (no learned weights)
-# scored ADD-AUC 0.044 on e24 at 12 ms/frame. A hold-the-frame-0-pose baseline scores 0.387.
-# Monocular silhouettes do not pin depth at ~3.5 m. MegaPose's learned refiner is the remaining
-# untested candidate; this script exists so that test costs ~$2, not so that it runs by default.
-#
-# Usage:  bash brev/t3_recon.sh                     # dry run: plan + estimate
-#         bash brev/t3_recon.sh --go                # on an approved box only
-set -euo pipefail
+# Usage:
+#   bash brev/t3_recon.sh            # dry run: preflight + plan + estimate
+#   bash brev/t3_recon.sh --go       # spends money; only with Luai's approval for MAX_USD
+set -uo pipefail
 
 GO=0
 [[ "${1:-}" == "--go" ]] && GO=1
 
-DATA=${DATA:-$HOME/v2d_data}
-CAM_DIR=${CAM_DIR:-$HOME/t3_cameras}
-OUT=${OUT:-$HOME/tier3_refs}
-WORK=${WORK:-$HOME/t3_work}
-EPISODES=${EPISODES:-$(seq -s ' ' 0 29)}
-N_ITERS=${N_ITERS:-5}
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+SCRATCH_HAND=/tmp/claude-1000/-home-jetson3-projects-contact-insertion/5be04aec-f270-4096-8ae3-8e871a25b215/scratchpad
+export V2D_SCRATCH=/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad
+DATA=${DATA:-$V2D_SCRATCH/data}
+KIT=${KIT:-$V2D_SCRATCH/kit_extract/v2d_submission_kit}
+CAM_DIR=${CAM_DIR:-$SCRATCH_HAND/t3_cameras}
+OUT=${OUT:-$SCRATCH_HAND/t3_recon}
+NAME=${NAME:-v2d-t3recon-01}
+INSTANCE_TYPE=${INSTANCE_TYPE:-massedcompute_A6000_plus}
+RATE_USD_PER_HOUR=${RATE_USD_PER_HOUR:-0.68}
+MAX_USD=${MAX_USD:-1.50}
+N_ITERS=${N_ITERS:-3}
 LOCKON_ITERS=${LOCKON_ITERS:-30}
-RATE_USD_H=${RATE_USD_H:-0.68}
-MAX_HOURS=${MAX_HOURS:-4}
 MEGAPOSE_COMMIT=f3b8e12
 HF=https://huggingface.co/datasets/nvidia/video_to_data_challenge/resolve/main
 VIDEOS=track_2/tier_1_multiview_caption/videos/chunk-000/observation.images.exo_camera
@@ -60,153 +51,133 @@ WEIGHT_MIRRORS=(
   "https://www.paris.inria.fr/archive_ylabbeprojectsdata/megapose/megapose-models"
   "https://gepettoweb.laas.fr/data/happypose/megapose/megapose-models"
 )
+WEIGHT_RUN=refiner-rgb-653307694
+LOG=$OUT/launch.log
 
-plan() {
-  local n_ep
-  n_ep=$(wc -w <<<"$EPISODES")
-  cat <<EOF
-t3_recon plan (dry run: nothing executed)
-  episodes        $n_ep: $EPISODES
-  data            $DATA  (meshes, meta, Tier 1 frame-0 pose only)
-  cameras         $CAM_DIR/camera_eNN.json (from the Jetson)
-  output          $OUT/episode_NNNNNN.npz + MD5SUMS (ms/frame printed per clip)
-  model           MegaPose megapose-1.0-RGB refiner (refiner-rgb-653307694), commit $MEGAPOSE_COMMIT
-  per frame       $N_ITERS refiner iterations, lock-on $LOCKON_ITERS on frame 0
-  estimate        ~0.33 s/frame x 22,990 frames ~ 2.1 h + ~0.75 h setup ~ 2.9 h
-  cost            ~\$$(python3 -c "print(f'{2.9*$RATE_USD_H:.2f}')") at \$$RATE_USD_H/h; cap $MAX_HOURS h = \$$(python3 -c "print(f'{$MAX_HOURS*$RATE_USD_H:.2f}')")
-  steps           1 check GPU, disk, inputs   2 fetch weights (abort if unreachable)
-                  3 build MegaPose env        4 fetch videos (HF, 686 MB)
-                  5 track each clip           6 md5 manifest
-EOF
+# Hours, all derived from the cap so the three limits cannot disagree.
+WATCHDOG_H=$(awk -v u="$MAX_USD" -v r="$RATE_USD_PER_HOUR" 'BEGIN{printf "%.2f", u/r}')
+BOX_DEADLINE_H=$(awk -v w="$WATCHDOG_H" 'BEGIN{printf "%.2f", w-0.40}')  # pull + delete margin
+
+say() { printf '\n== %s\n' "$*"; }
+step() {  # step <description> -- <command...>: print always, execute only with --go
+  local desc=$1; shift; [[ $1 == -- ]] && shift
+  printf '   %-34s %s\n' "$desc" "$*"
+  [[ $GO == 1 ]] && "$@"
+  return 0
 }
 
-run() { if [[ $GO == 1 ]]; then "$@"; else echo "  would run: $*"; fi; }
+estimate() {
+  # Minutes per stage. Tracking: 22,990 frames x N_ITERS x 66.5 ms per refiner iteration
+  # (GenFlow's measured MegaPose refiner on an RTX 3090; A6000 taken as equal; not measured).
+  awk -v n="$N_ITERS" -v r="$RATE_USD_PER_HOUR" -v l="$LOCKON_ITERS" 'BEGIN{
+    create=8; setup=12; upload=6; videos=2; weights=2; lock=30*l*0.0665/60; pull=3;
+    track=22990*n*0.0665/60;
+    total=create+setup+upload+videos+weights+lock+track+pull;
+    printf "   create+SSH ready      %5.1f min\n", create;
+    printf "   build MegaPose env    %5.1f min\n", setup;
+    printf "   upload inputs         %5.1f min  (meshes 345 MB, Tier 1 frame-0 poses, cameras)\n", upload;
+    printf "   videos from HF        %5.1f min  (686 MB)\n", videos;
+    printf "   weights               %5.1f min\n", weights;
+    printf "   lock-on, 30 clips     %5.1f min\n", lock;
+    printf "   tracking              %5.1f min  (22,990 frames x %d iters x 66.5 ms)\n", track, n;
+    printf "   pull + delete         %5.1f min\n", pull;
+    printf "   TOTAL                 %5.2f h  ->  $%.2f at $%.2f/h\n", total/60, total/60*r, r }'
+}
 
-plan
-if [[ $GO == 0 ]]; then
-  echo
-  echo "commands (dry run):"
+# --------------------------------------------------------------------------- preflight (free)
+mkdir -p "$OUT"
+say "Preflight (free)"
+PRE_OK=1
+n_cam=$(ls "$CAM_DIR"/camera_e*.json 2>/dev/null | wc -l)
+echo "   cameras         $n_cam/30 in $CAM_DIR"; [[ $n_cam == 30 ]] || PRE_OK=0
+for d in "$DATA/track_2/tier_1_multiview_caption/meta" "$DATA/track_2/tier_1_multiview_caption/mesh" "$KIT/metric_code/track_2"; do
+  [[ -d $d ]] && echo "   present         $d" || { echo "   MISSING         $d"; PRE_OK=0; }
+done
+WEIGHTS_FROM=""
+for base in "${WEIGHT_MIRRORS[@]}"; do
+  code=$(curl -s -o /dev/null -m 30 -I -w '%{http_code}' "$base/$WEIGHT_RUN/checkpoint.pth.tar" || true)
+  echo "   weights         $code  $base/$WEIGHT_RUN/checkpoint.pth.tar"
+  [[ $code == 200 || $code == 30? ]] && { WEIGHTS_FROM=$base; break; }
+done
+[[ -n $WEIGHTS_FROM ]] || { echo "   weights         UNREACHABLE on every mirror"; PRE_OK=0; }
+~/.local/bin/brev ls >/dev/null 2>&1 && echo "   brev            logged in" || { echo "   brev            NOT logged in"; PRE_OK=0; }
+free_gb=$(df -BG --output=avail "$OUT" | tail -1 | tr -dc 0-9); echo "   disk            ${free_gb} GB free"
+
+say "Estimate (one $INSTANCE_TYPE at \$$RATE_USD_PER_HOUR/h, N_ITERS=$N_ITERS)"
+estimate
+echo "   hard caps       box deadline ${BOX_DEADLINE_H} h, backstop delete ${WATCHDOG_H} h = \$$MAX_USD"
+
+# --------------------------------------------------------------------------- the run
+say "Steps ($([[ $GO == 1 ]] && echo EXECUTING || echo 'dry run: printed, not executed'))"
+if [[ $GO == 1 && $PRE_OK != 1 ]]; then
+  echo "!! preflight failed; refusing to create a box" >&2; exit 2
 fi
 
-# 1. checks
-run nvidia-smi --query-gpu=name,memory.total --format=csv
-run test -d "$DATA/track_2/tier_1_multiview_caption/meta"
-run test -d "$CAM_DIR"
-run mkdir -p "$OUT" "$WORK"
-
-# 2. weights first: the long steps are pointless without them
-fetch_weights() {
-  local dest=$WORK/megapose_data/megapose-models/refiner-rgb-653307694
-  mkdir -p "$dest"
-  for base in "${WEIGHT_MIRRORS[@]}"; do
-    if curl -fsS -m 60 -o "$dest/checkpoint.pth.tar" "$base/refiner-rgb-653307694/checkpoint.pth.tar" &&
-       curl -fsS -m 60 -o "$dest/config.yaml" "$base/refiner-rgb-653307694/config.yaml"; then
-      echo "weights from $base"
-      return 0
-    fi
+source "$REPO_ROOT/brev/budget_guard.sh"
+step "1  budget guard"                 -- budget_ok_for_hours "$WATCHDOG_H" "$NAME"
+arm_backstop() {  # detached: outlives this script, deletes the box at WATCHDOG_H regardless
+  setsid nohup bash "$REPO_ROOT/brev/backstop_watchdog.sh" "$NAME" \
+    "$(awk -v h="$WATCHDOG_H" 'BEGIN{printf "%d", h*3600}')" "$LOG" </dev/null >/dev/null 2>&1 &
+}
+step "2  arm backstop (detached)"      -- arm_backstop
+CREATED=0; T0=$SECONDS
+teardown() {
+  if [[ $CREATED == 1 ]]; then
+    for _ in 1 2 3 4 5; do ~/.local/bin/brev delete "$NAME" </dev/null >>"$LOG" 2>&1 && break; sleep 60; done
+    ab4_ledger_add "$NAME" "$(( (SECONDS - T0) / 60 + 1 ))"
+    ~/.local/bin/brev ls 2>/dev/null | grep -q "^[[:space:]]*$NAME[[:space:]]" \
+      && echo "!! $NAME STILL LISTED -- run: brev delete $NAME" >&2
+  fi
+}
+[[ $GO == 1 ]] && trap teardown EXIT INT TERM
+step "3  create box"                   -- ~/.local/bin/brev create "$NAME" --type "$INSTANCE_TYPE"
+[[ $GO == 1 ]] && CREATED=1
+wait_ssh() {
+  for _ in $(seq 1 80); do
+    ~/.local/bin/brev refresh >/dev/null 2>&1
+    ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout=20 -o BatchMode=yes "$NAME" true \
+      >/dev/null 2>&1 && return 0
+    sleep 15
   done
-  echo "MegaPose refiner weights unreachable on every mirror; stopping before any long step" >&2
-  return 1
+  echo "!! $NAME never accepted SSH" >&2; return 1
 }
-run fetch_weights
+step "4  wait for SSH (<=20 min)"      -- wait_ssh
 
-# 3. environment (x86-64 + CUDA; MegaPose's renderer is panda3d)
-setup_env() {
-  cd "$WORK"
-  [[ -d megapose6d ]] || git clone -q https://github.com/megapose6d/megapose6d.git
-  git -C megapose6d checkout -q "$MEGAPOSE_COMMIT"
-  python3 -m venv venv && . venv/bin/activate
-  pip install -q torch torchvision --index-url https://download.pytorch.org/whl/cu121
-  pip install -q panda3d panda3d-gltf trimesh omegaconf transforms3d roma pyarrow opencv-python-headless \
-    simplejson pypng bokeh pandas scipy tqdm webdataset joblib
-  pip install -q -e megapose6d
-}
-run setup_env
-
-# 4. videos
-fetch_videos() {
-  mkdir -p "$WORK/videos"
-  for e in $EPISODES; do
-    f=episode_$(printf %06d "$e").mp4
-    [[ -s "$WORK/videos/$f" ]] || curl -fsSL --retry 3 -o "$WORK/videos/$f" "$HF/$VIDEOS/$f"
-  done
-}
-run fetch_videos
-
-# 5. track (driver below; budget guard stops at MAX_HOURS)
-track_all() {
-  . "$WORK/venv/bin/activate"
-  export MEGAPOSE_DATA_DIR=$WORK/megapose_data
-  local start=$SECONDS
-  for e in $EPISODES; do
-    if (( SECONDS - start > MAX_HOURS * 3600 )); then echo "budget cap reached at e$e" >&2; break; fi
-    python3 "$WORK/t3_megapose_track.py" --episode "$e" --data "$DATA" \
-      --camera "$CAM_DIR/camera_e$(printf %02d "$e").json" \
-      --video "$WORK/videos/episode_$(printf %06d "$e").mp4" --out "$OUT" \
-      --n-iters "$N_ITERS" --lockon-iters "$LOCKON_ITERS"
-  done
-}
-write_driver() {
-  cat > "$WORK/t3_megapose_track.py" <<'PY'
-"""MegaPose RGB refiner tracking for one clip (untested: weights were unreachable when written)."""
-import argparse, json, time
-from pathlib import Path
-import cv2, numpy as np, pyarrow.parquet as pq, torch
-from scipy.spatial.transform import Rotation as R
-from megapose.datasets.object_dataset import RigidObject, RigidObjectDataset
-from megapose.inference.types import ObservationTensor, PoseEstimatesType
-from megapose.utils.load_model import NAMED_MODELS, load_named_model
-from megapose.utils.tensor_collection import PandasTensorCollection
-import pandas as pd
-
-ap = argparse.ArgumentParser()
-for a in ("--episode", "--n-iters", "--lockon-iters"):
-    ap.add_argument(a, type=int, required=True)
-for a in ("--data", "--camera", "--video", "--out"):
-    ap.add_argument(a, type=Path, required=True)
-args = ap.parse_args()
-t1 = args.data / "track_2/tier_1_multiview_caption"
-meta = next(json.loads(l) for l in open(t1 / "meta/episodes_metadata.jsonl")
-            if l.strip() and json.loads(l)["episode_index"] == args.episode)
-p = np.asarray(pq.read_table(t1 / f"data/chunk-000/episode_{args.episode:06d}.parquet",
-               columns=["observation.object.pose"])["observation.object.pose"][0].as_py())
-world_T_obj0 = np.eye(4); world_T_obj0[:3, :3] = R.from_quat([*p[4:7], p[3]]).as_matrix(); world_T_obj0[:3, 3] = p[:3]
-cam = json.loads(args.camera.read_text())
-K = np.asarray(cam["K"], np.float32); world_T_cam = np.asarray(cam["world_T_cam"])
-label = meta["object"]
-objects = RigidObjectDataset([RigidObject(label=label, mesh_path=t1 / meta["mesh"], mesh_units="m")])
-model = load_named_model("megapose-1.0-RGB", objects).cuda()
-
-def refine(rgb, TCO, n):
-    obs = ObservationTensor.from_numpy(rgb, None, K).cuda()
-    data = PandasTensorCollection(infos=pd.DataFrame({"label": [label], "batch_im_id": [0], "instance_id": [0]}),
-                                  poses=torch.as_tensor(TCO[None], dtype=torch.float32).cuda())
-    out, _ = model.forward_refiner(obs, data, n_iterations=n, keep_all_outputs=False)
-    return out[f"iteration={n}"].poses[0].cpu().numpy().astype(np.float64)
-
-cap = cv2.VideoCapture(str(args.video)); frames = []
-ok, bgr = cap.read()
-rgb0 = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
-TCO = refine(rgb0, np.linalg.inv(world_T_cam) @ world_T_obj0, args.lockon_iters)
-world_T_cam = world_T_obj0 @ np.linalg.inv(TCO)  # frame-0 alignment (FAQ PR 207)
-poses, times = [TCO], []
-while True:
-    ok, bgr = cap.read()
-    if not ok: break
-    t = time.time(); TCO = refine(cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB), TCO, args.n_iters)
-    torch.cuda.synchronize(); times.append(time.time() - t); poses.append(TCO)
-W = np.einsum("ij,tjk->tik", world_T_cam, np.asarray(poses))
-x = np.concatenate([W[:, :3, 3], R.from_matrix(W[:, :3, :3]).as_quat()], 1)[:, None]
-args.out.mkdir(parents=True, exist_ok=True)
-np.savez(args.out / f"episode_{args.episode:06d}.npz", episode_index=np.int64(args.episode),
-         coordinate_frame=np.array("released_track2_world"), frame_index=np.arange(len(x)), pose_xyzw=x)
-print(json.dumps({"episode": args.episode, "frames": len(x), "ms_per_frame": 1000 * float(np.mean(times))}))
+stage_inputs() {  # small bundle: meshes, meta, Tier 1 frame-0 poses only, cameras
+  local b=$OUT/inputs; rm -rf "$b"; mkdir -p "$b/cameras"
+  cp "$CAM_DIR"/camera_e*.json "$b/cameras/"
+  cp -r "$DATA/track_2/tier_1_multiview_caption/mesh" "$DATA/track_2/tier_1_multiview_caption/meta" "$b/"
+  "$REPO_ROOT/.venv311/bin/python" -I - "$DATA" "$b/frame0_poses.json" <<'PY'
+import json, sys, pyarrow.parquet as pq
+root, out = sys.argv[1], sys.argv[2]
+d = {e: pq.read_table(f"{root}/track_2/tier_1_multiview_caption/data/chunk-000/episode_{e:06d}.parquet",
+                      columns=["observation.object.pose"]).slice(0, 1)["observation.object.pose"][0].as_py()
+     for e in range(30)}
+json.dump(d, open(out, "w"))
 PY
+  tar -C "$OUT" -czf "$OUT/inputs.tgz" inputs
 }
-run write_driver
-run track_all
+step "5  stage inputs (local)"         -- stage_inputs
+step "6  upload inputs + runner"       -- scp -o ServerAliveInterval=30 "$OUT/inputs.tgz" \
+       "$REPO_ROOT/brev/t3_recon_box.sh" "$NAME":~/
+step "7  run on box (deadline ${BOX_DEADLINE_H} h)" -- ssh -o ServerAliveInterval=30 "$NAME" \
+       "WEIGHTS_FROM='$WEIGHTS_FROM' N_ITERS=$N_ITERS LOCKON_ITERS=$LOCKON_ITERS DEADLINE_H=$BOX_DEADLINE_H MEGAPOSE_COMMIT=$MEGAPOSE_COMMIT bash ~/t3_recon_box.sh"
+step "8  pull results"                 -- scp -o ServerAliveInterval=30 "$NAME:~/t3_out/*" "$OUT/"
+step "9  delete box"                   -- teardown
+[[ $GO == 1 ]] && { CREATED=0; trap - EXIT INT TERM; }
 
-# 6. manifest
-run bash -c "cd '$OUT' && md5sum episode_*.npz > MD5SUMS"
-[[ $GO == 0 ]] && echo && echo "dry run complete; pass --go on an approved box to execute"
+score_all() {  # free, on the Jetson: kit metric code via v2d score, per clip
+  cd "$REPO_ROOT" || return 1
+  local eps=() f b
+  for f in "$OUT"/episode_*.npz; do b=${f##*_}; eps+=("$((10#${b%.npz}))"); done
+  env -u PYTHONPATH PYTHONPATH=src .venv311/bin/python -m v2d.cli score --kit-root "$KIT" \
+    --dataset-root "$DATA" --pred "npz:$OUT" --tier tier2 --per-episode --episodes "${eps[@]}" \
+    -o "$OUT/kit_score.json"
+}
+step "10 kit score per clip (Jetson)"  -- score_all
+step "11 md5 manifest"                 -- bash -c "cd '$OUT' && md5sum episode_*.npz > MD5SUMS"
+
+say "Exact command"
+echo "   bash $REPO_ROOT/brev/t3_recon.sh --go"
+[[ $PRE_OK == 1 ]] || echo "   (would refuse right now: preflight failed above)"
 exit 0

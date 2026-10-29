@@ -1,0 +1,569 @@
+{
+  "what": "the 30 shipped wave-2 actors re-evaluated with the CLEAN Tier 1 reference as input",
+  "question": "Tier 1 permits the clean multi-view trajectory as input. Does feeding it to the policies we already have beat the entry we submitted, which was driven by the noisy Tier 2 input?",
+  "answer": "No, decisively: mean kit AUC falls from 0.46523 to 0.28937 and SP-SR from 0.667 to 0.133. Only 2 of 30 clips improved.",
+  "why": "Each actor was trained against one specific reference (bridge_v1, or its arm's cleaned tree). Swapping the reference at evaluation time is a distribution shift, not an upgrade: the policy learned to track the trajectory it saw, so a cleaner but different one puts it off-policy. That is a property of these actors, not of the input, and it is the argument for fine-tuning (brev/patch_warm_start.py) rather than swapping the reference cold.",
+  "one_variable": "Same actors, same z-drop picks, same evaluator build, same scorer; only the reference parquet differs. Every clip's rigid-frame check came out at or below 1.7e-05 cm and 5e-06 deg, so these numbers are not a frame artefact.",
+  "control_still_owed": "a 2-clip Tier 2-input control (e00, e03) through this same patched eval image, expecting the shipped 0.5178 and 0.7806; needs a box (~$0.7) and would rule out the eval image itself as the cause.",
+  "box": "v2d-t1eval-01, massedcompute_A6000_plus, eval only, no training, ~$0.6 over four attempts",
+  "means_over_30_clips": {
+    "add_auc": 0.28937,
+    "spider_sr": 0.13333,
+    "maniptrans_sr": 0.03333,
+    "mppe_cm": 48.778
+  },
+  "submitted_entry_for_comparison": {
+    "add_auc": 0.46523,
+    "spider_sr": 0.66667,
+    "maniptrans_sr": 0.46667,
+    "mppe_cm": 14.128,
+    "driven_by": "the noisy Tier 2 input (the shipped wave-2 entry)"
+  },
+  "clips_that_improved": [
+    "e06",
+    "e28"
+  ],
+  "e11_note": "e11 would not convert at all until the released-pose reader learned to carry invisible frames forward; one zero-norm quaternion in 901 frames. Fixed in src/v2d/submit/rollout.py.",
+  "episodes": [
+    {
+      "tag": "e00",
+      "episode": 0,
+      "ships_from": "A",
+      "checkpoint_sha256": "c3a98fd2280101fd3626502d1c022ed3a2cef4c28d10490103874a2006d960e8",
+      "frames": 778,
+      "clean_tier1_input": {
+        "add_auc": 0.3063142673521851,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 28.563428171747763
+      },
+      "shipped_tier2_input_kit_add_auc": 0.517753856041131,
+      "shipped_auc_source": "kit_add_auc",
+      "delta_auc": -0.2114395886889459,
+      "frame_check_position_cm": 1e-05,
+      "frame_check_angle_deg": 5e-06
+    },
+    {
+      "tag": "e01",
+      "episode": 1,
+      "ships_from": "first wave",
+      "checkpoint_sha256": "656db59f430606a391b432a4f57a7113aa48fd300dd6bcc3ff35df94983b92f6",
+      "frames": 747,
+      "clean_tier1_input": {
+        "add_auc": 0.17904953145917002,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 45.21297162908861
+      },
+      "shipped_tier2_input_kit_add_auc": 0.2001338688085676,
+      "shipped_auc_source": "kit_add_auc",
+      "delta_auc": -0.021084337349397575,
+      "frame_check_position_cm": 1e-05,
+      "frame_check_angle_deg": 8e-06
+    },
+    {
+      "tag": "e02",
+      "episode": 2,
+      "ships_from": "first wave",
+      "checkpoint_sha256": "30bf93aaf19961941f7ad36bd3f743683390a2f935626c1ace30064fd886b228",
+      "frames": 980,
+      "clean_tier1_input": {
+        "add_auc": 0.12901785714285713,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 77.4858070216295
+      },
+      "shipped_tier2_input_kit_add_auc": 0.4262755102040816,
+      "shipped_auc_source": "kit_add_auc",
+      "delta_auc": -0.2972576530612245,
+      "frame_check_position_cm": 1.5e-05,
+      "frame_check_angle_deg": 7e-06
+    },
+    {
+      "tag": "e03",
+      "episode": 3,
+      "ships_from": "A",
+      "checkpoint_sha256": "a54c05fb1e473dca07e3161ac40591016d6a41695cf38a75229a8260f93d2bf7",
+      "frames": 781,
+      "clean_tier1_input": {
+        "add_auc": 0.7127880921895007,
+        "spider_sr": 1.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 6.71278074109016
+      },
+      "shipped_tier2_input_kit_add_auc": 0.7806498079385403,
+      "shipped_auc_source": "kit_add_auc",
+      "delta_auc": -0.06786171574903965,
+      "frame_check_position_cm": 1.1e-05,
+      "frame_check_angle_deg": 4e-06
+    },
+    {
+      "tag": "e04",
+      "episode": 4,
+      "ships_from": "B1",
+      "checkpoint_sha256": "1b890b6429c487ead2561e3ea3510ac58fa2661f8c709cbea5d1dad2d70bb2e8",
+      "frames": 803,
+      "clean_tier1_input": {
+        "add_auc": 0.13846513075965133,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 123.37898477020728
+      },
+      "shipped_tier2_input_kit_add_auc": 0.14655977584059776,
+      "shipped_auc_source": "kit_add_auc",
+      "delta_auc": -0.008094645080946428,
+      "frame_check_position_cm": 1.7e-05,
+      "frame_check_angle_deg": 7e-06
+    },
+    {
+      "tag": "e05",
+      "episode": 5,
+      "ships_from": "first wave",
+      "checkpoint_sha256": "db80dc8849b16894879d14273c40c5f5cf7caada9f03e87a6f035e8d582e8afd",
+      "frames": 1003,
+      "clean_tier1_input": {
+        "add_auc": 0.11789631106679961,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 46.93702037765264
+      },
+      "shipped_tier2_input_kit_add_auc": 0.26601445663010964,
+      "shipped_auc_source": "kit_add_auc",
+      "delta_auc": -0.14811814556331004,
+      "frame_check_position_cm": 8e-06,
+      "frame_check_angle_deg": 5e-06
+    },
+    {
+      "tag": "e06",
+      "episode": 6,
+      "ships_from": "A",
+      "checkpoint_sha256": "41e28551fadfb628e3845b7ae5e3c0666aca8f997e9e5a933930b92092b90dc9",
+      "frames": 546,
+      "clean_tier1_input": {
+        "add_auc": 0.5687957875457875,
+        "spider_sr": 1.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 4.536044690802521
+      },
+      "shipped_tier2_input_kit_add_auc": 0.47584706959706957,
+      "shipped_auc_source": "kit_add_auc",
+      "delta_auc": 0.09294871794871795,
+      "frame_check_position_cm": 1e-05,
+      "frame_check_angle_deg": 1e-05
+    },
+    {
+      "tag": "e07",
+      "episode": 7,
+      "ships_from": "first wave",
+      "checkpoint_sha256": "5d0dcbab16831450402039174bdb44c45a5447c87e16bfa8f74e4f10a9b53a7e",
+      "frames": 896,
+      "clean_tier1_input": {
+        "add_auc": 0.17445591517857145,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 55.743803022471226
+      },
+      "shipped_tier2_input_kit_add_auc": 0.2508370535714286,
+      "shipped_auc_source": "kit_add_auc",
+      "delta_auc": -0.07638113839285715,
+      "frame_check_position_cm": 7e-06,
+      "frame_check_angle_deg": 6e-06
+    },
+    {
+      "tag": "e08",
+      "episode": 8,
+      "ships_from": "A",
+      "checkpoint_sha256": "ceb67ed9e1f6fb3fe878228af5b73e334dec836fa8206c76ade0f194bf5278dc",
+      "frames": 708,
+      "clean_tier1_input": {
+        "add_auc": 0.611228813559322,
+        "spider_sr": 1.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 3.6274563237837127
+      },
+      "shipped_tier2_input_kit_add_auc": 0.665430790960452,
+      "shipped_auc_source": "kit_add_auc",
+      "delta_auc": -0.054201977401129975,
+      "frame_check_position_cm": 8e-06,
+      "frame_check_angle_deg": 5e-06
+    },
+    {
+      "tag": "e09",
+      "episode": 9,
+      "ships_from": "B4x",
+      "checkpoint_sha256": "5d5ec726f8f7b25053629b4d91d62c2b000d501ec4836577b4404da48755fed4",
+      "frames": 870,
+      "clean_tier1_input": {
+        "add_auc": 0.1987787356321839,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 57.857413199969066
+      },
+      "shipped_tier2_input_kit_add_auc": 0.3002873563218391,
+      "shipped_auc_source": "kit_add_auc",
+      "delta_auc": -0.10150862068965522,
+      "frame_check_position_cm": 9e-06,
+      "frame_check_angle_deg": 5e-06
+    },
+    {
+      "tag": "e10",
+      "episode": 10,
+      "ships_from": "A",
+      "checkpoint_sha256": "2c8dbe73076a99706d222ab094378ebea5b868cb2dc7f83e635c0c7bcb719012",
+      "frames": 794,
+      "clean_tier1_input": {
+        "add_auc": 0.2602329974811083,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 16.500850933019393
+      },
+      "shipped_tier2_input_kit_add_auc": 0.4793765743073048,
+      "shipped_auc_source": "kit_add_auc",
+      "delta_auc": -0.2191435768261965,
+      "frame_check_position_cm": 1e-05,
+      "frame_check_angle_deg": 6e-06
+    },
+    {
+      "tag": "e11",
+      "episode": 11,
+      "ships_from": "A",
+      "checkpoint_sha256": "bc9f312626029610caa2529ce3c25ad4d595518ff1eaf28b37f95cb0591bb290",
+      "frames": 900,
+      "clean_tier1_input": {
+        "add_auc": 0.09166666666666667,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 45.600726701420996
+      },
+      "shipped_tier2_input_kit_add_auc": 0.4675694444444445,
+      "shipped_auc_source": "kit_add_auc",
+      "delta_auc": -0.3759027777777778,
+      "frame_check_position_cm": 8e-06,
+      "frame_check_angle_deg": 9e-06
+    },
+    {
+      "tag": "e12",
+      "episode": 12,
+      "ships_from": "A",
+      "checkpoint_sha256": "1d9acdd5b9c8b47cb16cbf9691183cd8c54ab4ee9b0847b853ce26d758e1527e",
+      "frames": 700,
+      "clean_tier1_input": {
+        "add_auc": 0.37580357142857146,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 45.9884558455672
+      },
+      "shipped_tier2_input_kit_add_auc": 0.790357142857143,
+      "shipped_auc_source": "kit_add_auc",
+      "delta_auc": -0.4145535714285715,
+      "frame_check_position_cm": 5e-06,
+      "frame_check_angle_deg": 8e-06
+    },
+    {
+      "tag": "e13",
+      "episode": 13,
+      "ships_from": "first wave",
+      "checkpoint_sha256": "b8d50915d8e1cc67a33fc86cf8b122a6df2892460c76d0734293857fc6042cc8",
+      "frames": 922,
+      "clean_tier1_input": {
+        "add_auc": 0.12764370932754882,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 64.14752231283906
+      },
+      "shipped_tier2_input_kit_add_auc": 0.1593682212581345,
+      "shipped_auc_source": "kit_add_auc",
+      "delta_auc": -0.031724511930585675,
+      "frame_check_position_cm": 9e-06,
+      "frame_check_angle_deg": 7e-06
+    },
+    {
+      "tag": "e14",
+      "episode": 14,
+      "ships_from": "B2",
+      "checkpoint_sha256": "32fcbae629d9a54ec451c4adada9e7c8138422dc9351dcdf694bbe763848e25c",
+      "frames": 993,
+      "clean_tier1_input": {
+        "add_auc": 0.13809164149043304,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 75.05270530686084
+      },
+      "shipped_tier2_input_kit_add_auc": 0.2055010070493454,
+      "shipped_auc_source": "kit_add_auc",
+      "delta_auc": -0.06740936555891236,
+      "frame_check_position_cm": 8e-06,
+      "frame_check_angle_deg": 6e-06
+    },
+    {
+      "tag": "e15",
+      "episode": 15,
+      "ships_from": "A",
+      "checkpoint_sha256": "4af572f1942a68946a3d0a241403400e0d73e84993b86cfed8c46e5a44efbd7a",
+      "frames": 715,
+      "clean_tier1_input": {
+        "add_auc": 0.23435314685314687,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 55.32642522505773
+      },
+      "shipped_tier2_input_kit_add_auc": 0.6652972027972027,
+      "shipped_auc_source": "kit_add_auc",
+      "delta_auc": -0.4309440559440558,
+      "frame_check_position_cm": 1.2e-05,
+      "frame_check_angle_deg": 7e-06
+    },
+    {
+      "tag": "e16",
+      "episode": 16,
+      "ships_from": "A",
+      "checkpoint_sha256": "8893521fb85dac951c510300ac4e917a5270f0cc5c61da4646ac3723b107467c",
+      "frames": 477,
+      "clean_tier1_input": {
+        "add_auc": 0.23322851153039834,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 68.72461118447777
+      },
+      "shipped_tier2_input_kit_add_auc": 0.5639412997903563,
+      "shipped_auc_source": "kit_add_auc",
+      "delta_auc": -0.330712788259958,
+      "frame_check_position_cm": 1e-05,
+      "frame_check_angle_deg": 5e-06
+    },
+    {
+      "tag": "e17",
+      "episode": 17,
+      "ships_from": "B4",
+      "checkpoint_sha256": "894fe4d8cb322be1891581cf8e1d67dedf01154e91271de06adacfd4b6a54da1",
+      "frames": 440,
+      "clean_tier1_input": {
+        "add_auc": 0.28181818181818186,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 27.062853815791104
+      },
+      "shipped_tier2_input_kit_add_auc": 0.4470170454545454,
+      "shipped_auc_source": "kit_add_auc",
+      "delta_auc": -0.16519886363636355,
+      "frame_check_position_cm": 7e-06,
+      "frame_check_angle_deg": 4e-06
+    },
+    {
+      "tag": "e18",
+      "episode": 18,
+      "ships_from": "A",
+      "checkpoint_sha256": "708d1b2f0f107c955fd18fd4c8bcf516465bf70d5c82a79b3662c043839ffee6",
+      "frames": 858,
+      "clean_tier1_input": {
+        "add_auc": 0.2956002331002331,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 26.360872140401913
+      },
+      "shipped_tier2_input_kit_add_auc": 0.738490675990676,
+      "shipped_auc_source": "kit_add_auc",
+      "delta_auc": -0.4428904428904429,
+      "frame_check_position_cm": 6e-06,
+      "frame_check_angle_deg": 5e-06
+    },
+    {
+      "tag": "e19",
+      "episode": 19,
+      "ships_from": "B2",
+      "checkpoint_sha256": "9d86963b296ad1d8bddabc9b376ce6f9edd32cc4ba87d690b56b3d08d02034da",
+      "frames": 886,
+      "clean_tier1_input": {
+        "add_auc": 0.11321952595936793,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 98.84804302840186
+      },
+      "shipped_tier2_input_kit_add_auc": 0.11625282167042891,
+      "shipped_auc_source": "kit_add_auc",
+      "delta_auc": -0.0030332957110609793,
+      "frame_check_position_cm": 8e-06,
+      "frame_check_angle_deg": 7e-06
+    },
+    {
+      "tag": "e20",
+      "episode": 20,
+      "ships_from": "A",
+      "checkpoint_sha256": "7b82299bdbb94e8a3f2745036f4bc38819d0d9cb05b082ad39c448ef84d85114",
+      "frames": 553,
+      "clean_tier1_input": {
+        "add_auc": 0.5426084990958409,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 4.075169575190858
+      },
+      "shipped_tier2_input_kit_add_auc": 0.7148508137432188,
+      "shipped_auc_source": "kit_add_auc",
+      "delta_auc": -0.17224231464737794,
+      "frame_check_position_cm": 6e-06,
+      "frame_check_angle_deg": 5e-06
+    },
+    {
+      "tag": "e21",
+      "episode": 21,
+      "ships_from": "first wave",
+      "checkpoint_sha256": "f9509618faa2ba02a75057023e90bfb07d8a111ac67283b8c95f028c96e2016f",
+      "frames": 678,
+      "clean_tier1_input": {
+        "add_auc": 0.21109882005899705,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 66.20496324910009
+      },
+      "shipped_tier2_input_kit_add_auc": null,
+      "shipped_auc_source": "first_wave_kit_add_auc (no second-wave kit score on record)",
+      "delta_auc": null,
+      "frame_check_position_cm": 1.2e-05,
+      "frame_check_angle_deg": 7e-06
+    },
+    {
+      "tag": "e22",
+      "episode": 22,
+      "ships_from": "A",
+      "checkpoint_sha256": "3774671b59798058ea1038be24093cc756a45398db0d23c4a61cc61c053a8796",
+      "frames": 719,
+      "clean_tier1_input": {
+        "add_auc": 0.3457927677329624,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 79.41489402726609
+      },
+      "shipped_tier2_input_kit_add_auc": 0.6686369958275382,
+      "shipped_auc_source": "kit_add_auc",
+      "delta_auc": -0.3228442280945758,
+      "frame_check_position_cm": 8e-06,
+      "frame_check_angle_deg": 5e-06
+    },
+    {
+      "tag": "e23",
+      "episode": 23,
+      "ships_from": "A",
+      "checkpoint_sha256": "40de27ec2a740d67903c6a30bbb3b33840238917151ae9e1548519fa70f7a850",
+      "frames": 946,
+      "clean_tier1_input": {
+        "add_auc": 0.2629492600422833,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 56.49789057190644
+      },
+      "shipped_tier2_input_kit_add_auc": 0.5880681818181819,
+      "shipped_auc_source": "kit_add_auc",
+      "delta_auc": -0.3251189217758986,
+      "frame_check_position_cm": 1e-05,
+      "frame_check_angle_deg": 5e-06
+    },
+    {
+      "tag": "e24",
+      "episode": 24,
+      "ships_from": "A",
+      "checkpoint_sha256": "f9dfbd643321873df859eaec2e963b1135f79df109a0e5942e971409420fa782",
+      "frames": 748,
+      "clean_tier1_input": {
+        "add_auc": 0.7671290106951871,
+        "spider_sr": 1.0,
+        "maniptrans_sr": 1.0,
+        "mppe_cm": 2.445417222537418
+      },
+      "shipped_tier2_input_kit_add_auc": 0.8942179144385026,
+      "shipped_auc_source": "kit_add_auc",
+      "delta_auc": -0.1270889037433155,
+      "frame_check_position_cm": 4e-06,
+      "frame_check_angle_deg": 5e-06
+    },
+    {
+      "tag": "e25",
+      "episode": 25,
+      "ships_from": "B1",
+      "checkpoint_sha256": "d92c610f410ba92a4dbfb0cee0a61a2676f20bf5328653366d38d8ff7f878220",
+      "frames": 859,
+      "clean_tier1_input": {
+        "add_auc": 0.12245343422584401,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 103.37317873917972
+      },
+      "shipped_tier2_input_kit_add_auc": 0.13344004656577416,
+      "shipped_auc_source": "kit_add_auc",
+      "delta_auc": -0.010986612339930146,
+      "frame_check_position_cm": 1.2e-05,
+      "frame_check_angle_deg": 9e-06
+    },
+    {
+      "tag": "e26",
+      "episode": 26,
+      "ships_from": "A",
+      "checkpoint_sha256": "deb64b193869f4466c4a625f680b4ad0ffa45bd6d97262779bfe53ec5e2e8c86",
+      "frames": 669,
+      "clean_tier1_input": {
+        "add_auc": 0.4524476831091181,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 5.078249930347196
+      },
+      "shipped_tier2_input_kit_add_auc": 0.592955904334828,
+      "shipped_auc_source": "kit_add_auc",
+      "delta_auc": -0.14050822122570994,
+      "frame_check_position_cm": 4e-06,
+      "frame_check_angle_deg": 6e-06
+    },
+    {
+      "tag": "e27",
+      "episode": 27,
+      "ships_from": "A",
+      "checkpoint_sha256": "1f3027859546f2e1931dc4cbf409666e25d027caa53528aea0ed3515effae23f",
+      "frames": 565,
+      "clean_tier1_input": {
+        "add_auc": 0.3652654867256637,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 75.99731523001111
+      },
+      "shipped_tier2_input_kit_add_auc": 0.7793141592920354,
+      "shipped_auc_source": "kit_add_auc",
+      "delta_auc": -0.4140486725663717,
+      "frame_check_position_cm": 1e-05,
+      "frame_check_angle_deg": 7e-06
+    },
+    {
+      "tag": "e28",
+      "episode": 28,
+      "ships_from": "first wave",
+      "checkpoint_sha256": "ff3afa4eaa15287ad1a9a0e33d608a726b8567bfe381284179e6bcfbfb4b9d36",
+      "frames": 988,
+      "clean_tier1_input": {
+        "add_auc": 0.09166244939271255,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 63.35632487744629
+      },
+      "shipped_tier2_input_kit_add_auc": 0.08913208502024292,
+      "shipped_auc_source": "kit_add_auc",
+      "delta_auc": 0.0025303643724696318,
+      "frame_check_position_cm": 9e-06,
+      "frame_check_angle_deg": 5e-06
+    },
+    {
+      "tag": "e29",
+      "episode": 29,
+      "ships_from": "A (re-rolled 2026-10-28)",
+      "checkpoint_sha256": "2383145003217205219b3dcded9bde10cd5b4501c8017164d91104e517b0e94d",
+      "frames": 467,
+      "clean_tier1_input": {
+        "add_auc": 0.23126338329764454,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 33.22765125457654
+      },
+      "shipped_tier2_input_kit_add_auc": 0.6270074946466809,
+      "shipped_auc_source": "kit_add_auc",
+      "delta_auc": -0.3957441113490364,
+      "frame_check_position_cm": 7e-06,
+      "frame_check_angle_deg": 5e-06
+    }
+  ]
+}

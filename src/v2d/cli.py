@@ -104,6 +104,10 @@ FORWARDED: dict[str, tuple[str, str]] = {
     "retarget-validate": ("v2d.retarget.validate", "check a retargeted clip against its input"),
     "retarget-qa": ("v2d.retarget.qa", "aggregate the retargeter's own diagnostics"),
     "score": ("v2d.score.track2", "score a prediction with the kit's metric code"),
+    "tier3-world": (
+        "v2d.stage.tier3_world",
+        "put a Tier 3 reconstruction in the released world frame (frame-0 anchor only)",
+    ),
     "probe-supports": ("v2d.probe.support_root", "what Tier 2 corrupts; are the primitives usable"),
     "noise-channels": (
         "v2d.analyze.noise_channels",

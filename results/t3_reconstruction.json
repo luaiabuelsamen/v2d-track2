@@ -1,0 +1,570 @@
+{
+  "what": "a Tier 3 reconstruction of all 30 clips from the released video alone, put into the released world frame and scored against Tier 1 truth",
+  "pipeline": "NVIDIA's own reconstruction modules, in their intended order: v2d_geocalib -> v2d_moge (depth + intrinsics) -> v2d_grounding_dino (detect the named object) -> a prompt converter -> v2d_sam2 (masks) -> v2d_foundation_pose (6-DoF pose per frame, nvlabs_pytorch backend). MegaPose was the original plan and was abandoned: its only weight host is unreachable and every mirror probed 403s or 404s.",
+  "alignment": "ONE rigid transform from frame 0, as the FAQ permits (nvidia-isaac/video_to_data PR 207: 'teams may use the first frame of Tier 1 data to compute alignment'). world_T_cam = world_T_obj[0] @ inv(cam_T_obj[0]), applied unchanged to every later frame. No scale fitted, no per-frame correction, nothing after frame 0 read from Tier 1. Frame-0 position residual 0.0000 cm and orientation residual 0.000 deg on all 30 clips, which is also the check that the wxyz quaternion convention is right -- Transform3d is imported from upstream rather than reimplemented.",
+  "object_identity": "read from meta/episodes_metadata.jsonl (the 'object'/'mesh' fields only, never 'task'), because the object cannot be derived from the sequence id: e05 is 'g1_box_rotate_01' whose mesh is 'big_black_box'.",
+  "overall_kit_score_of_the_raw_reconstruction": {
+    "add_auc": 0.22799019040404067,
+    "maniptrans_sr": 0.03333333333333333,
+    "mppe_cm": 66.60263222640054,
+    "spider_sr": 0.3333333333333333
+  },
+  "frames_scored": 22989,
+  "quality": "sharply bimodal rather than uniformly mediocre. 10 clips track well (<5 deg mean orientation drift and <16 cm mean position error): e00, e08, e18, e20, e21, e22, e23, e24, e26, e29. The other 20 lose the object and run to tens of centimetres or metres.",
+  "tracked_well": [
+    "e00",
+    "e08",
+    "e18",
+    "e20",
+    "e21",
+    "e22",
+    "e23",
+    "e24",
+    "e26",
+    "e29"
+  ],
+  "can_the_raw_reconstruction_be_submitted_as_is": "No, not honestly. The kit's packer accepts an empty checkpoint_sha256 but requires a non-empty, uniform eval_code_sha256 (tools/pack_submission.py:420-445). A reconstruction is not an evaluator run, so there is no honest value for that field, and inventing one is the exact misrepresentation src/v2d/submit/tier1.py's NOT_FOR_SUBMISSION guard exists to prevent. The tier's own input_note says to 'drive your policy from that', so the entry has to be a policy rollout against this reconstruction -- which also supplies real provenance.",
+  "next": "free: retarget all 30 clips against these object trajectories (v2d retarget --object-npz) to get whole-body references the evaluator can drive; then one eval-only box (~$1) rolling the 30 shipped actors out against them; then pack, validate, submit. Expect a score well below the 0.228 the raw reconstruction scores, because driving an actor with a reference it never trained on costs it a lot -- measured, not guessed: results/t1_clean_input_eval.json.",
+  "episodes": [
+    {
+      "tag": "e00",
+      "episode": 0,
+      "frames": 778,
+      "anchor_residual_cm": 0.0,
+      "orientation_error_frame0_deg": 0.0,
+      "orientation_error_mean_deg": 2.12,
+      "orientation_error_p90_deg": 3.81,
+      "position_error_mean_cm": 7.624,
+      "position_error_final_cm": 6.748,
+      "kit": {
+        "add_auc": 0.32519280205655526,
+        "spider_sr": 1.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 7.625237712518712
+      },
+      "tracked_well": true
+    },
+    {
+      "tag": "e01",
+      "episode": 1,
+      "frames": 747,
+      "anchor_residual_cm": 0.0,
+      "orientation_error_frame0_deg": 0.0,
+      "orientation_error_mean_deg": 31.38,
+      "orientation_error_p90_deg": 98.37,
+      "position_error_mean_cm": 11.056,
+      "position_error_final_cm": 1.457,
+      "kit": {
+        "add_auc": 0.3439591700133869,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 11.348282660110502
+      },
+      "tracked_well": false
+    },
+    {
+      "tag": "e02",
+      "episode": 2,
+      "frames": 980,
+      "anchor_residual_cm": 0.0,
+      "orientation_error_frame0_deg": 0.0,
+      "orientation_error_mean_deg": 98.92,
+      "orientation_error_p90_deg": 149.18,
+      "position_error_mean_cm": 73.561,
+      "position_error_final_cm": 141.368,
+      "kit": {
+        "add_auc": 0.011734693877551022,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 74.10067543022329
+      },
+      "tracked_well": false
+    },
+    {
+      "tag": "e03",
+      "episode": 3,
+      "frames": 781,
+      "anchor_residual_cm": 0.0,
+      "orientation_error_frame0_deg": 0.0,
+      "orientation_error_mean_deg": 80.4,
+      "orientation_error_p90_deg": 118.16,
+      "position_error_mean_cm": 15.568,
+      "position_error_final_cm": 3.961,
+      "kit": {
+        "add_auc": 0.02808898847631242,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 16.78046541103954
+      },
+      "tracked_well": false
+    },
+    {
+      "tag": "e04",
+      "episode": 4,
+      "frames": 803,
+      "anchor_residual_cm": 0.0,
+      "orientation_error_frame0_deg": 0.0,
+      "orientation_error_mean_deg": 117.66,
+      "orientation_error_p90_deg": 166.11,
+      "position_error_mean_cm": 164.587,
+      "position_error_final_cm": 189.329,
+      "kit": {
+        "add_auc": 0.11846201743462018,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 164.86063428762347
+      },
+      "tracked_well": false
+    },
+    {
+      "tag": "e05",
+      "episode": 5,
+      "frames": 1003,
+      "anchor_residual_cm": 0.0,
+      "orientation_error_frame0_deg": 0.0,
+      "orientation_error_mean_deg": 105.46,
+      "orientation_error_p90_deg": 178.97,
+      "position_error_mean_cm": 106.964,
+      "position_error_final_cm": 113.485,
+      "kit": {
+        "add_auc": 0.10125872382851446,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 107.04923058778684
+      },
+      "tracked_well": false
+    },
+    {
+      "tag": "e06",
+      "episode": 6,
+      "frames": 546,
+      "anchor_residual_cm": 0.0,
+      "orientation_error_frame0_deg": 0.0,
+      "orientation_error_mean_deg": 80.61,
+      "orientation_error_p90_deg": 177.2,
+      "position_error_mean_cm": 26.207,
+      "position_error_final_cm": 49.15,
+      "kit": {
+        "add_auc": 0.18921703296703296,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 26.37993303467051
+      },
+      "tracked_well": false
+    },
+    {
+      "tag": "e07",
+      "episode": 7,
+      "frames": 896,
+      "anchor_residual_cm": 0.0,
+      "orientation_error_frame0_deg": 0.0,
+      "orientation_error_mean_deg": 51.64,
+      "orientation_error_p90_deg": 122.17,
+      "position_error_mean_cm": 49.577,
+      "position_error_final_cm": 36.95,
+      "kit": {
+        "add_auc": 0.008858816964285712,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 49.69752843840515
+      },
+      "tracked_well": false
+    },
+    {
+      "tag": "e08",
+      "episode": 8,
+      "frames": 708,
+      "anchor_residual_cm": 0.0,
+      "orientation_error_frame0_deg": 0.0,
+      "orientation_error_mean_deg": 1.63,
+      "orientation_error_p90_deg": 2.95,
+      "position_error_mean_cm": 4.655,
+      "position_error_final_cm": 3.992,
+      "kit": {
+        "add_auc": 0.5742408192090396,
+        "spider_sr": 1.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 4.656827618147878
+      },
+      "tracked_well": true
+    },
+    {
+      "tag": "e09",
+      "episode": 9,
+      "frames": 870,
+      "anchor_residual_cm": 0.0,
+      "orientation_error_frame0_deg": 0.0,
+      "orientation_error_mean_deg": 88.86,
+      "orientation_error_p90_deg": 158.61,
+      "position_error_mean_cm": 85.106,
+      "position_error_final_cm": 96.227,
+      "kit": {
+        "add_auc": 0.09547413793103449,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 85.57956918942506
+      },
+      "tracked_well": false
+    },
+    {
+      "tag": "e10",
+      "episode": 10,
+      "frames": 794,
+      "anchor_residual_cm": 0.0,
+      "orientation_error_frame0_deg": 0.0,
+      "orientation_error_mean_deg": 81.42,
+      "orientation_error_p90_deg": 177.15,
+      "position_error_mean_cm": 92.113,
+      "position_error_final_cm": 190.385,
+      "kit": {
+        "add_auc": 0.15790302267002518,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 92.15926130631898
+      },
+      "tracked_well": false
+    },
+    {
+      "tag": "e11",
+      "episode": 11,
+      "frames": 901,
+      "anchor_residual_cm": 0.0,
+      "orientation_error_frame0_deg": 0.0,
+      "orientation_error_mean_deg": 105.16,
+      "orientation_error_p90_deg": 179.32,
+      "position_error_mean_cm": 50.92,
+      "position_error_final_cm": 342.67,
+      "kit": {
+        "add_auc": 0.10708333333333334,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 50.823735511550005
+      },
+      "tracked_well": false
+    },
+    {
+      "tag": "e12",
+      "episode": 12,
+      "frames": 700,
+      "anchor_residual_cm": 0.0,
+      "orientation_error_frame0_deg": 0.0,
+      "orientation_error_mean_deg": 57.57,
+      "orientation_error_p90_deg": 160.97,
+      "position_error_mean_cm": 34.518,
+      "position_error_final_cm": 89.211,
+      "kit": {
+        "add_auc": 0.1961607142857143,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 34.877573877011656
+      },
+      "tracked_well": false
+    },
+    {
+      "tag": "e13",
+      "episode": 13,
+      "frames": 922,
+      "anchor_residual_cm": 0.0,
+      "orientation_error_frame0_deg": 0.0,
+      "orientation_error_mean_deg": 72.69,
+      "orientation_error_p90_deg": 120.95,
+      "position_error_mean_cm": 78.925,
+      "position_error_final_cm": 101.603,
+      "kit": {
+        "add_auc": 0.11971258134490238,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 79.02694003786401
+      },
+      "tracked_well": false
+    },
+    {
+      "tag": "e14",
+      "episode": 14,
+      "frames": 993,
+      "anchor_residual_cm": 0.0,
+      "orientation_error_frame0_deg": 0.0,
+      "orientation_error_mean_deg": 94.29,
+      "orientation_error_p90_deg": 167.19,
+      "position_error_mean_cm": 146.354,
+      "position_error_final_cm": 236.462,
+      "kit": {
+        "add_auc": 0.13400050352467271,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 146.4109544479456
+      },
+      "tracked_well": false
+    },
+    {
+      "tag": "e15",
+      "episode": 15,
+      "frames": 715,
+      "anchor_residual_cm": 0.0,
+      "orientation_error_frame0_deg": 0.0,
+      "orientation_error_mean_deg": 44.47,
+      "orientation_error_p90_deg": 118.94,
+      "position_error_mean_cm": 114.387,
+      "position_error_final_cm": 188.709,
+      "kit": {
+        "add_auc": 0.19650349650349652,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 114.4330402834092
+      },
+      "tracked_well": false
+    },
+    {
+      "tag": "e16",
+      "episode": 16,
+      "frames": 477,
+      "anchor_residual_cm": 0.0,
+      "orientation_error_frame0_deg": 0.0,
+      "orientation_error_mean_deg": 44.75,
+      "orientation_error_p90_deg": 140.28,
+      "position_error_mean_cm": 41.627,
+      "position_error_final_cm": 111.447,
+      "kit": {
+        "add_auc": 0.08031970649895179,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 41.69730652929047
+      },
+      "tracked_well": false
+    },
+    {
+      "tag": "e17",
+      "episode": 17,
+      "frames": 440,
+      "anchor_residual_cm": 0.0,
+      "orientation_error_frame0_deg": 0.0,
+      "orientation_error_mean_deg": 79.71,
+      "orientation_error_p90_deg": 169.85,
+      "position_error_mean_cm": 180.26,
+      "position_error_final_cm": 294.195,
+      "kit": {
+        "add_auc": 0.2362215909090909,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 180.3595993816679
+      },
+      "tracked_well": false
+    },
+    {
+      "tag": "e18",
+      "episode": 18,
+      "frames": 858,
+      "anchor_residual_cm": 0.0,
+      "orientation_error_frame0_deg": 0.0,
+      "orientation_error_mean_deg": 2.31,
+      "orientation_error_p90_deg": 3.76,
+      "position_error_mean_cm": 3.952,
+      "position_error_final_cm": 2.754,
+      "kit": {
+        "add_auc": 0.6140734265734266,
+        "spider_sr": 1.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 3.955986762847724
+      },
+      "tracked_well": true
+    },
+    {
+      "tag": "e19",
+      "episode": 19,
+      "frames": 886,
+      "anchor_residual_cm": 0.0,
+      "orientation_error_frame0_deg": 0.0,
+      "orientation_error_mean_deg": 102.06,
+      "orientation_error_p90_deg": 151.57,
+      "position_error_mean_cm": 271.125,
+      "position_error_final_cm": 418.643,
+      "kit": {
+        "add_auc": 0.09304458239277653,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 271.1805782550367
+      },
+      "tracked_well": false
+    },
+    {
+      "tag": "e20",
+      "episode": 20,
+      "frames": 553,
+      "anchor_residual_cm": 0.0,
+      "orientation_error_frame0_deg": 0.0,
+      "orientation_error_mean_deg": 2.4,
+      "orientation_error_p90_deg": 3.91,
+      "position_error_mean_cm": 9.859,
+      "position_error_final_cm": 5.542,
+      "kit": {
+        "add_auc": 0.15110759493670886,
+        "spider_sr": 1.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 9.860836677938062
+      },
+      "tracked_well": true
+    },
+    {
+      "tag": "e21",
+      "episode": 21,
+      "frames": 678,
+      "anchor_residual_cm": 0.0,
+      "orientation_error_frame0_deg": 0.0,
+      "orientation_error_mean_deg": 2.49,
+      "orientation_error_p90_deg": 3.7,
+      "position_error_mean_cm": 6.799,
+      "position_error_final_cm": 16.015,
+      "kit": {
+        "add_auc": 0.41454646017699115,
+        "spider_sr": 1.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 6.802326068585132
+      },
+      "tracked_well": true
+    },
+    {
+      "tag": "e22",
+      "episode": 22,
+      "frames": 719,
+      "anchor_residual_cm": 0.0,
+      "orientation_error_frame0_deg": 0.0,
+      "orientation_error_mean_deg": 2.89,
+      "orientation_error_p90_deg": 5.38,
+      "position_error_mean_cm": 4.619,
+      "position_error_final_cm": 5.581,
+      "kit": {
+        "add_auc": 0.5651077885952712,
+        "spider_sr": 1.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 4.623984097034685
+      },
+      "tracked_well": true
+    },
+    {
+      "tag": "e23",
+      "episode": 23,
+      "frames": 946,
+      "anchor_residual_cm": 0.0,
+      "orientation_error_frame0_deg": 0.0,
+      "orientation_error_mean_deg": 4.8,
+      "orientation_error_p90_deg": 7.33,
+      "position_error_mean_cm": 7.925,
+      "position_error_final_cm": 14.997,
+      "kit": {
+        "add_auc": 0.3102536997885835,
+        "spider_sr": 1.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 7.9338387291881345
+      },
+      "tracked_well": true
+    },
+    {
+      "tag": "e24",
+      "episode": 24,
+      "frames": 748,
+      "anchor_residual_cm": 0.0,
+      "orientation_error_frame0_deg": 0.0,
+      "orientation_error_mean_deg": 3.36,
+      "orientation_error_p90_deg": 5.39,
+      "position_error_mean_cm": 8.938,
+      "position_error_final_cm": 15.964,
+      "kit": {
+        "add_auc": 0.1957720588235294,
+        "spider_sr": 1.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 8.941483651929175
+      },
+      "tracked_well": true
+    },
+    {
+      "tag": "e25",
+      "episode": 25,
+      "frames": 859,
+      "anchor_residual_cm": 0.0,
+      "orientation_error_frame0_deg": 0.0,
+      "orientation_error_mean_deg": 107.5,
+      "orientation_error_p90_deg": 166.15,
+      "position_error_mean_cm": 55.205,
+      "position_error_final_cm": 134.03,
+      "kit": {
+        "add_auc": 0.07727008149010477,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 55.5179632417866
+      },
+      "tracked_well": false
+    },
+    {
+      "tag": "e26",
+      "episode": 26,
+      "frames": 669,
+      "anchor_residual_cm": 0.0,
+      "orientation_error_frame0_deg": 0.0,
+      "orientation_error_mean_deg": 1.79,
+      "orientation_error_p90_deg": 3.28,
+      "position_error_mean_cm": 2.647,
+      "position_error_final_cm": 2.002,
+      "kit": {
+        "add_auc": 0.7744768310911809,
+        "spider_sr": 1.0,
+        "maniptrans_sr": 1.0,
+        "mppe_cm": 2.6513474084105892
+      },
+      "tracked_well": true
+    },
+    {
+      "tag": "e27",
+      "episode": 27,
+      "frames": 565,
+      "anchor_residual_cm": 0.0,
+      "orientation_error_frame0_deg": 0.0,
+      "orientation_error_mean_deg": 29.07,
+      "orientation_error_p90_deg": 64.9,
+      "position_error_mean_cm": 211.734,
+      "position_error_final_cm": 304.874,
+      "kit": {
+        "add_auc": 0.14623893805309734,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 211.76372311549616
+      },
+      "tracked_well": false
+    },
+    {
+      "tag": "e28",
+      "episode": 28,
+      "frames": 988,
+      "anchor_residual_cm": 0.0,
+      "orientation_error_frame0_deg": 0.0,
+      "orientation_error_mean_deg": 132.63,
+      "orientation_error_p90_deg": 171.16,
+      "position_error_mean_cm": 121.261,
+      "position_error_final_cm": 157.821,
+      "kit": {
+        "add_auc": 0.030301113360323886,
+        "spider_sr": 0.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 121.4451067186606
+      },
+      "tracked_well": false
+    },
+    {
+      "tag": "e29",
+      "episode": 29,
+      "frames": 467,
+      "anchor_residual_cm": 0.0,
+      "orientation_error_frame0_deg": 0.0,
+      "orientation_error_mean_deg": 2.47,
+      "orientation_error_p90_deg": 3.98,
+      "position_error_mean_cm": 5.532,
+      "position_error_final_cm": 3.899,
+      "kit": {
+        "add_auc": 0.4431209850107066,
+        "spider_sr": 1.0,
+        "maniptrans_sr": 0.0,
+        "mppe_cm": 5.534996320093789
+      },
+      "tracked_well": true
+    }
+  ]
+}

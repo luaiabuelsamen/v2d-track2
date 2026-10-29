@@ -34,6 +34,7 @@ import pyarrow.parquet as pq
 from scipy.spatial.transform import Rotation
 
 from ..config import TIER_DIRS
+from ..dataset import hold_last_visible
 from ..geometry import wxyz_to_xyzw
 
 #: The packer's own tolerance for "these differ by one rigid transform".
@@ -51,7 +52,16 @@ def _poses(table: Any, prefix: str, keep: np.ndarray, order: np.ndarray) -> np.n
 
 
 def released_pose(dataset_root: Path, tier: str, episode: int) -> np.ndarray:
-    """The tier's released object pose as ``(T,7)`` xyz + xyzw."""
+    """The tier's released object pose as ``(T,7)`` xyz + xyzw, invisible frames carried forward.
+
+    An invisible frame is stored as a zero-filled quaternion. Read literally that is not a
+    rotation at all: it has zero norm, so `Rotation.from_quat` rejects it, which is how e11 --
+    one invisible frame in 901 -- failed to convert while the other 29 clips went through.
+    Carrying the last visible pose is the treatment the scorer already applies
+    (`v2d.dataset.hold_last_visible`), and it is the right one here for the same reason: this
+    trajectory is only used to fit and verify a rigid transform, and a phantom pose at the world
+    origin would corrupt both the fit and the residual that is supposed to catch a bad fit.
+    """
     path = (
         dataset_root
         / "track_2"
@@ -60,13 +70,12 @@ def released_pose(dataset_root: Path, tier: str, episode: int) -> np.ndarray:
         / "chunk-000"
         / f"episode_{episode:06d}.parquet"
     )
-    raw = np.asarray(
-        pq.read_table(path, columns=["observation.object.pose"])[
-            "observation.object.pose"
-        ].to_pylist(),
-        dtype=np.float64,
-    )
-    return np.concatenate([raw[:, :3], wxyz_to_xyzw(raw[:, 3:])], axis=1)
+    table = pq.read_table(path, columns=["observation.object.pose", "observation.object.visible"])
+    raw = np.asarray(table["observation.object.pose"].to_pylist(), dtype=np.float64)
+    visible = np.asarray(table["observation.object.visible"].to_pylist(), dtype=bool)
+    pose = np.concatenate([raw[:, :3], wxyz_to_xyzw(raw[:, 3:])], axis=1)
+    filled, _count = hold_last_visible(pose, visible)
+    return filled
 
 
 def convert(
