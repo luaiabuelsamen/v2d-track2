@@ -4,8 +4,13 @@ Reads nothing but each rollout's own `reference_*` columns -- the reconstruction
 driven by -- so no ground truth enters the verdict. A fine-tuned rollout replaces its pass-1
 rollout only if it has no drop and sits closer to that input reference.
 """
-import glob, json, os, sys
-import numpy as np, pandas as pd
+import glob
+import json
+import os
+import sys
+
+import numpy as np
+import pandas as pd
 
 DROP_M = 0.10  # the registered z-drop gate: achieved beyond 10 cm of the input reference
 
@@ -34,8 +39,20 @@ def load(dirs):
     return out
 
 
-old = load([sys.argv[1]])
-new = load(sys.argv[2:])
+# -o <path> is required rather than derived: an earlier version wrote its JSON to
+# `sys.argv[0].replace("t3_adopt.py", "t3ws_adoption.json")`, and this file is not named
+# t3_adopt.py, so the replace was a no-op and the tool overwrote ITSELF with its own output.
+argv = sys.argv[1:]
+out_path = None
+if "-o" in argv:
+    i = argv.index("-o")
+    out_path = argv[i + 1]
+    del argv[i:i + 2]
+if out_path is None or len(argv) < 2:
+    sys.exit("usage: adopt.py <incumbent-rollout-dir> <new-rollout-dir>... -o <out.json>")
+
+old = load([argv[0]])
+new = load(argv[1:])
 rows, adopt = [], []
 for tag in sorted(new):
     if tag not in old:
@@ -62,6 +79,7 @@ json.dump(
         "adopted": adopt,
         "clips": rows,
     },
-    open(sys.argv[0].replace("t3_adopt.py", "t3ws_adoption.json"), "w"),
+    open(out_path, "w"),
     indent=1,
 )
+print(f"wrote {out_path}")
