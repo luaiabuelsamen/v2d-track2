@@ -148,3 +148,34 @@ written before the three remaining clips existed, it applies a criterion this pr
 and recorded hours earlier, and it makes the *spending* test no easier. If anything it is stricter
 than the original on what matters — the original would have let a batch that clears −5 cm upload
 even while regressing AUC, and this one would not.
+
+## The arm is exhausted, not merely unaffordable — 20:45 UTC
+
+The −5 cm bar failing says this batch was not worth repeating. The headroom table says something
+stronger: **there is nothing left to repeat it on.** Of the 13 Tier 3 clips never fine-tuned:
+
+| clip | headroom | clip | headroom |
+|---|---|---|---|
+| e02 | **+6.09 cm** | e05 | −43.93 cm |
+| e07 | **+2.48 cm** | e04 | −47.32 cm |
+| e11 | −1.56 cm | e28 | −54.86 cm |
+| e10 | −15.08 cm | e15 | −60.24 cm |
+| e13 | −24.26 cm | e14 | −113.55 cm |
+| e09 | −36.23 cm | e27 | −140.97 cm |
+| | | e19 | −182.66 cm |
+
+**Two clips have any headroom at all, 8.57 cm between them — 0.29 cm on the 30-clip mean even if
+both were fixed perfectly.** The other eleven are negative: their policies already track better
+than the reconstruction they were given, so pulling them toward it makes the score worse, and the
+input-only rule would adopt the regression because it measures distance to the input.
+
+So Tier 3 fine-tuning is closed on material, not on budget. A credit top-up would not revive it.
+
+**What this says about Tier 3's real constraint.** Eleven of thirty clips are reconstruction-bound:
+the policy beats its own input. Tier 3's remaining gain is therefore in the *reconstruction* — the
+MoGe plus FoundationPose solve whose floors run to 271 cm on e19 — and not in the policy at all.
+That is the same shape as the Tier 2 finding in `docs/TRACK_WHAT.md`, where our entry sits just
+under our own cleaner's ceiling: **on both tiers we are now limited by the quality of the reference
+we construct, not by how well the policy tracks it.** Tier 1, where the reference is handed to us
+clean, is the one tier where the policy is still the limit — which is exactly why Tier 1 is also
+the one place where money still buys rank (`docs/TO_THE_TOP.md`, ~$36 for about +19 rank points).
