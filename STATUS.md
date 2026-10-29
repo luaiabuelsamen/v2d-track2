@@ -17,7 +17,7 @@ is a real provenance mismatch, not a formality.
 | entry | file | AUC | SP-SR | MP-SR | MPPE | vs what is on the board |
 |---|---|---|---|---|---|---|
 | Tier 1 v2 | `$S/t1_entry_v2/track2_tier1.csv` | **0.51030** | 0.6667 | **0.5000** | **13.9635** | 0.46523 / 0.6667 / 0.4667 / 14.128 — better on all four |
-| Tier 2 wave-2 | `$S/t2_entry_wave2/track2_tier2.csv` | 0.46523 | 0.6667 | 0.4667 | 14.128 | already uploaded; unchanged |
+| Tier 2 | — | 0.46523 | 0.6667 | 0.4667 | 14.128 | **nothing to submit.** The board already holds our best Tier 2 file; the second-wave candidate scored 0.46313, *worse*, and the chain result rules out a fine-tune (see docs/T1_CHAIN.md) |
 | Tier 3 v2 | `$S/t3_entry_v2/track2_tier3.csv` | **0.25059** | **0.1667** | **0.0333** | **54.44** | nothing submitted — Tier 3 is currently a zero |
 
 `$S` is `/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad`.
