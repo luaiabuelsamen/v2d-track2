@@ -198,13 +198,29 @@ support_flag_for() {
 }
 
 say "Start the container"
+# On a COLD box there is no image, so this `start` triggers a full build of several minutes. The
+# wait used to be 100 s, which expired mid-build: the build phase then returned while the image was
+# still being made, the eval stage ran with no container, wrote FATAL and exited, and nothing
+# started training once the build finished. Both strong-four boxes lost ~10 min of paid time this
+# way. So wait as long as a build actually takes, and stop early only when the starter itself has
+# exited -- that distinguishes "still building" from "failed".
 V2D_ASSETS_DIR="$ASSETS" docker/run.sh start latest 0 </dev/null >/dev/null 2>&1 &
-for _ in $(seq 1 20); do
+STARTER=$!
+for i in $(seq 1 300); do
   sleep 5
   container_id >/dev/null 2>&1 && break
+  if ! kill -0 "$STARTER" 2>/dev/null; then
+    sleep 10   # the container can appear a moment after the starter returns
+    container_id >/dev/null 2>&1 && break
+    echo "FATAL: docker/run.sh start exited after $((i*5))s with no container. docker ps:" >&2
+    docker ps -a | head -5 >&2
+    docker images | head -5 >&2
+    exit 1
+  fi
+  [ $((i % 24)) -eq 0 ] && echo "   still waiting for the container ($((i*5))s; image build is slow on a cold box)"
 done
 if ! container_id >/dev/null 2>&1; then
-  echo "FATAL: no flash_chord container after 100s. docker ps:" >&2
+  echo "FATAL: no flash_chord container after 1500s. docker ps:" >&2
   docker ps -a | head -5 >&2
   exit 1
 fi
