@@ -188,11 +188,16 @@ step "9  pull results"                 -- rsync -a -e "ssh -o ServerAliveInterva
        "$NAME":~/t1_eval_results/ "$OUT/"
 if [[ $GO == 1 ]]; then
   PULLED=$(find "$OUT/rollouts" -name 'episode_*.parquet' 2>/dev/null | wc -l)
-  if [[ $PULLED == 0 ]]; then
+  WANTED=$(grep -c . "$PLAN")
+  # "> 0" is not the bar. A run that exported 1 of 30 and reported success deleted its own box
+  # under that test; the box is only disposable once every planned clip is home.
+  if [[ $PULLED -lt $WANTED ]]; then
     CREATED=0; trap - EXIT INT TERM
-    echo "!! pulled 0 rollouts; KEEPING $NAME so the run can be inspected or resumed" >&2
+    echo "!! pulled $PULLED of $WANTED rollouts; KEEPING $NAME to finish or inspect" >&2
+    echo "   resume with: ssh $NAME 'PLAN=~/t1_plan.txt bash ~/t1_eval_box.sh'  (done clips skip)" >&2
     exit 3
   fi
+  echo "pulled $PULLED of $WANTED rollouts"
 fi
 step "10 delete box"                   -- teardown
 [[ $GO == 1 ]] && { CREATED=0; trap - EXIT INT TERM; }

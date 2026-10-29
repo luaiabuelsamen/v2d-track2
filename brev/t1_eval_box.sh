@@ -25,11 +25,14 @@ say() { printf '\n== %s (%s)\n' "$*" "$(date -u +%H:%M:%S)"; }
 container_id() { docker ps -q --filter name=flash_chord | head -1; }
 # -i and never -it: the repo's wrapper uses `docker exec -it`, and -t fails on this box with
 # "the input device is not a TTY", which silently lost every container call once already.
+# `< /dev/null` is load-bearing. Without it `docker exec -i` inherits the loop's stdin, which is
+# the plan file, swallows the remaining 29 lines, and the loop ends after one clip -- having
+# written every success marker, so it looks like a clean run. That is exactly what happened.
 run() {
   local cid
   cid="$(container_id)" || return 1
   [ -n "$cid" ] || { echo "no flash_chord container is running" >&2; return 1; }
-  docker exec -i "$cid" bash -lc "$1"
+  docker exec -i "$cid" bash -lc "$1" < /dev/null
 }
 
 CID="$(container_id)"
@@ -68,7 +71,7 @@ run 'test -d /v2d/assets' || { echo "FATAL: /v2d/assets is not mounted in the co
 TOTAL="$(grep -c . "$PLAN")"
 INDEX=0
 : > "$OUT/summary.txt"
-while read -r EP TAG STAGE SEQ SUPPORT; do
+while read -r EP TAG STAGE SEQ SUPPORT <&3; do
   [ -n "${EP:-}" ] || continue
   INDEX=$((INDEX + 1))
   ELAPSED_H="$(awk -v s="$START" -v n="$(date +%s)" 'BEGIN{printf "%.3f", (n-s)/3600}')"
@@ -112,9 +115,16 @@ while read -r EP TAG STAGE SEQ SUPPORT; do
     rm -f "$DEST"
     echo "$TAG EXPORT EMPTY -- removed so it cannot be mistaken for a result" | tee -a "$OUT/summary.txt"
   fi
-done < "$PLAN"
+done 3< "$PLAN"
 
 EXPORTED="$(find "$OUT/rollouts" -name 'episode_*.parquet' | wc -l)"
 echo "exported $EXPORTED of $TOTAL clips" | tee -a "$OUT/summary.txt"
-[ "$EXPORTED" = "$TOTAL" ] && touch "$OUT/DONE"
 echo "$EXPORTED" > "$OUT/COUNT"
+if [ "$EXPORTED" = "$TOTAL" ]; then
+  touch "$OUT/DONE"
+else
+  # Short of the plan is a failure even when every clip attempted succeeded: the loop ending
+  # early is indistinguishable from success unless the count is checked.
+  echo "FATAL: exported $EXPORTED of $TOTAL -- refusing to report this run as finished" >&2
+  exit 4
+fi
