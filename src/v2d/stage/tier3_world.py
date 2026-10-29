@@ -121,12 +121,25 @@ def align_episode(poses_root: Path, dataset_root: Path, episode: int, out_dir: P
     # or the mesh scale would show up here rather than as a mysteriously poor score.
     anchor_cm = float(np.linalg.norm(pose_xyzw[0, :3] - truth[0, :3]) * 100.0)
     out_dir.mkdir(parents=True, exist_ok=True)
-    # `coordinate_frame` is what the retargeter and the scorer check before they will read this,
-    # and the frame-0 anchor is exactly what earns the stamp: the poses are in the released world.
+    # Three different consumers read this file and they do not want the same thing, so it is
+    # written to satisfy all three at once rather than once per consumer:
+    #
+    #   the scorer (`v2d score --pred npz:`)         `pose_xyzw`, any trailing shape
+    #   the retargeter (`--object-npz`)              `pose_xyzw` + `coordinate_frame`
+    #   the kit's packer (`--frame-references`)      all four keys, and `pose_xyzw` strictly
+    #                                                (frames, bodies, 7) with a `frame_index`
+    #                                                covering every scored frame
+    #
+    # The packer's contract is the strict one (`tools/pack_submission.py:132-158`) and it matters
+    # here more than elsewhere: Tier 3 has `input_path: null`, so there is no released input for
+    # it to fall back on and this file IS the policy input reference for the frame conversion.
+    # `coordinate_frame` is earned by the frame-0 anchor, not asserted.
     np.savez_compressed(
         out_dir / f"episode_{episode:06d}.npz",
-        pose_xyzw=pose_xyzw,
+        pose_xyzw=pose_xyzw.reshape(len(pose_xyzw), 1, 7),
         coordinate_frame="released_track2_world",
+        episode_index=np.int64(episode),
+        frame_index=np.arange(len(pose_xyzw), dtype=np.int64),
     )
     return {
         "episode": episode,
