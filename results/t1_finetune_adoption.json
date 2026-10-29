@@ -1,7 +1,7 @@
 {
  "what": "Tier 1 adoption of the warm-start fine-tune, under the registered no-regression rule",
  "rule": "AUC improves and no other board regresses; legal because Tier 1's permitted input is the configured scoring reference",
- "clips_scored": 18,
+ "clips_scored": 19,
  "adopted": [
   "e00",
   "e06",
@@ -103,6 +103,23 @@
    "delta_auc": 0.30414,
    "ships_final_checkpoint": true,
    "adopted": true
+  },
+  "e09": {
+   "shipped": {
+    "add_auc": 0.30029,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 4.89016
+   },
+   "fine_tuned": {
+    "add_auc": 0.22399,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 11.65739
+   },
+   "delta_auc": -0.07629,
+   "ships_final_checkpoint": true,
+   "adopted": false
   },
   "e10": {
    "shipped": {

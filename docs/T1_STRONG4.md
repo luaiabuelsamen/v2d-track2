@@ -48,3 +48,15 @@ one clip adopts; it counts as having been worth launching if the entry mean cros
 **The seven weak clips are deliberately not run**: e05 e07 e13 e14 e19 e25 e28, all shipping under
 0.27, where the measured adoption rate is 0 of 3 and the mean delta is +0.002. Paying ~$5 for them
 would be buying a number the data says is zero.
+
+## e09 lands and sharpens the rule, 2026-10-29 13:15 UTC
+
+e09 was the last gen-1 clip: **shipped 0.30029 -> fine-tuned 0.22399, -0.07629, rejected.** It is
+the fourth clip below 0.35 to be fine-tuned and the fourth to fail, so the split now reads **0 of 4
+below 0.35, 8 of 15 at or above it.** Nineteen clips scored; the eight adoptions are unchanged
+(e00 e06 e12 e16 e22 e23 e24 e26) and the entry stands at 0.5103 by per-clip tally, 0.50838 packed.
+
+This is the clearest version of the finding: the warm-start fine-tune is a *sharpening* tool. It
+takes a policy that already tracks the object and re-fits it to a new reference. A policy that
+drops the object has nothing to sharpen, and 50M more steps of the final curriculum stage will not
+teach it to hold on. Every clip left in the Tier 1 queue is therefore chosen on shipped AUC alone.
