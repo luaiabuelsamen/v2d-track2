@@ -19,13 +19,17 @@
    "v2d-t1f-2c": 300,
    "v2d-t1f-3c": 265,
    "v2d-t1chain": 150,
-   "v2d-t1s4-a": 150,
-   "v2d-t1s4-b": 150
+   "v2d-t1s4-a (FAILURE, never booted)": 40,
+   "v2d-t1s4-b (FAILURE, never booted)": 40,
+   "v2d-t1s4-a2 (measured 13:28-15:18)": 110,
+   "v2d-t1s4-b2 (measured 13:30-15:20)": 110,
+   "v2d-t3s6-a (projected, 3 clips)": 150
   },
-  "dollars": 11.5
+  "dollars": 13.2
  },
- "total_projected_dollars": 23.65,
+ "total_projected_dollars": 25.35,
  "credit_at_last_email": 30.38,
- "credit_remaining_projected": 6.73,
- "what_that_buys": "At $0.68/box-hour and ~1.1 h per clip, about 8 more clip-runs. The Tier 3 strong-six arm is staged as two boxes at ~$4.50; on this projection only ONE of those boxes (3 clips, ~$2.25) is safely affordable, so it launches as one box and the second waits on the measured result."
+ "credit_remaining_projected": 5.03,
+ "what_that_buys": "Tier 3 box a (e06 e12 e17) is launched on the measured figure. Box b (e15 e16 e27) is held until box a's first clip is scored: at $1.70 a box both would fit the projection, but spending on the second before the first says anything buys nothing if the arm is a dud, and there is no deadline pressure -- the freeze is Nov 4.",
+ "measured_cost_per_box": "The strong-four boxes did bring-up, a cold image build, a 49 MB upload, two 50M-step fine-tunes and two evaluations in 110 minutes = $1.25/box, against the $2.25 the estimate used. So a 3-clip Tier 3 box is about $1.70, not $2.25."
 }

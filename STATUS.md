@@ -5,7 +5,7 @@
 Everything below is measured, kit-validated and preflighted. Nothing can reach a board without
 these two actions, and the Nov 4 2026 5:00 p.m. EST freeze is the deadline.
 
-**1. Push.** `git push origin main` — 55 commits ahead of `origin/main` (e8ffe8f), private repo
+**1. Push.** `git push origin main` — 63 commits ahead of `origin/main` (e8ffe8f), private repo
 `luaiabuelsamen/v2d-track2`. All three entries name a commit URL for provenance; the warm-start
 code that produced the improved rollouts is in the unpushed commits, so uploading before the push
 is a real provenance mismatch, not a formality.
@@ -16,15 +16,16 @@ is a real provenance mismatch, not a formality.
 
 | entry | file | AUC | SP-SR | MP-SR | MPPE | vs what is on the board |
 |---|---|---|---|---|---|---|
-| Tier 1 v2 | `$S/t1_entry_v2/track2_tier1.csv` | **0.51030** | 0.6667 | **0.5000** | **13.9635** | 0.46523 / 0.6667 / 0.4667 / 14.128 — better on all four |
+| Tier 1 v2 | `$S/t1_entry_v2/track2_tier1.csv` | **0.52688** | 0.6667 | **0.5000** | **13.9014** | 0.46523 / 0.6667 / 0.4667 / 14.128 — better on all four, and **past CHORD's 0.51038** |
 | Tier 2 | — | 0.46523 | 0.6667 | 0.4667 | 14.128 | **nothing to submit.** The board already holds our best Tier 2 file; the second-wave candidate scored 0.46313, *worse*, and the chain result rules out a fine-tune (see docs/T1_CHAIN.md) |
 | Tier 3 v2 | `$S/t3_entry_v2/track2_tier3.csv` | **0.25059** | **0.1667** | **0.0333** | **54.44** | nothing submitted — Tier 3 is currently a zero |
 
 `$S` is `/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad`.
 
-Tier 1 sits **0.00008** under the CHORD baseline of 0.51038 and four more clips are training, so
-the Tier 1 file is still improving; Tier 3 is the single largest gain available because an
-unsubmitted tier scores zero. Also still pending: accept the `Nvidia-V2D-Challenge` GitHub invite,
+Tier 1 now sits **+0.0165 above** the CHORD baseline of 0.51038, and Tier 1 fine-tuning is
+**closed**: the strong-four arm adopted 3 of 4 (e08 +0.258, e15 +0.160, e27 +0.079) and every clip
+never fine-tuned is below 0.30, where no clip has ever adopted. Tier 3 is now the single largest
+gain available, because an unsubmitted tier scores zero. Also still pending: accept the `Nvidia-V2D-Challenge` GitHub invite,
 confirm the registration form, and pick the final two submissions before the freeze.
 
 ## Live, 2026-10-29 10:20 UTC: the Tier 1 fine-tune is working
