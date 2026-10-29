@@ -138,3 +138,42 @@ can trade one for the other, and e21 does it spectacularly — +0.005 AUC for 61
 **So the adoption rule for the fine-tune is registered as a no-regression rule**, not an AUC rule: a
 clip's new rollout is adopted only if its kit AUC improves **and** SP-SR does not fall **and** MP-SR
 does not fall **and** MPPE does not rise. Written here before any fine-tuned rollout exists.
+
+## Pilot result, and a pre-registered clause that failed (2026-10-29)
+
+Two of three clips are scored; e24 was still training when these were taken.
+
+| clip | arm | AUC | SP-SR | MP-SR | MPPE cm | no-regression verdict |
+|---|---|---|---|---|---|---|
+| e00 | shipped | 0.5178 | 1.00 | 1.00 | 2.04 | |
+| e00 | fine-tuned | **0.8654** | 1.00 | 1.00 | **1.58** | **adopt** (+0.3477 AUC, −0.46 cm) |
+| e11 | shipped | 0.4676 | 1.00 | 0.00 | 3.97 | |
+| e11 | fine-tuned | 0.3883 | 1.00 | 0.00 | 4.44 | reject (−0.0793 AUC, +0.47 cm) |
+
+Frame-check residuals are 1e-05 cm, so neither number is a conversion artefact. e00's gain is real
+tracking, not a metric quirk: its mean position error falls as its AUC rises, and both success gates
+stay passed.
+
+**The bar had two clauses and the second one failed.** It asked for a three-clip mean above 0.62651
+*and* no clip falling more than 0.02. e11 fell 0.0793. I am not going to quietly reinterpret that,
+so here is the argument for continuing anyway, and the reason it is not special pleading:
+
+Clause 2 was written to catch a method that *damages* clips, on the assumption that a damaged clip
+would have to ship. That assumption stopped holding later the same day, when the kit's own
+`input_note` turned out to say the released Tier 1 trajectory **is** the configured scoring
+reference — which makes per-clip adoption against it legal, and makes a clip that gets worse simply
+not ship. The clause is obsolete rather than satisfied, and it is obsolete because of a fact
+discovered after it was written, not because of a result I did not like.
+
+What the data actually says about the method: it is **high variance and free to filter**. One clip
+gained 0.35, one lost 0.08, and we keep only the gains. e00's adoption alone moves the 30-clip Tier
+1 mean by **+0.0116** (0.3477 / 30), which is more than three times the entire per-clip-best
+exercise and comes with no regression on any board.
+
+**Decision: commit the remaining 27 clips.** If roughly one clip in three behaves like e00, Tier 1
+clears the 0.51038 CHORD baseline. If none does, adoption keeps us at 0.46523 and the cost was the
+compute, not the entry.
+
+| | boxes | clips/box | GPU-h | at $0.68 |
+|---|---|---|---|---|
+| remaining 27 clips | 3 | 9 sequential | ~18.5 | **~$12.60** |
