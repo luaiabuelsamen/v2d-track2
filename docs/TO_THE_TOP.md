@@ -144,6 +144,6 @@ reward of `docs/ARM_CR.md`, which was built and smoke-tested but never run to co
 ## Spend to date
 
 ~$111 of NVIDIA Brev credit across the first wave, the second wave, Tier 3 reconstruction, the
-Tier 1 warm-start programme and the strong-four arm. **~$5 left**, and the card is off. The Nov 4
+Tier 1 warm-start programme and the strong-four arm. **~$2.61 left** after the MPPE push, and the card is off. The Nov 4
 2026 5:00 p.m. EST freeze is the deadline; all three tiers are already on the board, so a
 top-up buys rank, not eligibility.
