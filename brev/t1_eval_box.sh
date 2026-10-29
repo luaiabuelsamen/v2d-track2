@@ -36,6 +36,31 @@ CID="$(container_id)"
 [ -n "$CID" ] || { echo "FATAL: no container; run gate_on_instance.sh build first" >&2; exit 2; }
 [ -f "$PLAN" ] || { echo "FATAL: no plan at $PLAN" >&2; exit 2; }
 
+# The image must carry the patches the checkpoints were TRAINED with, or rebuilding the experiment
+# from a checkpoint config dies on its own keys:
+#   TypeError: ReconBodyObjectiveConfig.__init__() got an unexpected keyword argument
+#              'object_orientation_std'
+# Read out of all 30 checkpoints, the only non-stock objective keys are object_orientation_weight
+# and object_orientation_std, identically on every one, so exactly one patch is needed. The std
+# VALUE does not matter here -- each checkpoint's saved config supplies its own, including the
+# 0.8 arms -- the patch only has to put the field on the dataclass.
+say "patch the image's objective to match what these checkpoints were trained with"
+# shellcheck source=brev/arm_flags.sh
+. "$HOME/arm_flags.sh"
+ARM_OVERRIDES="$(arm_flags_apply orientation_reward "t1-eval $(hostname)")" || {
+  echo "FATAL: could not apply the orientation patch; evaluating would fail on every clip" >&2
+  exit 2
+}
+run 'python -c "
+from flash_chord.objectives.recon_body import ReconBodyObjectiveConfig as C
+import dataclasses
+f={x.name for x in dataclasses.fields(C)}
+need={\"object_orientation_weight\",\"object_orientation_std\"}
+missing=need-f
+raise SystemExit(f\"objective still missing {missing}\" if missing else 0)
+"' || { echo "FATAL: the patch did not take; the objective lacks the orientation fields" >&2; exit 2; }
+echo "objective carries the orientation fields; overrides: ${ARM_OVERRIDES:-(none)}"
+
 # The staged tree must be visible in the container before anything else, or every clip fails the
 # same way 30 times over.
 run 'test -d /v2d/assets' || { echo "FATAL: /v2d/assets is not mounted in the container" >&2; exit 2; }

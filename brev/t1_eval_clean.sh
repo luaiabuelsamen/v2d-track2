@@ -111,8 +111,12 @@ upload() {
   # The CONTENTS of the staged tree, so /v2d/assets/<stage>/... matches what the checkpoints record.
   rsync -a --info=stats1 -e "ssh -o ServerAliveInterval=30" "$ASSETS"/ "$NAME":~/v2d_assets/ || return 1
   scp -o ServerAliveInterval=30 "$PLAN" "$NAME":~/t1_plan.txt || return 1
+  # Everything the box runner sources or calls, or it dies on the box with "No such file or
+  # directory" after the image has already been paid for -- which is how the first wave of the
+  # 30-clip run was lost.
   scp -o ServerAliveInterval=30 "$REPO_ROOT/brev/gate_on_instance.sh" \
-      "$REPO_ROOT/brev/t1_eval_box.sh" "$NAME":~/ || return 1
+      "$REPO_ROOT/brev/t1_eval_box.sh" "$REPO_ROOT/brev/arm_flags.sh" \
+      "$REPO_ROOT/brev/patch_object_orientation.py" "$NAME":~/ || return 1
 }
 step "5  upload assets + runners"      -- upload
 # The manifest gate, on the box, before any GPU time is spent on a tree that travelled badly.
@@ -120,10 +124,30 @@ step "6  verify the manifest on the box" -- ssh -o BatchMode=yes "$NAME" \
        'cd ~/v2d_assets && md5sum -c --quiet MD5SUMS && echo "manifest ok: $(wc -l < MD5SUMS) files"'
 step "7  build image + start container" -- ssh -o ServerAliveInterval=30 "$NAME" \
        'bash ~/gate_on_instance.sh build 2>&1 | tail -20'
-step "8  evaluate 30 clips"            -- ssh -o ServerAliveInterval=30 "$NAME" \
-       "PLAN=~/t1_plan.txt DEADLINE_H=$BOX_DEADLINE_H bash ~/t1_eval_box.sh"
+
+# A failure here used to fall through to "pull" and "delete", which pulled nothing and deleted the
+# evidence: the first run died on every clip with an unexpected-keyword error and still tore the
+# box down. Keep the box, inside the backstop, and say how to look.
+if ! step "8  evaluate 30 clips"       -- ssh -o ServerAliveInterval=30 "$NAME" \
+       "PLAN=~/t1_plan.txt DEADLINE_H=$BOX_DEADLINE_H bash ~/t1_eval_box.sh"; then
+  if [[ $GO == 1 ]]; then
+    echo "!! evaluation failed. The box $NAME is KEPT (backstop deletes it at ${WATCHDOG_H} h)." >&2
+    echo "   Look with:  ssh $NAME 'tail -40 ~/t1_eval_results/eval_*.log'" >&2
+    exit 3
+  fi
+fi
+
+# Pull before deleting, and only delete if something came back: an empty pull with a live box is
+# recoverable, an empty pull with a deleted box is not.
 step "9  pull results"                 -- rsync -a -e "ssh -o ServerAliveInterval=30" \
        "$NAME":~/t1_eval_results/ "$OUT/"
+if [[ $GO == 1 ]]; then
+  PULLED=$(find "$OUT/rollouts" -name 'episode_*.parquet' 2>/dev/null | wc -l)
+  if [[ $PULLED == 0 ]]; then
+    echo "!! pulled 0 rollouts; KEEPING $NAME so the run can be inspected or resumed" >&2
+    exit 3
+  fi
+fi
 step "10 delete box"                   -- teardown
 [[ $GO == 1 ]] && { CREATED=0; trap - EXIT INT TERM; }
 
