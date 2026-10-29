@@ -112,18 +112,29 @@ already on the board. The pilot's bar still stands as the test of whether the *m
 whether the remaining $14 is worth committing — but the score risk is nil, which is the main reason
 to prefer this over further Tier 2 work.
 
-**2. There is a small free gain available now.** Taking, per clip, the best of the three rollout
-sets we already hold — the shipped Tier 2-driven entry, the clean-Tier-1-driven eval, and the
-Tier 3-driven eval — gives **0.46857 against 0.46522, +0.00335**, from three clips:
+**2. A "free gain" that was not one, and the rule it fixed.** Taking the per-clip best *AUC*
+across the three rollout sets we hold gives 0.46858 against 0.46523. I built the machinery
+(`v2d frame-refs`, which assembles a per-episode frame-reference tree so clips driven by different
+references can be packed together) and packed it: kit packer pass, kit validator pass, zero
+findings, submittable. Then I scored all four metrics instead of one:
 
-| clip | shipped | clean-input | tier3 | best | from |
+| clip | arm | AUC | SP-SR | MP-SR | MPPE cm |
 |---|---|---|---|---|---|
-| e06 | 0.4758 | **0.5688** | 0.3122 | 0.5688 | clean-input |
-| e21 | 0.2060 | **0.2111** | 0.1485 | 0.2111 | clean-input |
-| e28 | 0.0891 | **0.0917** | 0.0645 | 0.0917 | clean-input |
+| e06 | shipped | 0.4758 | 1.00 | **1.00** | **3.20** |
+| e06 | clean-input | **0.5688** | 1.00 | 0.00 | 4.54 |
+| e21 | shipped | 0.2061 | **1.00** | 0.00 | **4.78** |
+| e21 | clean-input | **0.2111** | 0.00 | 0.00 | 66.20 |
+| e28 | shipped | 0.0891 | 0.00 | 0.00 | **44.07** |
+| e28 | clean-input | **0.0917** | 0.00 | 0.00 | 63.36 |
 
-Record: `results/t1_perclip_best.json`. It is not packed yet, because each arm was driven by a
-different reference and the kit packer takes a single `--frame-references` directory, so a mixed
-entry needs a per-clip frame-reference tree built first. At +0.0034 that is not worth doing on its
-own; it becomes worth doing the moment the fine-tune adds a fourth candidate per clip, and the same
-machinery serves both.
+At entry level that is AUC 0.46523 → 0.46858 but **SP-SR 0.667 → 0.633, MP-SR 0.467 → 0.433 and
+MPPE 14.13 → 16.86 cm**: three of the four Tier 1 boards worse for three thousandths of AUC on the
+fourth. AUC integrates the whole error curve while the success rates are hard gates, so a rollout
+can trade one for the other, and e21 does it spectacularly — +0.005 AUC for 61 cm of MPPE.
+
+**The shipped entry is kept, and across the arms we hold it is already Pareto-optimal.** Record:
+`results/t1_perclip_best.json`.
+
+**So the adoption rule for the fine-tune is registered as a no-regression rule**, not an AUC rule: a
+clip's new rollout is adopted only if its kit AUC improves **and** SP-SR does not fall **and** MP-SR
+does not fall **and** MPPE does not rise. Written here before any fine-tuned rollout exists.

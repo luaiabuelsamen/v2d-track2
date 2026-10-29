@@ -1,0 +1,32 @@
+{
+  "csv": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t1_best/pack/track2_tier1.csv",
+  "dry_run": false,
+  "episodes": 30,
+  "findings": [],
+  "frame_references": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t1_best/frame_refs",
+  "kit_packer": "pass",
+  "kit_packer_output": [
+    "frame conversion reference: /tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t1_best/frame_refs",
+    "clean scoring reference: /tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/data/track_2/tier_1_multiview_caption",
+    "note: 30 distinct checkpoints across the episodes, which is expected for per-sequence policies",
+    "input reference check: one rigid frame transform per episode; maximum residual 1.29e-07 m, 1.71e-07 rad",
+    "converted 30 Track 2 episode(s) into the released frame",
+    "note: no evaluator metrics JSON found next to the trajectories; skipping the cross-check",
+    "",
+    "wrote /tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t1_best/pack/track2_tier1.csv (22,989 rows, 11,840,037 B)",
+    "locally computed: AUC=0.4686  SP-SR=0.6333  MP-SR=0.4333  MPPE=16.8623",
+    "upload with: python submit/v2d_submit.py /tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t1_best/pack/track2_tier1.csv --track track_2_tier1 -m '<message>'"
+  ],
+  "kit_validator": "pass",
+  "local_score": {
+    "add_auc": 0.4685794572846213,
+    "maniptrans_sr": 0.43333333333333335,
+    "mppe_cm": 16.862261145420895,
+    "spider_sr": 0.6333333333333333
+  },
+  "rollouts": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t1_best/rollouts",
+  "rows": 22989,
+  "source": "rollout export",
+  "submittable": true,
+  "tier": "tier1"
+}

@@ -108,6 +108,15 @@ FORWARDED: dict[str, tuple[str, str]] = {
         "v2d.stage.tier3_world",
         "put a Tier 3 reconstruction in the released world frame (frame-0 anchor only)",
     ),
+    "frame-refs": (
+        "v2d.stage.frame_refs",
+        "build a per-episode frame-reference tree, for an entry whose clips came from "
+        "different references",
+    ),
+    "t3-clean": (
+        "v2d.stage.t3_clean",
+        "reject relocalisation jumps in a Tier 3 reconstruction (no ground truth read)",
+    ),
     "probe-supports": ("v2d.probe.support_root", "what Tier 2 corrupts; are the primitives usable"),
     "noise-channels": (
         "v2d.analyze.noise_channels",
