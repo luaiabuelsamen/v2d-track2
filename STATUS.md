@@ -1,5 +1,32 @@
 # STATUS — v2d (NVIDIA V2D Challenge, Track 2)
 
+## BLOCKED ON LUAI — three validated entries are packed and not uploaded
+
+Everything below is measured, kit-validated and preflighted. Nothing can reach a board without
+these two actions, and the Nov 4 2026 5:00 p.m. EST freeze is the deadline.
+
+**1. Push.** `git push origin main` — 50 commits ahead of `origin/main` (e8ffe8f), private repo
+`luaiabuelsamen/v2d-track2`. All three entries name a commit URL for provenance; the warm-start
+code that produced the improved rollouts is in the unpushed commits, so uploading before the push
+is a real provenance mismatch, not a formality.
+
+**2. Submit.** One command per board once the push lands:
+
+    .venv311/bin/python submit/v2d_submit.py <csv> --track <track> -m '<message>'
+
+| entry | file | AUC | SP-SR | MP-SR | MPPE | vs what is on the board |
+|---|---|---|---|---|---|---|
+| Tier 1 v2 | `$S/t1_entry_v2/track2_tier1.csv` | **0.51030** | 0.6667 | **0.5000** | **13.9635** | 0.46523 / 0.6667 / 0.4667 / 14.128 — better on all four |
+| Tier 2 wave-2 | `$S/t2_entry_wave2/track2_tier2.csv` | 0.46523 | 0.6667 | 0.4667 | 14.128 | already uploaded; unchanged |
+| Tier 3 v2 | `$S/t3_entry_v2/track2_tier3.csv` | **0.25059** | **0.1667** | **0.0333** | **54.44** | nothing submitted — Tier 3 is currently a zero |
+
+`$S` is `/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad`.
+
+Tier 1 sits **0.00008** under the CHORD baseline of 0.51038 and four more clips are training, so
+the Tier 1 file is still improving; Tier 3 is the single largest gain available because an
+unsubmitted tier scores zero. Also still pending: accept the `Nvidia-V2D-Challenge` GitHub invite,
+confirm the registration form, and pick the final two submissions before the freeze.
+
 ## Live, 2026-10-29 10:20 UTC: the Tier 1 fine-tune is working
 
 Tier 1 is the one tier where we sit **below** the CHORD baseline, and the warm-start fine-tune is
