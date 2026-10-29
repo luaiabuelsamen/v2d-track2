@@ -34,8 +34,25 @@
    },
    "delta_auc": -0.08259,
    "adopted": false
+  },
+  "e16": {
+   "gen1": {
+    "add_auc": 0.64688,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 1.0,
+    "mppe_cm": 2.91447
+   },
+   "gen2": {
+    "add_auc": 0.29625,
+    "spider_sr": 0.0,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 61.35464
+   },
+   "delta_auc": -0.35063,
+   "adopted": false
   }
  },
  "adopted": [],
- "verdict": "0 of 2 adopted; the arm fails its bar and NO gen-2 rollout may enter the entry"
+ "verdict": "0 of 3 adopted, deltas -0.058 / -0.083 / -0.351. The arm fails its registered two-adoption bar decisively and NO gen-2 rollout may enter the entry.",
+ "a_prediction_that_was_wrong": "I kept e16 on the grounds that gen 1 had gained only +0.083 there, so it had 'the most headroom' of the three. e16 lost 0.351 -- by far the worst of the three. Headroom was the wrong variable: e22 and e24 were dropped for being saturated, but e16 shows the arm damages clips regardless of where they sit, so the stop was right and the reason I gave for it was not."
 }

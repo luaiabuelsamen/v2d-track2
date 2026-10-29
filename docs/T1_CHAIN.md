@@ -112,3 +112,28 @@ Tier 1 and Tier 3 both *did* gain from the fine-tune because in both cases the r
 Tier 1 to the released clean trajectory, Tier 3 to our own video reconstruction. The mechanism is
 re-fitting to a new reference, not extra training. That is why the last of the credit goes to
 Tier 3 (0.25059, the weakest board, 21 clips never fine-tuned) and not to Tier 2.
+
+## Final: 0 of 3, and my reason for keeping e16 was wrong
+
+| clip | gen 1 (350M) | gen 2 (400M) | delta |
+|---|---|---|---|
+| e00 | 0.8654 | 0.8078 | -0.0576 |
+| e12 | 0.8839 | 0.8013 | -0.0826 |
+| e16 | 0.6469 | **0.2963** | **-0.3506** |
+
+e16 also loses both success gates (SP-SR 1.0 -> 0, MP-SR 1.0 -> 0) and its MPPE goes 3.0 -> 61.4 cm:
+the policy stops holding the object altogether.
+
+**I kept e16 for the wrong reason.** The argument was that gen 1 had gained only +0.083 there, so
+e16 had "the most headroom" of the three remaining clips, while e22 (0.8603) and e24 (0.9567) were
+saturated. e16 then lost the most by a factor of four. Headroom was not the variable; the arm
+damages a clip wherever it sits. Dropping e22 and e24 was the right call and the reasoning I
+published for it does not survive its own test case — had I run them, the likely outcome was two
+more losses, which is the same conclusion by a worse route.
+
+The arm fails its registered two-adoption bar 0 of 3, and `results/t1_chain_adoption.json` is what
+keeps those rollouts out of the entry — the record exists because the packer had already shipped
+two of them once on directory order alone.
+
+**Cost of the overrun:** the broken waiter let the box start e22 at 13:15 and I caught it at 13:35
+by reading the box directly, so about 20 minutes, ~$0.23, on a clip whose result was not wanted.
