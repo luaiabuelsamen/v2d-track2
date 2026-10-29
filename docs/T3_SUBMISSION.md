@@ -74,3 +74,34 @@ Whichever of the two the bar selects, per clip, packed with `v2d pack --tier tie
 --frame-references <the reconstruction npz tree>` — Tier 3 releases no input, so that flag is
 required and the submit repo refuses without it. Then the kit validator, a local score, and upload
 to the four `v2d-challenge-track2-tier3-*` boards, all four of which are already joined.
+
+## Smoke-test evidence, recorded before the spend (2026-10-28)
+
+Everything below is free and was run before the box was created, so a failure would have cost
+nothing. Each line is a command that was actually executed, not a plan.
+
+| Check | Result |
+|---|---|
+| whole-body retarget against the reconstruction, 30 clips, 1 worker | **30/30**, worst rigid-fit residual **0.0001 mm**, worst orientation residual **0.033°**, 0 failures |
+| staging (`brev/stage_t1_eval.sh --motion $S/t3/motion/tier2`) | **30/30** refs, **30/30** with a support USDA, manifest **210 lines == 210 files** (nothing written after the manifest) |
+| driver preflight | 30/30 refs, 30/30 checkpoints, plan 30 clips, brev logged in |
+| `v2d pack --tier tier3` end to end, `--motion-root` stand-in, `--dry-run` | `kit_packer: pass`, `kit_validator: pass`, **22,989 rows** |
+| the packer's own frame check on our npz | one rigid transform per episode, max residual **2.72e-07 m / 1.55e-07 rad** |
+| the audit on a stand-in | correctly **fails**: "30 episode(s) reproduce the policy input to under 0.1 mm, which no simulated policy does" |
+
+The last row is the one worth keeping. It is the guard that distinguishes a policy rollout from a
+replay of its own input, it fires on the stand-in, and it is therefore load-bearing evidence that
+the real pack is a real pack. The stand-in's score (AUC 0.2280 / SP-SR 0.3333 / MP-SR 0.0333 /
+MPPE 66.60 cm) also reproduces the independently measured raw-reconstruction score exactly, which
+cross-checks the packer against the scorer.
+
+Two contract details that were settled by reading rather than by spending:
+
+* **The scorer needs no tier flag.** `build_frames` reads the released Tier 1 trajectory as the
+  stand-in for the host's `multi_view_ground_truth` for every tier, and that stand-in is validated
+  rather than assumed: our local Tier 2 numbers matched the public board to five decimals.
+  `v2d score --tier` is only a label and has no `tier3` choice.
+* **Tier 3 is the one tier where our own npz is the frame reference.** `input_path: null` means
+  there is no released input to fit the rigid transform against, so both `rollout-to-npz` and the
+  kit packer are pointed at `$S/t3/npz_world` — which is in `released_track2_world` by
+  construction, anchored at frame 0 with a 0.0000 cm residual on all 30 clips.
