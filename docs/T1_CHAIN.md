@@ -72,3 +72,26 @@ boxes will take about $2.50 more, so this fits with roughly $9 unspent.
 * **Tier 2.** Its input may not be the clean trajectory, so none of this transfers. Tier 2 is also
   the one tier already comfortably above its baseline (0.46523 against CHORD's 0.374), and Tier 1
   is the one below (0.49118 against 0.51038). The marginal dollar belongs on Tier 1.
+
+## Result, 2026-10-29 13:10 UTC — the chain fails its bar and was stopped early
+
+| clip | shipped | gen 1 (350M) | gen 2 (400M) | gen2 - gen1 |
+|---|---|---|---|---|
+| e00 | 0.5178 | 0.8654 | 0.8078 | **-0.0576** |
+| e12 | 0.7904 | 0.8839 | 0.8013 | **-0.0826** |
+| e16 | 0.5639 | 0.6469 | running | |
+| e22 | 0.6686 | 0.8603 | not run | |
+| e24 | 0.8942 | 0.9567 | not run | |
+
+The registered bar was "at least two clips adopt". Both scored clips lost, and lost by more than
+most gen-1 clips gained. **A further 50M steps on an already-fine-tuned actor is not free; it is
+negative.** The fine-tune's gain comes from re-running the last curriculum stage against a *new*
+reference, and once that has happened the clip is at its peak — more of the same stage walks it off.
+
+e22 (gen-1 0.8603) and e24 (0.9567) are the two most saturated clips in the queue, which is the
+same shape that just lost twice, so they were **deliberately not run** and the box was deleted after
+e16 — the one clip of the three with real headroom left (gen 1 gained only +0.083 there). That saved
+about 2 box-hours, ~$1.35, on a question the first two clips had already answered.
+
+Adoption is unaffected either way: a gen-2 clip only ships if it beats its gen-1 rollout, and
+neither did.
