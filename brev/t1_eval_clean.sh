@@ -26,8 +26,11 @@ ASSETS=${ASSETS:-$S/t1_eval/assets}
 PLAN=${PLAN:-$S/t1_eval/assets.sources.txt}
 OUT=${OUT:-$S/t1_eval/results}
 NAME=${NAME:-v2d-t1eval-01}
-INSTANCE_TYPE=${INSTANCE_TYPE:-massedcompute_A6000_plus}
-RATE_USD_PER_HOUR=${RATE_USD_PER_HOUR:-0.68}
+# massedcompute_A6000_plus disappeared from the catalog mid-run on 2026-10-29 and three creates
+# failed with "not a recognized type" before the message was read. hyperstack_A6000 is the cheapest
+# 48 GB card still listed, and cheaper than what we had been paying.
+INSTANCE_TYPE=${INSTANCE_TYPE:-hyperstack_A6000}
+RATE_USD_PER_HOUR=${RATE_USD_PER_HOUR:-0.60}
 BOX_DEADLINE_H=${BOX_DEADLINE_H:-2.5}
 WATCHDOG_H=${WATCHDOG_H:-3.2}
 # Hooks, so a second job that is "create a box, upload a staged tree, run one script per clip,
@@ -78,6 +81,15 @@ printf '   %-15s %s\n' "checkpoints" "$CKPTS/$EXPECT_CLIPS"
   || { echo "   plan            MISSING"; PRE_OK=0; }
 ~/.local/bin/brev ls >/dev/null 2>&1 && printf '   %-15s %s\n' "brev" "logged in" \
   || { echo "   brev            NOT logged in"; PRE_OK=0; }
+# An instance type can vanish from the catalog between runs, and then `brev create` fails with
+# "not a recognized type" AFTER the budget guard has committed the spend and the backstop is armed.
+if ~/.local/bin/brev search 2>/dev/null | grep -qE "^[[:space:]]*$INSTANCE_TYPE[[:space:]]"; then
+  printf '   %-15s %s\n' "instance type" "$INSTANCE_TYPE is in the catalog"
+else
+  echo "   instance type   $INSTANCE_TYPE IS NOT IN THE CATALOG -- 48 GB cards still listed:"
+  ~/.local/bin/brev search 2>/dev/null | awk '$6 >= 48 {printf "                     %-32s %s\n", $1, $NF}' | head -5
+  PRE_OK=0
+fi
 
 say "Estimate (one $INSTANCE_TYPE at \$$RATE_USD_PER_HOUR/h)"
 cat <<EST
