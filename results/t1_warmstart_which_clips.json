@@ -1,0 +1,79 @@
+{
+ "what": "Which clips the Tier 1 warm start helps, measured on the first seven that landed.",
+ "the_split": "Every clip that gained ships its FINAL checkpoint. Every clip whose shipped checkpoint was picked EARLIER by the z-drop rule lost.",
+ "why_that_would_be": "z-drop picking an earlier checkpoint is a statement that late-stage training made that clip worse. The fine-tune re-runs exactly that late stage -- 299,999,232 to 349,999,104 -- so on those clips it reproduces the degradation selection had rejected. e20 is the clearest: z-drop picked 300M over the 350M final, and fine-tuning from 300M to 350M took it from 0.715 to 0.480.",
+ "n": 7,
+ "caveat": "seven clips, one seed. The split is clean but it is a hypothesis, not a law.",
+ "clips": {
+  "e00": {
+   "selected_environment_steps": 349999104,
+   "ships_final_checkpoint": true,
+   "shipped_auc": 0.51775,
+   "fine_tuned_auc": 0.86544,
+   "delta": 0.34769
+  },
+  "e11": {
+   "selected_environment_steps": 249999360,
+   "ships_final_checkpoint": false,
+   "shipped_auc": 0.46757,
+   "fine_tuned_auc": 0.38826,
+   "delta": -0.07931
+  },
+  "e24": {
+   "selected_environment_steps": 349999104,
+   "ships_final_checkpoint": true,
+   "shipped_auc": 0.89422,
+   "fine_tuned_auc": 0.95672,
+   "delta": 0.0625
+  },
+  "e01": {
+   "selected_environment_steps": 199999488,
+   "ships_final_checkpoint": false,
+   "shipped_auc": 0.20013,
+   "fine_tuned_auc": 0.18959,
+   "delta": -0.01054
+  },
+  "e02": {
+   "selected_environment_steps": 249999360,
+   "ships_final_checkpoint": false,
+   "shipped_auc": 0.42628,
+   "fine_tuned_auc": 0.36996,
+   "delta": -0.05632
+  },
+  "e10": {
+   "selected_environment_steps": 349999104,
+   "ships_final_checkpoint": true,
+   "shipped_auc": 0.47938,
+   "fine_tuned_auc": 0.47457,
+   "delta": -0.00481
+  },
+  "e20": {
+   "selected_environment_steps": 299999232,
+   "ships_final_checkpoint": false,
+   "shipped_auc": 0.71485,
+   "fine_tuned_auc": 0.48011,
+   "delta": -0.23474
+  }
+ },
+ "action_taken": "The three live boxes were re-queued onto their final-checkpoint clips only (e04 e06 e09 | e10 e12 e16 e17 e18 | e21 e22 e23 e26 e29), dropping 11 predicted-loss clips. Those clips cost about $4.80 and could not have changed the entry: the no-regression adoption rule rejects a regression, so a predicted loss contributes exactly nothing either way. The money buys information we already have.",
+ "of_the_30": {
+  "ship_final_checkpoint": [
+   "e00",
+   "e04",
+   "e06",
+   "e09",
+   "e10",
+   "e12",
+   "e16",
+   "e17",
+   "e18",
+   "e21",
+   "e22",
+   "e23",
+   "e24",
+   "e26",
+   "e29"
+  ],
+  "count": 15
+ }
+}

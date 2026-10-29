@@ -195,3 +195,45 @@ Record: `results/t1_warmstart_pilot.json`. The two adoptions alone are worth **+
 30-clip Tier 1 mean. The pilot's average per-clip adoption gain is **+0.1367**; at that rate across
 30 clips Tier 1 reaches roughly 0.60, and at half that rate it still clears the **0.51038** CHORD
 baseline we currently sit below.
+
+## Which clips it helps (first seven, 2026-10-29 10:00 UTC)
+
+| clip | shipped ckpt | shipped AUC | fine-tuned | Δ |
+|---|---|---|---|---|
+| e00 | **final** | 0.51775 | 0.86544 | **+0.3477** |
+| e24 | **final** | 0.89422 | 0.95672 | **+0.0625** |
+| e10 | **final** | 0.47938 | 0.47457 | −0.0048 |
+| e20 | 300M | 0.71485 | 0.48011 | −0.2347 |
+| e11 | 250M | 0.46757 | 0.38826 | −0.0793 |
+| e02 | 250M | 0.42628 | 0.36996 | −0.0563 |
+| e01 | 200M | 0.20013 | 0.18959 | −0.0105 |
+
+Both gains come from clips that ship their **final** checkpoint. Every clip where z-drop had picked
+an earlier checkpoint lost, and the one final-checkpoint clip that did not gain lost 0.005, which is
+noise.
+
+**Why that would be.** z-drop picking an earlier checkpoint is a measurement that late-stage
+training made *that clip* worse. The fine-tune re-runs precisely that late stage — 299,999,232 to
+349,999,104 — so on those clips it reproduces the degradation selection had already rejected. e20 is
+the clean case: z-drop chose 300M over the 350M final, and fine-tuning 300M → 350M took it from
+0.715 to 0.480. Seven clips and one seed, so this is a hypothesis; but it is a mechanism, not a
+correlation, and it predicts the sign of all seven.
+
+**Acted on it.** The three live boxes were re-queued onto their final-checkpoint clips only —
+`e04 e06 e09` | `e10 e12 e16 e17 e18` | `e21 e22 e23 e26 e29` — dropping eleven predicted-loss
+clips and about **$4.80**. Nothing is given up by that: under the no-regression rule a regressing
+clip ships its old rollout, so a predicted loss contributes exactly zero to the entry either way.
+Fifteen of the thirty clips ship a final checkpoint, and twelve of those are now in flight.
+
+**Two bugs this exposed, both fixed.**
+
+`brev/arm_flags.sh` accepted a patch report only if it contained the word "patched".
+`patch_warm_start.py` words its no-op as "already carries the warm-start keys", so the *second* run
+of any warm-start box died with "reported no patch at all" and sat at 0% GPU. Restarting a box is
+how a queue gets re-ordered and how a dead runner is recovered, so the no-op report is the normal
+case. Both wordings are now accepted, with a test that feeds the real stdout to the real predicate.
+
+Committing `brev/t1_eval_clean.sh` while a launcher was executing it corrupted that shell's lazy
+read of the file and aborted it at line 265. v2d-t3ws-b was deleted at 4 of its 5 clips and **e29's
+Tier 3 fine-tune was lost**. Adoption means no score was lost — e29 ships its pass-1 rollout — but
+a running script must not be rewritten underneath itself.

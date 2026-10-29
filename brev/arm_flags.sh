@@ -147,8 +147,14 @@ arm_flags_overrides() {
 # already patched, so that no-op report is the NORMAL case -- e11 on a-b05 and e25 on b1-b01 both
 # died on it within a minute of starting, and every later clip on an A, B1 or B2 box would have.
 arm_flags_report_ok() {
+  # A patch script must leave evidence that its change is in place -- either it applied the change
+  # now, or it found it already applied. The second case is the normal one on a RESTART, and the
+  # scripts word it differently: patch_object_* say "already patched", patch_warm_start.py says
+  # "already carries the warm-start keys". Matching only *patched* made every restart of a
+  # warm-start box fail with "reported no patch at all" and left the box idling at 0% GPU, which is
+  # how v2d-t1f-1 burned time on 2026-10-29. Both wordings count.
   case "$1" in
-    *patched*) return 0 ;;
+    *patched*|*"already carries"*) return 0 ;;
     *) return 1 ;;
   esac
 }

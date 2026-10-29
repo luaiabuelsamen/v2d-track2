@@ -182,3 +182,35 @@ def test_the_guard_is_inert_at_multiplier_one() -> None:
     """A stock run must be bit-identical, so the default path has to be a no-op."""
     for step in (0, 1, 2_000, 1_000_000):
         assert guarded_rate(7.5e-4, step, updates=2_000, multiplier=1.0) == 7.5e-4
+
+
+def test_the_report_is_accepted_fresh_and_again(tree: Path, capsys) -> None:
+    """A restart re-applies nothing, and the runner must still train.
+
+    `brev/arm_flags.sh` refuses to train on a report that shows no evidence the patch is in place,
+    which is right -- but it only matched the wording "patched", and this script words its no-op as
+    "already carries the warm-start keys". So the SECOND run of any warm-start box died with
+    "reported no patch at all" and the box sat at 0% GPU. Restarting a box is how a queue gets
+    re-ordered and how a dead runner is recovered, so the no-op report is a normal case, not an
+    error. This feeds the real stdout to the real predicate.
+    """
+    import subprocess
+
+    def accepted(report: str) -> bool:
+        return (
+            subprocess.run(
+                ["bash", str(Path(__file__).parents[1] / "brev/arm_flags.sh"), "--report-ok", report],
+                capture_output=True,
+                text=True,
+                check=False,
+            ).returncode
+            == 0
+        )
+
+    assert apply(tree) == 0
+    fresh = capsys.readouterr().out
+    assert accepted(fresh), fresh
+    assert apply(tree) == 0
+    again = capsys.readouterr().out
+    assert "already carries the warm-start keys" in again
+    assert accepted(again), again
