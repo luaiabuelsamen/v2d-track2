@@ -98,7 +98,40 @@ an unflipped frame: under the retargeter's `diag(1,-1,-1)` the feet sit at 2.0 c
 **A learned denoiser.** Without an absolute anchor it could remove only ~6% of the Tier 2 error,
 and a grasping hand is a loose anchor (4.9 cm and 44° of wander), so it was dropped.
 
-## 6. Honest limitations
+## 6. Warm-start fine-tuning, the one method change that paid
+
+The cold swap above said a policy cannot be handed a new reference. The obvious correction is to
+let it *re-fit* to one, cheaply. `brev/patch_warm_start.py` adds `training.warm_start_actor_path`:
+after `create_learner` it loads a shipped actor's params and batch stats, sets
+`environment_steps` to 299,999,232 so the curriculum sits in its final stage, and runs to the
+normal 349,999,104 — about 50M steps, one seventh of a full run, ~35 min on an A6000. The critic
+starts cold, so the actor's learning rate is scaled x0.1 for the first 2,000 updates.
+
+**It works on Tier 1, where the permitted input *is* the configured scoring reference**
+(`config/tracks.json` → `input_note`), so a per-clip choice may legally read it. 23 of 30 clips
+were fine-tuned on the clean trajectory and adopted under a no-regression rule — AUC must improve
+and no other board may fall:
+
+| | AUC | SP-SR | MP-SR | MPPE cm |
+|---|---|---|---|---|
+| shipped entry (on the boards) | 0.46523 | 0.6667 | 0.4667 | 14.128 |
+| **after 11 adoptions** | **0.52688** | 0.6667 | **0.5000** | **13.9014** |
+| CHORD Tier 1 baseline | 0.51038 | — | — | — |
+
+**The gain mechanism is re-fitting to a new reference, not extra training.** A second generation,
+fine-tuning the already-fine-tuned actors again on the *same* reference, adopted **0 of 3** and
+lost badly on e16 (0.6469 → 0.2963, both gates lost, MPPE 3.0 → 61.4 cm). Nothing is being bought
+by more steps.
+
+**Adoption is predicted by the clip's shipped AUC, not by its checkpoint index.** 11 of 19 clips
+above 0.35 adopted, mean gain +0.169; **0 of 4** below 0.35 did. That rule retired the arm: every
+clip above the line has been run, and the seven never run all sit below 0.30.
+
+On **Tier 3** the input is our own reconstruction, not the scoring reference, so selection must
+read the input alone — a z-drop/input-distance rule with no truth read. 5 of 10 clips adopted that
+way, taking the entry from 0.23233 to 0.25059 and turning both success gates off zero.
+
+## 7. Honest limitations
 
 One seed. No ablation isolates the four recipe changes from each other — the shipping run was
 chosen as a shipping run, knowingly, over an attribution run. The remaining failure mode is
@@ -107,7 +140,7 @@ mid-episode drops rather than a broken pipeline: trajectories show the object tr
 did not touch: `soma_to_g1` writes every object URDF as 1 kg with inertia `diag(0.01)`, which makes
 the squeegee, cane and vacuum 6–14× too easy to spin.
 
-## 7. Reproducing
+## 8. Reproducing
 
 `README.md` has the pipeline and the results table. Every number in `results/` is reproducible
 from a committed script; every Brev run is a committed runner with its cost in the ledger. Total
