@@ -257,3 +257,24 @@ files, and the two plan lines appended to `~/t1_plan.txt`. Appending is safe whi
 mid-clip: it walks the plan on fd 3 and has not reached EOF, so it picks the new lines up. That
 saved a bring-up and a 10-minute image build, about $1.60, and 2c now runs seven clips inside its
 6.5 h deadline with 1.3 h to spare.
+
+## Addendum, 2026-10-29 12:50 UTC — all 18 gen-1 clips scored
+
+| clip | shipped AUC | fine-tuned | delta | ships final ckpt | adopted |
+|---|---|---|---|---|---|
+| e06 | 0.47585 | 0.77999 | +0.30414 | yes | yes |
+| e26 | 0.59296 | 0.60024 | +0.00729 | yes | yes |
+| e18 | 0.73849 | 0.56585 | -0.17264 | yes | no (loses the MP-SR pass) |
+| e29 | 0.62701 | 0.60238 | -0.02463 | yes | no |
+
+Eight of eighteen adopt: e00 e06 e12 e16 e22 e23 e24 e26, mean adopted gain +0.133.
+
+**Entry v2 packs at AUC 0.50838 / SP-SR 0.6667 / MP-SR 0.5000 / MPPE 13.973** against the uploaded
+0.46523 / 0.6667 / 0.4667 / 14.128 — better on all four, and 0.0020 under CHORD's 0.51038.
+
+The final-checkpoint prediction held up in direction but not as a sufficient condition: all four
+clips here ship a final checkpoint, and two of them still lost. Shipping the final checkpoint is
+what makes a gain *possible* (the fine-tune resumes from 300M, so a clip whose z-drop pick was
+earlier is being re-run through training it already declined), not what makes one happen.
+
+Still open: e09 on v2d-t1f-2c, and the generation-2 chain at 3 of 5.
