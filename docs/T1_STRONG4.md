@@ -60,3 +60,30 @@ This is the clearest version of the finding: the warm-start fine-tune is a *shar
 takes a policy that already tracks the object and re-fits it to a new reference. A policy that
 drops the object has nothing to sharpen, and 50M more steps of the final curriculum stage will not
 teach it to hold on. Every clip left in the Tier 1 queue is therefore chosen on shipped AUC alone.
+
+## Bring-up failure, 2026-10-29 13:20-13:30 UTC — the instance type was delisted mid-flight
+
+Both boxes came back **FAILURE / CREATE_FAILED** after 28 minutes in DEPLOYING. The cause was not
+the ~1/3 random create-failure rate: **`hyperstack_A6000` disappeared from the Brev catalog between
+the 12:52 launch and the 13:27 retry.** Preflight had passed it at 12:52 ("is in the catalog") and
+refused it at 13:27, listing the 48 GB cards that remain:
+
+    massedcompute_A6000        $0.68
+    massedcompute_A6000_base   $0.68
+    massedcompute_A6000_plus   $0.68
+    massedcompute_L40S         $1.06
+
+That also explains why *both* boxes failed simultaneously, which random provisioning failure would
+not. Relaunched as `v2d-t1s4-a2` / `v2d-t1s4-b2` on `massedcompute_A6000` at $0.68/h — the rate the
+cost projection already assumed, so the ~$1.70 estimate is unchanged.
+
+**The catalog churns in both directions.** `massedcompute_A6000_plus` vanished earlier today and
+`hyperstack_A6000` was then the cheapest 48 GB card; now the reverse. Any launcher that pins a type
+will eventually create nothing, so the type belongs in preflight (where it is) and overridable at
+the command line (`ITYPE=`, added).
+
+Three plumbing fixes went with the relaunch, each one a thing that would have lost the run quietly:
+the box name is overridable so a replacement keeps its letter's staged tree and results directory;
+the puller maps `v2d-t1s4-a*` by pattern, so a replacement's rollouts still land where the packer
+looks; and the bring-up watcher reads the STATUS column for `FAILURE` rather than waiting out a
+20-minute SSH poll against an instance that will never boot.
