@@ -87,3 +87,25 @@ the box name is overridable so a replacement keeps its letter's staged tree and 
 the puller maps `v2d-t1s4-a*` by pattern, so a replacement's rollouts still land where the packer
 looks; and the bring-up watcher reads the STATUS column for `FAILURE` rather than waiting out a
 20-minute SSH poll against an instance that will never boot.
+
+## The runner raced its own image build, 13:34-13:45 UTC
+
+Both relaunched boxes wrote `FATAL: no container; run gate_on_instance.sh build first` into
+`run.log` within four minutes of bring-up, while `gate_on_instance.sh build` was still running and
+`docker images` was empty. So the eval stage ran before the image existed, failed, and exited —
+and nothing would have started training once the build finished. GPU 0%, box billing.
+
+`gate_on_instance.sh` starts the container with `docker/run.sh start latest 0 &` and then waits
+only **100 s** for it to appear. A cold box has no image, so that `start` triggers a full build of
+several minutes, the 100 s wait expires, and the build phase returns while the image is still
+being made. The runner's `|| FAILED` guard does not catch it because the build step itself does not
+report failure.
+
+**Recovery, no re-provisioning:** a waiter per box polls for a real image and then starts
+`run_warm_start.sh` with the launcher's exact env. It will not act while the launcher's own
+`t1_runner.sh` is alive — that process starts the runner itself once its build returns, and a
+second runner on the same plan would put two trainings on one GPU and two claims on one clip. The
+first version of the waiter checked only for a running training, which left a race window of one
+poll interval; it now stands down for the owner and acts only when nothing else can.
+
+This is a cold-box defect, so **the Tier 3 launch will hit it too** and the same waiter applies.
