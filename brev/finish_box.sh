@@ -7,7 +7,12 @@
 # clip it skipped. This reads the box's own plan, so it is right whatever the queue was changed to.
 set -uo pipefail
 S=/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad
-BOX=$1; DIR=$2
+BOX=$1; DIR=$2; RESTART_ENV=${3:-}
+# RESTART_ENV is the EXACT environment to restart this box's runner with, and it has no default
+# on purpose. This script restarted v2d-t1chain with a hard-coded generation-1 environment that
+# carried no WS_START, which would have rewound the actor 50M steps and redone training it had
+# already had -- a rollout from a different arm wearing this one's name. Guessing a recipe is
+# worse than not restarting, so without this argument a dead runner is reported and left dead.
 rssh() { timeout 120 ssh -o BatchMode=yes -o ConnectTimeout=20 "$BOX" "$@" 2>/dev/null | grep -v Pseudo; }
 
 # `brev ls` answers short or empty under concurrent calls -- three of these watchers starting at
@@ -50,11 +55,13 @@ for i in $(seq 1 300); do
   # -- so the restart needs BOTH to be down, not just the runner.
   WORKERS=$(rssh "ps -eo pid,args --no-headers | awk '\$3==\"scripts/train_flash_sac.py\" {print \$1}' | wc -l")
   if [ "$RUNNING" = "0" ] && [ "$WORKERS" = "0" ]; then
-    echo "$(date -u +%H:%M) $BOX: runner DOWN at $HAVE/$WANT clips -- restarting in place"
-    rssh "nohup env PLAN=\$HOME/t1_plan.txt OUT=\$HOME/t1_eval_results DEADLINE_H=6.5 \
-      ARM_FLAGS=start_curriculum,orientation_reward,object_position \
-      V2D_OBJECT_POSITION_STD=0.08 V2D_OBJECT_ORIENTATION_STD=0.3 \
-      bash \$HOME/run_warm_start.sh >> \$HOME/t1_eval_results/run.log 2>&1 & echo restarted \$!"
+    echo "$(date -u +%H:%M) $BOX: runner DOWN at $HAVE/$WANT clips"
+    if [ -z "$RESTART_ENV" ]; then
+      echo "   no RESTART_ENV given -- leaving it dead rather than guessing the recipe"
+    else
+      rssh "nohup env PLAN=\$HOME/t1_plan.txt OUT=\$HOME/t1_eval_results $RESTART_ENV \
+        bash \$HOME/run_warm_start.sh >> \$HOME/t1_eval_results/run.log 2>&1 & echo restarted \$!"
+    fi
   fi
   sleep 300
 done
