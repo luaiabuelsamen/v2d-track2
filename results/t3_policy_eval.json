@@ -1,0 +1,268 @@
+{
+ "what": "Tier 3 pass 1: the 30 shipped wave-2 actors driven by our own video reconstruction.",
+ "box": {
+  "name": "v2d-t3eval-01",
+  "type": "massedcompute_A6000_plus",
+  "minutes": 55,
+  "usd": 0.62,
+  "note": "Brev's control plane reported this box FAILURE/CREATE_FAILED while it was working normally; the box was trusted over the status row, and it produced 30/30."
+ },
+ "means_over_30_clips": {
+  "add_auc": 0.23233,
+  "spider_sr": 0.0,
+  "maniptrans_sr": 0.0,
+  "mppe_cm": 62.11
+ },
+ "raw_reconstruction_for_comparison": {
+  "add_auc": 0.22799,
+  "spider_sr": 0.33333,
+  "maniptrans_sr": 0.03333,
+  "mppe_cm": 66.60263,
+  "note": "the reconstruction scored directly; cannot be submitted, no evaluator ran so there is no honest eval_code_sha256"
+ },
+ "the_prediction_and_why_it_was_wrong": "docs/T3_SUBMISSION.md registered, before launch, that pass 1 would land in 0.10-0.20 and BELOW the raw reconstruction's 0.228, reasoning from the Tier 1 result where a 1 cm reference swap cost 0.465 -> 0.289. It came in at 0.23233, slightly ABOVE raw, with MPPE better (62.11 vs 66.60). The reasoning missed that a physical policy cannot reproduce a physically impossible input: where the reconstruction has the object floating or jittering, contact and gravity correct it. That is why AUC and MPPE improve.",
+ "but_the_success_rates_went_the_other_way": "SP-SR 0.333 -> 0.000 and MP-SR 0.033 -> 0.000. Those thresholds are tight (10 cm / 0.5 rad and 3 cm / 30 deg, time-averaged) and the policy's own tracking error pushes the well-reconstructed clips past them. So the raw reconstruction would beat this entry on two of the four Tier 3 boards, and cannot be submitted on any of them.",
+ "what_this_means_for_spending": "Tier 3's bottleneck is the reconstruction, not the policy. The policy already scores at the reconstruction's own level (0.2323 vs 0.2280), so GPU spent on better Tier 3 policies buys little; the lever is the 20 of 30 clips whose reconstruction loses the object, and that is free CPU work. No GPU is allocated to Tier 3.",
+ "episodes": [
+  {
+   "tag": "e08",
+   "add_auc": 0.5598516949152542,
+   "spider_sr": 0.0,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 18.46364854895159,
+   "shipped_tier2_auc": 0.665430790960452
+  },
+  {
+   "tag": "e26",
+   "add_auc": 0.4507660687593423,
+   "spider_sr": 0.0,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 5.424403866641241,
+   "shipped_tier2_auc": 0.592955904334828
+  },
+  {
+   "tag": "e20",
+   "add_auc": 0.4098101265822785,
+   "spider_sr": 0.0,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 35.40196904457976,
+   "shipped_tier2_auc": 0.7148508137432188
+  },
+  {
+   "tag": "e00",
+   "add_auc": 0.40657133676092544,
+   "spider_sr": 0.0,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 23.260545018477686,
+   "shipped_tier2_auc": 0.517753856041131
+  },
+  {
+   "tag": "e22",
+   "add_auc": 0.34448887343532686,
+   "spider_sr": 0.0,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 77.43960984421938,
+   "shipped_tier2_auc": 0.6686369958275382
+  },
+  {
+   "tag": "e18",
+   "add_auc": 0.3248106060606061,
+   "spider_sr": 0.0,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 31.218949997452455,
+   "shipped_tier2_auc": 0.738490675990676
+  },
+  {
+   "tag": "e06",
+   "add_auc": 0.3121565934065934,
+   "spider_sr": 0.0,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 92.96253797098016,
+   "shipped_tier2_auc": 0.47584706959706957
+  },
+  {
+   "tag": "e12",
+   "add_auc": 0.30375,
+   "spider_sr": 0.0,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 28.166033976789794,
+   "shipped_tier2_auc": 0.790357142857143
+  },
+  {
+   "tag": "e23",
+   "add_auc": 0.30265591966173366,
+   "spider_sr": 0.0,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 35.32194954724211,
+   "shipped_tier2_auc": 0.5880681818181819
+  },
+  {
+   "tag": "e17",
+   "add_auc": 0.2857954545454545,
+   "spider_sr": 0.0,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 118.01856886411986,
+   "shipped_tier2_auc": 0.4470170454545454
+  },
+  {
+   "tag": "e27",
+   "add_auc": 0.2724557522123894,
+   "spider_sr": 0.0,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 70.82266366149972,
+   "shipped_tier2_auc": 0.7793141592920354
+  },
+  {
+   "tag": "e16",
+   "add_auc": 0.24986897274633124,
+   "spider_sr": 0.0,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 67.24277209697931,
+   "shipped_tier2_auc": 0.5639412997903563
+  },
+  {
+   "tag": "e15",
+   "add_auc": 0.24283216783216782,
+   "spider_sr": 0.0,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 54.22925869390917,
+   "shipped_tier2_auc": 0.6652972027972027
+  },
+  {
+   "tag": "e29",
+   "add_auc": 0.2398286937901499,
+   "spider_sr": 0.0,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 30.894841388077715,
+   "shipped_tier2_auc": 0.6270074946466809
+  },
+  {
+   "tag": "e10",
+   "add_auc": 0.2260705289672544,
+   "spider_sr": 0.0,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 77.29745225059406,
+   "shipped_tier2_auc": 0.4793765743073048
+  },
+  {
+   "tag": "e24",
+   "add_auc": 0.2080548128342246,
+   "spider_sr": 0.0,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 14.578655336971824,
+   "shipped_tier2_auc": 0.8942179144385026
+  },
+  {
+   "tag": "e09",
+   "add_auc": 0.18096264367816092,
+   "spider_sr": 0.0,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 48.879527891679686,
+   "shipped_tier2_auc": 0.3002873563218391
+  },
+  {
+   "tag": "e07",
+   "add_auc": 0.17759486607142858,
+   "spider_sr": 0.0,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 52.148909430483435,
+   "shipped_tier2_auc": 0.2508370535714286
+  },
+  {
+   "tag": "e03",
+   "add_auc": 0.16181177976952624,
+   "spider_sr": 0.0,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 150.8803431322284,
+   "shipped_tier2_auc": 0.7806498079385403
+  },
+  {
+   "tag": "e01",
+   "add_auc": 0.15980589022757696,
+   "spider_sr": 0.0,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 39.52141934588098,
+   "shipped_tier2_auc": 0.2001338688085676
+  },
+  {
+   "tag": "e21",
+   "add_auc": 0.1485066371681416,
+   "spider_sr": 0.0,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 115.32814012206671,
+   "shipped_tier2_auc": 0.206
+  },
+  {
+   "tag": "e14",
+   "add_auc": 0.1395392749244713,
+   "spider_sr": 0.0,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 32.897544974871856,
+   "shipped_tier2_auc": 0.2055010070493454
+  },
+  {
+   "tag": "e13",
+   "add_auc": 0.13706616052060738,
+   "spider_sr": 0.0,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 54.791116866863696,
+   "shipped_tier2_auc": 0.1593682212581345
+  },
+  {
+   "tag": "e02",
+   "add_auc": 0.12869897959183674,
+   "spider_sr": 0.0,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 79.50027136999724,
+   "shipped_tier2_auc": 0.4262755102040816
+  },
+  {
+   "tag": "e05",
+   "add_auc": 0.11970338983050847,
+   "spider_sr": 0.0,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 63.00095805108155,
+   "shipped_tier2_auc": 0.26601445663010964
+  },
+  {
+   "tag": "e04",
+   "add_auc": 0.11869551681195517,
+   "spider_sr": 0.0,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 117.36985778440953,
+   "shipped_tier2_auc": 0.14655977584059776
+  },
+  {
+   "tag": "e19",
+   "add_auc": 0.11336060948081264,
+   "spider_sr": 0.0,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 88.48267335665571,
+   "shipped_tier2_auc": 0.11625282167042891
+  },
+  {
+   "tag": "e11",
+   "add_auc": 0.09354166666666666,
+   "spider_sr": 0.0,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 49.05208386423324,
+   "shipped_tier2_auc": 0.4675694444444445
+  },
+  {
+   "tag": "e25",
+   "add_auc": 0.08643771827706635,
+   "spider_sr": 0.0,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 124.13075063804932,
+   "shipped_tier2_auc": 0.13344004656577416
+  },
+  {
+   "tag": "e28",
+   "add_auc": 0.06446103238866396,
+   "spider_sr": 0.0,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 66.58232138302171,
+   "shipped_tier2_auc": 0.08913208502024292
+  }
+ ]
+}
