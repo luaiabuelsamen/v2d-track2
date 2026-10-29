@@ -1,0 +1,30 @@
+{
+ "what": "tier1 submission, uploaded 2026-10-29",
+ "uploaded_at_utc": "2026-10-29T15:52Z",
+ "csv": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t1_entry_v2/track2_tier1.csv",
+ "csv_sha256": "09d600923c567ed1d08bb213648e9ae3f05070266f1a80a50edca368005e01c1",
+ "csv_bytes": 11841438,
+ "code_commit_url": "https://github.com/luaiabuelsamen/v2d-track2/commit/6eb90dc1c2d81741842d805e6ffdc6f127266b5e",
+ "code_commit_pushed": true,
+ "kaggle_submission_refs": {
+  "auc": 57778044,
+  "sp_sr": 57778047,
+  "mp_sr": 57778052,
+  "mppe": 57778054
+ },
+ "local_score": {
+  "add_auc": 0.526879001729094,
+  "spider_sr": 0.6666666666666666,
+  "maniptrans_sr": 0.5,
+  "mppe_cm": 13.901418899450068
+ },
+ "public_score": {
+  "add_auc": "0.52687",
+  "spider_sr": "0.66666",
+  "maniptrans_sr": "0.50000",
+  "mppe_cm": "13.90141"
+ },
+ "local_vs_public": "agrees to 5 decimals on all four",
+ "quota_after": "4 submissions left today on each of the four boards",
+ "note": "Replaces the 0.46523 entry, which was the Tier 2 file byte-identical. 11 of 23 fine-tuned clips adopted under the no-regression rule (AUC must improve and no other board may fall); legal on Tier 1 only, because config/tracks.json names the permitted multiview trajectory as the configured scoring reference. Now +0.01650 past the CHORD Tier 1 baseline of 0.51038."
+}

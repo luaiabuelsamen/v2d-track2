@@ -1,32 +1,30 @@
 # STATUS — v2d (NVIDIA V2D Challenge, Track 2)
 
-## BLOCKED ON LUAI — three validated entries are packed and not uploaded
+## All three tiers are on the board, 2026-10-29 15:52 UTC
 
-Everything below is measured, kit-validated and preflighted. Nothing can reach a board without
-these two actions, and the Nov 4 2026 5:00 p.m. EST freeze is the deadline.
-
-**1. Push.** `git push origin main` — 63 commits ahead of `origin/main` (e8ffe8f), private repo
-`luaiabuelsamen/v2d-track2`. All three entries name a commit URL for provenance; the warm-start
-code that produced the improved rollouts is in the unpushed commits, so uploading before the push
-is a real provenance mismatch, not a formality.
-
-**2. Submit.** One command per board once the push lands:
-
-    .venv311/bin/python submit/v2d_submit.py <csv> --track <track> -m '<message>'
-
-| entry | file | AUC | SP-SR | MP-SR | MPPE | vs what is on the board |
+| tier | AUC | SP-SR | MP-SR | MPPE cm | was | reference |
 |---|---|---|---|---|---|---|
-| Tier 1 v2 | `$S/t1_entry_v2/track2_tier1.csv` | **0.52688** | 0.6667 | **0.5000** | **13.9014** | 0.46523 / 0.6667 / 0.4667 / 14.128 — better on all four, and **past CHORD's 0.51038** |
-| Tier 2 | — | 0.46523 | 0.6667 | 0.4667 | 14.128 | **nothing to submit.** The board already holds our best Tier 2 file; the second-wave candidate scored 0.46313, *worse*, and the chain result rules out a fine-tune (see docs/T1_CHAIN.md) |
-| Tier 3 v2 | `$S/t3_entry_v2/track2_tier3.csv` | **0.25059** | **0.1667** | **0.0333** | **54.44** | nothing submitted — Tier 3 is currently a zero |
+| **Tier 1** | **0.52687** | 0.66666 | **0.50000** | **13.90141** | 0.46523 / 0.66667 / 0.46667 / 14.128 | CHORD 0.51038 — **we are +0.0165 past it** |
+| Tier 2 | 0.46523 | 0.66667 | 0.46667 | 14.128 | unchanged, and it is our best Tier 2 file | CHORD board average 0.374 / 0.533 / 0.067 / 20.5 |
+| **Tier 3** | **0.25059** | **0.16666** | **0.03333** | **54.43633** | **nothing — the tier scored zero** | no published baseline |
 
-`$S` is `/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad`.
+Every public score agrees with the local kit score to five decimals, so the local scorer is a
+faithful stand-in and nothing has to be guessed from the board. Receipts and per-board submission
+ids are in `results/tier1_submission_v2.json` and `results/tier3_submission_v2.json`; the code
+commit named by all 22,989 rows of each entry is `6eb90dc`, pushed and resolvable on `origin/main`.
 
-Tier 1 now sits **+0.0165 above** the CHORD baseline of 0.51038, and Tier 1 fine-tuning is
-**closed**: the strong-four arm adopted 3 of 4 (e08 +0.258, e15 +0.160, e27 +0.079) and every clip
-never fine-tuned is below 0.30, where no clip has ever adopted. Tier 3 is now the single largest
-gain available, because an unsubmitted tier scores zero. Also still pending: accept the `Nvidia-V2D-Challenge` GitHub invite,
-confirm the registration form, and pick the final two submissions before the freeze.
+Tier 1 moved because of warm-start fine-tuning (`docs/T1_STRONG4.md`, `docs/WARM_START.md`): 11 of
+23 fine-tuned clips adopted under a rule that requires AUC to improve and forbids any other board
+from falling. That is legal on Tier 1 alone, because `config/tracks.json` names the permitted
+multiview trajectory as *the configured scoring reference*; on Tier 2 and Tier 3 selection reads
+the input only. Tier 1 fine-tuning is now **closed**: every clip above the 0.35 line where
+adoption happens has been run, and all seven never run sit below 0.30, where 0 of 4 have ever
+adopted.
+
+**Still open for the Nov 4 2026 5:00 p.m. EST freeze:** accept the `Nvidia-V2D-Challenge` GitHub
+invite, confirm the registration form, and pick the final two submissions per board. One Tier 3
+box (`v2d-t3s6-a`, clips e06 e12 e17) is training on the last ~$5 of Brev credit; if it adopts,
+Tier 3 gets a second upload.
 
 ## Live, 2026-10-29 10:20 UTC: the Tier 1 fine-tune is working
 

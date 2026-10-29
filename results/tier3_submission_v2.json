@@ -1,0 +1,30 @@
+{
+ "what": "tier3 submission, uploaded 2026-10-29",
+ "uploaded_at_utc": "2026-10-29T15:52Z",
+ "csv": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t3_entry_v2/track2_tier3.csv",
+ "csv_sha256": "6df483b2dd17634e259a16ddf6eae450f689a60f72331d28edf3c4db25df4d3d",
+ "csv_bytes": 11843991,
+ "code_commit_url": "https://github.com/luaiabuelsamen/v2d-track2/commit/6eb90dc1c2d81741842d805e6ffdc6f127266b5e",
+ "code_commit_pushed": true,
+ "kaggle_submission_refs": {
+  "auc": 57778063,
+  "sp_sr": 57778069,
+  "mp_sr": 57778073,
+  "mppe": 57778075
+ },
+ "local_score": {
+  "add_auc": 0.2505939954639073,
+  "spider_sr": 0.16666666666666666,
+  "maniptrans_sr": 0.03333333333333333,
+  "mppe_cm": 54.43633966798409
+ },
+ "public_score": {
+  "add_auc": "0.25059",
+  "spider_sr": "0.16666",
+  "maniptrans_sr": "0.03333",
+  "mppe_cm": "54.43633"
+ },
+ "local_vs_public": "agrees to 5 decimals on all four",
+ "quota_after": "4 submissions left today on each of the four boards",
+ "note": "Tier 3 was scoring nothing: no entry at all. Input is our own MoGe-based reconstruction; 25 clips from pass 1 and 5 replaced by warm-start fine-tunes chosen on the input alone (tools/t3/adopt.py reads no ground truth, because on Tier 3 the input is NOT the scoring reference). Pass 1 scored 0.23233 / 0.0 / 0.0 / 62.11; both success gates are now off zero."
+}
