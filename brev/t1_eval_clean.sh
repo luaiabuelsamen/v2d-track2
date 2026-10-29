@@ -127,11 +127,28 @@ wait_ssh() {
 }
 step "4  wait for SSH (<=20 min)"      -- wait_ssh
 
+# Every other remote call goes through rssh, which retries this instance type's intermittent
+# "kex_exchange_identification: Connection closed by remote host". The upload did not, and on
+# v2d-t3ws-a it cost the whole box: the 1 GB rsync of the asset tree succeeded, the scp of the
+# runner scripts was refused, the driver carried on, and the box sat at 0% GPU reporting
+# "gate_on_instance.sh: No such file or directory". Retried now, per transfer.
+retry() {
+  local label=$1 i; shift
+  for i in 1 2 3 4 5; do
+    "$@" && return 0
+    echo "   $label refused (attempt $i); retrying" >&2
+    sleep $((i * 15))
+  done
+  echo "!! $label failed five times" >&2
+  return 1
+}
 upload() {
-  ssh -o BatchMode=yes "$NAME" 'mkdir -p ~/v2d_assets' || return 1
+  retry "mkdir" ssh -o BatchMode=yes -o ConnectTimeout=30 "$NAME" 'mkdir -p ~/v2d_assets' || return 1
   # The CONTENTS of the staged tree, so /v2d/assets/<stage>/... matches what the checkpoints record.
-  rsync -a --info=stats1 -e "ssh -o ServerAliveInterval=30" "$ASSETS"/ "$NAME":~/v2d_assets/ || return 1
-  scp -o ServerAliveInterval=30 "$PLAN" "$NAME":~/t1_plan.txt || return 1
+  retry "asset rsync" rsync -a --info=stats1 -e "ssh -o ServerAliveInterval=30" \
+      "$ASSETS"/ "$NAME":~/v2d_assets/ || return 1
+  retry "plan scp" scp -o ServerAliveInterval=30 -o ConnectTimeout=30 \
+      "$PLAN" "$NAME":~/t1_plan.txt || return 1
   # Everything the box runner sources or calls, or it dies on the box with "No such file or
   # directory" after the image has already been paid for -- which is how the first wave of the
   # 30-clip run was lost.
@@ -140,9 +157,13 @@ upload() {
     [[ -f "$REPO_ROOT/$f" ]] || { echo "!! EXTRA_UPLOADS: no $REPO_ROOT/$f" >&2; return 1; }
     extra+=("$REPO_ROOT/$f")
   done
-  scp -o ServerAliveInterval=30 "$REPO_ROOT/brev/gate_on_instance.sh" \
+  retry "runner scp" scp -o ServerAliveInterval=30 -o ConnectTimeout=30 \
+      "$REPO_ROOT/brev/gate_on_instance.sh" \
       "$REPO_ROOT/brev/$BOX_SCRIPT" "$REPO_ROOT/brev/arm_flags.sh" \
       "$REPO_ROOT/brev/patch_object_orientation.py" "${extra[@]}" "$NAME":~/ || return 1
+  # And prove every one of them arrived, because a partial upload is what actually happened.
+  retry "runner check" ssh -o BatchMode=yes -o ConnectTimeout=30 "$NAME" \
+      "test -s ~/gate_on_instance.sh && test -s ~/$BOX_SCRIPT && test -s ~/arm_flags.sh" || return 1
 }
 step "5  upload assets + runners"      -- upload
 # The manifest gate, on the box, before any GPU time is spent on a tree that travelled badly.
