@@ -1,0 +1,31 @@
+{
+ "what": "e17: the first clip where the registered input-only rule adopts a rollout that loses AUC against truth",
+ "predicted": "docs/T3_MPPE_PUSH.md predicted this class before e17 was scored: e17's reconstruction floor is 180.22 cm against a pass-1 MPPE of 118.02, i.e. headroom -62 cm. The policy already beats its own input, so pulling it closer to the input cannot help truth.",
+ "numbers": {
+  "input_err_cm": {
+   "pass1": 99.22,
+   "fine_tuned": 98.67,
+   "improvement_pct": 0.55
+  },
+  "truth": {
+   "auc": {
+    "pass1": 0.2858,
+    "fine_tuned": 0.27315,
+    "delta": -0.01265
+   },
+   "mppe_cm": {
+    "pass1": 118.02,
+    "fine_tuned": 116.21,
+    "delta": -1.81
+   }
+  }
+ },
+ "entry_effect": {
+  "mean_auc": -0.00042,
+  "mean_mppe_cm": -0.06,
+  "rank_effect": "none: tier3-auc stays 3rd, tier3-mppe stays 6th either way"
+ },
+ "decision": "Adopt, because that is what the registered rule says and the rule was registered precisely so that a peek at truth cannot change a verdict. Overriding it here would be the oracle selection this project has refused all along, for 0.0004 of AUC against +0.06 cm of MPPE -- a wash.",
+ "refinement_registered_for_the_pending_batch": "A 0.55% improvement in input error on a 99 cm error is noise. For the five-clip MPPE push still training (e03 e25 e01 e29 e16), adoption additionally requires the mean input error to improve by at least 2% relative. Declared now, before any of those five has been scored or even pulled, so it is a rule and not a rationalisation. It is input-only, so it stays legal on Tier 3. All five have positive headroom, so this is a guard rather than a filter.",
+ "the_general_lesson": "The input-only rule is sound where the input is better than the policy, and blind where it is worse. Headroom is what tells those apart, and it needs truth -- so it can choose which clips to RUN but never which rollout to SHIP."
+}
