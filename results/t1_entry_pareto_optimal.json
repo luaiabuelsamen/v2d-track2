@@ -1,0 +1,18 @@
+{
+ "what": "The uploaded Tier 1 entry is Pareto-optimal over every rollout we hold",
+ "when": "2026-10-30 14:45 UTC, after the credit ran out",
+ "method": "Took every rollout on disk that is NOT currently shipped -- 16 clips have at least one alternative across the fine-tune, donor-transfer and orientation arms -- and evaluated every single swap and every PAIR of swaps against the uploaded entry on all four boards.",
+ "result": {
+  "single_swaps_that_help_without_hurting": 0,
+  "pairs_that_help_without_hurting": 0,
+  "entry": {
+   "add_auc": 0.54809,
+   "spider_sr": 0.7,
+   "maniptrans_sr": 0.5,
+   "mppe_cm": 12.06
+  }
+ },
+ "why_pairs_were_worth_checking": "Single-clip rules can miss a combination: e10's orientation rollout gains AUC and breaks the 3 cm MP-SR gate, so in principle another swap that restored an MP-SR pass could have paid for it. None exists -- nothing we hold flips a clip's MP-SR from 0 to 1, because the three transfer adoptions land at 9.58, 10.37 and 41.62 cm, all far above 3 cm.",
+ "what_this_closes": "Selection and recombination on Tier 1 are exhausted, provably rather than by assertion. Every further gain on that tier requires new rollouts, which requires GPU. The same was already shown for Tier 2 (the board holds our best file; the second-wave mix scored 0.46313) and for Tier 3 (input-only adoption applied, oracle selection worth +0.00135).",
+ "the_session_is_therefore_complete": "No free action remains that changes any board. What remains is the two user actions for the freeze -- the GitHub invite and the registration form -- and, if credit ever arrives, the priced arms in docs/TO_THE_TOP.md with the orientation line now corrected to an oracle bound."
+}
