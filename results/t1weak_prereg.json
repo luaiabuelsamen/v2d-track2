@@ -47,5 +47,20 @@
   "new_code": "brev/run_t1weak.sh, an adapter: t1_eval_clean.sh hands its box script PLAN as an env var while run_tier2_full.sh takes the map positionally. Two proven scripts, translated rather than bent.",
   "dry_run_evidence": "DRY_RUN=1 on box a's map printed the real training command: task.parquet under /v2d/assets/t1weak, total_environment_steps=349999104, save_interval=49999872, scene.support resolved per clip, reset.reset_voc_scale=0.0 from the start-curriculum patch, object_position std 0.08 and object_orientation std 0.3 applied, seed 42, then one evaluation per checkpoint.",
   "known_cosmetic_defect": "run_tier2_full.sh hardcodes logging.project=v2d-t2-combined and run_name=t2_eXX, so these Tier 1 runs will be labelled t2 in the offline W&B dirs. Logging is offline and the results tree is what gets scored, so this is mislabelling rather than a fault, and I would rather not edit a runner that has driven 30 clips for a cosmetic fix."
+ },
+ "correction_2026_10_30_06_05": {
+  "what_was_wrong": "I called T1WEAK 'launch-ready' with the clips split 4/4/3 by count. The pilot then failed on the box with Newton's URDF parser dying at 'not well-formed (invalid token): line 1, column 0', and the cause was my staging, not the clip.",
+  "the_cause": "Each reference parquet records an ABSOLUTE, stage-qualified object path -- e19's is /v2d/assets/sw_B2/.../textured_mesh.urdf. My flatten had moved every clip under one stage name 't1weak', so on the box that path did not exist and the parser read nothing. The warm-start stager preserves each clip's original stage name for exactly this reason; its docstring says so about the reference path and the same holds for the object.",
+  "the_fix": "Group boxes by the stage the parquet records, not by clip count. The eleven clips use four stages: t2_combined 6, sw_B1 2, sw_B2 2, sw_B4x 1. t2_combined is split across two boxes so none runs past its authority.",
+  "revised_boxes": {
+   "a": "sw_B1: e04 e25 (8.8 box-h)",
+   "b": "sw_B2: e14 e19 (8.8)",
+   "c": "sw_B4x: e09 (4.4)",
+   "d": "t2_combined: e01 e05 e07 (13.2)",
+   "e": "t2_combined: e13 e21 e28 (13.2)"
+  },
+  "revised_cost": "48.4 box-hours unchanged = $32.91, but five bring-ups instead of three adds about $1.40, so ~$34.3 and $40 still covers it with margin for Brev's create failures.",
+  "also_fixed": "My hand-rolled MD5SUMS included itself, so md5sum -c always reported one mismatch -- the 'file written after the manifest' trap this project has hit before. Manifests now exclude themselves and verify clean. And brev/t1_eval_clean.sh gained NEEDS_CKPT=0 so its actor-count preflight, which exists to stop a warm-start box training from scratch by accident, does not refuse an arm that means to.",
+  "status": "launch-ready again, and this time one box of it has actually run on hardware"
  }
 }
