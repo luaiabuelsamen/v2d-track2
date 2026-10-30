@@ -1,0 +1,17 @@
+{
+ "what": "T1PILOT: one clip, e19, full-length from scratch on the clean Tier 1 reference",
+ "registered_at": "2026-10-29 21:50 UTC, before the box exists",
+ "why_a_pilot_at_all": "The $36 T1WEAK arm rests on an UNVERIFIED hypothesis: that training a weak clip from scratch on the clean Tier 1 reference beats its Tier 2-trained rollout. Every piece of evidence we have is about warm starts, which is a different thing. One clip tests the hypothesis for ~$3 and either de-risks the ask or saves the $36.",
+ "why_e19_specifically": "Measured, not guessed. docs/FAILURE_MOMENTS.md says these clips fail while the object is nearly still, and for e28 it says the Tier 2 reference is not holding the object either (palm 23.5 cm from its surface) -- so no policy could fix that clip. Measuring the CLEAN reference's grip at each failure window with the kit's own vertex cloud: e19 cane 4.1 cm, e05 box 5.4 cm, e28 squeegee 10.8 cm, e09 bowl 80.4 cm. e19 and e05 are the clips where the clean reference genuinely holds the object and the shipped policy still drops it, which is the only place the hypothesis has a mechanism. e19 has the lower bar of the two.",
+ "recipe": "Identical to T1WEAK so the result transfers: full 349,999,104 steps from scratch, clean Tier 1 reference, start_curriculum + orientation_reward std 0.3 + object_position std 0.08, seed 42, scene.support from the clip's own USDA, world_count 1 at eval. No voc_curriculum: e19's B2 arm moved its input distance 57.16 -> 57.16 cm, i.e. nothing, and adding it would confound the one variable under test.",
+ "the_bar": "e19's record is AUC 0.1163 at MPPE 58.10 cm. The pilot succeeds if ANY checkpoint beats 0.1163 on kit AUC with no other board regressing -- the same adoption rule as the rest of Tier 1, legal there because the permitted input IS the scoring reference. If the best checkpoint is under 0.1163, the clean-reference hypothesis is wrong for weak clips, T1WEAK should NOT be funded, and the $36 ask is withdrawn.",
+ "why_running_out_of_credit_cannot_waste_it": "The runner checkpoints and EVALUATES every 49,999,872 steps and the puller brings each evaluation home within 10 minutes. $2.61 buys about 3.8 box-hours against the 4.4 h a full run needs, so the likely outcome is 4 or 5 scored checkpoints rather than 7 -- an AUC-versus-steps curve for a weak clip on a clean reference, which answers the funding question even truncated. No all-or-nothing failure mode.",
+ "what_was_rejected_instead": "A compressed-curriculum 50M-step run on 5 clips (~$2.05) would have confounded two variables -- short budget and compressed VOC fade -- so a failure could not distinguish 'clean references do not help weak clips' from 'not enough steps'. And patch_voc_curriculum.py's own analysis says these clips want a LATER VOC hand-off, not an earlier one, so compressing fights their known failure mode; its --zero-at also refuses anything below 0.6, so that arm would have needed a code change too.",
+ "staged": {
+  "assets": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t1weak_assets_p",
+  "clips": 1,
+  "manifest_files": 7,
+  "size": "32M",
+  "map": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t1weak_map_p"
+ }
+}
