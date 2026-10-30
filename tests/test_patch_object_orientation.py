@@ -239,3 +239,26 @@ def test_a_failure_anywhere_writes_nothing_anywhere(tree: Path):
     assert "anchor occurs 2 times" in str(caught.value)
     assert "object_orientation" not in objective(tree)
     assert "object_orientation_weight" not in (tree / "configs/objective/recon_body.yaml").read_text()
+
+
+def test_weight_is_a_parameter_and_reaches_both_files(tree: Path):
+    """--weight must change the YAML as well as the dataclass default.
+
+    The YAML carries the value the runtime reads. Parameterising only the dataclass would make
+    the flag a silent no-op, and the arm on the record would not be the arm that trained --
+    the same failure mode the std's own test guards against.
+    """
+    assert patcher.DEFAULT_WEIGHT == 1.0
+    assert patcher.main([str(tree), "--std", "0.8", "--weight", "5.0"]) == 0
+    objective = (tree / "objectives/recon_body.py").read_text()
+    yaml = (tree / "configs/objective/recon_body.yaml").read_text()
+    assert "    object_orientation_weight: float = 5.0\n" in objective
+    assert "object_orientation_weight: 5.0\n" in yaml
+    assert "object_orientation_std: 0.8\n" in yaml
+
+
+def test_a_non_positive_weight_is_refused(tree: Path):
+    for bad in ("0", "-1", "nan", "inf"):
+        with pytest.raises(SystemExit) as caught:
+            patcher.main([str(tree), "--weight", bad])
+        assert "--weight must be finite and positive" in str(caught.value)

@@ -43,9 +43,18 @@ MARKER = "object_orientation"
 # 0.3 rad = 17.2 deg; see the module docstring for why it is not palm_orientation's 0.4.
 DEFAULT_STD = 0.3
 
+#: Weight 1.0 is palm_orientation's, and it is a house calibration rather than a tuned value. It is
+#: now a parameter because the two are not interchangeable here: `body_joint_position` carries 5.0,
+#: so at weight 1.0 the object's orientation is worth a fifth of body tracking and a policy will
+#: trade it away. Second-wave arm B4x raised the STD to 0.8 on the orientation-limited clips, which
+#: fixed the gradient -- at std 0.3 a clip sitting 49.8 deg out earns exp(-(0.87/0.3)^2) = 0.0002,
+#: no signal at all, against 0.31 at std 0.8 -- and still gained only +0.0206 of AUC against a
+#: +0.318 oracle bound. Gradient without weight is not a reason to act on it.
+DEFAULT_WEIGHT = 1.0
 
-def objective_edits(std: float) -> tuple[tuple[str, str], ...]:
-    """The edits to `objectives/recon_body.py`, for one choice of std."""
+
+def objective_edits(std: float, weight: float = DEFAULT_WEIGHT) -> tuple[tuple[str, str], ...]:
+    """The edits to `objectives/recon_body.py`, for one choice of std and weight."""
     return (
         # (1) the term name, appended so the existing indices are untouched
         (
@@ -60,7 +69,8 @@ def objective_edits(std: float) -> tuple[tuple[str, str], ...]:
         # (3) the config: a weight and a std of its own
         (
             "    force_closure_weight: float = 5.0\n",
-            "    force_closure_weight: float = 5.0\n    object_orientation_weight: float = 1.0\n",
+            "    force_closure_weight: float = 5.0\n"
+            f"    object_orientation_weight: float = {weight!r}\n",
         ),
         (
             "    palm_orientation_std: float = 0.4\n",
@@ -126,12 +136,16 @@ def objective_edits(std: float) -> tuple[tuple[str, str], ...]:
     )
 
 
-def objective_yaml_edits(std: float) -> tuple[tuple[str, str], ...]:
-    """The edits to `configs/objective/recon_body.yaml`, for one choice of std."""
+def objective_yaml_edits(std: float, weight: float = DEFAULT_WEIGHT) -> tuple[tuple[str, str], ...]:
+    """The edits to `configs/objective/recon_body.yaml`, for one choice of std and weight.
+
+    The YAML carries the value the runtime reads, so parameterising only the dataclass default
+    would make --weight a silent no-op -- the arm on the record would not be the arm that trained.
+    """
     return (
         (
             "object_position_weight: 1.0\n",
-            "object_position_weight: 1.0\nobject_orientation_weight: 1.0\n",
+            f"object_position_weight: 1.0\nobject_orientation_weight: {weight!r}\n",
         ),
         (
             "palm_orientation_std: 0.4\n",
@@ -199,10 +213,19 @@ def main(argv: list[str] | None = None) -> int:
         default=DEFAULT_STD,
         help=f"shaping std in radians for the new term (default {DEFAULT_STD:g})",
     )
+    parser.add_argument(
+        "--weight",
+        type=float,
+        default=DEFAULT_WEIGHT,
+        help=f"objective weight for the new term (default {DEFAULT_WEIGHT:g}; "
+             "body_joint_position carries 5.0, so 1.0 means a fifth of body tracking)",
+    )
     args = parser.parse_args(argv)
 
     if not (args.std > 0.0) or args.std != args.std or args.std == float("inf"):
         raise SystemExit(f"FATAL: --std must be finite and positive, got {args.std!r}")
+    if not (args.weight > 0.0) or args.weight != args.weight or args.weight == float("inf"):
+        raise SystemExit(f"FATAL: --weight must be finite and positive, got {args.weight!r}")
 
     objective_yaml = args.root / "configs/objective/recon_body.yaml"
     carried = existing_std(objective_yaml)
@@ -218,8 +241,8 @@ def main(argv: list[str] | None = None) -> int:
         )
 
     targets: list[tuple[Path, tuple[tuple[str, str], ...]]] = [
-        (args.root / "objectives/recon_body.py", objective_edits(args.std)),
-        (objective_yaml, objective_yaml_edits(args.std)),
+        (args.root / "objectives/recon_body.py", objective_edits(args.std, args.weight)),
+        (objective_yaml, objective_yaml_edits(args.std, args.weight)),
     ]
     # Every curriculum that names the ReconBody weights, not just the one recipe we run: a stage
     # whose key set is short by one raises at the moment it is entered, hours into a run.
