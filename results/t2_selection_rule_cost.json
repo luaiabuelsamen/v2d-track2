@@ -1,0 +1,61 @@
+{
+ "what": "The input-only rule's cost, measured on real Tier 2 checkpoints: 0.062 AUC on one clip",
+ "measured": "2026-10-30 06:23 UTC, e29's seven surviving second-wave checkpoints",
+ "the_table": [
+  {
+   "steps": 49999872,
+   "input_err_cm": 101.3,
+   "drop": true,
+   "truth_auc": 0.1962,
+   "mppe_cm": 101.34
+  },
+  {
+   "steps": 99999744,
+   "input_err_cm": 30.34,
+   "drop": true,
+   "truth_auc": 0.19419,
+   "mppe_cm": 31.75
+  },
+  {
+   "steps": 149999616,
+   "input_err_cm": 24.2,
+   "drop": true,
+   "truth_auc": 0.20088,
+   "mppe_cm": 25.75
+  },
+  {
+   "steps": 199999488,
+   "input_err_cm": 3.16,
+   "drop": false,
+   "truth_auc": 0.62687,
+   "mppe_cm": 3.58
+  },
+  {
+   "steps": 249999360,
+   "input_err_cm": 3.86,
+   "drop": false,
+   "truth_auc": 0.57883,
+   "mppe_cm": 4.31
+  },
+  {
+   "steps": 299999232,
+   "input_err_cm": 3.39,
+   "drop": false,
+   "truth_auc": 0.49077,
+   "mppe_cm": 4.75
+  },
+  {
+   "steps": 349999104,
+   "input_err_cm": 3.06,
+   "drop": false,
+   "truth_auc": 0.56478,
+   "mppe_cm": 4.16
+  }
+ ],
+ "what_the_rule_did": "Four checkpoints have no drop. The rule takes the lowest input error, which is 349,999,104 at 3.06 cm, scoring 0.56478. The truth-optimal choice is 199,999,488 at 3.16 cm, scoring 0.62687. The rule discriminated on a 0.10 cm difference and surrendered 0.062 of AUC.",
+ "why_this_is_more_than_a_curiosity": "It is the physics-correction hypothesis (results/t2_physics_correction_idea.json) measured on real data. More training fits the NOISY reference better -- input error falls 3.16 -> 3.06 cm -- and fits truth worse, AUC 0.627 -> 0.565. On Tier 2 the reference is corrupted, so tracking it harder is actively wrong past some point, and the input-only rule rewards exactly that.",
+ "a_legal_refinement_with_a_mechanism": "Among no-drop checkpoints whose input error is within a margin of the minimum, prefer the EARLIEST rather than the lowest. That reads no truth, so it stays legal on Tier 2 and Tier 3, and it has a mechanism: later checkpoints have had more opportunity to fit the noise. On this clip it would pick 199,999,488 and gain +0.062. This is the same shape as the 2% margin added for Tier 3, where a 0.56% input gain was noise.",
+ "how_far_it_might_go": "If a 0.062 gain were typical of clips whose no-drop checkpoints tie within ~0.1 cm, and a third of the 30 clips tie that way, the entry mean would rise about +0.02 -- which is more than the +0.0155 that separates us from 4th on tier2-auc. That is a rank point, from selection alone, with no training.",
+ "why_it_cannot_be_tested_now": "The other clips' per-checkpoint rollouts were deleted in the disk cleanup that kept us above the 20 GB floor; only e29's seven survived. Re-generating them is evaluation-only -- no training -- at roughly $0.05 per checkpoint of GPU, so about $4.50 for 30 clips x 7 checkpoints. That is the cheapest credible rank point left anywhere on the board, and it is cheaper than every training arm.",
+ "what_i_did_not_do": "I did not adopt the 200M checkpoint for e29. It would be truth-based selection against the registered rule, worth +0.00207 on the entry mean and no rank change. The finding is worth more than the 0.002, and taking it would have made the finding unusable as evidence."
+}
