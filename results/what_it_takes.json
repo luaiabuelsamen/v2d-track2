@@ -1,0 +1,140 @@
+{
+ "what": "What winning requires, computed against the whole field for the first time",
+ "when": "2026-10-30 18:30 UTC, 124 h to the freeze",
+ "ranking_rule": "FAQ: sum your ranking in each metric, lowest sum wins. Twelve boards.",
+ "overall_standing": [
+  {
+   "rank": 1,
+   "team": "Izus_systems",
+   "sum": 39,
+   "t1": 12,
+   "t2": 17,
+   "t3": 10,
+   "entered": 12
+  },
+  {
+   "rank": 2,
+   "team": "nima arki",
+   "sum": 53,
+   "t1": 20,
+   "t2": 23,
+   "t3": 10,
+   "entered": 12
+  },
+  {
+   "rank": 3,
+   "team": "maniphys.ai",
+   "sum": 56,
+   "t1": 33,
+   "t2": 13,
+   "t3": 10,
+   "entered": 12
+  },
+  {
+   "rank": 4,
+   "team": "Xueyi Wang (FF)",
+   "sum": 57,
+   "t1": 17,
+   "t2": 11,
+   "t3": 29,
+   "entered": 12
+  },
+  {
+   "rank": 5,
+   "team": "MBZUAI-RCL Group",
+   "sum": 58,
+   "t1": 4,
+   "t2": 6,
+   "t3": 48,
+   "entered": 8
+  },
+  {
+   "rank": 6,
+   "team": "domoarigato",
+   "sum": 72,
+   "t1": 27,
+   "t2": 28,
+   "t3": 17,
+   "entered": 12
+  },
+  {
+   "rank": 7,
+   "team": "us",
+   "sum": 86,
+   "t1": 44,
+   "t2": 19,
+   "t3": 23,
+   "entered": 12
+  },
+  {
+   "rank": 8,
+   "team": "wte09fl",
+   "sum": 98,
+   "t1": 45,
+   "t2": 31,
+   "t3": 22,
+   "entered": 12
+  }
+ ],
+ "rule_sensitivity": "under absence = tied last we are still 7th and Izus still leads; only a rule ignoring unentered boards changes it, and that rule would rank a one-entry team 2nd, so it is not the rule",
+ "ladder_points_needed": {
+  "6th": 15,
+  "5th": 29,
+  "4th": 30,
+  "3rd": 31,
+  "2nd": 34,
+  "1st": 48
+ },
+ "why_first_is_out_of_reach": {
+  "our_working_clips": {
+   "count": 18,
+   "mean_auc": 0.7506,
+   "best": 0.9567
+  },
+  "if_all_30_reached_our_good_mean": {
+   "entry_auc": 0.7506,
+   "tier1_auc_rank": 6
+  },
+  "to_reach_rank_1": "every clip at 0.9567, our single best in 30",
+  "conclusion": "the leaders typical clip beats our second best: recipe and training scale, not selection or cleanup"
+ },
+ "what_is_purchasable": {
+  "tier1_broken_clips": [
+   "e25",
+   "e04",
+   "e19",
+   "e13",
+   "e01",
+   "e14",
+   "e21",
+   "e07",
+   "e28",
+   "e09",
+   "e02",
+   "e17"
+  ],
+  "if_8_of_12_rescued": {
+   "tier1_sp_sr": "21/30 rank 12 -> ~29/30 rank 2, -10",
+   "tier1_mppe": "12.06 -> ~4 cm, -4",
+   "tier1_auc": "0.548 -> ~0.65, -2",
+   "tier1_mp_sr": "15/30 -> ~19/30, -2",
+   "tier1_total": "44 -> ~26, eighteen rank points"
+  },
+  "method": "donor transfer, measured 3 of 9 at $0.37/clip with one donor each; best-of-N per clip is legal on Tier 1 because its permitted input IS the scoring reference",
+  "cost": "12 clips x 6 attempts x $0.57 = $41"
+ },
+ "the_decisive_unknown": {
+  "question": "is the 1-in-3 rate per attempt or per clip",
+  "per_attempt": "any clip is rescuable with tries; 6 attempts gives 91 percent per clip and $41 buys ~10 clips",
+  "per_clip": "three of the nine were rescuable and six never will be; extra attempts buy nothing",
+  "the_test": "3 clips x 4 donors = 12 cells = $7. If a clip that failed its first donor succeeds on a later one, the world is per-attempt. Buy this before anything else."
+ },
+ "best_ratio_on_the_board": "tier3-mp-sr: +3 clips is 7th to 1st, six rank points, because only 11 teams entered and the leaders pass 3 of 30. Also the least likely: we pass 1 and our Tier 3 position error averages 47.77 cm against a 3 cm gate.",
+ "recombination": "closed properly: multi-start hill climbing over the whole 30-clip entry (4^30, 40 restarts, plateau term) against the rank sum finds 44 as a hard floor; best is 12.01783 cm, 0.0208 short of one point",
+ "the_answer": {
+  "first": "no -- a better tracker, not a purchase",
+  "3rd": "about $150-300 and nearly everything landing; one chance in four or five",
+  "6th": "about $40-60 if the Tier 1 rescue works at the measured rate; the realistic aim",
+  "standing_still": "wte09fl cost us two rank points this afternoon by uploading while we were idle"
+ }
+}

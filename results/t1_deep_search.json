@@ -1,0 +1,59 @@
+{
+ "restarts": 40,
+ "shipped": {
+  "metrics": {
+   "add_auc": 0.5480866549213755,
+   "spider_sr": 0.7,
+   "maniptrans_sr": 0.5,
+   "mppe_cm": 12.060208918436075
+  },
+  "ranks": {
+   "add_auc": 11,
+   "spider_sr": 12,
+   "maniptrans_sr": 11,
+   "mppe_cm": 10
+  },
+  "rank_sum": 44
+ },
+ "best": {
+  "metrics": {
+   "add_auc": 0.5479137410436423,
+   "spider_sr": 0.7,
+   "maniptrans_sr": 0.5,
+   "mppe_cm": 12.017828371331934
+  },
+  "ranks": {
+   "add_auc": 11,
+   "spider_sr": 12,
+   "maniptrans_sr": 11,
+   "mppe_cm": 10
+  },
+  "rank_sum": 44
+ },
+ "moves": [
+  {
+   "clip": "e01",
+   "arm": "xfer"
+  },
+  {
+   "clip": "e06",
+   "arm": "t1f"
+  },
+  {
+   "clip": "e12",
+   "arm": "t1f"
+  },
+  {
+   "clip": "e19",
+   "arm": "xfer"
+  },
+  {
+   "clip": "e23",
+   "arm": "t1f"
+  },
+  {
+   "clip": "e24",
+   "arm": "t1f"
+  }
+ ]
+}
