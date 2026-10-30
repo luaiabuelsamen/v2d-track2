@@ -1,0 +1,80 @@
+{
+ "what": "T1XFER complete: six clips, two adoptions, one rank point, box deleted",
+ "when": "2026-10-30 09:32 UTC",
+ "the_six": {
+  "e28": {
+   "auc": [
+    0.0891,
+    0.2977
+   ],
+   "mppe_cm": [
+    44.07,
+    9.58
+   ],
+   "verdict": "ADOPT",
+   "note": "worst clip on the board; object held to frame 745 of 988 against 118 shipped"
+  },
+  "e19": {
+   "auc": [
+    0.1163,
+    0.1591
+   ],
+   "mppe_cm": [
+    58.1,
+    41.62
+   ],
+   "verdict": "ADOPT",
+   "note": "held to frame 437 of 886 against 133 shipped"
+  },
+  "e14": {
+   "auc": [
+    0.2055,
+    0.4724
+   ],
+   "mppe_cm": [
+    6.06,
+    16.96
+   ],
+   "verdict": "keep shipped",
+   "note": "the largest AUC gain of all six, +0.2669, and still correctly refused"
+  },
+  "e13": {
+   "auc": [
+    0.1594,
+    0.2234
+   ],
+   "mppe_cm": [
+    4.98,
+    30.21
+   ],
+   "verdict": "keep shipped"
+  },
+  "e25": {
+   "auc": [
+    0.1334,
+    0.1368
+   ],
+   "mppe_cm": [
+    74.78,
+    120.73
+   ],
+   "verdict": "keep shipped"
+  },
+  "e01": {
+   "auc": [
+    0.2001,
+    0.1949
+   ],
+   "mppe_cm": [
+    43.67,
+    42.4
+   ],
+   "verdict": "keep shipped"
+  }
+ },
+ "what_it_delivered": "Tier 1 entry 0.52687 -> 0.53525 AUC, SP-SR 0.66667 -> 0.70000, MPPE 13.90 -> 12.20, and tier1-mppe 11th -> 10th confirmed on the live board. $2.23 of credit.",
+ "the_e14_case_is_the_most_instructive": "+0.2669 of AUC, the biggest single-clip gain the arm produced, and adopting it would have been rank-NEUTRAL: entry AUC 0.54415 passes wte09fl (+1 rank on tier1-auc) while SP-SR falls 0.70000 -> 0.66667 and drops us out of a three-way tie (-1 rank), because the clip's MPPE going 6.06 -> 16.96 cm takes it from passing the 10 cm SP-SR gate to failing it. I checked this expecting to find my per-clip rule too strict; it agrees exactly with the board-level test.",
+ "three_selection_hypotheses_refuted": "loses-vs-holds the object, inertia error, and donor-target size. The last was registered publicly as a prediction for e01 and e14 and both refuted it -- e01 at ratio 1.24 sits between two adoptions and failed. I cannot predict which clips work.",
+ "the_recommendation_that_survives": "Run it on everything unadopted without selecting. 2 of 6 adopted for +0.2514 of summed AUC = +0.042 per clip tried = +0.0014 of entry AUC per $0.50 clip. The twelve remaining unadopted clips are about $6 for ~+0.017 of entry AUC, against the +0.0066 that separates us from wte09fl. A failed clip costs only its $0.50 because the no-regression rule keeps it out of the entry.",
+ "box": "v2d-t1pilot deleted at 09:32 after all six rollouts were pulled and scored locally"
+}
