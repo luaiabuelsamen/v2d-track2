@@ -1,0 +1,18 @@
+{
+ "what": "Does the URDF inertia placeholder explain which clips drop? Measured: no.",
+ "measured": "2026-10-30 06:34 UTC, 12 clips with both an inertia figure and a drop figure",
+ "the_hypothesis": "soma_to_g1.py writes every object URDF as mass 1.0 kg with inertia diag(0.01) regardless of shape, so long thin objects spin 6-14x too easily (docs/FAILURE_MOMENTS.md). e28's recorded mechanism is 'the policy's object is flung far faster than the reference moves it', which is exactly what too little rotational inertia would cause. If that drives the drops, fixing the inertia would target precisely the failing clips.",
+ "result": {
+  "spearman_rho": 0.308,
+  "p_value": 0.33,
+  "n": 12,
+  "mean_achieved_minus_reference_cm": {
+   "at_or_above_6x_too_easy": 13.08,
+   "below_6x": 13.86
+  }
+ },
+ "why_it_fails": "The bins are indistinguishable and the within-bin spread swamps the between-bin difference. At 14.3x too easy, e10 is only 0.97 cm worse than its reference while e28 is 42.34 cm worse. At 5.9x, e08 is BETTER than its reference while e19 is 55.17 cm worse. Identical inertia error, opposite outcomes.",
+ "caveat_stated_honestly": "Only 12 of 30 clips have an inertia figure, and the two worst clips overall -- e04 at +101.5 cm and e25 at +73.0 -- are not among them. A full measurement could change the picture, and computing it is free CPU. But within the sample that exists the signal is absent, and the absence is strong: the extremes of the inertia range contain both the best and the worst outcomes.",
+ "consequence": "Editing object physics is not the lever, which also makes the unresolved rules question moot for now -- there is no measured gain to weigh against it. The drops are not explained by rotational inertia, so they are either a control-policy failure or driven by something else in the contact model.",
+ "where_this_leaves_the_drops": "Unexplained, and that is the honest state. What IS established: 19 of 30 Tier 2 clips end up worse than a reference that is only 1.94 cm from truth, the same clips are weak on Tier 1, and neither the reference, the reconstruction, the checkpoint selection, nor the object inertia accounts for it. The remaining candidate is the policy itself, which is what the transfer arm tests."
+}
