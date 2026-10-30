@@ -155,10 +155,19 @@ rejected.
 
 A single structural result organises the remaining work:
 
-- **Tier 2 is reference-bound.** Our entry (0.46522) sits just under our own cleaner's ceiling
-  (0.4755 scored against truth). The only free route past it — re-deriving the object's orientation
-  from the clean hand pose — is refuted: **0 of 29 clips have a rigid grasp**, median spread 21.6°
-  one-handed against Tier 2's own 21.4° of orientation noise (`docs/TRACK_WHAT.md`).
+- **Tier 2 is policy-bound, not reference-bound.** An earlier draft of this section claimed the
+  opposite, from comparing our entry's AUC (0.46522) with the reference's (0.4247). That comparison
+  is invalid: AUC mixes position and orientation and the two defects cancel. Measured on the
+  trajectories instead (`results/t2_not_reference_bound.json`), **the noisy Tier 2 reference is
+  1.94 cm from truth on average while our policies are 13.84 cm**, and **19 of 30 clips end up
+  worse than the reference they were given** — e04 at 102.6 cm against a reference 1.17 cm from
+  truth. The position error is ours. The reference's own defect is orientation (21.4°), which
+  contact partly corrects for us, and the free route to fixing that *is* closed: **0 of 29 clips
+  have a rigid grasp**, median spread 21.6° one-handed against that same 21.4° (`docs/TRACK_WHAT.md`).
+  - And the deficit is mostly *not* dropped objects. Only **9 of 30 clips ever leave a 10 cm band
+    around their reference**, yet 19 do worse than it against truth — so nine clips drop
+    catastrophically and the rest track a good reference a few centimetres loosely. Precision
+    across many clips, not robustness on a few, is where most of the gap lives.
 - **Tier 3 is reconstruction-bound.** Eleven of thirty clips have *negative* headroom: the policy
   already tracks better than the reconstruction it was given, so pulling it toward the input makes
   the score worse. Only 2 of the 13 untried clips have any headroom at all, 8.57 cm between them
