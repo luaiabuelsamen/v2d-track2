@@ -72,9 +72,19 @@ PRE_OK=1
 STAGED=$(find "$ASSETS" -name data.parquet 2>/dev/null | wc -l)
 printf '   %-15s %s\n' "staged refs" "$STAGED/$EXPECT_CLIPS parquets in $ASSETS"
 [[ $STAGED == "$EXPECT_CLIPS" ]] || { echo "   staged refs     INCOMPLETE -- stage first"; PRE_OK=0; }
+# A warm-start arm must ship one actor per clip, and this check exists because a box that reaches
+# training with a missing actor silently trains from scratch and scores like a different arm. An
+# arm that MEANS to train from scratch (NEEDS_CKPT=0, e.g. T1PILOT/T1WEAK on clean references) has
+# no actors to ship, so the same check would refuse a correctly staged tree.
 CKPTS=$(find "$ASSETS/ckpt" -name policy.safetensors 2>/dev/null | wc -l)
-printf '   %-15s %s\n' "checkpoints" "$CKPTS/$EXPECT_CLIPS"
-[[ $CKPTS == "$EXPECT_CLIPS" ]] || PRE_OK=0
+if [[ ${NEEDS_CKPT:-1} == 1 ]]; then
+  printf '   %-15s %s\n' "checkpoints" "$CKPTS/$EXPECT_CLIPS"
+  [[ $CKPTS == "$EXPECT_CLIPS" ]] || PRE_OK=0
+else
+  printf '   %-15s %s\n' "checkpoints" "not required (training from scratch); found $CKPTS"
+  [[ $CKPTS == 0 ]] || { echo "   checkpoints     REFUSING: NEEDS_CKPT=0 but $CKPTS actor(s) are staged;"
+                         echo "                   a from-scratch arm must not carry actors it might load"; PRE_OK=0; }
+fi
 [[ -f "$ASSETS/MD5SUMS" ]] && printf '   %-15s %s\n' "manifest" "$(wc -l < "$ASSETS/MD5SUMS") lines" \
   || { echo "   manifest        MISSING"; PRE_OK=0; }
 [[ -f "$PLAN" ]] && printf '   %-15s %s\n' "plan" "$(grep -c . "$PLAN") clips" \
