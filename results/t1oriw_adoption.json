@@ -17,6 +17,22 @@
     "spider_sr": 0.0
    },
    "adopt": false
+  },
+  {
+   "clip": "e10",
+   "record": {
+    "add_auc": 0.4793765743073048,
+    "maniptrans_sr": 1.0,
+    "mppe_cm": 2.9722914532637477,
+    "spider_sr": 1.0
+   },
+   "oriw": {
+    "add_auc": 0.5469143576826196,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 3.384821667187076,
+    "spider_sr": 1.0
+   },
+   "adopt": false
   }
  ]
 }

@@ -1,0 +1,32 @@
+{
+ "what": "The orientation headroom is real but GATED: collecting it breaks MP-SR on the same clips",
+ "when": "2026-10-30 13:52 UTC, 2 of 5 clips in",
+ "e09": {
+  "auc": [
+   0.3003,
+   0.2462
+  ],
+  "mppe_cm": [
+   4.89,
+   8.31
+  ],
+  "verdict": "keep shipped",
+  "reading": "lost both channels -- weighting orientation 5x degraded tracking outright"
+ },
+ "e10": {
+  "auc": [
+   0.4794,
+   0.5469
+  ],
+  "mppe_cm": [
+   2.97,
+   3.38
+  ],
+  "verdict": "keep shipped",
+  "reading": "the informative one: the arm DOES collect orientation, +0.0675 of AUC, and pays 0.41 cm of position for it"
+ },
+ "why_the_trade_is_unaffordable_here": "The clips with orientation headroom are precisely the clips that already track position tightly -- that is what 'orientation-limited' means. e10 sits at 2.97 cm, three hundredths of a centimetre inside the 3 cm MP-SR gate. Pay 0.41 cm for orientation and the clip crosses the gate: entry MP-SR 0.50000 -> 0.46667, a whole board point, against +0.00225 of entry AUC that changes no rank because crisiumnih is 0.58226 away.",
+ "what_this_says_about_the_decomposition": "docs/METRICS_DEEP_DIVE.md's +0.318 per clip is an oracle bound computed by substituting TRUTH orientation at the clip's existing position. It is arithmetically correct and operationally unreachable, because no reward that improves orientation leaves position untouched -- and these clips have no position to spare. The bound measures what perfect orientation would be worth, not what any orientation term can collect.",
+ "status": "2 of 5 clips, 0 adopted. e13, e20 and e21 still to run and they are tighter still (e13 4.98 cm, e20 2.08, e21 4.79), so the same gate applies. I am recording the mechanism now rather than after the fifth clip because it is already specific, and the remaining three will either confirm it or surprise me.",
+ "the_consequence_for_the_roadmap": "If the remaining three behave the same, the +0.053 of entry AUC I have been quoting as the largest available lever should be struck -- not because the orientation error is not there, but because it cannot be collected under a rule that protects MP-SR, and MP-SR is itself a board worth a rank point. Two arms have now gone after it: B4x with the gradient alone (6% of the bound) and this one with gradient and weight (collects some and cannot keep it)."
+}
