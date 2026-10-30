@@ -1,0 +1,25 @@
+{
+ "what": "The board moved against us within half an hour of our uploads. Rank sum is 86, not 84.",
+ "measured": "2026-10-30 06:27 UTC, all twelve boards re-downloaded",
+ "what_changed": {
+  "tier3-auc": {
+   "was": "3rd at 0.26781",
+   "now": "4th",
+   "cause": "maniphys.ai went 0.22590 -> 0.28173 at 2026-10-29 21:43, 27 minutes after our 21:16 upload"
+  },
+  "tier3-mppe": {
+   "was": "5th at 47.77180",
+   "now": "6th",
+   "cause": "maniphys.ai went 49.93762 -> 36.60061 at 21:44, so the position we took from them at 21:17 was taken back in 27 minutes"
+  },
+  "tier1-auc": {
+   "was": "12 of 23",
+   "now": "12 of 24",
+   "cause": "Izus_systems reached 0.82849 at 21:45; our rank is unchanged but the field grew"
+  }
+ },
+ "live_rank_sum": 86,
+ "what_i_had_been_reporting": "84, correct at 21:17 and stale by 21:44. I carried it forward for several hours without re-checking, which is exactly the kind of number that should be re-measured rather than remembered.",
+ "the_strategic_point": "This is the most decision-relevant thing measured today. The board is NOT static: at least two teams uploaded improvements in the same hours we did, and one of them erased both of our rank gains within half an hour. Three consequences. First, holding credit has a cost -- a gain banked today can be overtaken tomorrow, so spending on the best available arm sooner is better than waiting for a better arm. Second, the gaps quoted in docs/TO_THE_TOP.md are a snapshot and will have moved by the time any arm finishes. Third, maniphys.ai's Tier 3 jump (AUC +0.056, MPPE -13.3 cm in one upload) is larger than anything our fine-tune arm produced, which suggests they changed method rather than selection -- most plausibly a better reconstruction, which is exactly what our own headroom analysis says binds Tier 3 (eleven clips where the policy already beats its input).",
+ "what_it_does_not_change": "Our own numbers are unchanged and still verified: Tier 1 0.52687, Tier 2 0.46522, Tier 3 0.26781 / 0.20000 / 47.77180. We lost rank to someone else's improvement, not to a regression of ours."
+}
