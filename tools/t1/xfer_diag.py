@@ -38,4 +38,4 @@ else:
 print(f"{tag}: {frames} frames | mean err {err.mean() * 100:6.2f} cm | "
       f"max {err.max() * 100:6.2f} cm | inside 10 cm {held:.0%}")
 print(f"       first loss: {first if first is not None else 'never'} | {mech}")
-print(f"       shipped record for comparison: AUC {rec['add_auc']:.4f}, MPPE {rec['mppe_cm']:.2f} cm")
+print(f"       shipped record: AUC {rec['add_auc']:.4f}, MPPE {rec['mppe_cm']:.2f} cm")
