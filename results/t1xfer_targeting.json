@@ -1,0 +1,71 @@
+{
+ "what": "Which clips the donor transfer should be run on, and why the ask is now ~$2 not $10",
+ "derived": "2026-10-30 07:52 UTC, from three transfer results plus the all-30 drop analysis",
+ "the_rule": "Run the transfer on clips whose shipped rollout LOSES the object -- leaves a 10 cm band around its reference -- and not on clips that already hold it and merely score low.",
+ "the_mechanism": "The donor is an actor that holds its own object to 1.43 cm. It can give a clip that drops what it lacks; it has nothing to give a clip that already holds and scores low for some other reason, and it can take away the tight tracking that clip already had.",
+ "the_evidence": {
+  "e19": {
+   "loses": true,
+   "first_loss_frame": 133,
+   "verdict": "ADOPTED",
+   "auc": [
+    0.1163,
+    0.1591
+   ]
+  },
+  "e28": {
+   "loses": true,
+   "first_loss_frame": 118,
+   "verdict": "ADOPTED",
+   "auc": [
+    0.0891,
+    0.2977
+   ]
+  },
+  "e13": {
+   "loses": false,
+   "verdict": "rejected",
+   "auc": [
+    0.1594,
+    0.2234
+   ],
+   "mppe_cm": [
+    4.98,
+    30.21
+   ],
+   "note": "already tracked to 4.98 cm; the transfer traded that for AUC"
+  }
+ },
+ "the_two_populations": {
+  "loses_the_object": {
+   "clips": [
+    "e01",
+    "e02",
+    "e04",
+    "e05",
+    "e07",
+    "e14",
+    "e25"
+   ],
+   "cost_at_0.5h_per_clip": 2.38,
+   "note": "the queue now running covers e25, e01 and e14 -- three of the seven"
+  },
+  "holds_the_object": {
+   "clips": [
+    "e03",
+    "e09",
+    "e10",
+    "e11",
+    "e13",
+    "e17",
+    "e18",
+    "e20",
+    "e21",
+    "e29"
+   ],
+   "prediction": "the arm should fail on these as it failed on e13, so do not pay for them"
+  }
+ },
+ "the_revised_ask": "About $2 finishes the targeted population -- e02, e04, e05 and e07 after the current queue -- against $10 for all nineteen unadopted clips. If the holds-the-object prediction is wrong, those ten remain available later for another $3.40, but there is no reason to buy them before the seven that match the mechanism.",
+ "honesty_about_the_sample": "Three clips: two adoptions that lose the object and one rejection that holds it. That is thin, and the rule is mechanistically motivated rather than statistically established. What makes it worth acting on is that it only ever says SPEND LESS -- the cost of being wrong is foregone upside on ten clips, not a wasted run."
+}
