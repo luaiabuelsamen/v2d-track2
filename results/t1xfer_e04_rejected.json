@@ -1,0 +1,32 @@
+{
+ "what": "e04 rejected; the transfer arm's rate is 2 of 7 and the expectation must come down",
+ "when": "2026-10-30 10:35 UTC",
+ "e04": {
+  "auc": [
+   0.1466,
+   0.1472
+  ],
+  "mppe_cm": [
+   102.96,
+   152.27
+  ],
+  "verdict": "keep shipped",
+  "note": "the donor made a baseball-bat rotation substantially worse, 103 -> 152 cm"
+ },
+ "the_rate_and_what_it_implies": {
+  "tried": 7,
+  "adopted": 2,
+  "summed_auc_gain": 0.2514,
+  "per_clip_tried": 0.036,
+  "entry_auc_per_clip": 0.0012,
+  "this_wave_projection": "two eligible clips left, e05 and e07, so about +0.0024 of entry AUC -- short of the +0.0066 that passes wte09fl. On the evidence this wave probably does not buy a rank point, and I would rather say so now than after the fact."
+ },
+ "my_eligibility_test_also_failed": "I argued only clips with LOOSE shipped MPPE can adopt, since the rule forbids MPPE regressions. That is still true as a necessary condition -- both tight clips, e13 and e14, were refused on exactly that -- but it is weak as a sufficient one: of five loose clips tried, only two adopted (e19, e28), while e25, e01 and e04 all had room and failed. So the criterion narrows the field from 13 to 3 without raising the hit rate inside it.",
+ "what_is_now_four_refuted_selection_ideas": [
+  "loses-vs-holds the object",
+  "inertia error",
+  "donor-target size",
+  "loose shipped MPPE as a sufficient condition"
+ ],
+ "the_standing_recommendation_unchanged_but_cheaper": "Run the arm broadly and do not select, because nothing predicts it. At +0.0012 of entry AUC per $0.50 clip, the ten structurally ineligible clips are not worth buying, and the honest expected value of the whole remaining population is small. The arm's real contribution today was e28 alone: +0.2086 of AUC and MPPE 44.07 -> 9.58, which carried the SP-SR board and the MPPE rank point by itself."
+}
