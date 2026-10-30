@@ -1,0 +1,22 @@
+{
+ "what": "orientation reward std 0.8 weight 5.0, warm start from each clip's own actor",
+ "adopted": [],
+ "clips": [
+  {
+   "clip": "e09",
+   "record": {
+    "add_auc": 0.3002873563218391,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 4.890156881537679,
+    "spider_sr": 0.0
+   },
+   "oriw": {
+    "add_auc": 0.2461925287356322,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 8.30824218966984,
+    "spider_sr": 0.0
+   },
+   "adopt": false
+  }
+ ]
+}
