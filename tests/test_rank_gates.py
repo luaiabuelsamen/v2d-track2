@@ -21,7 +21,8 @@ from tools_t1_shim import gate_margins, rank_swap
 def test_tie_ranks_behind_not_level():
     board = [0.9, 0.7, 0.5]
     assert rank_swap.rank(board, "spider_sr", 0.7) == 3, "a tie must rank behind the team it ties"
-    assert rank_swap.rank(board, "spider_sr", 0.70001) == 2, "beating it by anything promotes"
+    assert rank_swap.rank(board, "spider_sr", 22 / 30) == 2, "one more clip promotes"
+    assert rank_swap.rank(board, "add_auc", 0.70001) == 2, "a continuous board promotes on any gain"
 
 
 def test_lower_is_better_for_mppe_only():
@@ -51,7 +52,10 @@ def test_page_token_line_and_odd_rows(tmp_path):
 
 
 def test_aggregate_swaps_replace_rather_than_append():
-    entry = {"e00": dict.fromkeys(rank_swap.METRICS, 1.0), "e01": dict.fromkeys(rank_swap.METRICS, 3.0)}
+    entry = {
+        "e00": dict.fromkeys(rank_swap.METRICS, 1.0),
+        "e01": dict.fromkeys(rank_swap.METRICS, 3.0),
+    }
     agg = rank_swap.aggregate(entry, {"e01": dict.fromkeys(rank_swap.METRICS, 1.0)})
     assert agg["add_auc"] == 1.0, "a swap must replace its clip, not add a 31st"
 
@@ -112,3 +116,18 @@ def test_geodesic_angle_folds_the_double_cover():
     a = np.array([[0.0, 0.0, 0.0, 1.0]])
     assert gate_margins.geodesic_angle(a, a)[0] == 0.0
     assert gate_margins.geodesic_angle(a, -a)[0] == 0.0, "q and -q are the same rotation"
+
+
+def test_truncated_success_rate_is_snapped_to_clip_counts():
+    """16/30 prints as 0.53333 on the board and computes as 0.5333333 for us.
+
+    Compared raw, our own entry looks ahead of a team on exactly the same 16 clips, and the tool
+    reports a rank point that does not exist. Both sides have to be read as clip counts.
+    """
+    board = [0.53333]  # 16/30 as Kaggle prints it
+    assert rank_swap.rank(board, "maniptrans_sr", 16 / 30) == 2, "same 16 clips is a tie, not a win"
+    assert rank_swap.rank(board, "maniptrans_sr", 17 / 30) == 1
+    assert rank_swap.rank(board, "maniptrans_sr", 15 / 30) == 2
+
+    # AUC is continuous, so nothing is snapped there.
+    assert rank_swap.rank([0.53333], "add_auc", 16 / 30) == 1

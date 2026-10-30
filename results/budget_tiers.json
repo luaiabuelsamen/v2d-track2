@@ -1,0 +1,134 @@
+{
+ "what": "What each budget buys, in rank points, from measured rates",
+ "when": "2026-10-30 18:11 UTC, 124 h to the freeze",
+ "standing": {
+  "rank_sum": 86,
+  "was": 84,
+  "why_it_moved": "wte09fl uploaded Tier 3 at 14:50 UTC today and took two of our Tier 3 ranks; nothing of ours regressed"
+ },
+ "free_moves": "exhausted and proven against the rank objective: no 1-, 2- or 3-swap over 67 held alternatives lowers the rank sum",
+ "measured_unit_costs": {
+  "box_bringup": 0.55,
+  "warm_start_cell": 0.57,
+  "full_length_cell": 3.0,
+  "eight_boxes_per_day": 131
+ },
+ "historical_returns": {
+  "donor_transfer_6_clips": {
+   "spend": 2.23,
+   "rank_points": 1,
+   "hit_rate": "3 of 9"
+  },
+  "t3_mppe_push": {
+   "spend": 4.12,
+   "rank_points": 1
+  },
+  "second_wave_tier2_full_length": {
+   "spend": 85,
+   "result": "tier2 AUC 0.39076 -> 0.46522, all four boards moved"
+  },
+  "orientation_arm": {
+   "spend": 2,
+   "hit_rate": "0 of 2",
+   "why": "collecting orientation broke the 3 cm MP-SR gate"
+  },
+  "gen2_warm_start": {
+   "spend": 3,
+   "hit_rate": "0 of 3",
+   "why": "re-fitting the same reference twice adds nothing"
+  }
+ },
+ "rate_of_record": "about $2-4 per rank point while targeted near-misses last; about $85 for broad retraining that moves four boards at once",
+ "capacity": {
+  "hours_to_freeze": 124,
+  "concurrent_boxes_proven": 8,
+  "dollars_of_capacity": 630,
+  "conclusion": "money is the binding constraint, not time, up to roughly $600"
+ },
+ "tiers": [
+  {
+   "budget": 12,
+   "name": "the gate flips",
+   "cells": 20,
+   "boxes": 7,
+   "hours": 6,
+   "targets": [
+    "tier1-sp-sr +2 via e16 (1.3 deg) or e05 (0.32 cm)",
+    "tier1-mppe +1 (0.0632 cm)",
+    "tier1-mp-sr +1 via e11 and e29",
+    "tier3-mp-sr +2"
+   ],
+   "expected_rank_points": [
+    2,
+    5
+   ],
+   "rank_sum_after": [
+    81,
+    84
+   ],
+   "confidence": "the only tier I would call likely"
+  },
+  {
+   "budget": 40,
+   "name": "the transfer arm on Tier 2",
+   "cells": 60,
+   "boxes": 14,
+   "hours": 24,
+   "targets": [
+    "tier2-sp-sr +3 points (5th to 2nd) for 3 clips",
+    "tier2-auc +1 (+0.0155)",
+    "tier3-auc +1 (+0.0139)"
+   ],
+   "why": "the donor transfer has never been run on Tier 2, where 19 of 30 clips score worse than their own input reference",
+   "expected_rank_points": [
+    5,
+    9
+   ],
+   "rank_sum_after": [
+    77,
+    81
+   ]
+  },
+  {
+   "budget": 120,
+   "name": "retrain where warm starts plateau",
+   "cells": "60 warm + 30 full",
+   "boxes": 8,
+   "hours": 48,
+   "why": "the precision recipe took Tier 2 from 0.391 to 0.465 and has never been run on Tier 1",
+   "expected_rank_points": [
+    8,
+    13
+   ],
+   "rank_sum_after": [
+    73,
+    78
+   ]
+  },
+  {
+   "budget": 250,
+   "name": "everything, two seeds",
+   "boxes": "8-11",
+   "hours": 48,
+   "includes": "the tier3-mp-sr swing: 1/30 to 4/30 is 7th to 1st, six rank points, and the least likely of anything here",
+   "expected_rank_points": [
+    12,
+    20
+   ],
+   "rank_sum_after": [
+    66,
+    74
+   ]
+  }
+ ],
+ "not_purchasable": {
+  "tier1_top_three": "MBZUAI 0.89354 against our 19 best clips averaging 0.7228 -- a better tracker, not more runs",
+  "tracks_1_and_3": "different data and pipeline, closed in results/other_tracks_feasibility.json",
+  "oracle_selection_on_t2_t3": "the clean reference is not a permitted input there"
+ },
+ "free_and_worth_more": [
+  "accept the Nvidia-V2D-Challenge GitHub invite, or the commit URL in all 22,989 rows per entry is unreadable",
+  "confirm the registration form"
+ ],
+ "the_trade": "+0.00945 AUC is adoptable at zero rank cost from rollouts we hold, a third of a tier1-auc rank point, but it costs two SP-SR clips and so destroys the e16/e05 flip worth two points. Alternatives, not additions."
+}

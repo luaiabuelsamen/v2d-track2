@@ -33,6 +33,11 @@ BOARD_FILE = {
     "mppe_cm": "mppe",
 }
 LOWER_IS_BETTER = frozenset({"mppe_cm"})
+# A success rate over 30 clips can only be k/30, but Kaggle publishes it truncated to five
+# decimals: 16/30 prints as 0.53333, which is strictly below the 0.5333333 our own entry computes.
+# Comparing those raw turns a genuine tie -- which ranks behind us -- into a rank gained, and a
+# board point we do not have into a reason to spend. Snap both sides to the clip count instead.
+QUANTISED = {"spider_sr": 30, "maniptrans_sr": 30}
 TEAM = "Luai Abuelsamen"
 
 
@@ -52,8 +57,16 @@ def read_board(directory: Path, metric: str, us: str) -> list[float]:
     return scores
 
 
+def quantise(metric: str, value: float) -> float:
+    """Clip counts, not the truncated decimals the board prints. See QUANTISED."""
+    clips = QUANTISED.get(metric)
+    return round(value * clips) if clips else value
+
+
 def rank(scores: list[float], metric: str, value: float) -> int:
     """1 + teams strictly ahead + teams tied, since a tie ranks behind on submission time."""
+    scores = [quantise(metric, s) for s in scores]
+    value = quantise(metric, value)
     if metric in LOWER_IS_BETTER:
         ahead = sum(1 for s in scores if s < value)
     else:
