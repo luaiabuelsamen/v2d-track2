@@ -1,0 +1,77 @@
+{
+ "what": "The strategic picture, now that the transfer arm has results: two populations, two arms",
+ "derived": "2026-10-30 07:56 UTC, joining docs/METRICS_DEEP_DIVE.md's AUC decomposition to the transfer results",
+ "what_the_decomposition_said": {
+  "orientation_limited_9": {
+   "clips": [
+    "e00",
+    "e06",
+    "e08",
+    "e09",
+    "e10",
+    "e13",
+    "e20",
+    "e21",
+    "e26"
+   ],
+   "oracle_gain_each": 0.318,
+   "mean_position_error_cm": 3.2,
+   "note": "perfect orientation would take them 0.377 -> 0.695"
+  },
+  "position_limited_8": {
+   "clips": [
+    "e02",
+    "e03",
+    "e10",
+    "e11",
+    "e15",
+    "e24",
+    "e27",
+    "e29"
+   ],
+   "oracle_gain_each": 0.269
+  },
+  "object_gone_5": {
+   "clips": [
+    "e04",
+    "e14",
+    "e19",
+    "e25",
+    "e28"
+   ],
+   "oracle_gain": "0.026 to 0.077",
+   "its_verdict": "neither reward channel can reach them -- no shaping term is the lever"
+  }
+ },
+ "what_the_transfer_results_say": "The transfer gained +0.2086 on e28 and +0.0428 on e19 -- both in the 'object gone' set the decomposition called unreachable. It was right that no REWARD reaches them and wrong that nothing does: a donor actor changes the policy's competence rather than its reward, which is a different axis entirely. The three remaining object-gone clips are e04, e14 and e25, and e25 is training now.",
+ "where_the_biggest_headroom_actually_is": "Orientation on clips that already track position well. Five of the nine orientation-limited clips are still unadopted -- e09 e10 e13 e20 e21 -- and the oracle bound is +0.318 each, about +0.053 on the entry mean, which would take Tier 1 AUC from 0.53525 past wte09fl (0.54183) and crisiumnih (0.58226). That is the largest single lever left on any board.",
+ "but_the_one_arm_tried_recovered_6_percent_of_it": "Second-wave arm B4x raised the orientation reward std to 0.8 on those clips. On e00 it gained +0.0206 of AUC and failed MP-SR, so the input-only rule kept the incumbent. +0.02 against a +0.318 oracle is 6% of the available headroom, so the bound is nowhere near achievable with a shaping-std change alone.",
+ "the_two_arm_split_this_implies": {
+  "droppers_7": {
+   "clips": [
+    "e01",
+    "e02",
+    "e04",
+    "e05",
+    "e07",
+    "e14",
+    "e25"
+   ],
+   "arm": "donor transfer",
+   "cost": 2.38,
+   "evidence": "2 of 2 adopted where the clip loses the object"
+  },
+  "orientation_limited_5": {
+   "clips": [
+    "e09",
+    "e10",
+    "e13",
+    "e20",
+    "e21"
+   ],
+   "arm": "unknown -- std 0.8 recovered 6% of the oracle, so a better orientation mechanism is needed rather than a tighter std",
+   "note": "e13 confirms the transfer is the wrong arm here: it gained AUC and lost 25 cm of MPPE"
+  }
+ },
+ "the_honest_conclusion": "The cheap, demonstrated arm addresses the smaller headroom, and the larger headroom has no demonstrated arm. That is worth saying plainly: $2.38 finishes the droppers and is worth doing, but the orientation half -- the +0.053 that would actually move Tier 1 AUC several places -- needs a method we do not have, not money."
+}
