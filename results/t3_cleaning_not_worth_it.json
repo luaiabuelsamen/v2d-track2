@@ -1,0 +1,20 @@
+{
+ "what": "Would cleaning our Tier 3 reconstruction be worth $90? Measured, and no.",
+ "measured": "2026-10-30 06:30 UTC, 29 clips, reconstruction vs clean Tier 1 truth, split by contact",
+ "the_question": "maniphys.ai's Tier 3 jump (+0.056 AUC, -13.3 cm MPPE in one upload) looks like a better reconstruction, and our own headroom analysis says the reconstruction binds Tier 3. The cheap analogue was to CLEAN ours with the existing support-surface cleaner and retrain, ~$90. The cleaner only corrects RESTING frames, where an object sits on a surface, so the share of error in rest frames is an upper bound on what cleaning could recover.",
+ "answer": {
+  "mean_recon_error_cm": 68.6,
+  "mean_share_of_error_in_rest_frames_pct": 31.1,
+  "worst_clips_share_pct": {
+   "cane_e19": 16.8,
+   "woven_basket_e27": 27.2,
+   "traffic_cone_e17": 40.4,
+   "baseball_bat_e04": 13.8,
+   "round_table_e14": 10.1
+  }
+ },
+ "why_that_settles_it": "Perfect rest-frame cleaning recovers under a third of the error on average and about a tenth on the clips with the largest floors -- and the Tier 2 cleaner recovered only part of its own target, so the real figure is lower again. The error lives in HELD frames, with the object in the air, where there is no support surface to pin it against. No amount of contact-plausibility cleaning reaches it.",
+ "what_this_says_about_tier_3": "The binding constraint is the pose tracker DURING MANIPULATION, not scene-contact plausibility. FoundationPose loses the object while it is being carried, and that is a different failure from an object resting at the wrong height. So a Tier 3 arm worth funding would improve tracking through occlusion and motion -- a different method, not a post-process -- which is very likely what maniphys.ai changed.",
+ "cost_of_this_measurement": "Zero. CPU on the Jetson, 29 clips, while the GPU box trained.",
+ "the_general_lesson": "This is the second $90 arm priced out by a free measurement in one hour -- the first was the checkpoint-selection rule, whose cost I had understated twentyfold. Both took minutes of CPU and both would have been plausible places to spend a whole top-up."
+}
