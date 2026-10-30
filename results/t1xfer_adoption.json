@@ -2,7 +2,7 @@
  "what": "T1XFER adoptions: weak/rejected Tier 1 clips warm-started from e08's fine-tuned actor",
  "rule": "AUC improves, neither success gate falls, MPPE does not worsen",
  "donor": "e08 fine-tuned, kit AUC 0.9236 at 1.43 cm",
- "clips_scored": 3,
+ "clips_scored": 4,
  "adopted": [
   "e19",
   "e28"
@@ -43,6 +43,24 @@
    "adopt": true,
    "d_auc": 0.04282,
    "d_mppe_cm": -16.484
+  },
+  {
+   "clip": "e25",
+   "record": {
+    "add_auc": 0.13344004656577416,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 74.77703932945676,
+    "spider_sr": 0.0
+   },
+   "transfer": {
+    "add_auc": 0.13678696158323633,
+    "maniptrans_sr": 0.0,
+    "mppe_cm": 120.73457129159647,
+    "spider_sr": 0.0
+   },
+   "adopt": false,
+   "d_auc": 0.00335,
+   "d_mppe_cm": 45.958
   },
   {
    "clip": "e28",

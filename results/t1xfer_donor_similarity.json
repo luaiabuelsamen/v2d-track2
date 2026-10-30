@@ -1,0 +1,31 @@
+{
+ "what": "e25 rejected: the transfer arm is 2 of 4, and donor-target size may be why",
+ "when": "2026-10-30 08:20 UTC",
+ "e25": {
+  "auc": [
+   0.1334,
+   0.1368
+  ],
+  "mppe_cm": [
+   74.78,
+   120.73
+  ],
+  "verdict": "keep shipped",
+  "mechanism": "dropped at frame 145 against the shipped rollout's 126, and the error after the drop is far worse: 120.6 cm mean against 74.78"
+ },
+ "what_it_does_to_my_targeting_rule": "Weakens it. e25 loses its object, so the loses-vs-holds rule predicted an adoption. The rule is now 2 of 3 on losers and 0 of 1 on holders -- directionally alive but no longer clean.",
+ "the_pattern_that_fits_all_four": {
+  "donor": "e08, skinny wood chair, longest axis 0.88 m",
+  "adopted": {
+   "e28": "squeegee, 1.54 m, ratio 1.75",
+   "e19": "cane, 0.91 m, ratio 1.03"
+  },
+  "rejected": {
+   "e25": "water bottle, 0.28 m, ratio 0.32",
+   "e13": "snack box, 0.33 m, ratio 0.38"
+  },
+  "reading": "The donor transferred to objects of its own scale or larger and failed on objects a third its size. That is mechanically plausible -- a policy that has learned to carry a long chair has learned a two-handed, wide-grip behaviour that does not apply to a bottle -- and it is four points, so it is a hypothesis, not a law."
+ },
+ "what_it_predicts_for_the_queue": "e01 is a vacuum at 1.04 m, ratio 1.18 -- the same band as both adoptions, so the arm should work. e14 is a round table at 0.78 m, ratio 0.89, also in band. Both are predictions made before the runs finish.",
+ "if_it_holds": "The arm needs a donor per size class rather than one donor: our best large-object actor for large targets, and a small-object actor for small ones. e24 (0.2 m object) is adopted at 0.9567 AUC and would be the natural small-object donor. That costs nothing extra -- it is a different path in the plan file."
+}
