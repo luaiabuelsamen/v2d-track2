@@ -38,6 +38,12 @@ echo "adopted from the fine-tune: ${ADOPTED:-none}"
 # and e12 (0.8013) in place of the gen-1 rollouts that scored 0.8654 and 0.8839 -- a rollout that
 # had LOST its own comparison, chosen because its directory sorted later.
 CHAIN_ADOPTION=$REPO/results/t1_chain_adoption.json
+XFER_ADOPTION=${XFER_ADOPTION:-$REPO/results/t1xfer_adoption.json}
+XFER_ADOPTED=""
+if [ -s "$XFER_ADOPTION" ]; then
+  XFER_ADOPTED=$("$PY" -c "import json,sys; print(' '.join(json.load(open(sys.argv[1]))['adopted']))" "$XFER_ADOPTION")
+  echo "transfer-arm adoptions: ${XFER_ADOPTED:-none}"
+fi
 CHAIN_ADOPTED=""
 if [ -s "$CHAIN_ADOPTION" ]; then
   CHAIN_ADOPTED=$("$PY" -c "import json,sys; print(' '.join(json.load(open(sys.argv[1]))['adopted']))" "$CHAIN_ADOPTION")
@@ -50,6 +56,13 @@ for TAG in $ADOPTED; do
   done
   case " $CHAIN_ADOPTED " in
     *" $TAG "*) [ -s "$S/ws_chain/results/rollouts/$F.parquet" ] && SRC=$S/ws_chain/results/rollouts ;;
+  esac
+  # T1XFER (donor-actor transfer) wins over every earlier tree for the clips it adopts, and like
+  # the chain it is named explicitly rather than appended to the search list. Appending is what
+  # made this packer ship two LOSING rollouts chosen by directory order
+  # (results/t1_chain_adoption.json); a named source cannot be re-chosen by filesystem order.
+  case " $XFER_ADOPTED " in
+    *" $TAG "*) [ -s "$S/xfer_results/rollouts/$F.parquet" ] && SRC=$S/xfer_results/rollouts ;;
   esac
   [ -n "$SRC" ] || { echo "FATAL: $TAG adopted but no Tier 1 rollout found" >&2; exit 3; }
   cp "$SRC/$F.parquet" "$SRC/$F.json" "$OUT/results/"
