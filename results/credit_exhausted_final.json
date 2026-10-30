@@ -1,0 +1,32 @@
+{
+ "what": "Credit exhausted. Final state of the orientation arm and of the session's compute.",
+ "when": "2026-10-30 14:42 UTC",
+ "how_the_credit_ended": "v2d-oriw disappeared from the org while its launcher was still at step 8 (wait_remote), so it was terminated externally rather than torn down -- the signature of the credit running out mid-run. e13 was training and its rollout is lost; e20 and e21 never started. Nothing already measured was lost: e09 and e10 had been pulled and scored by their own one-shots before the box died, which is why per-clip pulls were worth the trouble.",
+ "orientation_arm_final": {
+  "clips_completed": 2,
+  "adopted": 0,
+  "e09": {
+   "auc": [
+    0.3003,
+    0.2462
+   ],
+   "mppe_cm": [
+    4.89,
+    8.31
+   ]
+  },
+  "e10": {
+   "auc": [
+    0.4794,
+    0.5469
+   ],
+   "mppe_cm": [
+    2.97,
+    3.38
+   ]
+  },
+  "verdict": "Inconclusive on two clips, but with a mechanism that is specific: the arm DOES collect orientation (+0.0675 of AUC on e10, against B4x's +0.0206 with the gradient alone) and pays position for it (+0.41 cm). Orientation-limited clips are by definition the ones already tracking position tightly -- e10 sits 0.03 cm inside the 3 cm MP-SR gate -- so the trade crosses a gate and costs a board point for AUC that changes no rank."
+ },
+ "what_i_would_now_tell_someone_funding_this": "Strike the '+0.053 of entry AUC available in orientation' line from the roadmap, or re-label it as an oracle bound. Two arms tested it from opposite sides: B4x gave the term a gradient and collected 6% of it; this one gave the gradient weight and collected more but could not keep it. The error is real and the headroom is not spendable under a rule that protects MP-SR -- and MP-SR is a board worth a rank point in its own right, 11th at 0.50000 with wte09fl 0.53333 one clip above.",
+ "session_compute_total": "About $8 of Brev credit across four boxes today: v2d-t1pilot ($2.23, six transfer clips), v2d-t1xfer2 ($1.56, three more), v2d-oriw (~$1.4, two orientation clips before termination), plus the Tier 3 boxes earlier. Two rank points, three tiers live."
+}
