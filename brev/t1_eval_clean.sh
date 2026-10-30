@@ -76,10 +76,15 @@ printf '   %-15s %s\n' "staged refs" "$STAGED/$EXPECT_CLIPS parquets in $ASSETS"
 # training with a missing actor silently trains from scratch and scores like a different arm. An
 # arm that MEANS to train from scratch (NEEDS_CKPT=0, e.g. T1PILOT/T1WEAK on clean references) has
 # no actors to ship, so the same check would refuse a correctly staged tree.
+# How many actors the arm needs is not always one per clip. A warm start from each clip's OWN
+# actor needs EXPECT_CLIPS of them; the donor transfer needs exactly ONE shared actor; a
+# from-scratch arm needs none and must not carry any. EXPECT_CKPTS says which, defaulting to the
+# per-clip case, and NEEDS_CKPT=0 keeps the from-scratch meaning.
 CKPTS=$(find "$ASSETS/ckpt" -name policy.safetensors 2>/dev/null | wc -l)
+EXPECT_CKPTS=${EXPECT_CKPTS:-$EXPECT_CLIPS}
 if [[ ${NEEDS_CKPT:-1} == 1 ]]; then
-  printf '   %-15s %s\n' "checkpoints" "$CKPTS/$EXPECT_CLIPS"
-  [[ $CKPTS == "$EXPECT_CLIPS" ]] || PRE_OK=0
+  printf '   %-15s %s\n' "checkpoints" "$CKPTS/$EXPECT_CKPTS"
+  [[ $CKPTS == "$EXPECT_CKPTS" ]] || PRE_OK=0
 else
   printf '   %-15s %s\n' "checkpoints" "not required (training from scratch); found $CKPTS"
   [[ $CKPTS == 0 ]] || { echo "   checkpoints     REFUSING: NEEDS_CKPT=0 but $CKPTS actor(s) are staged;"
