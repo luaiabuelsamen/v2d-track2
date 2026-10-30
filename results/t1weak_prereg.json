@@ -33,5 +33,19 @@
   "manifest_files": 77,
   "size": "379M"
  },
- "what_is_not_yet_built": "The launcher: full-length training on a Tier 1 asset tree reuses brev/run_tier2_full.sh with ARM_FLAGS for the precision recipe, which has run 30 clips before, but the per-box clip packing and the plan file still need writing. ~30 minutes of free work, which I will do rather than leave the money waiting."
+ "what_is_not_yet_built": "The launcher: full-length training on a Tier 1 asset tree reuses brev/run_tier2_full.sh with ARM_FLAGS for the precision recipe, which has run 30 clips before, but the per-box clip packing and the plan file still need writing. ~30 minutes of free work, which I will do rather than leave the money waiting.",
+ "launch_is_ready": {
+  "status": "staged, split, dry-run verified. Awaiting credit only.",
+  "command": "bash $S/launch_t1weak.sh a   # then b, then c, creates spaced ~20 s apart",
+  "boxes": {
+   "a": "e01 e04 e05 e07",
+   "b": "e09 e13 e14 e19",
+   "c": "e21 e25 e28"
+  },
+  "balanced_why": "4/4/3 rather than 5/3/3: four clips at 4.4 h is 17.6 h plus bring-up, inside the 21 h box deadline and 22 h backstop. A five-clip box would run 22 h and race its own deletion authority.",
+  "per_box_asset_trees": "One tree per box, not one shared tree. t1_eval_clean.sh's preflight compares parquets found in ASSETS against the box's clip count, so a shared 11-clip tree against a 4-clip plan reads INCOMPLETE and refuses to launch -- which is exactly what it did to the strong-four relaunch this morning. a: 4 parquets/4 usda/25 files/127M, b: same, c: 3/3/19/76M.",
+  "new_code": "brev/run_t1weak.sh, an adapter: t1_eval_clean.sh hands its box script PLAN as an env var while run_tier2_full.sh takes the map positionally. Two proven scripts, translated rather than bent.",
+  "dry_run_evidence": "DRY_RUN=1 on box a's map printed the real training command: task.parquet under /v2d/assets/t1weak, total_environment_steps=349999104, save_interval=49999872, scene.support resolved per clip, reset.reset_voc_scale=0.0 from the start-curriculum patch, object_position std 0.08 and object_orientation std 0.3 applied, seed 42, then one evaluation per checkpoint.",
+  "known_cosmetic_defect": "run_tier2_full.sh hardcodes logging.project=v2d-t2-combined and run_name=t2_eXX, so these Tier 1 runs will be labelled t2 in the offline W&B dirs. Logging is offline and the results tree is what gets scored, so this is mislabelling rather than a fault, and I would rather not edit a runner that has driven 30 clips for a cosmetic fix."
+ }
 }
