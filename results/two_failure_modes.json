@@ -28,5 +28,36 @@
  },
  "how_to_read_it": "Six of nine clips fit: e28, e19 and e05 fail at rest with 10-27x too little inertia, while e25, e07 and e04 fail in motion with near-correct inertia. Three do not: e09 and e17 fail at rest at 1.3x, and e14 fails in motion at 10.3x. p=0.0952 on nine clips is weak evidence -- the medians differ sixfold but the sample cannot carry the claim, and I am not going to call a 0.095 a result after spending this session correcting two of my own confident conclusions.",
  "what_would_settle_it": "Characterising the failure moment for the other 21 clips, which is the same free CPU analysis docs/FAILURE_MOMENTS.md ran on nine. That is the next measurement if there is time, and it would also give the full taxonomy the second-wave triage only sketched.",
- "why_it_matters_either_way": "If inertia error drives the rest-failures, correcting the tensor helps that mode and nothing else -- so the rules question is worth asking but the expected gain is bounded to roughly the clips in that group. If it does not, the rules question can be dropped and the drops are entirely a control problem, which is what the transfer arm addresses."
+ "why_it_matters_either_way": "If inertia error drives the rest-failures, correcting the tensor helps that mode and nothing else -- so the rules question is worth asking but the expected gain is bounded to roughly the clips in that group. If it does not, the rules question can be dropped and the drops are entirely a control problem, which is what the transfer arm addresses.",
+ "RETRACTED_06_39": {
+  "verdict": "Not supported. p=0.4524 under a consistent definition, and the direction reverses.",
+  "what_i_did": "Computed the failure moment for all 30 clips myself from the shipped rollouts: first frame where the achieved object leaves a 10 cm band around its reference, and the mean REFERENCE object speed over the 30 frames before it, against the clip's mean speed. That gives one definition applied to every clip ($S/failure_modes_all30.json).",
+  "the_result": {
+   "slow_moment_failures": {
+    "clips": [
+     "e01",
+     "e02",
+     "e04",
+     "e19",
+     "e25",
+     "e28"
+    ],
+    "median_x_too_easy": 5.3
+   },
+   "fast_moment_failures": {
+    "clips": [
+     "e05",
+     "e07",
+     "e14"
+    ],
+    "median_x_too_easy": 10.3
+   },
+   "mann_whitney_one_sided_p": 0.4524,
+   "note": "the fast group has the HIGHER inertia error, opposite to the hypothesis"
+  },
+  "why_my_earlier_p_was_wrong": "It paired docs/FAILURE_MOMENTS.md's hand-curated mode labels with an inertia measure I computed separately. The two labellings disagree on five of nine clips: that doc calls e04 and e25 fast-moment failures where a consistent recomputation calls them slow (e04 local 0.265 vs clip 0.320 m/s; e25 0.137 vs 0.258), calls e05 still where recomputation says fast (0.249 vs 0.083), and labels e09 and e17 at all where they never exceed the 10 cm gate against their reference. Its labels presumably use a different window or reference speed; the point is that mixing two definitions manufactured an effect.",
+  "what_still_stands": "The separate result that clips >=8x too easy to spin end up a median 12.39 cm worse than their own reference against 1.24 cm below that, one-sided p=0.0279. That test used two measures I computed the same way for all 30 clips, and it is untouched by this retraction. Inertia error is associated with doing worse than your reference; it does not predict WHEN in the clip you fail.",
+  "a_finding_about_the_data_rather_than_the_physics": "Only 9 of 30 clips ever leave a 10 cm band around their reference, yet 19 of 30 end up worse than that reference against truth. So most of our deficit is not dropped objects at all -- it is tracking a good reference a few centimetres loosely across many clips. That reframes the problem again: the catastrophic drops are nine clips, and the other ten points of deficit are diffuse."
+ },
+ "status": "RETRACTED. The association with inertia survives; the mode split does not."
 }
