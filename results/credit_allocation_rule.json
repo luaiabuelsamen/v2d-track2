@@ -1,0 +1,9 @@
+{
+ "what": "How the last ~$1.9 of credit is allocated between two live candidates",
+ "registered_at": "2026-10-30 06:18 UTC, before e19's score exists",
+ "the_problem": "The T1XFER queue holds six clips and will spend every remaining dollar on them whether or not the arm works. If transfer is dead, clips 3-6 are pure waste, and the $1.50 Tier 2 physics-correction test (results/t2_physics_correction_idea.json) is a better use of the same money.",
+ "why_t1xfer_goes_first": "Higher immediate rank value. On Tier 1 the next team is +0.01496 of AUC away, which 1-3 good adoptions could cover, and each clip crossing a success gate is worth +0.0333 where two flips buy a rank point on two separate boards. On Tier 2 the next team is +0.0155 of mean AUC away, which needs roughly half a point of summed AUC -- several clips, not one. So Tier 1 can convert a small gain into rank and Tier 2 cannot.",
+ "the_switch_rule": "If NEITHER e19 nor e28 adopts under the standing Tier 1 rule, stop the transfer queue before clip 3 and spend what is left on the Tier 2 physics test (loosened object term, 2-3 clips). Two clips failing is enough: the donor is our best actor and these are the two lowest bars on the board (0.1163 and 0.0891), so if transfer cannot beat those it will not beat 0.4794 on e10.",
+ "if_one_of_the_two_adopts": "Let the queue run to the credit limit, repack, and upload. A single adoption also justifies the $10 ask for all 19 unadopted clips, since the per-clip cost is ~$0.50 and the arm would be demonstrated rather than hypothesised.",
+ "why_this_is_written_now": "Because deciding it after seeing e19 would be choosing the allocation to fit the result. Both branches are stated with their thresholds while the answer is still unknown."
+}
