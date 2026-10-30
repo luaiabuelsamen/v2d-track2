@@ -1,44 +1,61 @@
 # STATUS — v2d (NVIDIA V2D Challenge, Track 2)
 
-## All three tiers are on the board, 2026-10-29 15:52 UTC
+## Final state, 2026-10-30 14:50 UTC — compute closed, credit exhausted (tested)
 
-| board | rank | us | 1st | gap |
-|---|---|---|---|---|
-| tier1-auc | **11/24** | 0.54808 | 0.89354 | 0.345 |
-| tier1-sp-sr | 12/22 | 0.70000 | 0.96666 | 0.267 |
-| tier1-mp-sr | 11/22 | 0.50000 | 0.93333 | 0.433 |
-| tier1-mppe | **10/22** | 12.06 cm | 2.78 | 9.3 cm |
-| tier2-auc | 5/18 | 0.46522 | 0.56768 | 0.102 |
-| tier2-sp-sr | 5/18 | 0.66666 | 0.80000 | 0.133 |
-| tier2-mp-sr | 5/18 | 0.46666 | 0.80000 | 0.333 |
-| tier2-mppe | **4/18** | 14.13 cm | 9.28 | 4.8 cm |
-| tier3-auc | 4/10 | 0.26781 | 0.33311 | 0.065 |
-| tier3-sp-sr | 5/10 | 0.20000 | 0.40000 | 0.200 |
-| tier3-mp-sr | 6/10 | 0.03333 | 0.10000 | 0.067 |
-| tier3-mppe | 6/10 | 47.77 cm | 31.34 | 16.4 cm |
+| board | rank | us | leader |
+|---|---|---|---|
+| tier1-auc | **11/24** | 0.54808 | 0.89354 |
+| tier1-sp-sr | 12/22 | 0.70000 | 0.96666 |
+| tier1-mp-sr | 11/22 | 0.50000 | 0.93333 |
+| tier1-mppe | **10/22** | 12.06020 | 2.78211 |
+| tier2-auc | 5/18 | 0.46522 | 0.56768 |
+| tier2-mppe | 4/18 | 14.128 | 9.28429 |
+| tier3-auc | 4/10 | 0.26781 | 0.33311 |
+| tier3-sp-sr | 5/10 | 0.20000 | 0.40000 |
+| tier3-mp-sr | 6/10 | 0.03333 | 0.10000 |
+| tier3-mppe | 6/10 | 47.772 | 31.33930 |
 
-Tier 1 went 0.46523 → **0.52687** today, past CHORD's 0.51038; Tier 3 went from **no entry at all**
-to 3rd on AUC. Tier 2 is unchanged because the board already holds our best Tier 2 file.
+**Rank sum 84**, from 87 at the start of 2026-10-30. Tier 1 rose 0.46523 → 0.54808 (past CHORD's
+0.51038 and wte09fl's 0.54183); SP-SR 0.66667 → 0.70000; MPPE 14.128 → 12.06020. Tier 3 went from
+**no entry at all** to three scoring boards. Nineteen uploads, every one matching the local kit
+score to five decimals.
 
-**`docs/TO_THE_TOP.md` is the costed answer to "what would first place take".** The short version:
-our nineteen best Tier 1 clips average 0.7228 while the leader's whole 30-clip entry averages
-0.89354, so lifting all eleven weak clips to 0.80 — better than our current average — reaches
-0.751 and about 5th. First place needs a better per-clip tracker, not more credit. What money does
-buy: the eleven weak Tier 1 clips full-length on clean references, ~$36, for 12th → 5th-8th.
+### The two things that are yours, before the Nov 4 2026 5:00 p.m. EST freeze
 
-Every public score agrees with the local kit score to five decimals, so the local scorer is a
-faithful stand-in and nothing has to be guessed from the board. Receipts and per-board submission
-ids are in `results/tier1_submission_v2.json` (commit `6eb90dc`) and
-`results/tier3_submission_v4.json` (commit `75ac3e8`), superseding the v2 and v3 Tier 3 records
-beside them; every commit named in a submitted row is pushed and resolvable on `origin/main`.
+1. **Accept the `Nvidia-V2D-Challenge` GitHub invite.** The repo is private and every one of the
+   22,989 rows in each entry names a commit URL in it.
+2. **Confirm the registration form.** No submission selection is needed: the latest upload is the
+   best on all twelve boards (`results/final_submission_selection.json`).
 
-Tier 1 moved because of warm-start fine-tuning (`docs/T1_STRONG4.md`, `docs/WARM_START.md`): 11 of
-23 fine-tuned clips adopted under a rule that requires AUC to improve and forbids any other board
-from falling. That is legal on Tier 1 alone, because `config/tracks.json` names the permitted
-multiview trajectory as *the configured scoring reference*; on Tier 2 and Tier 3 selection reads
-the input only. Tier 1 fine-tuning is now **closed**: every clip above the 0.35 line where
-adoption happens has been run, and all seven never run sit below 0.30, where 0 of 4 have ever
-adopted.
+### Nothing else is reachable without GPU, and that is proven not assumed
+
+- **Credit is gone**, confirmed by two creates returning `Bad Request` — distinct from the
+  "not a recognized type" and "resource exhausted" failures seen earlier the same day
+  (`results/credit_exhaustion_confirmed.json`).
+- **The Tier 1 entry is Pareto-optimal** over all 16 clips holding unshipped alternatives, by every
+  single swap and every pair (`results/t1_entry_pareto_optimal.json`).
+- **Tier 2's board holds our best file**; the second-wave mix scored 0.46313, worse.
+- **Tier 3's input-only adoption is applied**; oracle selection there is worth +0.00135.
+
+### If credit arrives: the priced queue, with honest rates
+
+| arm | cost | evidence |
+|---|---|---|
+| donor transfer, 10 untried clips | ~$5 | **3 of 9 adopted**, +0.637 summed AUC, heavy-tailed — e05 +0.385, e28 +0.209, e19 +0.043 |
+| the 3 orientation clips lost mid-run (e13 e20 e21) | ~$1 | arm is 0 of 2 and **gated** — see below |
+| Tier 1's weak clips, full length from scratch | ~$34 | untested; the 11 clips below 0.35 never adopted a warm start |
+
+**Do not fund the orientation headroom as written.** `docs/METRICS_DEEP_DIVE.md`'s "+0.318 per clip"
+is an **oracle bound**: it substitutes truth orientation at the clip's existing position. Two arms
+tested it — B4x gave the term a gradient (6% of the bound), and ORI-W gave the gradient weight
+(collected +0.0675 on e10 and could not keep it, because 0.41 cm of position crossed the 3 cm MP-SR
+gate). The error is real; the headroom is not spendable under a rule that protects MP-SR
+(`results/ori_headroom_is_gated.json`).
+
+**Do not try to select transfer clips.** Six hypotheses refuted, one of them a prediction registered
+publicly before the run that killed it. The rule's MPPE clause already narrows 30 clips to ~9, and
+inside those nine nothing predicts the outcome. At $0.50 a clip, breadth beats cleverness
+(`results/t1xfer_final.json`).
 
 ## LIVE as of 2026-10-30 06:17 UTC: T1XFER on `v2d-t1pilot`
 
