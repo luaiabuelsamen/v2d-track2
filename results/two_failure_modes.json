@@ -1,0 +1,32 @@
+{
+ "what": "Do the two failure modes split by inertia error? Suggestive, not established.",
+ "measured": "2026-10-30 06:36 UTC, 9 clips whose failure moment is characterised in docs/FAILURE_MOMENTS.md",
+ "the_hypothesis": "An object with far too little rotational inertia gets FLUNG when the policy first loads it, which would show up as a failure while the object is nearly still. An object with correct inertia is instead simply lost during fast motion. If so, inertia error should be higher among clips that fail at rest.",
+ "result": {
+  "fails_while_still": {
+   "n": 5,
+   "median_x_too_easy": 10.7,
+   "values": {
+    "e28": 27.3,
+    "e19": 11.3,
+    "e05": 10.7,
+    "e09": 1.3,
+    "e17": 1.3
+   }
+  },
+  "fails_while_fast": {
+   "n": 4,
+   "median_x_too_easy": 1.8,
+   "values": {
+    "e14": 10.3,
+    "e04": 2.5,
+    "e25": 1.0,
+    "e07": 0.7
+   }
+  },
+  "mann_whitney_one_sided_p": 0.0952
+ },
+ "how_to_read_it": "Six of nine clips fit: e28, e19 and e05 fail at rest with 10-27x too little inertia, while e25, e07 and e04 fail in motion with near-correct inertia. Three do not: e09 and e17 fail at rest at 1.3x, and e14 fails in motion at 10.3x. p=0.0952 on nine clips is weak evidence -- the medians differ sixfold but the sample cannot carry the claim, and I am not going to call a 0.095 a result after spending this session correcting two of my own confident conclusions.",
+ "what_would_settle_it": "Characterising the failure moment for the other 21 clips, which is the same free CPU analysis docs/FAILURE_MOMENTS.md ran on nine. That is the next measurement if there is time, and it would also give the full taxonomy the second-wave triage only sketched.",
+ "why_it_matters_either_way": "If inertia error drives the rest-failures, correcting the tensor helps that mode and nothing else -- so the rules question is worth asking but the expected gain is bounded to roughly the clips in that group. If it does not, the rules question can be dropped and the drops are entirely a control problem, which is what the transfer arm addresses."
+}
