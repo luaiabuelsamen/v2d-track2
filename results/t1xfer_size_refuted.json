@@ -1,0 +1,36 @@
+{
+ "what": "My donor-size hypothesis is refuted by the prediction I registered against it",
+ "when": "2026-10-30 08:50 UTC",
+ "the_prediction": "Recorded and pushed at 08:20, before the run finished: 'e01 (ratio 1.24) and e14 (0.92) should both adopt', on the basis that all four results to that point separated cleanly at the donor's own scale.",
+ "what_happened": {
+  "e01": {
+   "auc": [
+    0.2001,
+    0.1949
+   ],
+   "d_auc": -0.0052,
+   "mppe_cm": [
+    43.67,
+    42.4
+   ],
+   "verdict": "keep shipped",
+   "donor_ratio": 1.24
+  }
+ },
+ "why_the_hypothesis_is_dead": "e01's ratio of 1.24 sits BETWEEN e19's 1.08 and e28's 1.82, both of which adopted. A rule cannot be true if the interval between two successes contains a failure. The clean split at 0.5 was an artifact of having only four points and no case in the middle.",
+ "other_candidates_also_fail_to_separate": "Inertia error does not do it either: e01 is 8.2x too easy to spin, between e19's 11.3x and e13's low value, and it failed. Nor does 'loses the object' -- e01, e25 and e28 all lose it and only e28 adopted.",
+ "the_arm_as_it_actually_stands": {
+  "tried": 5,
+  "adopted": 2,
+  "clips": {
+   "e28": 0.2086,
+   "e19": 0.0428,
+   "e13": "rejected on MPPE",
+   "e25": "rejected",
+   "e01": "rejected"
+  },
+  "blended_value": "+0.2514 of summed AUC across 5 clips tried = +0.050 per clip tried, which is +0.0017 on the entry mean per clip at $0.50. For the 12 remaining unadopted clips that is about +0.020 of entry AUC for $6 -- and +0.0066 is all that separates us from wte09fl on tier1-auc. So the arm still pays BROADLY even though it cannot be targeted.",
+  "what_i_cannot_do": "predict which clips will work. Three hypotheses tried, three refuted."
+ },
+ "the_honest_recommendation": "Run it on everything unadopted rather than trying to select: the per-clip cost is $0.50, the blended return is +0.0017 of entry AUC per clip, and the no-regression rule makes a failed clip cost nothing but the $0.50. Selection has consumed more of my analysis than it could ever have saved in money."
+}
