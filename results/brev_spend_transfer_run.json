@@ -1,0 +1,14 @@
+{
+ "what": "Brev spend at the end of the transfer run",
+ "when": "2026-10-30 08:52 UTC",
+ "box": "v2d-t1pilot, massedcompute_A6000_base at $0.68/h, created 05:35 UTC 2026-10-30",
+ "uptime_h": 3.28,
+ "cost_so_far": 2.23,
+ "credit_at_last_email": 30.38,
+ "spent_before_this_box": 25.35,
+ "projected_total": 27.58,
+ "projected_remaining": 2.8,
+ "note": "The earlier projection said $2.61 remained before this box; at 3.28 h the box has used $2.23 of it, so the arithmetic now says about $0.38 left on that basis. The two figures disagree because the pre-box projection itself carried bounded estimates for five boxes that were deleted by their finishers. Treat $0.4 as the operative number and expect e14 to be the last clip either way.",
+ "what_this_box_bought": "Six clips of the donor transfer for ~$2.23: two adoptions (e28 +0.2086 AUC and MPPE 44.07 -> 9.58 cm; e19 +0.0428, 58.10 -> 41.62), one rank point on tier1-mppe (11th -> 10th), the SP-SR board lifted 0.66667 -> 0.70000, three refuted selection hypotheses, and the discovery that the orientation patch was missing its weight parameter.",
+ "value_per_dollar": "One rank point and +0.0084 of entry AUC for $2.23, against the $90 arms two free measurements priced out this morning. The cheap arm was the right call."
+}
