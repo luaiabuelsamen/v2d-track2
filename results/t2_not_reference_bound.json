@@ -1,0 +1,42 @@
+{
+ "what": "Tier 2 is NOT reference-bound. I had it backwards, and here is the measurement.",
+ "measured": "2026-10-30 06:32 UTC, all 30 shipped Tier 2 rollouts against clean Tier 1 truth",
+ "the_numbers": {
+  "mean_reference_error_vs_truth_cm": 1.94,
+  "mean_achieved_error_vs_truth_cm": 13.84,
+  "clips_where_physics_corrects": 4,
+  "clips_tracking_the_noise": 7,
+  "clips_worse_than_their_own_reference": 19,
+  "worst": {
+   "e04": [
+    102.64,
+    1.17
+   ],
+   "e25": [
+    74.59,
+    1.64
+   ],
+   "e19": [
+    58.07,
+    2.9
+   ],
+   "e28": [
+    43.59,
+    1.25
+   ],
+   "e01": [
+    43.64,
+    1.45
+   ]
+  }
+ },
+ "what_i_claimed_before": [
+  "'Tier 2 is reference-bound: our entry sits just under our own cleaner's 0.4755 ceiling.'",
+  "'The implied arm is to LOOSEN object tracking so physics dominates.'"
+ ],
+ "why_both_were_wrong": "The Tier 2 reference's POSITION is nearly perfect -- 1.94 cm from truth on average -- while our policies average 13.84 cm. Nineteen of thirty clips are worse than the reference they were given, five of them by 40 to 100 cm. So the position error is OURS, not the reference's, and loosening the tracking term would make it worse, not better.",
+ "how_the_earlier_reading_went_wrong": "I compared our entry's AUC (0.46522) with the reference's AUC (0.4247) and concluded we were near the reference's ceiling. But AUC mixes position and orientation. The reference has good position (1.94 cm) and bad orientation (21.4 deg); our policy has bad position on 19 clips and better orientation, because contact makes the object sit plausibly. The two defects roughly cancel in AUC, which hid the fact that we are twelve centimetres worse than our own input on position.",
+ "what_it_actually_says_to_do": "The Tier 2 path is the same as Tier 1's: STOP DROPPING OBJECTS. The 19 clips worse than their reference are the drops, and they are mostly the same clips that are weak on Tier 1 -- e04, e25, e19, e28, e01, e05, e07. That is a policy-competence problem on both tiers, which makes the transfer arm now training the most relevant experiment for BOTH rather than a Tier 1 curiosity.",
+ "the_physics_test_is_cancelled": "The $1.50 loosened-tracking arm is withdrawn. Its premise was that the reference is the limit; the measurement says the reference is 1.94 cm and we are 13.84. Loosening would be spending to move in the wrong direction.",
+ "the_process_point": "I published 'Tier 2 is reference-bound' as a structural finding and put it in the technical report. It took one free measurement over data we already had to refute it. The measurement should have come first -- comparing two AUC numbers is not the same as comparing the trajectories they summarise."
+}
