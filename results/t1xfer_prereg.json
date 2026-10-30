@@ -12,5 +12,34 @@
  },
  "recipe": "run_warm_start.sh, which reads the stage per clip from its plan and so respects each parquet's recorded absolute object path -- the thing that broke the flattened pilot. start_curriculum + orientation std 0.3 + object_position std 0.08, seed 42, warm start at 299,999,232 to 349,999,104 steps, actor LR x0.1 for the first 2,000 updates, critic cold.",
  "the_bar": "Per clip, beat its shipped Tier 1 AUC with no other board regressing -- the standing Tier 1 rule. The ARM works if at least one of the four adopts. If none does, both weak-clip routes have failed and the honest conclusion is that weak clips need a method change rather than more training, which withdraws the $40 ask entirely.",
- "what_this_would_mean_if_it_works": "11 weak clips at ~$0.50 is about $7 rather than $34, so the ask drops from $40 to $10 and the whole Tier 1 rebuild becomes affordable within one top-up."
+ "what_this_would_mean_if_it_works": "11 weak clips at ~$0.50 is about $7 rather than $34, so the ask drops from $40 to $10 and the whole Tier 1 rebuild becomes affordable within one top-up.",
+ "donor_load_verified": "e19's train log reports: 'warm start: actor from /v2d/assets/ckpt/donor/policy.safetensors, steps set to 299,999,232, curriculum stage voc_scale=0.0'. So the donor actor is genuinely the starting point -- a run that had silently trained from scratch would score like a different arm and the comparison would be worthless.",
+ "if_the_pilot_adopts_the_full_arm_is_cheap": {
+  "candidates": "All 19 Tier 1 clips the no-regression rule has NOT adopted -- not just the 11 weak ones. Twelve of the 19 were tried with their OWN actor and rejected, and that is the thing this arm changes; seven were never tried at all.",
+  "clips_by_bar": {
+   "e28": 0.0891,
+   "e19": 0.1163,
+   "e25": 0.1334,
+   "e04": 0.1466,
+   "e13": 0.1594,
+   "e01": 0.2001,
+   "e14": 0.2055,
+   "e21": 0.2061,
+   "e07": 0.2508,
+   "e05": 0.266,
+   "e09": 0.3003,
+   "e02": 0.4263,
+   "e17": 0.447,
+   "e11": 0.4676,
+   "e10": 0.4794,
+   "e29": 0.627,
+   "e20": 0.7149,
+   "e18": 0.7385,
+   "e03": 0.7806
+  },
+  "cost": "19 clips x 0.5 h = 9.5 box-hours = $6.46, three boxes at 3.2 h each, about $7.30 with bring-ups. Against $32.91 for the eleven weak clips from scratch.",
+  "no_stage_grouping_needed": "run_warm_start.sh reads the stage per clip from its plan, so one box can mix clips from any stage. That removes the five-box stage grouping T1WEAK needed and the absolute-object-path trap that broke the flattened pilot.",
+  "the_ask_becomes": "$10 rather than $40, and it covers every unadopted Tier 1 clip rather than eleven of them."
+ },
+ "why_the_rejected_twelve_matter_most": "Their own-actor fine-tunes did not merely fail to improve -- all twelve came back WORSE on MPPE, several catastrophically (e02 4.57 -> 35.05 cm, e21 4.79 -> 10.34). That is the signature of an actor refitting toward a reference it cannot track. A donor that already tracks its own clip to 1.43 cm starts from competence instead."
 }
