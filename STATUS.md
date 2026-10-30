@@ -40,6 +40,28 @@ the input only. Tier 1 fine-tuning is now **closed**: every clip above the 0.35 
 adoption happens has been run, and all seven never run sit below 0.30, where 0 of 4 have ever
 adopted.
 
+## LIVE as of 2026-10-30 06:17 UTC: T1XFER on `v2d-t1pilot`
+
+One box is training, on the last ~$1.9 of Brev credit. **Arm:** warm-start a weak Tier 1 clip from
+a *strong* clip's actor (donor: e08 fine-tuned, 0.9236 AUC at 1.43 cm). Every earlier weak-clip
+attempt warm-started a clip from its OWN actor, which has converged on failing it — 0 of 4 adopted
+below 0.35, and all twelve rejected clips came back *worse* on MPPE. All 30 actors share one
+tensor-shape signature and one `policy_schema_json`, so a donor loads for any clip; verified in
+e19's log (`warm start: actor from /v2d/assets/ckpt/donor/policy.safetensors`).
+
+- Queue, lowest bar first: **e19** (0.1163, training since 06:07, ~30 min/clip), e28 (0.0891),
+  e13 (0.1594), e25 (0.1334), e01 (0.2001), e14 (0.2055).
+- Scoring and adoption run automatically (`$S/xfer_score2.sh`, `$S/xfer_adopt.py`); the packer
+  reads `results/t1xfer_adoption.json` **by named source**, not by directory order.
+- **Pre-registered switch rule** (`results/credit_allocation_rule.json`): if neither e19 nor e28
+  adopts, stop the queue before clip 3 and spend the rest on the $1.50 Tier 2 physics test.
+- If one adopts: repack, upload, and the arm scales to **all 19 unadopted Tier 1 clips for ~$7.30**
+  (`results/t1xfer_prereg.json`) — which replaces the $34 from-scratch plan.
+
+**If a future session picks this up:** the three commands are
+`bash $S/xfer_score2.sh` (already running), `.venv311/bin/python $S/xfer_adopt.py
+results/t1xfer_adoption.json`, then `bash brev/pack_t1_entry.sh`.
+
 **Still open, and all of it is yours rather than mine** — for the Nov 4 2026 5:00 p.m. EST freeze:
 
 1. Accept the `Nvidia-V2D-Challenge` GitHub invite (the repo is private; a judge resolving the
