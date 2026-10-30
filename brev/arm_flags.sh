@@ -181,7 +181,12 @@ arm_flags_apply() {
     args=""
     case "$flag" in
       orientation_reward)
-        [ -n "${V2D_OBJECT_ORIENTATION_STD:-}" ] && args="--std ${V2D_OBJECT_ORIENTATION_STD}" ;;
+        # Two knobs, as object_position already had. B4x moved the std alone and recovered 6% of
+        # the oracle bound, because the term's weight stayed at 1.0 against body_joint_position's
+        # 5.0: gradient without weight. Both are passed explicitly so the cell log shows the arm.
+        [ -n "${V2D_OBJECT_ORIENTATION_STD:-}" ] && args="--std ${V2D_OBJECT_ORIENTATION_STD}"
+        [ -n "${V2D_OBJECT_ORIENTATION_WEIGHT:-}" ] \
+          && args="$args --weight ${V2D_OBJECT_ORIENTATION_WEIGHT}" ;;
       object_position)
         # Two knobs, one patch: Part A moves the std alone, the tail arm moves the weight alone.
         # Both are passed explicitly so the applied arm is readable in the cell log.
