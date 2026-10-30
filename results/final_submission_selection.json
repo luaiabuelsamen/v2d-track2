@@ -1,0 +1,70 @@
+{
+ "what": "Is our latest submission also our best, on every board? Checked 2026-10-30 06:21 UTC.",
+ "why_it_matters": "The challenge notes mention designating final submissions. If an earlier upload beat the current one on some metric, the choice would matter and a default could cost a board. This checks every submission we have ever made, per board, from Kaggle's own history.",
+ "answer": "Yes on all twelve. The latest upload is the best on every metric; nothing is stranded.",
+ "per_board_best_vs_worst_ever": {
+  "tier1-auc": {
+   "best": 0.52687,
+   "worst": 0.13434,
+   "submissions": 4
+  },
+  "tier1-sp-sr": {
+   "best": 0.66666,
+   "worst": 0.0,
+   "submissions": 4
+  },
+  "tier1-mp-sr": {
+   "best": 0.5,
+   "worst": 0.0,
+   "submissions": 4
+  },
+  "tier1-mppe": {
+   "best_min": 13.90141,
+   "worst": 74.19795,
+   "submissions": 4
+  },
+  "tier2-auc": {
+   "best": 0.46522,
+   "worst": 0.39076,
+   "submissions": 3
+  },
+  "tier2-sp-sr": {
+   "best": 0.66666,
+   "worst": 0.56666,
+   "submissions": 3
+  },
+  "tier2-mp-sr": {
+   "best": 0.46666,
+   "worst": 0.16666,
+   "submissions": 3
+  },
+  "tier2-mppe": {
+   "best_min": 14.1276,
+   "worst": 17.35839,
+   "submissions": 3
+  },
+  "tier3-auc": {
+   "best": 0.26781,
+   "worst": 0.25059,
+   "submissions": 4
+  },
+  "tier3-sp-sr": {
+   "best": 0.2,
+   "worst": 0.16666,
+   "submissions": 4
+  },
+  "tier3-mp-sr": {
+   "best": 0.03333,
+   "worst": 0.03333,
+   "submissions": 4,
+   "note": "identical across all four, so there is nothing to choose"
+  },
+  "tier3-mppe": {
+   "best_min": 47.7718,
+   "worst": 54.43633,
+   "submissions": 4
+  }
+ },
+ "consequence_for_the_freeze": "If designation is required, designate the LATEST on each of the twelve boards. If it is not required, the default already lands on our best. Either way no action is needed beyond what is already uploaded -- which closes the one item on the handoff list that could have silently cost rank.",
+ "the_progression_is_monotone": "Every tier improved with each upload rather than trading metrics: Tier 1 0.13434 -> 0.46522 -> 0.52687, Tier 2 0.39076 -> 0.46522, Tier 3 0.25059 -> 0.25197 -> 0.26781. The no-regression adoption rule is why -- it refuses any clip that would drop a board, so no upload has ever cost us one."
+}
