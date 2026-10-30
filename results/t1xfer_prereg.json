@@ -1,0 +1,16 @@
+{
+ "what": "T1XFER: warm-start a WEAK Tier 1 clip from a STRONG clip's actor",
+ "registered_at": "2026-10-30 06:10 UTC, before the pilot box is repurposed",
+ "the_idea": "Every weak-clip arm so far has warm-started a clip from ITS OWN actor, which has converged on failing that clip -- 0 of 4 below 0.35 ever adopted. A strong clip's actor has learned to manipulate. All 30 shipped actors share one tensor-shape signature and one policy_schema_json, so a donor actor loads for any clip: checked locally from the safetensors headers, 30 of 30 identical.",
+ "why_it_displaces_the_pilot": "A warm start is 50M steps (~30 min, ~$0.50) against 350M from scratch (~3.5 h, ~$3.00). The remaining $2.61 buys ONE from-scratch clip or FOUR cross-clip clips. Four clips of a $7 arm is both better evidence and a more actionable answer than one clip of a $34 arm, so the cheaper hypothesis is tested first. The from-scratch pilot had run 19 minutes, about $0.21, and its real value is already banked: it found the stage-path bug that would have killed a five-box T1WEAK launch.",
+ "donor": "e08's FINE-TUNED actor, kit AUC 0.9236 at 1.43 cm MPPE -- our best, and trained on a clean Tier 1 reference, which is what the targets also use. Path ws_s4a/results/rollouts/e08_policy.safetensors.",
+ "clips_in_order_of_lowest_bar": {
+  "e19": 0.1163,
+  "e28": 0.0891,
+  "e13": 0.1594,
+  "e25": 0.1334
+ },
+ "recipe": "run_warm_start.sh, which reads the stage per clip from its plan and so respects each parquet's recorded absolute object path -- the thing that broke the flattened pilot. start_curriculum + orientation std 0.3 + object_position std 0.08, seed 42, warm start at 299,999,232 to 349,999,104 steps, actor LR x0.1 for the first 2,000 updates, critic cold.",
+ "the_bar": "Per clip, beat its shipped Tier 1 AUC with no other board regressing -- the standing Tier 1 rule. The ARM works if at least one of the four adopts. If none does, both weak-clip routes have failed and the honest conclusion is that weak clips need a method change rather than more training, which withdraws the $40 ask entirely.",
+ "what_this_would_mean_if_it_works": "11 weak clips at ~$0.50 is about $7 rather than $34, so the ask drops from $40 to $10 and the whole Tier 1 rebuild becomes affordable within one top-up."
+}
