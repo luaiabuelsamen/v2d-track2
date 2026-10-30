@@ -1,0 +1,60 @@
+{
+ "what": "T1XFER final: 3 of 9 adopted, two rank points, ~$3.79 of credit",
+ "when": "2026-10-30 12:10 UTC",
+ "adopted": {
+  "e05": {
+   "auc": [
+    0.266,
+    0.6509
+   ],
+   "mppe_cm": [
+    14.63,
+    10.37
+   ]
+  },
+  "e28": {
+   "auc": [
+    0.0891,
+    0.2977
+   ],
+   "mppe_cm": [
+    44.07,
+    9.58
+   ]
+  },
+  "e19": {
+   "auc": [
+    0.1163,
+    0.1591
+   ],
+   "mppe_cm": [
+    58.1,
+    41.62
+   ]
+  }
+ },
+ "refused": {
+  "e14": "+0.2669 AUC but MPPE 6.06 -> 16.96, rank-neutral if taken",
+  "e13": "+0.0641 AUC but MPPE 4.98 -> 30.21",
+  "e07": "AUC and MPPE both worse",
+  "e01": "AUC worse",
+  "e04": "MPPE 102.96 -> 152.27",
+  "e25": "MPPE 74.78 -> 120.73"
+ },
+ "what_it_delivered": {
+  "tier1_auc": "0.46523 -> 0.54808, rank 12 -> 11 (past wte09fl)",
+  "tier1_sp_sr": "0.66667 -> 0.70000",
+  "tier1_mppe": "14.128 -> 12.06020, rank 11 -> 10",
+  "rank_sum": "87 -> 84",
+  "cost": "about $3.79 across two boxes"
+ },
+ "the_distribution_is_what_matters": "Three adoptions of +0.385, +0.209 and +0.043 against six refusals. +0.637 of summed AUC over nine clips tried is +0.021 on the entry mean. The returns are heavy-tailed, which is why both of my projections were wrong: the optimistic one and then the pessimistic revision I made twenty minutes before e05 came in at five times it.",
+ "five_refuted_selection_ideas": [
+  "loses-vs-holds the object",
+  "inertia error",
+  "donor-target size (registered as a prediction and refuted by it)",
+  "loose shipped MPPE as sufficient",
+  "any projection of the per-clip rate"
+ ],
+ "what_i_would_tell_the_next_person": "Run it on everything eligible and do not try to pick. The rule's MPPE clause makes clips with tight shipped MPPE structurally ineligible, which narrows 30 clips to about 9, and inside those nine nothing predicts the outcome. At $0.50 a clip and a heavy tail, breadth beats cleverness -- I spent more analysis on selection than selection could ever have saved."
+}
