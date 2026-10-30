@@ -131,7 +131,52 @@ On **Tier 3** the input is our own reconstruction, not the scoring reference, so
 read the input alone — a z-drop/input-distance rule with no truth read. 5 of 10 clips adopted that
 way, taking the entry from 0.23233 to 0.25059 and turning both success gates off zero.
 
-## 7. Honest limitations
+## 7. What the leaderboard taught us that local scoring could not
+
+Local kit scores matched the public board to five decimals on all sixteen uploads, so the scorer
+was never the uncertainty. The *ranking* was. Three things only became visible after pulling all
+twelve boards (`results/leaderboard_positions.json`, `results/t1_rank_sensitivity.json`):
+
+**Final rank is the sum of per-metric ranks** (`README.md`), so a board where we sit 11th of 22 is
+worth as much to fix as one where we sit 3rd of 10. Reasoning in AUC points had undervalued Tier 1,
+which is both our weakest tier and the one with the most teams.
+
+**The field is dense exactly where we sit.** The team immediately above us is +0.015 of AUC, −0.86 cm
+of MPPE, or **one clip crossing a success gate** — and the SP-SR flip passes *two* teams tied at
+0.70. Up to +5 rank points sit within about one clip's worth of improvement. That is a completely
+different target from the 0.367 of AUC separating us from first place.
+
+**Ties do not promote.** Kaggle breaks them by submission time and the teams above us submitted
+earlier, so matching 0.53333 on MP-SR leaves us below. A rank point needs *two* gate flips, not one
+— which doubles the cost of the cheapest-looking plan and is why a one-clip gate-flip arm was
+rejected.
+
+## 8. Two things that are limited by the reference, and one by the policy
+
+A single structural result organises the remaining work:
+
+- **Tier 2 is reference-bound.** Our entry (0.46522) sits just under our own cleaner's ceiling
+  (0.4755 scored against truth). The only free route past it — re-deriving the object's orientation
+  from the clean hand pose — is refuted: **0 of 29 clips have a rigid grasp**, median spread 21.6°
+  one-handed against Tier 2's own 21.4° of orientation noise (`docs/TRACK_WHAT.md`).
+- **Tier 3 is reconstruction-bound.** Eleven of thirty clips have *negative* headroom: the policy
+  already tracks better than the reconstruction it was given, so pulling it toward the input makes
+  the score worse. Only 2 of the 13 untried clips have any headroom at all, 8.57 cm between them
+  (`docs/T3_MPPE_PUSH.md`).
+- **Tier 1 is policy-bound**, because the reference is handed to us clean. It is therefore the one
+  tier where training money still buys rank — and the only tier where a per-clip choice may legally
+  read the scoring reference, since `config/tracks.json` names the permitted multiview trajectory as
+  the configured scoring reference.
+
+**The warm start's mechanism, stated precisely:** gains come from re-fitting an actor to a *new*
+reference, never from more steps. A second generation on the *same* reference adopted 0 of 3 and
+lost e16 outright (0.6469 → 0.2963, both gates). And a clip's own actor is a poor starting point
+once it has converged on failing: 0 of 4 clips below 0.35 adopted, and all twelve rejected clips
+came back **worse** on MPPE. The last arm attempted therefore warm-starts a weak clip from the best
+*other* clip's actor — all 30 actors share one tensor-shape signature and one `policy_schema_json`,
+so a donor loads for any clip, and a transfer costs ~$0.50 against ~$3.00 from scratch.
+
+## 9. Honest limitations
 
 One seed. No ablation isolates the four recipe changes from each other — the shipping run was
 chosen as a shipping run, knowingly, over an attribution run. The remaining failure mode is
@@ -140,7 +185,7 @@ mid-episode drops rather than a broken pipeline: trajectories show the object tr
 did not touch: `soma_to_g1` writes every object URDF as 1 kg with inertia `diag(0.01)`, which makes
 the squeegee, cane and vacuum 6–14× too easy to spin.
 
-## 8. Reproducing
+## 10. Reproducing
 
 `README.md` has the pipeline and the results table. Every number in `results/` is reproducible
 from a committed script; every Brev run is a committed runner with its cost in the ledger. Total
