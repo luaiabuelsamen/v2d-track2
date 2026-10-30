@@ -14,5 +14,40 @@
  "why_it_fails": "The bins are indistinguishable and the within-bin spread swamps the between-bin difference. At 14.3x too easy, e10 is only 0.97 cm worse than its reference while e28 is 42.34 cm worse. At 5.9x, e08 is BETTER than its reference while e19 is 55.17 cm worse. Identical inertia error, opposite outcomes.",
  "caveat_stated_honestly": "Only 12 of 30 clips have an inertia figure, and the two worst clips overall -- e04 at +101.5 cm and e25 at +73.0 -- are not among them. A full measurement could change the picture, and computing it is free CPU. But within the sample that exists the signal is absent, and the absence is strong: the extremes of the inertia range contain both the best and the worst outcomes.",
  "consequence": "Editing object physics is not the lever, which also makes the unresolved rules question moot for now -- there is no measured gain to weigh against it. The drops are not explained by rotational inertia, so they are either a control-policy failure or driven by something else in the contact model.",
- "where_this_leaves_the_drops": "Unexplained, and that is the honest state. What IS established: 19 of 30 Tier 2 clips end up worse than a reference that is only 1.94 cm from truth, the same clips are weak on Tier 1, and neither the reference, the reconstruction, the checkpoint selection, nor the object inertia accounts for it. The remaining candidate is the policy itself, which is what the transfer arm tests."
+ "where_this_leaves_the_drops": "Unexplained, and that is the honest state. What IS established: 19 of 30 Tier 2 clips end up worse than a reference that is only 1.94 cm from truth, the same clips are weak on Tier 1, and neither the reference, the reconstruction, the checkpoint selection, nor the object inertia accounts for it. The remaining candidate is the policy itself, which is what the transfer arm tests.",
+ "CORRECTION_06_36_i_closed_this_too_early": {
+  "what_i_did_wrong": "I tested 12 of 30 clips with a Spearman rank correlation, got rho +0.308 p 0.330, and recorded 'the URDF inertia placeholder does not explain the drops'. Two mistakes: the sample was partial because only 12 clips had an inertia figure, and Spearman tests for a MONOTONE relationship when the mechanism predicts a THRESHOLD -- below some inertia the object is flingable, above it not.",
+  "the_full_measurement": "Computed point-cloud inertia at 1 kg for all 29 released object meshes from the kit's own vertex clouds ($S/inertia_all30.json), so every clip now has a figure.",
+  "the_right_test_and_its_answer": {
+   "mann_whitney_one_sided_p": 0.0279,
+   "at_or_above_8x_too_easy": {
+    "n": 7,
+    "median_worse_by_cm": 12.39,
+    "mean": 22.5,
+    "clips": [
+     "e01",
+     "e05",
+     "e10",
+     "e12",
+     "e14",
+     "e19",
+     "e28"
+    ]
+   },
+   "below_8x": {
+    "n": 23,
+    "median_worse_by_cm": 1.24,
+    "mean": 8.68
+   },
+   "spearman_full_sample": {
+    "rho": 0.101,
+    "p": 0.597,
+    "note": "still nil, because the two worst clips have near-correct inertia and break the ranking"
+   }
+  },
+  "the_honest_conclusion": "Inertia error is ASSOCIATED with failing worse than your own reference (p=0.028) but is neither necessary nor sufficient. e10 at 20.8x too easy is only 0.97 cm worse; e25, whose inertia is exactly right at 1.0x, is 73.0 cm worse, and e04 at 2.5x is the worst clip on the board at 101.5 cm. So there are at least two distinct failure modes and inertia accounts for one of them.",
+  "what_it_would_be_worth": "Unquantified. Five of the seven high-inertia clips fail meaningfully (e01 +42, e19 +55, e28 +42, e05 +12, e14 +4.4), so fixing inertia could plausibly help them -- but it would not touch e04 or e25, the two worst. And correcting the inertia tensor is a RULES question (whether object physics may be edited at all), unresolved since it was first raised. It is now a question worth asking, which it was not twenty minutes ago.",
+  "the_process_lesson": "Partial data plus the wrong statistic produced a confident negative. The fix cost about three minutes of CPU. When a mechanism predicts a threshold, test the groups, not the ranks."
+ },
+ "status": "REOPENED, partially: an association at p=0.028, two failure modes, and a live rules question."
 }
