@@ -1,0 +1,18 @@
+{
+ "entry": {
+  "add_auc": 0.5480866549213755,
+  "spider_sr": 0.7,
+  "maniptrans_sr": 0.5,
+  "mppe_cm": 12.060208918436075
+ },
+ "ranks": {
+  "add_auc": 11,
+  "spider_sr": 12,
+  "maniptrans_sr": 11,
+  "mppe_cm": 10
+ },
+ "rank_sum": 44,
+ "alternatives": 67,
+ "depth_searched": 3,
+ "improvements": []
+}

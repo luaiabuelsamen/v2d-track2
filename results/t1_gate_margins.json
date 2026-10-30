@@ -1,0 +1,290 @@
+{
+ "what": "Why our Tier 1 rank is stuck, measured at the gate rather than at the metric",
+ "when": "2026-10-30, against the live leaderboard pulled the same hour",
+ "board_position": {
+  "add_auc": {
+   "us": 0.54808,
+   "rank": 11,
+   "next_up": 0.58226,
+   "team": "crisiumnih",
+   "gap": 0.03418,
+   "cushion_below": 0.00625
+  },
+  "spider_sr": {
+   "us": 0.7,
+   "rank": 12,
+   "note": "three-way tie at 0.70000 with CHORD Baseline and wte09fl, both ahead on submission time",
+   "to_gain": "any value above 0.70000, i.e. one clip flipping, lands rank 10 -- two rank points",
+   "cushion_below": "crisiumnih 0.56666"
+  },
+  "maniptrans_sr": {
+   "us": 0.5,
+   "rank": 11,
+   "next_up": 0.53333,
+   "team": "wte09fl",
+   "note": "ties do not promote, so 0.53333 is not enough; two clips must flip to reach 0.56667",
+   "cushion_below": "crisiumnih 0.46666, which 14/30 would tie"
+  },
+  "mppe_cm": {
+   "us": 12.0602,
+   "rank": 10,
+   "next_up": 11.997,
+   "team": "DAP",
+   "gap_cm": 0.0632,
+   "cushion_below": "Rohit Pardeshi 13.04419"
+  }
+ },
+ "rank_objective_search": {
+  "method": "The earlier Pareto proof asked whether a swap improves one metric without hurting another. That is the wrong objective -- the challenge ranks by the sum of per-metric ranks, so a swap that spends AUC inside our 0.00625 cushion to buy MPPE past DAP is worth a rank point. Re-ran the search over all 67 held alternative rollouts on 30 clips, scoring every 1-, 2- and 3-swap against the live board.",
+  "result": "no combination lowers the Tier 1 rank sum of 44",
+  "closest": "taking the lowest-MPPE rollout we hold on every clip reaches 12.01783 cm -- 0.0208 cm short of passing DAP -- while holding all three other ranks. 0.63 cm summed across 30 clips is the whole distance to that rank point.",
+  "tool": "tools/t1/rank_swap.py"
+ },
+ "the_finding": {
+  "headline": "Two clips miss the SP-SR gate by a hair, and one SP-SR flip is worth two rank points.",
+  "e16": {
+   "pos_cm": 1.86,
+   "ori_rad": 0.522,
+   "misses": "SP-SR orientation by 0.022 rad (1.3 degrees)",
+   "note": "position is 8 cm inside the 10 cm limit; it already passes MP-SR, by 0.09 degrees, so the orientation must come down without going up"
+  },
+  "e05": {
+   "pos_cm": 10.32,
+   "ori_rad": 0.308,
+   "misses": "SP-SR position by 0.32 cm",
+   "note": "orientation is comfortably inside 0.5 rad; this is a pure position-precision ask on the donor-transfer rollout"
+  },
+  "why_this_was_not_visible_before": "Every arm so far was judged on per-clip AUC, and every closure argument was written in metric space. A gate is not a metric: e16 needs 1.3 degrees, not a better AUC, and no amount of AUC bookkeeping shows that.",
+  "mp_sr_near_misses": {
+   "e29": 0.84,
+   "e11": 0.63,
+   "e13": 1.07,
+   "e09": 1.19,
+   "e02": 1.34,
+   "e21": 1.43,
+   "units": "cm of mean position error above the 3 cm gate",
+   "note": "MP-SR needs two of these to flip, because 0.53333 only ties wte09fl"
+  }
+ },
+ "what_this_costs": {
+  "unit": "a 50M-step warm start is about 0.63 GPU-hours, so roughly $0.55 per cell at $0.68/h including provisioning",
+  "targeted_set": "e16 and e05 for the SP-SR flip, e29 and e11 for the MP-SR pair, two seeds each: 8 cells, about $5",
+  "with_breadth": "adding e09 e13 e21 e02: 16 cells, about $9",
+  "upside": "+2 ranks on SP-SR, +1 on MP-SR if two flip, +1 on MPPE which 0.63 cm summed would carry: up to 4 of the 86",
+  "honest_odds": "low per cell. Second-generation warm starts adopted 0 of 3 before, and e16's own chain rollout fell 0.6469 -> 0.2963. The difference now is the target: a gate flip of 1.3 degrees or 0.32 cm, not an AUC record, so the criterion that failed those arms does not apply. Breadth, not selection, is what pays -- the donor transfer was 3 of 9 and heavy-tailed."
+ },
+ "blocked_on": "Brev credit. Two creates returned Bad Request; nothing can run until the account is topped up.",
+ "corrects": "docs/TO_THE_TOP.md and STATUS.md, which said the remaining gap is a better per-clip tracker bought with training scale. That is true of the leaders -- MBZUAI at 0.89354 against our 19 best clips averaging 0.7228 -- and false of the next two ranks, which are 1.3 degrees and 0.32 cm away.",
+ "per_clip_margins": [
+  {
+   "clip": "e05",
+   "pos_m": 0.10319350965838255,
+   "ori_rad": 0.30799714627592767,
+   "sp": false,
+   "mp": false
+  },
+  {
+   "clip": "e16",
+   "pos_m": 0.018637041855046915,
+   "ori_rad": 0.5219369211341963,
+   "sp": false,
+   "mp": true
+  },
+  {
+   "clip": "e01",
+   "pos_m": 0.43607312137786136,
+   "ori_rad": 0.5969965629452888,
+   "sp": false,
+   "mp": false
+  },
+  {
+   "clip": "e09",
+   "pos_m": 0.041895691157030956,
+   "ori_rad": 0.669723737000552,
+   "sp": false,
+   "mp": false
+  },
+  {
+   "clip": "e13",
+   "pos_m": 0.0406854602913805,
+   "ori_rad": 0.7010081087129016,
+   "sp": false,
+   "mp": false
+  },
+  {
+   "clip": "e19",
+   "pos_m": 0.4141712522284835,
+   "ori_rad": 1.4776634018207508,
+   "sp": false,
+   "mp": false
+  },
+  {
+   "clip": "e25",
+   "pos_m": 0.7459945517477717,
+   "ori_rad": 1.7247274863027409,
+   "sp": false,
+   "mp": false
+  },
+  {
+   "clip": "e07",
+   "pos_m": 0.09399741729299216,
+   "ori_rad": 1.8385242398140615,
+   "sp": false,
+   "mp": false
+  },
+  {
+   "clip": "e04",
+   "pos_m": 1.0244169520344901,
+   "ori_rad": 1.8530588245953916,
+   "sp": false,
+   "mp": false
+  },
+  {
+   "clip": "e08",
+   "pos_m": 0.014173183254495318,
+   "ori_rad": 0.03927444253390202,
+   "sp": true,
+   "mp": true
+  },
+  {
+   "clip": "e12",
+   "pos_m": 0.011542142808020241,
+   "ori_rad": 0.05489460207922606,
+   "sp": true,
+   "mp": true
+  },
+  {
+   "clip": "e00",
+   "pos_m": 0.015659481847177116,
+   "ori_rad": 0.05497481456467896,
+   "sp": true,
+   "mp": true
+  },
+  {
+   "clip": "e29",
+   "pos_m": 0.03839449675260966,
+   "ori_rad": 0.06564017924858502,
+   "sp": true,
+   "mp": false
+  },
+  {
+   "clip": "e27",
+   "pos_m": 0.01920054443950821,
+   "ori_rad": 0.06958024915310046,
+   "sp": true,
+   "mp": true
+  },
+  {
+   "clip": "e22",
+   "pos_m": 0.015358323961160915,
+   "ori_rad": 0.07300423176406441,
+   "sp": true,
+   "mp": true
+  },
+  {
+   "clip": "e15",
+   "pos_m": 0.018578967281583637,
+   "ori_rad": 0.07859507344516597,
+   "sp": true,
+   "mp": true
+  },
+  {
+   "clip": "e06",
+   "pos_m": 0.02467350083086981,
+   "ori_rad": 0.07939209497276657,
+   "sp": true,
+   "mp": true
+  },
+  {
+   "clip": "e23",
+   "pos_m": 0.019097326768004214,
+   "ori_rad": 0.08474825462277817,
+   "sp": true,
+   "mp": true
+  },
+  {
+   "clip": "e24",
+   "pos_m": 0.00950409873479437,
+   "ori_rad": 0.09105046179718328,
+   "sp": true,
+   "mp": true
+  },
+  {
+   "clip": "e18",
+   "pos_m": 0.019143485085364266,
+   "ori_rad": 0.11068965283598084,
+   "sp": true,
+   "mp": true
+  },
+  {
+   "clip": "e10",
+   "pos_m": 0.029355145872588775,
+   "ori_rad": 0.11836203710995062,
+   "sp": true,
+   "mp": true
+  },
+  {
+   "clip": "e03",
+   "pos_m": 0.024093386097372604,
+   "ori_rad": 0.23889720283127394,
+   "sp": true,
+   "mp": true
+  },
+  {
+   "clip": "e26",
+   "pos_m": 0.014050235744644977,
+   "ori_rad": 0.3509156217493744,
+   "sp": true,
+   "mp": true
+  },
+  {
+   "clip": "e20",
+   "pos_m": 0.01623641825539692,
+   "ori_rad": 0.35180373474304183,
+   "sp": true,
+   "mp": true
+  },
+  {
+   "clip": "e02",
+   "pos_m": 0.043430076002036896,
+   "ori_rad": 0.37254247275614827,
+   "sp": true,
+   "mp": false
+  },
+  {
+   "clip": "e11",
+   "pos_m": 0.03628172380056872,
+   "ori_rad": 0.3851721213392299,
+   "sp": true,
+   "mp": false
+  },
+  {
+   "clip": "e28",
+   "pos_m": 0.09437868602281754,
+   "ori_rad": 0.41669560129422956,
+   "sp": true,
+   "mp": false
+  },
+  {
+   "clip": "e17",
+   "pos_m": 0.0481602656866674,
+   "ori_rad": 0.44244260028305277,
+   "sp": true,
+   "mp": false
+  },
+  {
+   "clip": "e14",
+   "pos_m": 0.05837266035855053,
+   "ori_rad": 0.4519322696894679,
+   "sp": true,
+   "mp": false
+  },
+  {
+   "clip": "e21",
+   "pos_m": 0.04430948826048369,
+   "ori_rad": 0.4960011100436046,
+   "sp": true,
+   "mp": false
+  }
+ ]
+}

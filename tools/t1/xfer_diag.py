@@ -7,6 +7,7 @@ A donor actor can fail three distinguishable ways, and the number alone cannot t
 """
 import json
 import sys
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -22,8 +23,7 @@ lost = np.flatnonzero(err > DROP_M)
 first = int(lost[0]) if len(lost) else None
 frames = len(d)
 
-with open("results/t1_shipped_perclip.json") as fh:
-    rec = json.load(fh)[tag]
+rec = json.loads(Path("results/t1_shipped_perclip.json").read_text())[tag]
 
 held = float((err <= DROP_M).mean())
 if first is None:

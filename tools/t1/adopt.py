@@ -19,9 +19,7 @@ across the arms we hold raised AUC 0.46523 -> 0.46858 and lost SP-SR, MP-SR and 
 from __future__ import annotations
 
 import argparse
-import glob
 import json
-import os
 from pathlib import Path
 
 GATES = ("add_auc", "spider_sr", "maniptrans_sr", "mppe_cm")
@@ -52,9 +50,9 @@ def main(argv: list[str] | None = None) -> int:
     final = max(selected.values())
 
     clips, adopted = {}, []
-    for path in sorted(glob.glob(str(args.new_dir / "e*.score.json"))):
-        tag = os.path.basename(path).split(".")[0]
-        new = json.loads(Path(path).read_text())["overall"]
+    for path in sorted(args.new_dir.glob("e*.score.json")):
+        tag = path.name.split(".")[0]
+        new = json.loads(path.read_text())["overall"]
         old = shipped[tag]
         verdict = adopts(old, new)
         if verdict:
@@ -71,7 +69,8 @@ def main(argv: list[str] | None = None) -> int:
     gain = sum(clips[t]["delta_auc"] for t in adopted)
     base = sum(v["add_auc"] for v in shipped.values()) / len(shipped)
     record = {
-        "what": "Tier 1 adoption of the warm-start fine-tune, under the registered no-regression rule",
+        "what": "Tier 1 adoption of the warm-start fine-tune, under the registered"
+        " no-regression rule",
         "rule": "AUC improves and no other board regresses; legal because Tier 1's permitted input"
         " is the configured scoring reference",
         "clips_scored": len(clips),

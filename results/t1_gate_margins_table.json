@@ -1,0 +1,212 @@
+[
+ {
+  "clip": "e05",
+  "pos_m": 0.10319350965838255,
+  "ori_rad": 0.30799714627592767,
+  "spider_sr": false,
+  "maniptrans_sr": false
+ },
+ {
+  "clip": "e16",
+  "pos_m": 0.018637041855046915,
+  "ori_rad": 0.5219369211341963,
+  "spider_sr": false,
+  "maniptrans_sr": true
+ },
+ {
+  "clip": "e01",
+  "pos_m": 0.43607312137786136,
+  "ori_rad": 0.5969965629452888,
+  "spider_sr": false,
+  "maniptrans_sr": false
+ },
+ {
+  "clip": "e09",
+  "pos_m": 0.041895691157030956,
+  "ori_rad": 0.669723737000552,
+  "spider_sr": false,
+  "maniptrans_sr": false
+ },
+ {
+  "clip": "e13",
+  "pos_m": 0.0406854602913805,
+  "ori_rad": 0.7010081087129016,
+  "spider_sr": false,
+  "maniptrans_sr": false
+ },
+ {
+  "clip": "e19",
+  "pos_m": 0.4141712522284835,
+  "ori_rad": 1.4776634018207508,
+  "spider_sr": false,
+  "maniptrans_sr": false
+ },
+ {
+  "clip": "e25",
+  "pos_m": 0.7459945517477717,
+  "ori_rad": 1.7247274863027409,
+  "spider_sr": false,
+  "maniptrans_sr": false
+ },
+ {
+  "clip": "e07",
+  "pos_m": 0.09399741729299216,
+  "ori_rad": 1.8385242398140615,
+  "spider_sr": false,
+  "maniptrans_sr": false
+ },
+ {
+  "clip": "e04",
+  "pos_m": 1.0244169520344901,
+  "ori_rad": 1.8530588245953916,
+  "spider_sr": false,
+  "maniptrans_sr": false
+ },
+ {
+  "clip": "e08",
+  "pos_m": 0.014173183254495318,
+  "ori_rad": 0.03927444253390202,
+  "spider_sr": true,
+  "maniptrans_sr": true
+ },
+ {
+  "clip": "e12",
+  "pos_m": 0.011542142808020241,
+  "ori_rad": 0.05489460207922606,
+  "spider_sr": true,
+  "maniptrans_sr": true
+ },
+ {
+  "clip": "e00",
+  "pos_m": 0.015659481847177116,
+  "ori_rad": 0.05497481456467896,
+  "spider_sr": true,
+  "maniptrans_sr": true
+ },
+ {
+  "clip": "e29",
+  "pos_m": 0.03839449675260966,
+  "ori_rad": 0.06564017924858502,
+  "spider_sr": true,
+  "maniptrans_sr": false
+ },
+ {
+  "clip": "e27",
+  "pos_m": 0.01920054443950821,
+  "ori_rad": 0.06958024915310046,
+  "spider_sr": true,
+  "maniptrans_sr": true
+ },
+ {
+  "clip": "e22",
+  "pos_m": 0.015358323961160915,
+  "ori_rad": 0.07300423176406441,
+  "spider_sr": true,
+  "maniptrans_sr": true
+ },
+ {
+  "clip": "e15",
+  "pos_m": 0.018578967281583637,
+  "ori_rad": 0.07859507344516597,
+  "spider_sr": true,
+  "maniptrans_sr": true
+ },
+ {
+  "clip": "e06",
+  "pos_m": 0.02467350083086981,
+  "ori_rad": 0.07939209497276657,
+  "spider_sr": true,
+  "maniptrans_sr": true
+ },
+ {
+  "clip": "e23",
+  "pos_m": 0.019097326768004214,
+  "ori_rad": 0.08474825462277817,
+  "spider_sr": true,
+  "maniptrans_sr": true
+ },
+ {
+  "clip": "e24",
+  "pos_m": 0.00950409873479437,
+  "ori_rad": 0.09105046179718328,
+  "spider_sr": true,
+  "maniptrans_sr": true
+ },
+ {
+  "clip": "e18",
+  "pos_m": 0.019143485085364266,
+  "ori_rad": 0.11068965283598084,
+  "spider_sr": true,
+  "maniptrans_sr": true
+ },
+ {
+  "clip": "e10",
+  "pos_m": 0.029355145872588775,
+  "ori_rad": 0.11836203710995062,
+  "spider_sr": true,
+  "maniptrans_sr": true
+ },
+ {
+  "clip": "e03",
+  "pos_m": 0.024093386097372604,
+  "ori_rad": 0.23889720283127394,
+  "spider_sr": true,
+  "maniptrans_sr": true
+ },
+ {
+  "clip": "e26",
+  "pos_m": 0.014050235744644977,
+  "ori_rad": 0.3509156217493744,
+  "spider_sr": true,
+  "maniptrans_sr": true
+ },
+ {
+  "clip": "e20",
+  "pos_m": 0.01623641825539692,
+  "ori_rad": 0.35180373474304183,
+  "spider_sr": true,
+  "maniptrans_sr": true
+ },
+ {
+  "clip": "e02",
+  "pos_m": 0.043430076002036896,
+  "ori_rad": 0.37254247275614827,
+  "spider_sr": true,
+  "maniptrans_sr": false
+ },
+ {
+  "clip": "e11",
+  "pos_m": 0.03628172380056872,
+  "ori_rad": 0.3851721213392299,
+  "spider_sr": true,
+  "maniptrans_sr": false
+ },
+ {
+  "clip": "e28",
+  "pos_m": 0.09437868602281754,
+  "ori_rad": 0.41669560129422956,
+  "spider_sr": true,
+  "maniptrans_sr": false
+ },
+ {
+  "clip": "e17",
+  "pos_m": 0.0481602656866674,
+  "ori_rad": 0.44244260028305277,
+  "spider_sr": true,
+  "maniptrans_sr": false
+ },
+ {
+  "clip": "e14",
+  "pos_m": 0.05837266035855053,
+  "ori_rad": 0.4519322696894679,
+  "spider_sr": true,
+  "maniptrans_sr": false
+ },
+ {
+  "clip": "e21",
+  "pos_m": 0.04430948826048369,
+  "ori_rad": 0.4960011100436046,
+  "spider_sr": true,
+  "maniptrans_sr": false
+ }
+]
