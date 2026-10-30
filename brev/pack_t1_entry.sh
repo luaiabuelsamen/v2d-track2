@@ -49,7 +49,13 @@ if [ -s "$CHAIN_ADOPTION" ]; then
   CHAIN_ADOPTED=$("$PY" -c "import json,sys; print(' '.join(json.load(open(sys.argv[1]))['adopted']))" "$CHAIN_ADOPTION")
 fi
 echo "adopted from the generation-2 chain: ${CHAIN_ADOPTED:-none}"
-for TAG in $ADOPTED; do
+# Iterate over the UNION of every adoption source. The loop used to walk $ADOPTED alone -- the
+# fine-tune list -- so a clip adopted ONLY by the transfer arm was never visited and its rollout
+# was never substituted: the packer printed "transfer-arm adoptions: e19" and shipped the old
+# rollout anyway, leaving the entry score bit-identical. Third time this packer has silently
+# shipped the wrong rollout; each time the tell was a score that did not move.
+ALL_ADOPTED=$(printf '%s\n' $ADOPTED $XFER_ADOPTED | sort -u | tr '\n' ' ')
+for TAG in $ALL_ADOPTED; do
   EP=$((10#${TAG#e})); F=$(printf 'episode_%06d' "$EP"); SRC=""
   for d in ws_tier1 t1f_1 t1f_2c t1f_3c ws_s4a ws_s4b; do
     [ -s "$S/$d/results/rollouts/$F.parquet" ] && SRC=$S/$d/results/rollouts
@@ -69,11 +75,16 @@ for TAG in $ADOPTED; do
   echo "   $TAG <- ${SRC#$S/}"
 done
 
-# the per-clip reference map: clean Tier 1 for what the fine-tune drove, bridge_v1 for the rest
-"$PY" - "$ADOPTION" "$CLEAN_REFS" "$SHIPPED_REFS" "$OUT/refmap.json" <<'PY'
+# The per-clip reference map: a clip's frame reference must be the one its rollout was DRIVEN by,
+# or the packer's rigid-transform check fails. Clean Tier 1 for every clip whose shipped rollout
+# came from a Tier 1-driven arm -- the fine-tune AND the donor transfer -- and bridge_v1 for the
+# rest. Passing only $ADOPTION here is what made e19 fail at 0.0665 m / 0.4891 rad: its transfer
+# rollout was driven by the clean reference while its frame reference was still the Tier 2 one.
+"$PY" - "$ADOPTION" "$CLEAN_REFS" "$SHIPPED_REFS" "$OUT/refmap.json" "$XFER_ADOPTED" <<'PY'
 import json, sys
 adoption, clean, shipped, out = sys.argv[1:5]
-adopted = set(json.load(open(adoption))["adopted"])
+extra = set((sys.argv[5] if len(sys.argv) > 5 else "").split())
+adopted = set(json.load(open(adoption))["adopted"]) | extra
 json.dump({f"e{i:02d}": (clean if f"e{i:02d}" in adopted else shipped) for i in range(30)},
           open(out, "w"), indent=1)
 PY
