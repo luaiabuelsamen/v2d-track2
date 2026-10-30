@@ -1,0 +1,54 @@
+{
+ "what": "Credit exhaustion confirmed by test, not inferred",
+ "when": "2026-10-30 14:47 UTC",
+ "the_test": "Two creates on different 48 GB types. Both returned 'Bad Request' and created nothing. That is a different signature from today's other failures -- 'not a recognized type' when massedcompute_A6000 was delisted mid-session, and 'resource exhausted' when hyperstack_A6000 was listed but out of stock -- so this is the account, not the catalog or the provider.",
+ "why_it_was_worth_testing": "I had asserted the orientation box died of credit exhaustion. Its watchdog was 4.2 h and its launcher deadline 3.8 h, and it ran 2.3 h, so neither fired -- the cause was consistent with credit but unproven. Now it is proven, and a failed create costs nothing.",
+ "what_this_closes": "All compute. The session's remaining levers all require GPU: the ten untried transfer clips, the three orientation clips lost when the box died (e13, e20, e21), and every arm in docs/TO_THE_TOP.md.",
+ "what_is_already_proven_exhausted_without_gpu": "Selection and recombination on all three tiers. The Tier 1 entry is Pareto-optimal over all 16 clips with unshipped alternatives, by every single swap and every pair. Tier 2's board holds our best file. Tier 3's input-only adoption is applied and oracle selection there is worth +0.00135.",
+ "final_boards": {
+  "tier1": {
+   "auc": [
+    0.54808,
+    "11/24"
+   ],
+   "sp_sr": [
+    0.7,
+    "12/22"
+   ],
+   "mp_sr": [
+    0.5,
+    "11/22"
+   ],
+   "mppe": [
+    12.0602,
+    "10/22"
+   ]
+  },
+  "tier2": {
+   "auc": [
+    0.46522,
+    "5/18"
+   ],
+   "mppe": [
+    14.128,
+    "4/18"
+   ]
+  },
+  "tier3": {
+   "auc": [
+    0.26781,
+    "4/10"
+   ],
+   "sp_sr": [
+    0.2,
+    "5/10"
+   ],
+   "mppe": [
+    47.772,
+    "6/10"
+   ]
+  },
+  "rank_sum": 84,
+  "rank_sum_this_morning": 87
+ }
+}
