@@ -1,0 +1,37 @@
+{
+ "what": "T1WEAK, pre-registered 2026-10-29 21:35 UTC, staged and awaiting credit",
+ "the_arm": "Full-length training (349,999,104 steps) from scratch on the CLEAN Tier 1 references for the eleven clips below 0.35 AUC, with the precision recipe: start_curriculum, orientation_reward std 0.3, object_position std 0.08, seed 42, scene.support per clip, world_count 1 at eval. NOT a warm start -- the measured rule is that warm-starting a clip below 0.35 never adopts (0 of 4), and 12 of 12 rejected clips came back worse on MPPE, because 50M steps from a settled policy cannot relearn a clip it never solved.",
+ "why_these_eleven": "They are every clip under 0.35 in the current entry and they sum to 2.074 of AUC where the 19 good clips average 0.7228. They are also why Tier 1 is 12th of 23 while our best clips match the leader's per-clip quality (e08 is 0.9236 at 1.43 cm).",
+ "per_clip_now": {
+  "e28": 0.0891,
+  "e19": 0.1163,
+  "e25": 0.1334,
+  "e04": 0.1466,
+  "e13": 0.1594,
+  "e01": 0.2001,
+  "e14": 0.2055,
+  "e21": 0.2061,
+  "e07": 0.2508,
+  "e05": 0.266,
+  "e09": 0.3003
+ },
+ "cost": "11 clips x 4.4 box-hours x $0.68 = $32.91, plus bring-up and image build on each box. On 3 boxes that is ~16 h wall clock, inside the 24 h deletion authority; on 4 boxes ~12 h. Call it $36 with overhead, and $40 of credit covers it with a recovery margin for Brev's ~1/3 create-failure rate.",
+ "projection": {
+  "if_each_reaches_0.60": 0.67776,
+  "if_each_reaches_0.70": 0.71442,
+  "if_each_reaches_0.80": 0.75109,
+  "current": 0.52687,
+  "basis": "0.60-0.80 is where clean-reference training put every clip that works today; the 19 good clips average 0.7228 and were trained the same way."
+ },
+ "rank_effect": "tier1-auc 12th -> 5th-8th, and the gates follow: each clip that crosses 3 cm adds 0.0333 of MP-SR and each that crosses 10 cm adds 0.0333 of SP-SR, where the teams immediately above us are 0.03334 away on both. About +19 rank points across the four Tier 1 boards (results/t1_rank_sensitivity.json).",
+ "the_bar_written_before_launch": "A clip is adopted into the entry only if its kit AUC improves on the current per-clip record AND no other board regresses -- the same rule the warm-start programme used, which has never once cost a board point. The arm counts as having worked if the 30-clip entry mean reaches 0.60, i.e. at least +0.073. If it lands under 0.56 the clean- reference-training hypothesis is wrong for weak clips and the remaining credit stops.",
+ "staged": {
+  "assets": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/ws_t1weak",
+  "clips": 11,
+  "parquets": "11 of 11 verified",
+  "support_usda": "11 of 11",
+  "manifest_files": 77,
+  "size": "379M"
+ },
+ "what_is_not_yet_built": "The launcher: full-length training on a Tier 1 asset tree reuses brev/run_tier2_full.sh with ARM_FLAGS for the precision recipe, which has run 30 clips before, but the per-box clip packing and the plan file still need writing. ~30 minutes of free work, which I will do rather than leave the money waiting."
+}
