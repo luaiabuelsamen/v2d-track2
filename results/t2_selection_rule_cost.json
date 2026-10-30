@@ -65,5 +65,11 @@
   "what_is_actually_cheap": "Nothing, for this rule, on existing data. The one affordable version is to apply it to arms we run in FUTURE: run_tier2_full.sh already evaluates every checkpoint, so any funded run should pull every checkpoint's rollout rather than only the final, and then the earliest-within-margin rule can be applied for free at pack time.",
   "the_avoidable_part": "Those per-checkpoint rollouts DID exist for all 30 clips and I deleted them myself in the disk cleanup that kept us above the 20 GB floor. They are the raw material for every selection-rule question, they are small compared with the policies, and I kept the policies instead. If a future session has the choice, keep the rollouts."
  },
- "status": "Finding: measured and sound on one clip. Price: corrected from $4.50 to ~$90, so it is no longer the cheapest rank point and should NOT be funded ahead of T1XFER ($10) or the Tier 2 physics test ($1.50). Its cheap form is a change to how future runs are pulled."
+ "status": "Finding: measured and sound on one clip. Price: corrected from $4.50 to ~$90, so it is no longer the cheapest rank point and should NOT be funded ahead of T1XFER ($10) or the Tier 2 physics test ($1.50). Its cheap form is a change to how future runs are pulled.",
+ "the_free_fix_for_future_runs": {
+  "what": "A 50M-step warm start at the stock save interval of 49,999,872 produces exactly ONE checkpoint, so the earliest-within-margin rule has nothing to choose between. At a 2048-aligned interval of 9,999,872 the same run produces FIVE.",
+  "cost": "No extra training at all -- the steps are identical. Four more evaluations per clip at 1-2 min each is about $0.06 to $0.11 per clip at $0.68/h, plus a little disk.",
+  "applied_to": "SAVE_EVERY=9999872 is now set in the staged T1WEAK launcher's BOX_ENV. The arm currently running (e19) started with the stock interval and cannot be changed mid-flight -- editing a script a runner is reading is what cost clip e29 once already -- so it will yield one checkpoint and the rule will not apply to it.",
+  "why_it_matters": "It converts a finding that costs $90 to test retrospectively into one that is free prospectively: any funded run from here produces the checkpoints the rule needs, and the choice is then made at pack time for nothing."
+ }
 }
