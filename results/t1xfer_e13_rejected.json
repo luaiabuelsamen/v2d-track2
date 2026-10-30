@@ -1,0 +1,31 @@
+{
+ "what": "The no-regression rule rejected e13 and protected a rank point",
+ "when": "2026-10-30 07:48 UTC",
+ "e13": {
+  "auc": [
+   0.1594,
+   0.2234
+  ],
+  "d_auc": 0.0641,
+  "mppe_cm": [
+   4.98,
+   30.21
+  ],
+  "d_mppe_cm": 25.23,
+  "verdict": "keep shipped",
+  "mechanism": "held then dropped at frame 427 of 922; 46% of frames inside 10 cm"
+ },
+ "why_it_matters": "e13 is a clip that tracks tightly but scores low AUC -- shipped MPPE 4.98 cm. The transfer traded that away: +0.0641 of AUC for +25.23 cm of MPPE. On the entry that is +0.0021 of mean AUC, still short of wte09fl's 0.54183, against +0.84 cm of mean MPPE -- which would take us from 12.20 to 13.04 and hand back the 10th place on tier1-mppe we had just taken from Rohit Pardeshi at 13.04419.",
+ "the_general_point": "The rule is 'AUC improves AND no other board regresses', and this is the first time the second clause has done real work on a transfer clip. Across the whole warm-start programme it had never cost a board point; here it saved one. A rule that only ever agrees with the obvious choice is untested -- this one has now been tested.",
+ "transfer_arm_so_far": {
+  "adopted": [
+   "e19",
+   "e28"
+  ],
+  "rejected": [
+   "e13"
+  ],
+  "rate": "2 of 3",
+  "mean_auc_gain_on_adopted": 0.1257
+ }
+}
