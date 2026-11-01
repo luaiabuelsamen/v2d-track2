@@ -4,10 +4,10 @@ Reads nothing but each rollout's own `reference_*` columns -- the reconstruction
 driven by -- so no ground truth enters the verdict. A fine-tuned rollout replaces its pass-1
 rollout only if it has no drop and sits closer to that input reference.
 """
-import glob
+
 import json
-import os
 import sys
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -39,9 +39,9 @@ def measure(path):
 def load(dirs):
     out = {}
     for base in dirs:
-        for p in glob.glob(os.path.join(base, "episode_*.parquet")):
-            tag = "e%02d" % int(os.path.basename(p)[8:14])
-            out[tag] = p
+        for p in Path(base).glob("episode_*.parquet"):
+            tag = f"e{int(p.name[8:14]):02d}"
+            out[tag] = str(p)
     return out
 
 
@@ -53,11 +53,11 @@ out_path = None
 if "-o" in argv:
     i = argv.index("-o")
     out_path = argv[i + 1]
-    del argv[i:i + 2]
+    del argv[i : i + 2]
 if "--min-input-gain-pct" in argv:
     i = argv.index("--min-input-gain-pct")
     MIN_GAIN_PCT = float(argv[i + 1])
-    del argv[i:i + 2]
+    del argv[i : i + 2]
 if out_path is None or len(argv) < 2:
     sys.exit("usage: adopt.py <incumbent-rollout-dir> <new-rollout-dir>... -o <out.json>")
 
@@ -73,13 +73,12 @@ for tag in sorted(new):
     if o["mean_input_err_cm"] > 0:
         before, after = o["mean_input_err_cm"], n["mean_input_err_cm"]
         gain_pct = 100.0 * (before - after) / before
-    better = (not n["drop"] and o["drop"]) or (
-        n["drop"] == o["drop"] and gain_pct > MIN_GAIN_PCT
-    )
+    better = (not n["drop"] and o["drop"]) or (n["drop"] == o["drop"] and gain_pct > MIN_GAIN_PCT)
     if better:
         adopt.append(tag)
-    rows.append({"clip": tag, "old": o, "new": n, "input_gain_pct": round(gain_pct, 2),
-                 "adopt": better})
+    rows.append(
+        {"clip": tag, "old": o, "new": n, "input_gain_pct": round(gain_pct, 2), "adopt": better}
+    )
     print(
         f"{tag}  old {o['mean_input_err_cm']:7.2f} cm drop={int(o['drop'])}"
         f"   new {n['mean_input_err_cm']:7.2f} cm drop={int(n['drop'])}"
@@ -87,16 +86,17 @@ for tag in sorted(new):
         f"   -> {'ADOPT' if better else 'keep pass 1'}"
     )
 print(f"\nadopted {len(adopt)}/{len(rows)}: {' '.join(adopt)}")
-json.dump(
-    {
-        "what": "Tier 3 fine-tune adoption, decided on the reconstruction input alone",
-        "verdict_reads_ground_truth": False,
-        "drop_gate_m": DROP_M,
-        "min_input_gain_pct": MIN_GAIN_PCT,
-        "adopted": adopt,
-        "clips": rows,
-    },
-    open(out_path, "w"),
-    indent=1,
+Path(out_path).write_text(
+    json.dumps(
+        {
+            "what": "Tier 3 fine-tune adoption, decided on the reconstruction input alone",
+            "verdict_reads_ground_truth": False,
+            "drop_gate_m": DROP_M,
+            "min_input_gain_pct": MIN_GAIN_PCT,
+            "adopted": adopt,
+            "clips": rows,
+        },
+        indent=1,
+    )
 )
 print(f"wrote {out_path}")

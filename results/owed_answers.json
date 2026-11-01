@@ -1,0 +1,25 @@
+{
+ "what": "Two questions asked twice by Luai's orchestrator and never answered. Answered here from the repository alone, no compute.",
+ "when": "2026-11-01 04:10 UTC",
+ "q1_did_arm_CR_ever_finish_or_score_and_what_did_it_spend": {
+  "answer": "No. It launched, trained, and was killed by my own cap guard at 14M of 349,999,104 steps. It never produced a checkpoint, a rollout or a score, and it was never relaunched.",
+  "launched": "three boxes, six clips (e04 e05 e07 e09 e19 e25), two per box, under the $20 cap Luai set",
+  "the_term_itself_worked": "contact_role_palm was confirmed non-zero and finite 13 minutes into the first cells by reading the live offline .wandb stream (brev/read_wandb_terms.py), rather than waiting 40 minutes for the first checkpoint. So the arm's own implementation was verified; only its runs were lost.",
+  "how_it_died": "The inline cap guard armed over the launch had the box start time hardcoded as an epoch that was a year out -- 1761612220 is 2025-10-28, not 2026. It computed 26,280 box-hours and $17,871 against the $20 cap and deleted all three boxes, which were at 100% GPU, 14M steps in, and passing every check (commit dd27017).",
+  "spend": "about $0.95, plus an hour of wall clock",
+  "why_it_was_never_relaunched": "The remaining credit went to Tier 3 reconstruction, the donor transfer and the ORI-W arm, each of which had a cheaper per-clip price. CR appears in no row of results/second_wave_results.md because it has no row to appear in.",
+  "status_now": "Fully implemented, staged and gated: brev/patch_contact_role.py, brev/stage_cr.sh, brev/verify_cr_box.sh, the registered bar in docs/ARM_CR.md, and the fixed guard (brev/cr_cap_guard.sh, which now refuses to delete when its own arithmetic is implausible). One command from running: brev/second_wave.sh --groups CR --go --cap 20",
+  "what_it_would_cost_to_answer": "$20 for the six clips at 2 per box over 3 boxes, or $7 for two clips on one box as a read on the mechanism"
+ },
+ "q2_what_was_the_t1_eval_driver_bug": {
+  "answer": "The driver ran one clip of thirty and reported success. Commit 800e36c: 'The eval ran 1 clip of 30 and called it finished: docker exec ate the plan' -- the per-clip plan was passed into docker exec in a way that consumed it, so the loop saw a single clip and exited 0.",
+  "three_other_bugs_on_the_same_box": [
+   "dd427ee -- the eval image did not carry the patches the checkpoints were trained with, so it could not load them",
+   "2126c20 -- the eval did not survive that box type, and was deleting boxes that had been marked keep",
+   "a65487e -- the upload step was the one step without an SSH retry, and losing it cost a whole box"
+  ],
+  "did_the_bugs_invalidate_the_result": "No, and that was checked rather than assumed: the final run covered all 30 clips, every clip's rigid-frame check came out at or below 1.7e-05 cm and 5e-06 deg, and only the reference parquet differed between arms (results/t1_clean_input_eval.json).",
+  "the_result": "Driving the 30 shipped actors with the clean Tier 1 reference made them worse, not better: mean kit AUC 0.46523 -> 0.28937, SP-SR 0.667 -> 0.133, 2 of 30 clips improved. Each actor learned one specific reference, so a cleaner but different one is a distribution shift. That is the argument for fine-tuning onto it (brev/patch_warm_start.py), not for swapping it cold.",
+  "the_one_control_still_owed_and_why_it_matters": "A 2-clip Tier 2-input control (e00, e03) through the same patched eval image, expecting the shipped 0.5178 and 0.7806. It costs about $0.70 and it is the only thing that would rule out the eval image itself as the cause. If the image were at fault the clean-input conclusion is wrong and there is a free Tier 1 gain sitting in rollouts we already own, so this is cheap insurance on a conclusion the roadmap leans on. It belongs at the front of the funded queue, before the $7 donor test."
+ }
+}

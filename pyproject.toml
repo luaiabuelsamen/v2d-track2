@@ -61,6 +61,9 @@ ignore = [
 "brev/patch_object_orientation.py" = ["E501"]
 "brev/patch_contact_role.py" = ["E501"]
 "brev/patch_warm_start.py" = ["E501"]
+# Long lines here are single inline SVG and HTML elements. Wrapping one tag over three lines
+# hides the markup instead of clarifying it, so the limit is waived for this file alone.
+"tools/review/build_review_page.py" = ["E501"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

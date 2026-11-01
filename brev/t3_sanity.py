@@ -25,6 +25,7 @@ two that make a reconstruction unusable rather than merely poor.
 from __future__ import annotations
 
 import argparse
+import itertools
 import json
 import sys
 from pathlib import Path
@@ -34,7 +35,7 @@ from scipy.spatial.transform import Rotation
 from scipy.stats import spearmanr
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
-from v2d.dataset import object_pose  # noqa: E402
+from v2d.dataset import object_pose
 
 
 def read_poses(poses_dir: Path) -> tuple[np.ndarray, np.ndarray, list[int]]:
@@ -78,7 +79,7 @@ def main() -> int:
     expected = len(truth)
 
     finite = bool(np.isfinite(positions).all() and np.isfinite(quaternions).all())
-    gaps = [b - a for a, b in zip(frames, frames[1:], strict=False) if b - a != 1]
+    gaps = [b - a for a, b in itertools.pairwise(frames) if b - a != 1]
     moved = speed(positions)
     truth_moved = speed(truth[:, :3])
     overlap = min(len(moved), len(truth_moved))
@@ -109,15 +110,21 @@ def main() -> int:
         "speed_spearman_p": None if np.isnan(pvalue) else float(pvalue),
     }
 
-    print(f"frames      {record['frames_written']}/{expected}"
-          f"{'' if record['complete'] else '   <-- SHORT'}")
+    print(
+        f"frames      {record['frames_written']}/{expected}"
+        f"{'' if record['complete'] else '   <-- SHORT'}"
+    )
     print(f"finite      {finite}")
     print(f"gaps        {gaps[:5] if gaps else 'none'}")
-    print(f"step cm     median {record['step_cm_median']:.3f}  p99 {record['step_cm_p99']:.2f}  "
-          f"max {record['step_cm_max']:.2f}   (truth: median "
-          f"{record['truth_step_cm_median']:.3f}, max {record['truth_step_cm_max']:.2f})")
-    print(f"rot step    median {record['rotation_step_deg_median']:.3f} deg  "
-          f"max {record['rotation_step_deg_max']:.2f} deg")
+    print(
+        f"step cm     median {record['step_cm_median']:.3f}  p99 {record['step_cm_p99']:.2f}  "
+        f"max {record['step_cm_max']:.2f}   (truth: median "
+        f"{record['truth_step_cm_median']:.3f}, max {record['truth_step_cm_max']:.2f})"
+    )
+    print(
+        f"rot step    median {record['rotation_step_deg_median']:.3f} deg  "
+        f"max {record['rotation_step_deg_max']:.2f} deg"
+    )
     print(f"speed rho   {record['speed_spearman_vs_truth']}  (p={record['speed_spearman_p']})")
 
     verdict = []

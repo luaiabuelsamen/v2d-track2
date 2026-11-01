@@ -28,9 +28,20 @@ from scipy.spatial.transform import Rotation
 
 CV_TO_SOMA = np.diag([1.0, -1.0, -1.0])  # its own inverse
 COCO_TO_SOMA = {
-    1: "LeftEye", 2: "RightEye", 5: "LeftArm", 6: "RightArm", 7: "LeftForeArm",
-    8: "RightForeArm", 9: "LeftHand", 10: "RightHand", 11: "LeftLeg", 12: "RightLeg",
-    13: "LeftShin", 14: "RightShin", 15: "LeftFoot", 16: "RightFoot",
+    1: "LeftEye",
+    2: "RightEye",
+    5: "LeftArm",
+    6: "RightArm",
+    7: "LeftForeArm",
+    8: "RightForeArm",
+    9: "LeftHand",
+    10: "RightHand",
+    11: "LeftLeg",
+    12: "RightLeg",
+    13: "LeftShin",
+    14: "RightShin",
+    15: "LeftFoot",
+    16: "RightFoot",
 }
 SCALE = 0.5
 
@@ -41,9 +52,13 @@ class Keypoints:
 
         self.device = device
         self.det_proc = AutoProcessor.from_pretrained("PekingU/rtdetr_r18vd_coco_o365")
-        self.det = RTDetrForObjectDetection.from_pretrained("PekingU/rtdetr_r18vd_coco_o365").to(device)
+        self.det = RTDetrForObjectDetection.from_pretrained("PekingU/rtdetr_r18vd_coco_o365").to(
+            device
+        )
         self.pose_proc = AutoProcessor.from_pretrained("usyd-community/vitpose-base-simple")
-        self.pose = VitPoseForPoseEstimation.from_pretrained("usyd-community/vitpose-base-simple").to(device)
+        self.pose = VitPoseForPoseEstimation.from_pretrained(
+            "usyd-community/vitpose-base-simple"
+        ).to(device)
 
     @torch.no_grad()
     def __call__(self, image: np.ndarray) -> np.ndarray | None:
@@ -89,9 +104,10 @@ def solve(kps: dict, joints: np.ndarray, names: list[str], size: tuple[int, int]
     pts2, pts3 = np.asarray(pts2, float), np.asarray(pts3, float)
     best = None
     for f in np.geomspace(0.4 * w, 4.0 * w, 60):
-        K = np.array([[f, 0, w / 2], [0, f, h / 2], [0, 0, 1.0]])
-        ok, rvec, tvec, inl = cv2.solvePnPRansac(pts3, pts2, K, None, reprojectionError=12.0,
-                                                 iterationsCount=200)
+        K = np.array([[f, 0, w / 2], [0, f, h / 2], [0, 0, 1.0]])  # noqa: N806 - K is the intrinsic matrix
+        ok, rvec, tvec, inl = cv2.solvePnPRansac(
+            pts3, pts2, K, None, reprojectionError=12.0, iterationsCount=200
+        )
         if not ok or inl is None:
             continue
         err = np.linalg.norm(cv2.projectPoints(pts3, rvec, tvec, K, None)[0][:, 0] - pts2, axis=1)
@@ -99,27 +115,42 @@ def solve(kps: dict, joints: np.ndarray, names: list[str], size: tuple[int, int]
             best = (np.median(err), f, rvec.ravel(), tvec.ravel())
 
     def residual(x: np.ndarray) -> np.ndarray:
-        K = np.array([[x[0], 0, w / 2], [0, x[0], h / 2], [0, 0, 1.0]])
+        K = np.array([[x[0], 0, w / 2], [0, x[0], h / 2], [0, 0, 1.0]])  # noqa: N806 - intrinsics
         return (cv2.projectPoints(pts3, x[1:4], x[4:7], K, None)[0][:, 0] - pts2).ravel()
 
-    sol = least_squares(residual, np.concatenate([[best[1]], best[2], best[3]]), loss="huber",
-                        f_scale=8.0)
+    sol = least_squares(
+        residual, np.concatenate([[best[1]], best[2], best[3]]), loss="huber", f_scale=8.0
+    )
     err = np.linalg.norm(residual(sol.x).reshape(-1, 2), axis=1)
-    cam_T_world = np.eye(4)
+    cam_T_world = np.eye(4)  # noqa: N806 - frame_T_frame is the convention for a transform
     cam_T_world[:3, :3] = Rotation.from_rotvec(sol.x[1:4]).as_matrix()
     cam_T_world[:3, 3] = sol.x[4:7]
     f_full = sol.x[0] / SCALE
-    K_full = [[f_full, 0, w / SCALE / 2], [0, f_full, h / SCALE / 2], [0, 0, 1.0]]
-    return {"K": K_full, "world_T_cam": np.linalg.inv(cam_T_world).tolist(),
-            "reproj_median_px_half_res": float(np.median(err)),
-            "reproj_p90_px_half_res": float(np.percentile(err, 90)), "points": int(len(pts2))}
+    K_full = [  # noqa: N806 - intrinsics at full resolution
+        [f_full, 0, w / SCALE / 2],
+        [0, f_full, h / SCALE / 2],
+        [0, 0, 1.0],
+    ]
+    return {
+        "K": K_full,
+        "world_T_cam": np.linalg.inv(cam_T_world).tolist(),
+        "reproj_median_px_half_res": float(np.median(err)),
+        "reproj_p90_px_half_res": float(np.percentile(err, 90)),
+        "points": len(pts2),
+    }
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     ap.add_argument("--videos", type=Path, required=True)
-    ap.add_argument("--human-cache", type=Path, required=True,
-                    help="human_tier1_eNN.npz / human_tier2_eNN.npz (SOMA world joints)")
+    ap.add_argument(
+        "--human-cache",
+        type=Path,
+        required=True,
+        help="human_tier1_eNN.npz / human_tier2_eNN.npz (SOMA world joints)",
+    )
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--episodes", type=int, nargs="+", default=list(range(30)))
     ap.add_argument("--frames", type=int, default=40)
@@ -141,7 +172,11 @@ def main() -> None:
         result = solve({f: model(im) for f, im in images.items()}, joints, names, (w, h))
         result["episode"] = e
         target.write_text(json.dumps(result, indent=1) + "\n")
-        print(f"e{e:02d} f={result['K'][0][0]:.1f}px median {result['reproj_median_px_half_res']:.2f}px", flush=True)
+        print(
+            f"e{e:02d} f={result['K'][0][0]:.1f}px "
+            f"median {result['reproj_median_px_half_res']:.2f}px",
+            flush=True,
+        )
 
 
 if __name__ == "__main__":

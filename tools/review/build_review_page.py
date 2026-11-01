@@ -7,7 +7,9 @@ import json
 import pathlib
 import statistics
 
-S = pathlib.Path("/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad")
+S = pathlib.Path(
+    "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad"
+)
 CLIPS = json.loads((S / "review_data.json").read_text())
 OUT = S / "review" / "index.html"
 
@@ -16,8 +18,8 @@ MEAN_W1 = statistics.mean(c["w1"] for c in CLIPS)
 GAINED = sum(1 for c in CLIPS if c["ships"] > c["w1"] + 1e-9)
 REJECTED = sum(c["rejected"] for c in CLIPS)
 BELOW30 = [c for c in CLIPS if c["ships"] < 0.30]
-MP_PASS = 14          # results/tier2_entry_wave2.json: mp_sr_clips_of_30.this_entry
-MP_PASS_W1 = sum(1 for c in CLIPS if c["mp_w1"] == "Y")   # 5, the first wave
+MP_PASS = 14  # results/tier2_entry_wave2.json: mp_sr_clips_of_30.this_entry
+MP_PASS_W1 = sum(1 for c in CLIPS if c["mp_w1"] == "Y")  # 5, the first wave
 REGRESSED = sum(1 for c in CLIPS if c["ships"] < c["w1"] - 1e-9)
 
 # the nine clips the decomposition names as orientation-limited (they hold the object)
@@ -48,12 +50,20 @@ def dumbbell() -> str:
     # gridlines + axis
     for g in (0.0, 0.2, 0.4, 0.6, 0.8):
         gx = x(g)
-        p.append(f'<line x1="{gx:.1f}" y1="{top - 12:.1f}" x2="{gx:.1f}" y2="{h - 30:.1f}" class="grid"/>')
-        p.append(f'<text x="{gx:.1f}" y="{h - 14:.0f}" class="tick" text-anchor="middle">{g:.1f}</text>')
+        p.append(
+            f'<line x1="{gx:.1f}" y1="{top - 12:.1f}" x2="{gx:.1f}" y2="{h - 30:.1f}" class="grid"/>'
+        )
+        p.append(
+            f'<text x="{gx:.1f}" y="{h - 14:.0f}" class="tick" text-anchor="middle">{g:.1f}</text>'
+        )
     # the 0.30 line the triage uses as its weak-clip cut
     cx = x(0.30)
-    p.append(f'<line x1="{cx:.1f}" y1="{top - 16:.1f}" x2="{cx:.1f}" y2="{h - 30:.1f}" class="cut"/>')
-    p.append(f'<text x="{cx:.1f}" y="{top - 20:.0f}" class="cutlab" text-anchor="middle">0.30 weak-clip cut</text>')
+    p.append(
+        f'<line x1="{cx:.1f}" y1="{top - 16:.1f}" x2="{cx:.1f}" y2="{h - 30:.1f}" class="cut"/>'
+    )
+    p.append(
+        f'<text x="{cx:.1f}" y="{top - 20:.0f}" class="cutlab" text-anchor="middle">0.30 weak-clip cut</text>'
+    )
 
     for i, c in enumerate(rows):
         y = top + rowh * i + rowh / 2
@@ -74,9 +84,11 @@ def dumbbell() -> str:
             f'<text x="{x2 + 9:.1f}" y="{y + 3.6:.1f}" class="val {cls}">{c["ships"]:.3f}</text>'
         )
     # the two means
-    for v, lab, k in ((MEAN_W1, "wave 1", "m1"), (MEAN_SHIP, "shipped", "m2")):
+    for v, k in ((MEAN_W1, "m1"), (MEAN_SHIP, "m2")):
         mx = x(v)
-        p.append(f'<line x1="{mx:.1f}" y1="{top - 12:.1f}" x2="{mx:.1f}" y2="{h - 30:.1f}" class="mean {k}"/>')
+        p.append(
+            f'<line x1="{mx:.1f}" y1="{top - 12:.1f}" x2="{mx:.1f}" y2="{h - 30:.1f}" class="mean {k}"/>'
+        )
     p.append("</svg>")
     return "".join(p)
 
@@ -93,7 +105,9 @@ def table() -> str:
         d = c["ships"] - c["w1"]
         dtxt = f"{d:+.3f}" if abs(d) > 1e-9 else "&mdash;"
         dcls = "up" if d > 1e-9 else ("down" if d < -1e-9 else "flat")
-        lost = {"pos": "position", "ori": "orientation", "—": "&mdash;"}.get(c["lost_to"], esc(c["lost_to"]))
+        lost = {"pos": "position", "ori": "orientation", "—": "&mdash;"}.get(
+            c["lost_to"], esc(c["lost_to"])
+        )
         lcls = "pos" if c["lost_to"] == "pos" else ("ori" if c["lost_to"] == "ori" else "")
         weak = " class='weakrow'" if c["ships"] < 0.30 else ""
         body.append(
@@ -109,22 +123,46 @@ def table() -> str:
 
 
 FIGS = [
-    ("deep_dive/a_per_clip_error_timeseries.png", "Every clip, frame by frame",
-     "Object position error (blue, left axis) and orientation error (vermillion, right) against truth for the checkpoint that shipped. The green dashed line is the first sustained loss past 10 cm; grey fill is the reference's own speed. Weak clips are titled in vermillion."),
-    ("deep_dive/d_auc_decomposition.png", "Which channel costs the score",
-     "Per clip: the AUC that shipped (grey) against the same rollout with its orientation replaced by truth (blue, leaving only position error) and with its position replaced by truth (vermillion, leaving only orientation). The taller bar names the channel to fix."),
-    ("deep_dive/e_hand_to_object_distance.png", "Pantomime, as a number",
-     "Palm-to-object distance for the twelve worst clips: achieved object in vermillion, reference object in blue, palm speed in grey, and the green band where the retargeter says the object is in hand. A vermillion line that leaves the band while the body keeps moving is a robot miming the task."),
-    ("deep_dive/c_checkpoint_curves_and_variance.png", "Checkpoints, and the noise floor",
-     "Left: kit AUC against training steps for all 30 clips, with a black star on the checkpoint our registered rule picked. Right: the spread across each clip's last five checkpoints, which is the noise any A/B has to clear before it means anything."),
-    ("deep_dive/g_threshold_margins.png", "Who is one small gain from passing",
-     "Distance to each success threshold per clip on a symmetric log scale; a clip passes only when both bars are positive. SP-SR above (10 cm / 0.5 rad), MP-SR below (3 cm / 30°)."),
-    ("deep_dive/f_correlations.png", "What actually predicts the score",
-     "Kit AUC against object radius, first-loss frame, smoother anchor count and the reference's own ceiling, with Spearman ρ in each title. The dashed line is y = x: points above it are clips that beat the reference they were tracking."),
-    ("deep_dive/b_comparison_clips_vs_stock.png", "Our recipe against the stock one",
-     "The four clips where we hold a full-length stock-recipe run: combined recipe (blue) against stock (orange), position above and orientation below, with the 10 cm and 30° gates dotted."),
-    ("hail_mary/b_failing_clip_error_curves.png", "The five quiet failures",
-     "e05, e09, e17, e19 and e28 lose the object while it is nearly still, so speed does not explain them. These are the clips the contact-role reward was written for."),
+    (
+        "deep_dive/a_per_clip_error_timeseries.png",
+        "Every clip, frame by frame",
+        "Object position error (blue, left axis) and orientation error (vermillion, right) against truth for the checkpoint that shipped. The green dashed line is the first sustained loss past 10 cm; grey fill is the reference's own speed. Weak clips are titled in vermillion.",
+    ),
+    (
+        "deep_dive/d_auc_decomposition.png",
+        "Which channel costs the score",
+        "Per clip: the AUC that shipped (grey) against the same rollout with its orientation replaced by truth (blue, leaving only position error) and with its position replaced by truth (vermillion, leaving only orientation). The taller bar names the channel to fix.",
+    ),
+    (
+        "deep_dive/e_hand_to_object_distance.png",
+        "Pantomime, as a number",
+        "Palm-to-object distance for the twelve worst clips: achieved object in vermillion, reference object in blue, palm speed in grey, and the green band where the retargeter says the object is in hand. A vermillion line that leaves the band while the body keeps moving is a robot miming the task.",
+    ),
+    (
+        "deep_dive/c_checkpoint_curves_and_variance.png",
+        "Checkpoints, and the noise floor",
+        "Left: kit AUC against training steps for all 30 clips, with a black star on the checkpoint our registered rule picked. Right: the spread across each clip's last five checkpoints, which is the noise any A/B has to clear before it means anything.",
+    ),
+    (
+        "deep_dive/g_threshold_margins.png",
+        "Who is one small gain from passing",
+        "Distance to each success threshold per clip on a symmetric log scale; a clip passes only when both bars are positive. SP-SR above (10 cm / 0.5 rad), MP-SR below (3 cm / 30°).",
+    ),
+    (
+        "deep_dive/f_correlations.png",
+        "What actually predicts the score",
+        "Kit AUC against object radius, first-loss frame, smoother anchor count and the reference's own ceiling, with Spearman ρ in each title. The dashed line is y = x: points above it are clips that beat the reference they were tracking.",  # noqa: RUF001 - rho is the statistic's name
+    ),
+    (
+        "deep_dive/b_comparison_clips_vs_stock.png",
+        "Our recipe against the stock one",
+        "The four clips where we hold a full-length stock-recipe run: combined recipe (blue) against stock (orange), position above and orientation below, with the 10 cm and 30° gates dotted.",
+    ),
+    (
+        "hail_mary/b_failing_clip_error_curves.png",
+        "The five quiet failures",
+        "e05, e09, e17, e19 and e28 lose the object while it is nearly still, so speed does not explain them. These are the clips the contact-role reward was written for.",
+    ),
 ]
 
 

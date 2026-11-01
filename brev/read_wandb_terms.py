@@ -10,15 +10,21 @@ training goes, and this walks its history records for the reward components -- w
 non-zero, finite contact_role_palm was confirmed 13 minutes into arm CR's first cells rather than
 at the first checkpoint 40 minutes later.
 """
-import glob, json, sys
-from wandb.sdk.internal import datastore
-from wandb.proto import wandb_internal_pb2 as pb
 
-paths = sorted(glob.glob(sys.argv[1]))
+import json
+import sys
+from pathlib import Path
+
+from wandb.proto import wandb_internal_pb2 as pb
+from wandb.sdk.internal import datastore
+
+pattern = Path(sys.argv[1])
+paths = sorted(pattern.parent.glob(pattern.name))
 if not paths:
-    print(json.dumps({"error": "no .wandb file yet"})); raise SystemExit(0)
+    print(json.dumps({"error": "no .wandb file yet"}))
+    raise SystemExit(0)
 store = datastore.DataStore()
-store.open_for_scan(paths[-1])
+store.open_for_scan(str(paths[-1]))
 last, steps = {}, 0
 while True:
     data = store.scan_data()

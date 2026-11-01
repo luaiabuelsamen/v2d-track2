@@ -12,15 +12,15 @@ newer arm was judged against the incumbent at that moment.
 """
 
 import json
-import os
 import sys
+from pathlib import Path
 
 args = sys.argv[1:]
 if "-o" not in args:
     sys.exit("usage: merge_adoptions.py <batch.json>:<rollout-dir> [...] -o <merged.json>")
 i = args.index("-o")
 out_path = args[i + 1]
-pairs = args[:i] + args[i + 2:]
+pairs = args[:i] + args[i + 2 :]
 if not pairs:
     sys.exit("no batches given")
 
@@ -31,8 +31,7 @@ for spec in pairs:
     path, _, roll = spec.rpartition(":")
     if not path or not roll:
         sys.exit(f"expected <batch.json>:<rollout-dir>, got {spec!r}")
-    with open(path) as fh:
-        rec = json.load(fh)
+    rec = json.loads(Path(path).read_text())
     got = list(rec.get("adopted", []))
     # Claim only the clips whose rollout is really in THIS tree, both files. One batch can be
     # spread over several boxes (gen 1 ran on ws_t3a and ws_t3b), and the aggregate directory
@@ -42,10 +41,10 @@ for spec in pairs:
     for tag in got:
         ep = int(tag[1:])
         base = f"{roll}/episode_{ep:06d}"
-        if os.path.exists(f"{base}.parquet") and os.path.exists(f"{base}.json"):
+        if Path(f"{base}.parquet").exists() and Path(f"{base}.json").exists():
             if tag not in adopted:
                 adopted.append(tag)
-            source[tag] = roll      # a later spec overrides an earlier one
+            source[tag] = roll  # a later spec overrides an earlier one
             claimed.append(tag)
     batches.append({"batch": path, "rollouts": roll, "adopted": got, "claimed_here": claimed})
     print(f"{path}: {len(got)} adopted, {len(claimed)} present here -> {roll}")
@@ -64,6 +63,5 @@ merged = {
     "source": source,
     "batches": batches,
 }
-with open(out_path, "w") as fh:
-    json.dump(merged, fh, indent=1)
+Path(out_path).write_text(json.dumps(merged, indent=1))
 print(f"\n{len(adopted)} adopted in total -> {out_path}")
