@@ -20,12 +20,28 @@
 **no entry at all** to three scoring boards. Nineteen uploads, every one matching the local kit
 score to five decimals.
 
-### The two things that are yours, before the Nov 4 2026 5:00 p.m. EST freeze
+### What is yours, before the Nov 4 2026 5:00 p.m. EST freeze
 
-1. **Accept the `Nvidia-V2D-Challenge` GitHub invite.** The repo is private and every one of the
-   22,989 rows in each entry names a commit URL in it.
-2. **Confirm the registration form.** No submission selection is needed: the latest upload is the
-   best on all twelve boards (`results/final_submission_selection.json`).
+1. **Registration form: done**, 2026-11-01.
+2. **Turn the Brev card back on.** $50 covers the registered queue; every rank point left needs a
+   rollout we do not have, and the free options are closed by search rather than by assertion.
+
+**The GitHub invite was never yours to accept, and that was my error in three places in this
+file.** The invitation goes *from* Luai *to* `Nvidia-V2D-Challenge` — `docs/SCOPING.md:43`: "For a
+private repo, share it with the `Nvidia-V2D-Challenge` account." It was sent 2026-10-25 04:03 UTC
+and only NVIDIA can accept it; they have not in seven days. GitHub expires repository invitations
+after exactly seven days, so at 03:37 UTC on 2026-11-01 it had **26 minutes left** and would have
+lapsed silently, leaving the `code_commit_url` in all 22,989 rows of every entry unopenable for the
+whole judging period. It was deleted and re-sent under the authorisation Luai already gave on
+Oct 25: invitation `340814066`, created `2026-11-01T03:37:20Z`, write permission, **good to Nov 8**,
+which covers the freeze with four days of margin.
+
+Two things follow. **If it is still unaccepted near Nov 8, it needs re-sending again** — the same
+one-line `gh api -X DELETE .../invitations/<id>` then `-X PUT .../collaborators/Nvidia-V2D-Challenge
+-f permission=push`. And **the standing instruction not to make anything public is now the only
+thing between us and a judge who cannot open our code**; prizes require an Apache-2.0 release in any
+case (`docs/SCOPING.md:44`), so making the repo public is a decision worth taking deliberately
+rather than by default, and it is Luai's.
 
 ### Nothing else is reachable without GPU, and that is proven not assumed
 
@@ -81,9 +97,10 @@ results/t1xfer_adoption.json`, then `bash brev/pack_t1_entry.sh`.
 
 **Still open, and all of it is yours rather than mine** — for the Nov 4 2026 5:00 p.m. EST freeze:
 
-1. Accept the `Nvidia-V2D-Challenge` GitHub invite (the repo is private; a judge resolving the
-   provenance URL in every submitted row needs access).
-2. Confirm the registration form is complete.
+1. ~~Accept the `Nvidia-V2D-Challenge` GitHub invite~~ — **wrong, and corrected at the top of
+   this file.** The invite is one Luai *sends*; only NVIDIA can accept. Re-sent 2026-11-01, good
+   to Nov 8.
+2. ~~Confirm the registration form~~ — **done 2026-11-01.**
 3. Check whether the challenge requires designating final submissions per board. Kaggle shows no
    separate final-submission deadline and no private split (`privateScore` is empty on every
    board), so the best public submission should stand on its own — but that is worth confirming
@@ -187,8 +204,10 @@ winner); `docs/TECHNICAL_REPORT.md`; all twelve boards joined.
 
 **Needs Luai, not me:**
 
-1. **Accept the `Nvidia-V2D-Challenge` GitHub invite**, pending since 2026-10-25. Until it is
-   accepted the organisers cannot open the commit URL that every one of the 22,989 rows quotes.
+1. ~~**Accept the `Nvidia-V2D-Challenge` GitHub invite**~~ — **not Luai's to accept; see the top
+   of this file.** It is sent *to* NVIDIA and was 26 minutes from a silent 7-day expiry when that
+   was caught on 2026-11-01; re-sent as invitation `340814066`, good to Nov 8. Still unaccepted on
+   their side, which remains the one unresolved risk to the provenance URL in every row.
 2. **One push.** `origin/main` is at `0260cd8`, nineteen commits behind local `HEAD`, so none of
    the Tier 3 code is on the remote. The audit checks a commit URL's *shape*, not whether it
    resolves, so an unpushed sha would validate locally and 404 for a judge. The Tier 3 entry is
