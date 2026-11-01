@@ -1,5 +1,7 @@
 # What it takes to win
 
+> **Superseded in part, 2026-11-01.** This file prices rank gains on the assumption that ties rank behind and that the twelve boards sum into one standing. Both are wrong — NVIDIA's aggregator shares tied ranks and scores the three tiers separately (`docs/RANKING_RULE.md`). Claims marked **[DEAD]** below are worth zero rank points; the measurements are unaffected.
+
 *2026-10-30 18:30 UTC, 124 hours to the freeze. Every number here is from the full leaderboards
 pulled this hour (24 teams on Tier 1, 18 on Tier 2, 11 on Tier 3) or measured on boxes we ran.*
 

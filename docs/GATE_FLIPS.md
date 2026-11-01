@@ -1,5 +1,7 @@
 # Gate flips: where the next Tier 1 rank points actually are
 
+> **Superseded in part, 2026-11-01.** This file prices rank gains on the assumption that ties rank behind and that the twelve boards sum into one standing. Both are wrong — NVIDIA's aggregator shares tied ranks and scores the three tiers separately (`docs/RANKING_RULE.md`). Claims marked **[DEAD]** below are worth zero rank points; the measurements are unaffected.
+
 *2026-10-30, against the leaderboard pulled the same hour. Rank sum 86 of 12 boards.*
 
 Every arm this project ran was judged on per-clip **AUC**, and every closure argument was written
@@ -17,6 +19,8 @@ is what shows it.
 | tier1-mp-sr | 0.50000 | 11/20 | wte09fl 0.53333 | +2 clips (0.53333 only ties) |
 | tier1-mppe | 12.06020 | 10/20 | DAP 11.99700 | −0.0632 cm |
 
+**[DEAD]** Ties *do* share a rank, so the next two sentences are void; the rung on that
+board is 25 of 30 clips, not 22 (`docs/RANKING_RULE.md`).
 SP-SR is a three-way tie at 0.70000 and ties do not promote, so **one clip flipping takes 0.70000
 to 0.73333 and the rank from 12 to 10 — two rank points for one clip.**
 

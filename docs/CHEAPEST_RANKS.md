@@ -1,5 +1,7 @@
 # Two rank points for about two dollars
 
+> **Superseded in part, 2026-11-01.** This file prices rank gains on the assumption that ties rank behind and that the twelve boards sum into one standing. Both are wrong — NVIDIA's aggregator shares tied ranks and scores the three tiers separately (`docs/RANKING_RULE.md`). Claims marked **[DEAD]** below are worth zero rank points; the measurements are unaffected.
+
 Written 2026-11-01, free compute only, no launch. It revises the $41 plan in
 `docs/WHAT_IT_TAKES.md` downward by a factor of twenty, and the revision comes from a measurement
 that was already in our own files.
@@ -57,6 +59,9 @@ And the board arithmetic is unusually kind here:
 
 - tier1-sp-sr is 21/30, **rank 13 of 24**, with two teams sitting on exactly 21 ahead of us on
   submission time. **22 clips takes us to rank 11: two rank points for one clip.**
+**[DEAD]** Ties share a rank, so 21, 22, 23 and 24 of 30 clips are all rank 6 and the
+next rung is 25 clips. This purchase is worth zero rank points — see
+`docs/RANKING_RULE.md`. The noise-floor measurement it rests on is unaffected.
 - 23 clips buys nothing further (rank 10 needs 25), so **only one of e05 and e16 has to land.**
 - If e05 improves by 1.90 cm rather than 0.32, the entry mean MPPE crosses 11.997 cm as well and
   tier1-mppe goes 11th to 10th. **Three rank points from one clip.**

@@ -1,24 +1,34 @@
 # STATUS — v2d (NVIDIA V2D Challenge, Track 2)
 
-## Final state, 2026-10-30 14:50 UTC — compute closed, credit exhausted (tested)
+## Standing, 2026-11-01 — corrected to the real ranking rule
 
-| board | rank | us | leader |
+**Track 2 is three separate standings, and tied ranks are shared.** Both of those were wrong in
+this file until today; `docs/RANKING_RULE.md` has the evidence from NVIDIA's own aggregator and
+what it costs us. There is no twelve-board "rank sum 84"; that number was our own invention.
+
+| board | rank | us | best |
 |---|---|---|---|
-| tier1-auc | **11/24** | 0.54808 | 0.89354 |
-| tier1-sp-sr | 12/22 | 0.70000 | 0.96666 |
-| tier1-mp-sr | 11/22 | 0.50000 | 0.93333 |
-| tier1-mppe | **10/22** | 12.06020 | 2.78211 |
-| tier2-auc | 5/18 | 0.46522 | 0.56768 |
-| tier2-mppe | 4/18 | 14.128 | 9.28429 |
-| tier3-auc | 4/10 | 0.26781 | 0.33311 |
-| tier3-sp-sr | 5/10 | 0.20000 | 0.40000 |
-| tier3-mp-sr | 6/10 | 0.03333 | 0.10000 |
-| tier3-mppe | 6/10 | 47.772 | 31.33930 |
+| tier1-auc | 12/23 | 0.54808 | 0.89354 |
+| tier1-sp-sr | 6/23 | 0.70000 | 0.96666 |
+| tier1-mp-sr | 8/23 | 0.50000 | 0.93333 |
+| tier1-mppe | 11/23 | 12.06020 | 2.78211 |
+| **tier1 overall** | **11/23** | **sum 37** | MBZUAI-RCL Group, sum 4 |
+| tier2-auc | 6/18 | 0.46522 | 0.56768 |
+| tier2-sp-sr | 5/18 | 0.66666 | 0.80000 |
+| tier2-mp-sr | 4/18 | 0.46666 | 0.80000 |
+| tier2-mppe | 6/18 | 14.12760 | 9.28429 |
+| **tier2 overall** | **6/18** | **sum 21** | MBZUAI-RCL Group, sum 7 |
+| tier3-auc | 4/12 | 0.26781 | 0.35643 |
+| tier3-sp-sr | 5/12 | 0.20000 | 0.46666 |
+| tier3-mp-sr | 3/12 | 0.03333 | 0.13333 |
+| tier3-mppe | 7/12 | 47.77180 | 31.33930 |
+| **tier3 overall** | **6/12** | **sum 19** | Izus_systems, sum 6 |
 
-**Rank sum 84**, from 87 at the start of 2026-10-30. Tier 1 rose 0.46523 → 0.54808 (past CHORD's
-0.51038 and wte09fl's 0.54183); SP-SR 0.66667 → 0.70000; MPPE 14.128 → 12.06020. Tier 3 went from
-**no entry at all** to three scoring boards. Nineteen uploads, every one matching the local kit
-score to five decimals.
+Tier 1 is our weakest tier and the one the whole queued plan pointed at — MBZUAI-RCL hold 4 of a
+possible 4 there, first on all four metrics, so it is not winnable in the days left. Tier 2 (6th,
+tied with nima arki) and Tier 3 (6th of 12) are where a rank is actually reachable.
+
+Nineteen uploads, every one matching the local kit score to five decimals.
 
 ### What is yours, before the Nov 4 2026 5:00 p.m. EST freeze
 

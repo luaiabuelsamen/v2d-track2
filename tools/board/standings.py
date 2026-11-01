@@ -1,22 +1,33 @@
-"""Rank-sum standings for every team in Track 2, computed from the twelve boards.
+"""Track 2 standings, computed the way the organisers compute them: per tier, ties shared.
 
-The challenge FAQ fixes the ranking rule: "We will sum your ranking in each metric and
-compute final rankings as the lowest sum of metric rankings."  Three tiers times four
-metrics is twelve boards, so a team's score is a sum of twelve integers and the only thing
-that matters about a metric gain is whether it crosses another team.
+This file previously summed twelve boards into one number and ranked ties behind, and both
+halves were wrong.  The correction comes from the official aggregator, which is the only
+executable statement of the rule anywhere:
+`https://nvidia-isaac.github.io/video_to_data/v2d_challenge/leaderboard.js`
 
-Two details decide whether the sum is right or flattering:
+* **Three tiers are three standings.**  Line 251: "Track 2 is scored separately at" each of
+  its three input tiers, and the track list carries `track_2_tier1`, `track_2_tier2` and
+  `track_2_tier3` as separate tables.  Nothing in that file sums anything -- there is no
+  `rank_sum` in it at all -- and the FAQ's "sum your ranking in each metric" worked example
+  sums *four* metrics, i.e. one tier.  A twelve-board total is our invention, and it hid
+  which tier a purchase would actually move.
+* **Ties share a rank.**  Lines 74-75: "Standard competition ranking: teams with the same
+  score share a rank, and the next team skips past them, so four teams tied for first are
+  all 1 and the fifth is 5."  We had assumed Kaggle's submission-time ordering applied, so
+  a tie ranked behind and every near-miss looked like a rank for sale.  Under the real rule
+  a metric gain pays nothing until it crosses a *distinct* score: on tier1-sp-sr, 21, 22 and
+  23 of 30 clips are all one rank and the next rung is 25.
+* **Baselines do not occupy ranks** (line 82, `row.is_baseline !== true`), so CHORD Baseline
+  sitting above us costs us nothing.
+* **An incomplete team is not ranked at all.**  Lines 66-71: "A team without a score on
+  every metric is not ranked.  It is listed below every complete team and greyed out like a
+  baseline."  So a team that entered one board of a tier is not a team we are behind, and
+  the old `strict`/`tied_last` columns -- which guessed at this both ways -- are gone.
 
-* Ties do not promote.  Kaggle orders equal scores by submission time, and every team we
-  tie with uploaded before us, so a tie ranks *behind*.  Rank is therefore
-  1 + (teams strictly ahead) + (teams tied that uploaded earlier).
-* Kaggle truncates to five decimals.  A success rate over 30 clips can only be k/30, so
-  16/30 publishes as 0.53333 while an entry computes 0.5333333; compared raw, a tie reads
-  as a rank gained.  Success-rate boards are snapped back to clip counts before comparing.
-
-Absence is reported both ways, because the FAQ does not say: `strict` counts only the
-boards a team entered (which flatters a team that entered one board), `tied_last` gives an
-absent team the last rank on that board plus one.  Our own standing is the same under both.
+Kaggle's five-decimal truncation is still handled: a success rate over 30 clips can only be
+k/30, so 16/30 publishes as 0.53333 while an entry computes 0.5333333, and compared raw that
+reads as a distinct score rather than the tie it is.  Success-rate boards are snapped back to
+clip counts before comparing.
 
 Usage:  python tools/board/standings.py <lb_dir> [--json out.json]
 where <lb_dir> holds tier{1,2,3}-{auc,sp-sr,mp-sr,mppe}.csv as
@@ -28,15 +39,18 @@ from __future__ import annotations
 import argparse
 import csv
 import json
-from collections import defaultdict
+import re
 from pathlib import Path
 
 TIERS = ("1", "2", "3")
 METRICS = ("auc", "sp-sr", "mp-sr", "mppe")
 LOWER_IS_BETTER = {"mppe"}
 # A success rate over 30 clips is k/30; snap both sides to k so Kaggle's truncation of
-# 0.5333333 to 0.53333 cannot turn a genuine tie into a rank we do not hold.
+# 0.5333333 to 0.53333 cannot read as a distinct score when it is really a tie.
 QUANTISED = {"sp-sr": 30, "mp-sr": 30}
+# The aggregator drops `is_baseline` rows before ranking.  The board CSVs carry no such
+# column, so the organisers' own entries are matched by name.
+BASELINE = re.compile(r"\bbaseline\b", re.IGNORECASE)
 OURS = "Luai Abuelsamen"
 
 
@@ -45,87 +59,106 @@ def quantise(metric: str, value: float) -> float:
     return round(value * clips) if clips else value
 
 
-def read_board(path: Path, canonical: dict[str, str]) -> dict[str, tuple[float, str]]:
-    """Best row per team: {team: (score, submission time)}.
+def read_board(path: Path, canonical: dict[str, str], metric: str = "auc") -> dict[str, float]:
+    """Best score per team, baselines dropped.
 
-    `canonical` is shared across boards and folds case-variant names onto one team:
-    MBZUAI uploaded as both "MBZUAI-RCL Group" and "MBZUAI-RCL GROUP", and counting those
-    as two teams would both lose them ranks and hand us a place we have not earned.
+    `metric` only decides which direction "best" is, for the rare board that lists a team
+    twice; a leaderboard CSV carries one row per team, so it almost never matters.
+
+    `canonical` is shared across boards and folds case-variant names onto one team: MBZUAI
+    uploaded as both "MBZUAI-RCL Group" and "MBZUAI-RCL GROUP", and counting those as two
+    teams would both lose them ranks and hand us a place we have not earned.
     """
-    best: dict[str, tuple[float, str]] = {}
+    best: dict[str, float] = {}
     with path.open(newline="") as fh:
         for row in csv.DictReader(fh):
             team, score = row.get("teamName"), row.get("score")
-            if not team or not score:
+            if not team or not score or BASELINE.search(team):
                 continue
             try:
                 value = float(score)
             except ValueError:
                 continue
             key = canonical.setdefault(team.casefold(), team)
-            when = row.get("submissionDate", "")
             prior = best.get(key)
-            if prior is None or when < prior[1]:
-                best[key] = (value, when)
+            if prior is None or better(metric, value, prior):
+                best[key] = value
     return best
 
 
-def rank_of(board: dict[str, tuple[float, str]], metric: str, team: str) -> int:
-    """1 + teams strictly ahead + teams tied that uploaded earlier."""
-    mine, when = board[team]
-    mine = quantise(metric, mine)
-    better = 0
-    for other, (score, other_when) in board.items():
-        if other == team:
-            continue
-        score = quantise(metric, score)
-        ahead = score < mine if metric in LOWER_IS_BETTER else score > mine
-        if ahead or (score == mine and other_when < when):
-            better += 1
-    return 1 + better
+def better(metric: str, value: float, than: float) -> bool:
+    return value < than if metric in LOWER_IS_BETTER else value > than
 
 
-def standings(lb_dir: Path) -> dict:
-    boards = {}
-    canonical: dict[str, str] = {}
-    for tier in TIERS:
-        for metric in METRICS:
-            path = lb_dir / f"tier{tier}-{metric}.csv"
-            if path.exists():
-                boards[(tier, metric)] = read_board(path, canonical)
+def competition_rank(board: dict[str, float], metric: str, team: str) -> int:
+    """Standard competition rank: 1 + the number of *distinct* better scores.
 
-    teams = {team for board in boards.values() for team in board}
-    ranks: dict[str, dict[str, int]] = defaultdict(dict)
-    for (tier, metric), board in boards.items():
-        for team in board:
-            ranks[team][f"tier{tier}-{metric}"] = rank_of(board, metric, team)
+    Teams on the same score share the rank and the next team skips past them, so four teams
+    tied for first are all 1 and the fifth is 5 -- `canonicalRanks` in leaderboard.js.
+    """
+    mine = quantise(metric, board[team])
+    ahead = {
+        quantise(metric, score)
+        for other, score in board.items()
+        if other != team and better(metric, quantise(metric, score), mine)
+    }
+    return 1 + len(ahead)
+
+
+def tier_standings(boards: dict[str, dict[str, float]]) -> dict:
+    """One tier's table: complete teams ranked by the sum of their four metric ranks."""
+    entered = {team for board in boards.values() for team in board}
+    complete = sorted(t for t in entered if all(t in board for board in boards.values()))
+    unranked = sorted(entered - set(complete))
 
     rows = []
-    for team in teams:
-        held = ranks[team]
-        absent = [f"tier{t}-{m}" for t in TIERS for m in METRICS if f"tier{t}-{m}" not in held]
-        penalty = sum(len(boards[(b[4], b[6:])]) + 1 for b in absent if (b[4], b[6:]) in boards)
-        per_tier = {
-            f"tier{t}": sum(v for k, v in held.items() if k.startswith(f"tier{t}-")) for t in TIERS
+    for team in complete:
+        # Only complete teams are ranked, so they are the only ones in the pool.
+        ranks = {
+            metric: competition_rank({t: board[t] for t in complete}, metric, team)
+            for metric, board in boards.items()
         }
         rows.append(
             {
                 "team": team,
-                "strict": sum(held.values()),
-                "tied_last": sum(held.values()) + penalty,
-                "entered": len(held),
-                "per_tier": per_tier,
-                "ranks": dict(sorted(held.items())),
+                "rank_sum": sum(ranks.values()),
+                "ranks": dict(sorted(ranks.items())),
+                "scores": {m: boards[m][team] for m in sorted(boards)},
             }
         )
+    rows.sort(key=lambda r: (r["rank_sum"], r["team"].casefold()))
+    # The standings table is itself a ranking, so ties share a place here too.
+    previous_sum, previous_place = None, 0
+    for index, row in enumerate(rows, 1):
+        if row["rank_sum"] != previous_sum:
+            previous_place = index
+        previous_sum = row["rank_sum"]
+        row["place"] = previous_place
+    return {
+        "boards": sorted(boards),
+        "ranked_teams": len(rows),
+        "unranked_incomplete": unranked,
+        "standings": rows,
+    }
 
-    rows.sort(key=lambda r: (r["tied_last"], r["strict"]))
-    for place, row in enumerate(rows, 1):
-        row["place_tied_last"] = place
-    by_strict = sorted(rows, key=lambda r: (r["strict"], -r["entered"]))
-    for place, row in enumerate(by_strict, 1):
-        row["place_strict"] = place
-    return {"boards": len(boards), "teams": len(teams), "standings": rows}
+
+def standings(lb_dir: Path) -> dict:
+    canonical: dict[str, str] = {}
+    tiers = {}
+    for tier in TIERS:
+        boards = {}
+        for metric in METRICS:
+            path = lb_dir / f"tier{tier}-{metric}.csv"
+            if path.exists():
+                boards[metric] = read_board(path, canonical, metric)
+        if len(boards) == len(METRICS):
+            tiers[f"tier{tier}"] = tier_standings(boards)
+    return {
+        "rule": "Per tier, sum of four standard-competition metric ranks. Ties share a rank; "
+        "baselines are excluded; a team missing any of a tier's four metrics is unranked "
+        "(leaderboard.js lines 66-82).",
+        "tiers": tiers,
+    }
 
 
 def main() -> None:
@@ -135,16 +168,17 @@ def main() -> None:
     args = ap.parse_args()
 
     out = standings(args.lb_dir)
-    print(f"{out['teams']} teams over {out['boards']} boards\n")
-    print(f"{'#':>3}  {'team':28} {'sum':>4} {'strict':>6} {'in':>3}  T1  T2  T3")
-    for row in out["standings"]:
-        mark = " <-- us" if row["team"] == OURS else ""
-        t = row["per_tier"]
+    for tier, table in out["tiers"].items():
+        incomplete = len(table["unranked_incomplete"])
         print(
-            f"{row['place_tied_last']:>3}  {row['team'][:28]:28} {row['tied_last']:>4} "
-            f"{row['strict']:>6} {row['entered']:>3}  "
-            f"{t['tier1']:>3} {t['tier2']:>3} {t['tier3']:>3}{mark}"
+            f"\n=== {tier}: {table['ranked_teams']} ranked teams, "
+            f"{incomplete} unranked (incomplete)"
         )
+        print(f"{'#':>3}  {'team':30} {'sum':>4}  " + "  ".join(f"{m:>6}" for m in METRICS))
+        for row in table["standings"]:
+            mark = " <-- us" if row["team"] == OURS else ""
+            ranks = "  ".join(f"{row['ranks'][m]:>6}" for m in METRICS)
+            print(f"{row['place']:>3}  {row['team'][:30]:30} {row['rank_sum']:>4}  {ranks}{mark}")
     if args.json:
         args.json.write_text(json.dumps(out, indent=1))
         print(f"\n-> {args.json}")
