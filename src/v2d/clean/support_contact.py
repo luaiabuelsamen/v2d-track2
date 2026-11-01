@@ -299,8 +299,13 @@ def run(
             hulls[episode.object_name] = object_hull(dataset_root, episode)
         vertices, hull_normals = hulls[episode.object_name]
 
+        # Read the support geometry from the tier this cleaner runs on, not from tier_1.
+        # The two trees ship byte-identical support_surface USDAs for all 30 clips, so this
+        # changes no output -- it removes the only tier_1 path from the Tier 2 pipeline, so
+        # "Tiers 2 and 3 must use the appropriate reference trajectory for each tier"
+        # (organisers' final checklist, 2026-11-01) has nothing to catch here.
         candidates = candidate_heights(
-            tier_root(dataset_root, "tier1") / episode.support_surface
+            tier_root(dataset_root, "tier2") / episode.support_surface
             if options.support_primitives
             else None
         )

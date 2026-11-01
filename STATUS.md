@@ -83,6 +83,29 @@ publicly before the run that killed it. The rule's MPPE clause already narrows 3
 inside those nine nothing predicts the outcome. At $0.50 a clip, breadth beats cleverness
 (`results/t1xfer_final.json`).
 
+## BLOCKED — eligibility, not score (2026-11-01)
+
+The organisers' final email makes a **completed technical-report form per top submission a
+condition of the entry being valid at all** — report PDF + GitHub links + **container link** —
+due with the freeze, **2026-11-04 17:00 EST / 22:00 UTC**. Full audit in
+`docs/FINAL_COMPLIANCE.md`. Three items, two of them Luai's:
+
+1. **Container does not exist.** The FlashCHORD image was lost in the 2026-10-28 reboot; this
+   box has only `jekyll-site` and `ursim_polyscopex`. The form asks for a link to it, so
+   **nineteen uploads are currently unbacked and no entry is valid without it.** Needs a GPU box
+   and a host. *Luai: this is what the remaining credit should buy first.*
+2. **GitHub is private and the NVIDIA invite is unaccepted.** Invitation 340814066 (re-sent
+   2026-11-01, expires Nov 8) goes *from* Luai *to* `Nvidia-V2D-Challenge`, so only they can
+   accept. A reviewer following the form's GitHub link cannot open the repo today. *Luai: either
+   confirm acceptance or make the repo public — prizes require an Apache-2.0 release anyway and
+   `LICENSE` already is one.*
+3. **The report is the wrong shape.** `docs/TECHNICAL_REPORT.md` is 2,202 words over ten
+   sections; they want two pages as Introduction / Approach / Experiments & Results / Conclusion,
+   from their template, as PDF. Free work, mine.
+
+Also unblocked by that email: **submissions are now unlimited**, so the 5-per-week-versus-5-per-day
+conflict is moot and no upload needs holding back.
+
 ## LIVE as of 2026-10-30 06:17 UTC: T1XFER on `v2d-t1pilot`
 
 One box is training, on the last ~$1.9 of Brev credit. **Arm:** warm-start a weak Tier 1 clip from
