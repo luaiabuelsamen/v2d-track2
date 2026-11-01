@@ -215,3 +215,29 @@ seven points a day.
    them none of the twelve uploads counts for anything.
 2. **Turn the Brev card back on.** $50 covers the $7 test and the $41 Tier 1 rescue with change.
 3. The queue is unchanged and still priced: **$7 test → $41 breadth on the 12 broken Tier 1 clips.**
+
+
+## Addendum 2, 2026-11-01: the $41 plan in this file is superseded
+
+`docs/CHEAPEST_RANKS.md` revises the plan above downward by a factor of twenty, on a measurement
+that was already in `results/metrics_deep_dive.json` and that I had not mined: the spread of kit
+AUC over each clip's **last five checkpoints**, within one run, is **0.0809 std and 0.2011 range**.
+
+Two consequences, both of which change what to buy:
+
+- **Six of the nine donor-transfer verdicts sit inside that noise floor** — e01, e04, e07, e13,
+  e19, e25 — and e19 is one of the three *adoptions*. So "3 of 9" is one draw from a wide
+  distribution, not a property of the clips, and the per-attempt-versus-per-clip question above is
+  less sharp than I put it.
+- **Repeating the same arm is worth +0.0112 AUC at best** (bootstrap, best-of-14 against
+  best-of-7; +0.0076 over the twelve broken clips). The $41 six-attempts-per-clip plan therefore
+  buys about a tenth of a rank point. What paid on e05 was a *different* actor, not another draw of
+  the same one, so attempts are only worth money when each is a different intervention.
+
+What the noise floor makes cheap instead is **gates**, because a gate is a step function and both
+Tier 1 SP-SR near-misses are far inside the spread: **e05 by 0.319 cm of position, e16 by 1.26° of
+orientation**, on a board where one clip is two rank points and only one of the two has to land.
+That is **~$1.30**, with zero downside because Tier 1 best-of-N is legal.
+
+Read `docs/CHEAPEST_RANKS.md` for the repriced queue. The ladder, the field table and the
+"first place is not purchasable" finding above all still stand.
