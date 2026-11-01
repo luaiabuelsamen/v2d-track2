@@ -154,3 +154,64 @@ of one rank point. Nothing else in 67 rollouts moves a board.
   uploading while we were idle.
 
 Buy the **$7 per-attempt test** first. Everything else is priced off its answer.
+
+## Addendum, 2026-11-01 03:30 UTC: the prediction in the last line came true
+
+The closing line above — *doing nothing is not standing still* — was written as an argument. It is
+now a measurement, and the number is worse than the one used to make the argument.
+
+Standings recomputed from all twelve boards with `tools/board/standings.py`
+(`results/standings_2026_11_01.json`):
+
+| # | team | sum | T1 | T2 | T3 | boards |
+|---|---|---|---|---|---|---|
+| 1 | Izus_systems | **32** | 11 | 14 | 7 | 12 |
+| 2 | nima arki | 60 | 22 | 24 | 14 | 12 |
+| 3 | Xueyi Wang (FF) | 60 | 17 | 12 | 31 | 12 |
+| 4 | MBZUAI-RCL Group | 63 | 4 | 7 | — | 8 |
+| 5 | maniphys.ai | 63 | 36 | 17 | 10 | 12 |
+| 6 | Debajyoti Dasgupta | 76 | 33 | 18 | 25 | 12 |
+| 7 | domoarigato | 79 | 28 | 33 | 18 | 12 |
+| **8** | **us** | **96** | **48** | 23 | 25 | 12 |
+| 9 | wte09fl | 107 | 49 | 35 | 23 | 12 |
+
+**In 33 idle hours we went from 7th at 86 to 8th at 96.** Nothing of ours regressed — every one of
+the ten points was taken by someone else moving:
+
+- **Izus_systems 39 → 32**, uploading a new Tier 3 entry at 01:13 UTC this morning, two hours ago.
+- **Debajyoti Dasgupta entered all twelve boards at 76** and went straight past us into 6th.
+- Our Tier 1 sum alone drifted **44 → 48** on other teams' uploads.
+
+The ladder is correspondingly steeper and the cheap rungs have moved, so the targets are restated
+from today's boards rather than yesterday's:
+
+| board | ours | rank | next rungs |
+|---|---|---|---|
+| tier1-auc | 0.54808 | 12 of 26 | 0.58226 → 11 · 0.63445 → 9 · 0.69517 → 8 |
+| tier1-sp-sr | 21/30 | 13 of 24 | **22 clips → 11 (two ranks)** · 25 → 10 · 26 → 9 |
+| tier1-mp-sr | 15/30 | 12 of 24 | 17 clips → 11 · 22 → 10 |
+| tier1-mppe | 12.06 cm | 11 of 24 | **11.997 → 10** · 11.867 → 9 · 11.260 → 8 |
+| tier2-mppe | 14.13 cm | 5 of 19 | 11.524 → 4 · 10.843 → 3 |
+| tier3-sp-sr | 6/30 | 7 of 12 | **8 clips → 5 (two ranks)** · 11 → 4 |
+| tier3-mp-sr | 1/30 | 7 of 12 | **2 clips → 5 (two ranks)** · 4 → 3 |
+| tier3-mppe | 47.77 cm | 7 of 12 | 45.05 → 6 · 42.30 → 5 |
+
+Three rungs are one clip wide: one more Tier 1 SP-SR clip is two ranks, one more Tier 3 MP-SR clip
+is two ranks, and 0.064 cm of Tier 1 MPPE is one. `gate_margins` already named the Tier 1 SP-SR
+candidates — **e16 misses by 1.3° and e05 by 0.32 cm**.
+
+And the free option was re-tested against these boards, not the old ones: the same 4^30 multi-start
+search now reports **48 as the floor**, with the same 12.01783 cm best, still 0.02 cm short of the
+rung. **Every remaining rank point needs a rollout we do not have.**
+
+### So the recommendation does not change, it only gets more urgent
+
+Jetson compute was checked rather than assumed: `docker images` holds no FlashCHORD image (the
+container was lost at the reboot) and there is no `~/projects/_ops/GPU_RELEASED`, so there is no
+free path to a new rollout. Three days and eighteen hours remain, and the field is moving about
+seven points a day.
+
+1. **Accept the GitHub invite and confirm the registration form.** Free, two minutes, and without
+   them none of the twelve uploads counts for anything.
+2. **Turn the Brev card back on.** $50 covers the $7 test and the $41 Tier 1 rescue with change.
+3. The queue is unchanged and still priced: **$7 test → $41 breadth on the 12 broken Tier 1 clips.**

@@ -1,0 +1,633 @@
+{
+ "boards": 12,
+ "teams": 27,
+ "standings": [
+  {
+   "team": "Izus_systems",
+   "strict": 32,
+   "tied_last": 32,
+   "entered": 12,
+   "per_tier": {
+    "tier1": 11,
+    "tier2": 14,
+    "tier3": 7
+   },
+   "ranks": {
+    "tier1-auc": 3,
+    "tier1-mp-sr": 2,
+    "tier1-mppe": 3,
+    "tier1-sp-sr": 3,
+    "tier2-auc": 5,
+    "tier2-mp-sr": 5,
+    "tier2-mppe": 2,
+    "tier2-sp-sr": 2,
+    "tier3-auc": 1,
+    "tier3-mp-sr": 1,
+    "tier3-mppe": 3,
+    "tier3-sp-sr": 2
+   },
+   "place_tied_last": 1,
+   "place_strict": 5
+  },
+  {
+   "team": "nima arki",
+   "strict": 60,
+   "tied_last": 60,
+   "entered": 12,
+   "per_tier": {
+    "tier1": 22,
+    "tier2": 24,
+    "tier3": 14
+   },
+   "ranks": {
+    "tier1-auc": 5,
+    "tier1-mp-sr": 9,
+    "tier1-mppe": 4,
+    "tier1-sp-sr": 4,
+    "tier2-auc": 8,
+    "tier2-mp-sr": 9,
+    "tier2-mppe": 3,
+    "tier2-sp-sr": 4,
+    "tier3-auc": 2,
+    "tier3-mp-sr": 4,
+    "tier3-mppe": 5,
+    "tier3-sp-sr": 3
+   },
+   "place_tied_last": 2,
+   "place_strict": 8
+  },
+  {
+   "team": "Xueyi Wang (FF)",
+   "strict": 60,
+   "tied_last": 60,
+   "entered": 12,
+   "per_tier": {
+    "tier1": 17,
+    "tier2": 12,
+    "tier3": 31
+   },
+   "ranks": {
+    "tier1-auc": 6,
+    "tier1-mp-sr": 3,
+    "tier1-mppe": 2,
+    "tier1-sp-sr": 6,
+    "tier2-auc": 2,
+    "tier2-mp-sr": 2,
+    "tier2-mppe": 1,
+    "tier2-sp-sr": 7,
+    "tier3-auc": 8,
+    "tier3-mp-sr": 12,
+    "tier3-mppe": 2,
+    "tier3-sp-sr": 9
+   },
+   "place_tied_last": 3,
+   "place_strict": 9
+  },
+  {
+   "team": "MBZUAI-RCL Group",
+   "strict": 11,
+   "tied_last": 63,
+   "entered": 8,
+   "per_tier": {
+    "tier1": 4,
+    "tier2": 7,
+    "tier3": 0
+   },
+   "ranks": {
+    "tier1-auc": 1,
+    "tier1-mp-sr": 1,
+    "tier1-mppe": 1,
+    "tier1-sp-sr": 1,
+    "tier2-auc": 1,
+    "tier2-mp-sr": 1,
+    "tier2-mppe": 4,
+    "tier2-sp-sr": 1
+   },
+   "place_tied_last": 4,
+   "place_strict": 1
+  },
+  {
+   "team": "maniphys.ai",
+   "strict": 63,
+   "tied_last": 63,
+   "entered": 12,
+   "per_tier": {
+    "tier1": 36,
+    "tier2": 17,
+    "tier3": 10
+   },
+   "ranks": {
+    "tier1-auc": 10,
+    "tier1-mp-sr": 10,
+    "tier1-mppe": 9,
+    "tier1-sp-sr": 7,
+    "tier2-auc": 3,
+    "tier2-mp-sr": 4,
+    "tier2-mppe": 7,
+    "tier2-sp-sr": 3,
+    "tier3-auc": 3,
+    "tier3-mp-sr": 2,
+    "tier3-mppe": 4,
+    "tier3-sp-sr": 1
+   },
+   "place_tied_last": 5,
+   "place_strict": 10
+  },
+  {
+   "team": "Debajyoti Dasgupta",
+   "strict": 76,
+   "tied_last": 76,
+   "entered": 12,
+   "per_tier": {
+    "tier1": 33,
+    "tier2": 18,
+    "tier3": 25
+   },
+   "ranks": {
+    "tier1-auc": 9,
+    "tier1-mp-sr": 6,
+    "tier1-mppe": 8,
+    "tier1-sp-sr": 10,
+    "tier2-auc": 4,
+    "tier2-mp-sr": 3,
+    "tier2-mppe": 6,
+    "tier2-sp-sr": 5,
+    "tier3-auc": 5,
+    "tier3-mp-sr": 8,
+    "tier3-mppe": 6,
+    "tier3-sp-sr": 6
+   },
+   "place_tied_last": 6,
+   "place_strict": 14
+  },
+  {
+   "team": "domoarigato",
+   "strict": 79,
+   "tied_last": 79,
+   "entered": 12,
+   "per_tier": {
+    "tier1": 28,
+    "tier2": 33,
+    "tier3": 18
+   },
+   "ranks": {
+    "tier1-auc": 8,
+    "tier1-mp-sr": 8,
+    "tier1-mppe": 7,
+    "tier1-sp-sr": 5,
+    "tier2-auc": 9,
+    "tier2-mp-sr": 7,
+    "tier2-mppe": 9,
+    "tier2-sp-sr": 8,
+    "tier3-auc": 7,
+    "tier3-mp-sr": 6,
+    "tier3-mppe": 1,
+    "tier3-sp-sr": 4
+   },
+   "place_tied_last": 7,
+   "place_strict": 16
+  },
+  {
+   "team": "Luai Abuelsamen",
+   "strict": 96,
+   "tied_last": 96,
+   "entered": 12,
+   "per_tier": {
+    "tier1": 48,
+    "tier2": 23,
+    "tier3": 25
+   },
+   "ranks": {
+    "tier1-auc": 12,
+    "tier1-mp-sr": 12,
+    "tier1-mppe": 11,
+    "tier1-sp-sr": 13,
+    "tier2-auc": 6,
+    "tier2-mp-sr": 6,
+    "tier2-mppe": 5,
+    "tier2-sp-sr": 6,
+    "tier3-auc": 4,
+    "tier3-mp-sr": 7,
+    "tier3-mppe": 7,
+    "tier3-sp-sr": 7
+   },
+   "place_tied_last": 8,
+   "place_strict": 18
+  },
+  {
+   "team": "wte09fl",
+   "strict": 107,
+   "tied_last": 107,
+   "entered": 12,
+   "per_tier": {
+    "tier1": 49,
+    "tier2": 35,
+    "tier3": 23
+   },
+   "ranks": {
+    "tier1-auc": 13,
+    "tier1-mp-sr": 11,
+    "tier1-mppe": 13,
+    "tier1-sp-sr": 12,
+    "tier2-auc": 10,
+    "tier2-mp-sr": 8,
+    "tier2-mppe": 8,
+    "tier2-sp-sr": 9,
+    "tier3-auc": 6,
+    "tier3-mp-sr": 3,
+    "tier3-mppe": 9,
+    "tier3-sp-sr": 5
+   },
+   "place_tied_last": 9,
+   "place_strict": 20
+  },
+  {
+   "team": "Chivatam",
+   "strict": 63,
+   "tied_last": 115,
+   "entered": 8,
+   "per_tier": {
+    "tier1": 13,
+    "tier2": 50,
+    "tier3": 0
+   },
+   "ranks": {
+    "tier1-auc": 2,
+    "tier1-mp-sr": 4,
+    "tier1-mppe": 5,
+    "tier1-sp-sr": 2,
+    "tier2-auc": 13,
+    "tier2-mp-sr": 11,
+    "tier2-mppe": 13,
+    "tier2-sp-sr": 13
+   },
+   "place_tied_last": 10,
+   "place_strict": 11
+  },
+  {
+   "team": "DAP",
+   "strict": 72,
+   "tied_last": 124,
+   "entered": 8,
+   "per_tier": {
+    "tier1": 32,
+    "tier2": 40,
+    "tier3": 0
+   },
+   "ranks": {
+    "tier1-auc": 7,
+    "tier1-mp-sr": 7,
+    "tier1-mppe": 10,
+    "tier1-sp-sr": 8,
+    "tier2-auc": 7,
+    "tier2-mp-sr": 10,
+    "tier2-mppe": 12,
+    "tier2-sp-sr": 11
+   },
+   "place_tied_last": 11,
+   "place_strict": 13
+  },
+  {
+   "team": "Team OPS",
+   "strict": 149,
+   "tied_last": 149,
+   "entered": 12,
+   "per_tier": {
+    "tier1": 65,
+    "tier2": 48,
+    "tier3": 36
+   },
+   "ranks": {
+    "tier1-auc": 17,
+    "tier1-mp-sr": 16,
+    "tier1-mppe": 16,
+    "tier1-sp-sr": 16,
+    "tier2-auc": 12,
+    "tier2-mp-sr": 13,
+    "tier2-mppe": 11,
+    "tier2-sp-sr": 12,
+    "tier3-auc": 10,
+    "tier3-mp-sr": 10,
+    "tier3-mppe": 8,
+    "tier3-sp-sr": 8
+   },
+   "place_tied_last": 12,
+   "place_strict": 23
+  },
+  {
+   "team": "CHORD Baseline",
+   "strict": 98,
+   "tied_last": 150,
+   "entered": 8,
+   "per_tier": {
+    "tier1": 55,
+    "tier2": 43,
+    "tier3": 0
+   },
+   "ranks": {
+    "tier1-auc": 14,
+    "tier1-mp-sr": 15,
+    "tier1-mppe": 15,
+    "tier1-sp-sr": 11,
+    "tier2-auc": 11,
+    "tier2-mp-sr": 12,
+    "tier2-mppe": 10,
+    "tier2-sp-sr": 10
+   },
+   "place_tied_last": 13,
+   "place_strict": 19
+  },
+  {
+   "team": "Rice RobotPI Lab",
+   "strict": 24,
+   "tied_last": 156,
+   "entered": 4,
+   "per_tier": {
+    "tier1": 24,
+    "tier2": 0,
+    "tier3": 0
+   },
+   "ranks": {
+    "tier1-auc": 4,
+    "tier1-mp-sr": 5,
+    "tier1-mppe": 6,
+    "tier1-sp-sr": 9
+   },
+   "place_tied_last": 14,
+   "place_strict": 2
+  },
+  {
+   "team": "Rohit Pardeshi",
+   "strict": 115,
+   "tied_last": 167,
+   "entered": 8,
+   "per_tier": {
+    "tier1": 56,
+    "tier2": 59,
+    "tier3": 0
+   },
+   "ranks": {
+    "tier1-auc": 15,
+    "tier1-mp-sr": 14,
+    "tier1-mppe": 12,
+    "tier1-sp-sr": 15,
+    "tier2-auc": 15,
+    "tier2-mp-sr": 14,
+    "tier2-mppe": 15,
+    "tier2-sp-sr": 15
+   },
+   "place_tied_last": 15,
+   "place_strict": 21
+  },
+  {
+   "team": "Open4D",
+   "strict": 169,
+   "tied_last": 169,
+   "entered": 12,
+   "per_tier": {
+    "tier1": 75,
+    "tier2": 58,
+    "tier3": 36
+   },
+   "ranks": {
+    "tier1-auc": 18,
+    "tier1-mp-sr": 20,
+    "tier1-mppe": 19,
+    "tier1-sp-sr": 18,
+    "tier2-auc": 14,
+    "tier2-mp-sr": 16,
+    "tier2-mppe": 14,
+    "tier2-sp-sr": 14,
+    "tier3-auc": 11,
+    "tier3-mp-sr": 5,
+    "tier3-mppe": 10,
+    "tier3-sp-sr": 10
+   },
+   "place_tied_last": 16,
+   "place_strict": 26
+  },
+  {
+   "team": "crisiumnih",
+   "strict": 55,
+   "tied_last": 187,
+   "entered": 4,
+   "per_tier": {
+    "tier1": 55,
+    "tier2": 0,
+    "tier3": 0
+   },
+   "ranks": {
+    "tier1-auc": 11,
+    "tier1-mp-sr": 13,
+    "tier1-mppe": 17,
+    "tier1-sp-sr": 14
+   },
+   "place_tied_last": 17,
+   "place_strict": 7
+  },
+  {
+   "team": "longbot",
+   "strict": 141,
+   "tied_last": 193,
+   "entered": 8,
+   "per_tier": {
+    "tier1": 77,
+    "tier2": 64,
+    "tier3": 0
+   },
+   "ranks": {
+    "tier1-auc": 19,
+    "tier1-mp-sr": 19,
+    "tier1-mppe": 18,
+    "tier1-sp-sr": 21,
+    "tier2-auc": 16,
+    "tier2-mp-sr": 15,
+    "tier2-mppe": 16,
+    "tier2-sp-sr": 17
+   },
+   "place_tied_last": 18,
+   "place_strict": 22
+  },
+  {
+   "team": "abgstn",
+   "strict": 64,
+   "tied_last": 196,
+   "entered": 4,
+   "per_tier": {
+    "tier1": 64,
+    "tier2": 0,
+    "tier3": 0
+   },
+   "ranks": {
+    "tier1-auc": 16,
+    "tier1-mp-sr": 17,
+    "tier1-mppe": 14,
+    "tier1-sp-sr": 17
+   },
+   "place_tied_last": 19,
+   "place_strict": 12
+  },
+  {
+   "team": "Javier Medel, MSc.",
+   "strict": 156,
+   "tied_last": 208,
+   "entered": 8,
+   "per_tier": {
+    "tier1": 88,
+    "tier2": 68,
+    "tier3": 0
+   },
+   "ranks": {
+    "tier1-auc": 22,
+    "tier1-mp-sr": 22,
+    "tier1-mppe": 22,
+    "tier1-sp-sr": 22,
+    "tier2-auc": 17,
+    "tier2-mp-sr": 18,
+    "tier2-mppe": 17,
+    "tier2-sp-sr": 16
+   },
+   "place_tied_last": 20,
+   "place_strict": 24
+  },
+  {
+   "team": "Null Walker",
+   "strict": 77,
+   "tied_last": 209,
+   "entered": 4,
+   "per_tier": {
+    "tier1": 77,
+    "tier2": 0,
+    "tier3": 0
+   },
+   "ranks": {
+    "tier1-auc": 20,
+    "tier1-mp-sr": 18,
+    "tier1-mppe": 20,
+    "tier1-sp-sr": 19
+   },
+   "place_tied_last": 21,
+   "place_strict": 15
+  },
+  {
+   "team": "Kelly To the H",
+   "strict": 213,
+   "tied_last": 213,
+   "entered": 12,
+   "per_tier": {
+    "tier1": 95,
+    "tier2": 74,
+    "tier3": 44
+   },
+   "ranks": {
+    "tier1-auc": 23,
+    "tier1-mp-sr": 24,
+    "tier1-mppe": 24,
+    "tier1-sp-sr": 24,
+    "tier2-auc": 18,
+    "tier2-mp-sr": 19,
+    "tier2-mppe": 18,
+    "tier2-sp-sr": 19,
+    "tier3-auc": 9,
+    "tier3-mp-sr": 11,
+    "tier3-mppe": 12,
+    "tier3-sp-sr": 12
+   },
+   "place_tied_last": 22,
+   "place_strict": 27
+  },
+  {
+   "team": "steven kerman",
+   "strict": 83,
+   "tied_last": 215,
+   "entered": 4,
+   "per_tier": {
+    "tier1": 83,
+    "tier2": 0,
+    "tier3": 0
+   },
+   "ranks": {
+    "tier1-auc": 21,
+    "tier1-mp-sr": 21,
+    "tier1-mppe": 21,
+    "tier1-sp-sr": 20
+   },
+   "place_tied_last": 23,
+   "place_strict": 17
+  },
+  {
+   "team": "TheTensorGeek",
+   "strict": 166,
+   "tied_last": 218,
+   "entered": 8,
+   "per_tier": {
+    "tier1": 93,
+    "tier2": 73,
+    "tier3": 0
+   },
+   "ranks": {
+    "tier1-auc": 24,
+    "tier1-mp-sr": 23,
+    "tier1-mppe": 23,
+    "tier1-sp-sr": 23,
+    "tier2-auc": 19,
+    "tier2-mp-sr": 17,
+    "tier2-mppe": 19,
+    "tier2-sp-sr": 18
+   },
+   "place_tied_last": 24,
+   "place_strict": 25
+  },
+  {
+   "team": "CHORD Baseline (CARI4D Reconstruction)",
+   "strict": 43,
+   "tied_last": 225,
+   "entered": 4,
+   "per_tier": {
+    "tier1": 0,
+    "tier2": 0,
+    "tier3": 43
+   },
+   "ranks": {
+    "tier3-auc": 12,
+    "tier3-mp-sr": 9,
+    "tier3-mppe": 11,
+    "tier3-sp-sr": 11
+   },
+   "place_tied_last": 25,
+   "place_strict": 6
+  },
+  {
+   "team": "Vi Nguy\u1ec5n V\u0103n",
+   "strict": 25,
+   "tied_last": 232,
+   "entered": 1,
+   "per_tier": {
+    "tier1": 25,
+    "tier2": 0,
+    "tier3": 0
+   },
+   "ranks": {
+    "tier1-auc": 25
+   },
+   "place_tied_last": 26,
+   "place_strict": 3
+  },
+  {
+   "team": "Mahyar Dana",
+   "strict": 26,
+   "tied_last": 233,
+   "entered": 1,
+   "per_tier": {
+    "tier1": 26,
+    "tier2": 0,
+    "tier3": 0
+   },
+   "ranks": {
+    "tier1-auc": 26
+   },
+   "place_tied_last": 27,
+   "place_strict": 4
+  }
+ ]
+}
