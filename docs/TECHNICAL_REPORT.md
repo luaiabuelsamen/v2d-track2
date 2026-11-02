@@ -1,202 +1,135 @@
-# V2D Challenge, Track 2 (Robotic Grounding) — technical report
+# One policy per sequence, selected without ground truth
 
-Team: Luai Abuelsamen (University of California, Berkeley).
-Code: <https://github.com/luaiabuelsamen/v2d-track2>, released under Apache-2.0 (`LICENSE`).
-Platform: an NVIDIA Jetson for all CPU work, and rented single-A6000 cloud boxes for training.
+**Track 2 — Robotic Grounding.** Luai Abuelsamen, University of California, Berkeley.
+Code: <https://github.com/luaiabuelsamen/v2d-track2> (Apache-2.0). Container: see the form.
+Hardware: an NVIDIA Jetson for all CPU work; rented single-A6000 cloud boxes for training.
+*A longer version of this report, with the full derivations and the negative results, is
+`docs/TECHNICAL_REPORT_LONG.md` in the repository.*
 
-## 1. What the task turned out to be
+## Introduction
 
-All three Tier 2 tiers are scored against the same `multi_view_ground_truth`; only the permitted
-*input* differs. We verified this the hard way, after noticing our Tier 1 and Tier 2 public scores
-were identical: the two CSVs are byte-identical, and a Kabsch fit shows every shipped rollout's
-reference is an exact (0.000 cm) rigid transform of the released Tier 2 trajectory. Identical
-predictions therefore earn identical scores, and the tiers differ only in what you are allowed to
-condition on. That single fact set the whole strategy: the object trajectory is the deliverable,
-and the policy exists to produce a physically realisable one.
+All three Track 2 tiers are scored against the same `multi_view_ground_truth`; only the
+permitted **input** differs. We found this by accident and then verified it: our Tier 1 and
+Tier 2 public scores came back identical, the two uploaded CSVs are byte-identical, and a
+Kabsch fit shows every shipped rollout's reference is an exact (0.000 cm) rigid transform of
+the released Tier 2 trajectory. Identical predictions earn identical scores.
 
-## 2. Pipeline
+That one fact set the strategy. The object trajectory is the deliverable; the policy exists to
+make it physically realisable; and the interesting engineering is not the reward but **what you
+are allowed to condition on**, because that is the only thing separating the tiers. We entered
+all three, and treated the input constraint as the design variable throughout: every per-clip
+decision in the Tier 2 and Tier 3 entries reads the *input* reference only, never the truth.
 
-SOMA-X human parameters → `soma_to_g1` retarget to a Unitree G1 with Dex3 hands (CPU, 30/30 clips
-at 0.0 mm residual against the released object trajectory) → FlashCHORD SAC training, one policy
-per sequence, 349,999,104 steps, `world_count=1`, `scene.support` per clip from the shipped
-`support_surface` primitives → `evaluate_policy.py` → per-episode checkpoint selection → the kit's
-own packer.
+## Approach
 
-Scoring was never reimplemented: `v2d score` hash-checks the kit's four metric files against
-`KIT_MANIFEST.json`, imports them and calls their `score()`, so local numbers are leaderboard
-numbers by construction. Across eight uploads the largest local-to-public disagreement was
-1.1e-05 in AUC, with the other three metrics matching exactly.
+SOMA-X human parameters → `soma_to_g1` retarget to a Unitree G1 with Dex3 hands (CPU, 30/30
+clips at 0.0 mm residual against the released object trajectory) → FlashCHORD SAC, **one policy
+per sequence**, 349,999,104 steps, `world_count=1`, `scene.support` set per clip from the
+shipped `support_surface` primitives → `evaluate_policy.py` → per-episode checkpoint selection
+→ the challenge kit's own packer.
 
-## 3. What actually moved the score
+Four recipe changes ship, each as a patch script that **refuses to apply to an upstream it does
+not recognise**, so a silent half-patch is impossible: an object-*orientation* reward term
+(weight 1.0, std 0.3) added to `recon_body`, which ships an `object_position_weight` and no
+orientation counterpart; a start-curriculum patch; object-position std tightened 0.2 → 0.08 m
+on clips already tracking; and finger targets on bridge-smoothed references.
 
-Ranked by measured contribution, not by how interesting it was.
+**Selection is the submission rule, registered before the run.** The provenance schema allows a
+different `checkpoint_sha256` per episode, so we pick, per clip, the latest checkpoint whose
+achieved object never leaves a 10 cm band around the *input* reference ("z-drop"). It reads only
+the input, so a reader with no ground truth can reproduce the pick. It cost us real score: 13
+rollouts kit-score higher than the ones that ship, and we shipped the rule's picks anyway.
 
-**`scene.support` per clip (largest single effect).** Our first full-length baseline scored a mean
-AUC of 0.043 because all three run scripts passed `scene.support=false` while NVIDIA's configs
-default it to `true`. Without the table the object falls at reset and the episode terminates on
-frame 0: metrics were bit-identical across all seven checkpoints, which is the signature. 14 of
-30 clips ship a support primitive. This one flag is also why ~12 clips in our first Tier 1 entry
-were near zero.
+**Tier 3** uses NVIDIA's own modules in their intended order — `v2d_geocalib` → `v2d_moge` →
+`v2d_grounding_dino` → a GroundingDINO-to-SAM2 prompt converter we had to write → `v2d_sam2` →
+`v2d_foundation_pose`. Placement in the released world is exactly one rigid transform taken from
+frame 0, as FAQ PR 207 permits: `world_from_cam = world_from_obj[0] @ inv(cam_from_obj[0])`,
+applied unchanged to every later frame, with no scale fitted and no per-frame correction. The
+frame-0 residual is 0.0000 cm and 0.000° on all 30 clips.
 
-**Per-episode checkpoint selection under an input-only rule.** The provenance schema allows a
-different `checkpoint_sha256` per episode. We pick, per clip, the latest checkpoint whose achieved
-object never leaves a 10 cm band around the *input* reference ("z-drop"). It reads only the input,
-never the truth, so it is reproducible by a reader who has no ground truth — and it is registered
-as the submission rule rather than chosen after the fact. It cost us something real: 13 rollouts
-kit-score higher than the ones that ship, and we shipped the rule's picks anyway.
-
-**What selection is *not* worth is score, and an earlier draft of this section overstated it.**
-On four clips, measured with the evaluator's own metric, z-drop beat the final checkpoint by
-+0.0705 (0.2745 against 0.2040), and that figure put selection second in this ranking. Across all
-30 clips with the kit scorer it is worth **+0.0010**: z-drop 0.3908, latest-drop-free 0.3946, final
-checkpoint 0.3898. An oracle that reads Tier 1 truth — the ceiling on *any* selection rule — reaches
-only 0.4201, so checkpoint selection cannot be worth more than +0.029 and no submittable rule
-collects even that (`docs/SECOND_WAVE.md`). The rule earns its place by being reproducible without
-ground truth, not by the points it adds. The 0.21 of headroom to the reference ceiling is a policy
-problem.
-
-**Reward shaping.** An object-orientation term (weight 1.0, std 0.3) added to `recon_body`, which
-has an `object_position_weight` but no orientation counterpart; a start-curriculum patch; tightened
-object-position std (0.2 → 0.08 m) on the clips that were already working; finger targets and
-bridge-smoothed references. Each is a patch script that refuses to apply to an upstream it does not
-recognise, so a silent half-patch is impossible.
-
-**Entry.** Mean kit AUC 0.46523 / SP-SR 0.66667 / MP-SR 0.46667 / MPPE 14.128 cm across 30 clips,
-against the published CHORD Tier 2 baseline of 0.374 / 0.533 / 0.067 / 20.5 cm. MP-SR passes on 14
-of 30 clips, up from 5.
-
-## 4. Tier 3: bring your own reconstruction
-
-NVIDIA's own modules, in their intended order: `v2d_geocalib` → `v2d_moge` → `v2d_grounding_dino`
-→ a GroundingDINO-to-SAM2 prompt converter we had to write → `v2d_sam2` → `v2d_foundation_pose`
-(`nvlabs_pytorch` backend). MegaPose was the original plan and was abandoned: its only weight host
-is unreachable and every mirror we probed returned 403 or 404.
-
-Placement in the released world uses exactly one rigid transform taken from frame 0, which is what
-FAQ PR 207 permits: `world_from_cam = world_from_obj[0] @ inv(cam_from_obj[0])`, applied unchanged
-to every later frame. No scale is fitted and no per-frame correction is applied. The frame-0
-residual is 0.0000 cm and 0.000° on all 30 clips, which simultaneously confirms the quaternion
-convention — `Transform3d` is imported from upstream rather than reimplemented.
-
-Reconstruction quality is bimodal rather than uniformly mediocre: 10 clips track to under 5° mean
-orientation drift and 16 cm mean position error; 20 lose the object. Scored raw against truth the
-reconstruction is AUC 0.228 / SP-SR 0.333 / MP-SR 0.033 / MPPE 66.6 cm.
-
-## 5. Negative results worth recording
-
-**Clean input does not help a policy trained on a different reference.** Tier 1 permits the clean
-multi-view trajectory, so we re-evaluated all 30 shipped actors on it. Mean AUC *fell* from 0.46523
-to 0.28937 and SP-SR from 0.667 to 0.138; only 2 of 30 clips improved. Frame checks were at or
-below 1.7e-05 cm, so this is not a conversion artefact. Each actor learned to track one specific
-trajectory, so substituting a cleaner one is a distribution shift, not an upgrade. The implication
-is that using a new reference requires fine-tuning, not a cold swap.
-
-**The root cleaner.** A floor/table support cleaner for the Tier 2 references measured worse than
-raw and was kept only behind a gate. Its original ~270 cm body-to-plane distance turned out to be
-an unflipped frame: under the retargeter's `diag(1,-1,-1)` the feet sit at 2.0 cm, on 30/30 clips.
-
-**A learned denoiser.** Without an absolute anchor it could remove only ~6% of the Tier 2 error,
-and a grasping hand is a loose anchor (4.9 cm and 44° of wander), so it was dropped.
-
-## 6. Warm-start fine-tuning, the one method change that paid
-
-The cold swap above said a policy cannot be handed a new reference. The obvious correction is to
-let it *re-fit* to one, cheaply. `brev/patch_warm_start.py` adds `training.warm_start_actor_path`:
+**Warm-start fine-tuning** (`brev/patch_warm_start.py`) adds `training.warm_start_actor_path`:
 after `create_learner` it loads a shipped actor's params and batch stats, sets
 `environment_steps` to 299,999,232 so the curriculum sits in its final stage, and runs to the
-normal 349,999,104 — about 50M steps, one seventh of a full run, ~35 min on an A6000. The critic
-starts cold, so the actor's learning rate is scaled x0.1 for the first 2,000 updates.
+normal 349,999,104 — about 50M steps, a seventh of a full run, ~35 min and ~$0.57 on an A6000.
+The critic starts cold, so the actor's learning rate is scaled ×0.1 for the first 2,000 updates.
 
-**It works on Tier 1, where the permitted input *is* the configured scoring reference**
-(`config/tracks.json` → `input_note`), so a per-clip choice may legally read it. 23 of 30 clips
-were fine-tuned on the clean trajectory and adopted under a no-regression rule — AUC must improve
-and no other board may fall:
+Scoring was never reimplemented. `v2d score` hash-checks the kit's four metric files against
+`KIT_MANIFEST.json`, imports them and calls their `score()`. Across nineteen uploads the largest
+local-to-public disagreement in AUC was 1.1e-05, with the other three metrics matching exactly.
 
-| | AUC | SP-SR | MP-SR | MPPE cm |
-|---|---|---|---|---|
-| shipped entry (on the boards) | 0.46523 | 0.6667 | 0.4667 | 14.128 |
-| **after 11 adoptions** | **0.52688** | 0.6667 | **0.5000** | **13.9014** |
-| CHORD Tier 1 baseline | 0.51038 | — | — | — |
+## Experiments & Results
 
-**The gain mechanism is re-fitting to a new reference, not extra training.** A second generation,
-fine-tuning the already-fine-tuned actors again on the *same* reference, adopted **0 of 3** and
-lost badly on e16 (0.6469 → 0.2963, both gates lost, MPPE 3.0 → 61.4 cm). Nothing is being bought
-by more steps.
+| entry (30 clips) | AUC | SP-SR | MP-SR | MPPE cm | rank |
+|---|---|---|---|---|---|
+| **Tier 1** | **0.54808** | 0.70000 | 0.50000 | **12.060** | 11 / 23 |
+| **Tier 2** | **0.46522** | 0.66666 | 0.46666 | **14.128** | 6 / 18 |
+| **Tier 3** | **0.26781** | 0.20000 | 0.03333 | 47.772 | 6 / 12 |
+| baseline, Tier 2 | 0.374 | 0.533 | 0.067 | 20.5 | — |
+| baseline, Tier 1 | 0.51038 | — | — | — | — |
 
-**Adoption is predicted by the clip's shipped AUC, not by its checkpoint index.** 11 of 19 clips
-above 0.35 adopted, mean gain +0.169; **0 of 4** below 0.35 did. That rule retired the arm: every
-clip above the line has been run, and the seven never run all sit below 0.30.
+Ranked by measured contribution rather than by interest:
 
-On **Tier 3** the input is our own reconstruction, not the scoring reference, so selection must
-read the input alone — a z-drop/input-distance rule with no truth read. 5 of 10 clips adopted that
-way, taking the entry from 0.23233 to 0.25059 and turning both success gates off zero.
+**`scene.support` per clip — the largest single effect, and it was a bug.** Our first
+full-length baseline scored mean AUC 0.043 because all three run scripts passed
+`scene.support=false` while NVIDIA's configs default it to `true`. Without the table the object
+falls at reset and the episode terminates on frame 0; metrics were bit-identical across all
+seven checkpoints, which is the signature. 14 of 30 clips ship a support primitive.
 
-## 7. What the leaderboard taught us that local scoring could not
+**Warm-start fine-tuning is the one method change that paid, and only where the rules allow
+it.** Tier 1 permits the clean multi-view trajectory, which the kit also names as the configured
+scoring reference, so a per-clip choice may legally read it. Fine-tuning shipped actors on that
+clean reference under a no-regression rule took Tier 1 from 0.46523 to **0.54808** AUC and MPPE
+from 14.128 to **12.060 cm**. On Tier 3 the input is our own reconstruction, so selection reads
+the input alone; 5 of 10 clips adopted that way, 0.23233 → **0.25059**, turning both success
+gates off zero.
 
-Local kit scores matched the public board to five decimals on all sixteen uploads, so the scorer
-was never the uncertainty. The *ranking* was. Three things only became visible after pulling all
-twelve boards (`results/leaderboard_positions.json`, `results/t1_rank_sensitivity.json`):
+**The mechanism is re-fitting to a new reference, not extra training.** A cold swap fails
+outright: re-evaluating all 30 shipped actors on the clean Tier 1 trajectory *dropped* mean AUC
+from 0.46523 to 0.28937 and SP-SR from 0.667 to 0.138, with only 2 of 30 clips improving (frame
+checks ≤1.7e-05 cm, so this is not a conversion artefact). A second generation of fine-tuning on
+the *same* reference adopted **0 of 3** and lost e16 outright (0.6469 → 0.2963). Adoption is
+predicted by the clip's shipped AUC: 11 of 19 clips above 0.35 adopted at a mean gain of +0.169;
+**0 of 4** below 0.35 did.
 
-**Final rank is the sum of per-metric ranks** (`README.md`), so a board where we sit 11th of 22 is
-worth as much to fix as one where we sit 3rd of 10. Reasoning in AUC points had undervalued Tier 1,
-which is both our weakest tier and the one with the most teams.
+**Checkpoint selection is worth less than it looks, and an earlier draft overstated it.** Across
+all 30 clips with the kit scorer, z-drop is worth **+0.0010** (0.3908 vs 0.3898 final). An oracle
+that reads the truth — the ceiling on *any* selection rule — reaches only 0.4201. The rule earns
+its place by being reproducible without ground truth, not by the points it adds.
 
-**The field is dense exactly where we sit.** The team immediately above us is +0.015 of AUC, −0.86 cm
-of MPPE, or **one clip crossing a success gate** — and the SP-SR flip passes *two* teams tied at
-0.70. Up to +5 rank points sit within about one clip's worth of improvement. That is a completely
-different target from the 0.367 of AUC separating us from first place.
+**Where the remaining gap actually lives.** Measured on trajectories rather than on AUC (which
+mixes position and orientation, and whose two defects cancel): the noisy Tier 2 reference is
+1.94 cm from truth on average while our policies are 13.84 cm, and **19 of 30 clips end up worse
+than the reference they were given**. The position error is ours — Tier 2 is policy-bound, not
+reference-bound. But only **9 of 30 clips ever leave a 10 cm band** around their reference. So
+nine clips drop catastrophically and the rest track a good reference a few centimetres loosely:
+**precision across many clips, not robustness on a few**, is where most of the deficit is. Tier 3
+is the opposite — eleven clips have *negative* headroom, the policy already tracking better than
+the reconstruction it was given.
 
-**Ties do not promote.** Kaggle breaks them by submission time and the teams above us submitted
-earlier, so matching 0.53333 on MP-SR leaves us below. A rank point needs *two* gate flips, not one
-— which doubles the cost of the cheapest-looking plan and is why a one-clip gate-flip arm was
-rejected.
+## Conclusion
 
-## 8. Two things that are limited by the reference, and one by the policy
+A three-tier benchmark that varies only the permitted input rewards treating the input constraint
+as the design variable, and we think the transferable results are these: a per-episode selection
+rule that reads the input alone is both legal in every tier and reproducible by a reader with no
+ground truth; cold-swapping a cleaner reference into a converged policy *loses* score, while
+fine-tuning it for a seventh of a run recovers and exceeds it; and the residual failure is
+mid-episode release of a well-tracked object, which our own diagnosis traces to the actor being
+paid for contact it cannot observe — `envs/recon_body.py` computes the contact state every step
+and then discards it, so the finger action through the frames before a drop is necessarily
+open-loop.
 
-A single structural result organises the remaining work:
+*Economic viability.* Total spend was **~$144 of cloud credit** for 30 policies across three
+tiers and nineteen uploads — a full-length cell is ~$3.00 and a warm-start cell ~$0.57, so the
+marginal cost of a new sequence is about the price of a coffee. *Data flywheel.* The selection
+and adoption rules read only the input, so every new rollout can be judged and adopted without
+any annotation — the loop closes without a human or a ground truth in it. *Complexity reduction.*
+One CLI, four patch scripts that refuse unknown upstreams, and a scorer that imports the kit's
+own metric code under a hash check, which is why local numbers match the board to five decimals.
+*Innovation.* The orientation reward term, the input-only z-drop rule, and warm-start transfer as
+a way to move one policy to a different reference cheaply.
 
-- **Tier 2 is policy-bound, not reference-bound.** An earlier draft of this section claimed the
-  opposite, from comparing our entry's AUC (0.46522) with the reference's (0.4247). That comparison
-  is invalid: AUC mixes position and orientation and the two defects cancel. Measured on the
-  trajectories instead (`results/t2_not_reference_bound.json`), **the noisy Tier 2 reference is
-  1.94 cm from truth on average while our policies are 13.84 cm**, and **19 of 30 clips end up
-  worse than the reference they were given** — e04 at 102.6 cm against a reference 1.17 cm from
-  truth. The position error is ours. The reference's own defect is orientation (21.4°), which
-  contact partly corrects for us, and the free route to fixing that *is* closed: **0 of 29 clips
-  have a rigid grasp**, median spread 21.6° one-handed against that same 21.4° (`docs/TRACK_WHAT.md`).
-  - And the deficit is mostly *not* dropped objects. Only **9 of 30 clips ever leave a 10 cm band
-    around their reference**, yet 19 do worse than it against truth — so nine clips drop
-    catastrophically and the rest track a good reference a few centimetres loosely. Precision
-    across many clips, not robustness on a few, is where most of the gap lives.
-- **Tier 3 is reconstruction-bound.** Eleven of thirty clips have *negative* headroom: the policy
-  already tracks better than the reconstruction it was given, so pulling it toward the input makes
-  the score worse. Only 2 of the 13 untried clips have any headroom at all, 8.57 cm between them
-  (`docs/T3_MPPE_PUSH.md`).
-- **Tier 1 is policy-bound**, because the reference is handed to us clean. It is therefore the one
-  tier where training money still buys rank — and the only tier where a per-clip choice may legally
-  read the scoring reference, since `config/tracks.json` names the permitted multiview trajectory as
-  the configured scoring reference.
-
-**The warm start's mechanism, stated precisely:** gains come from re-fitting an actor to a *new*
-reference, never from more steps. A second generation on the *same* reference adopted 0 of 3 and
-lost e16 outright (0.6469 → 0.2963, both gates). And a clip's own actor is a poor starting point
-once it has converged on failing: 0 of 4 clips below 0.35 adopted, and all twelve rejected clips
-came back **worse** on MPPE. The last arm attempted therefore warm-starts a weak clip from the best
-*other* clip's actor — all 30 actors share one tensor-shape signature and one `policy_schema_json`,
-so a donor loads for any clip, and a transfer costs ~$0.50 against ~$3.00 from scratch.
-
-## 9. Honest limitations
-
-One seed. No ablation isolates the four recipe changes from each other — the shipping run was
-chosen as a shipping run, knowingly, over an attribution run. The remaining failure mode is
-mid-episode drops rather than a broken pipeline: trajectories show the object tracked to ~1 cm for
-50–100 frames and then released, which is a policy problem. Object inertia is a sim artefact we
-did not touch: `soma_to_g1` writes every object URDF as 1 kg with inertia `diag(0.01)`, which makes
-the squeegee, cane and vacuum 6–14× too easy to spin.
-
-## 10. Reproducing
-
-`README.md` has the pipeline and the results table. Every number in `results/` is reproducible
-from a committed script; every Brev run is a committed runner with its cost in the ledger. Total
-training spend was ~$120 of NVIDIA Brev credit across the first wave, the second wave and the
-Tier 3 reconstruction.
+Limitations, stated plainly: one seed; no ablation isolates the four recipe changes from one
+another, because the shipping run was chosen as a shipping run, knowingly, over an attribution
+run; and object inertia is a sim artefact we did not touch — `soma_to_g1` writes every object
+URDF as 1 kg with inertia `diag(0.01)`, making the squeegee, cane and vacuum 6–14× too easy to
+spin, and those are among our worst clips.
