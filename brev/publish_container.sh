@@ -81,48 +81,82 @@ FLAGS="$1"; TAG="$2"; COMMIT="$3"; TOKEN="$4"
 CID="$(docker ps -q --filter name=flash_chord | head -1)"
 [ -n "$CID" ] || { echo "FATAL: no flash_chord container running on this box" >&2; exit 1; }
 
-docker exec -i "$CID" mkdir -p /opt/v2d/brev < /dev/null
-for f in ~/v2d_brev/*; do
-  docker exec -i "$CID" bash -c "cat > /opt/v2d/brev/$(basename "$f")" < "$f" || exit 1
-done
+# flash_chord is installed from /workspace, and /workspace is a BIND MOUNT. So the patches we
+# apply through `docker exec` land on the host tree, not on any image layer, and a `docker commit`
+# would publish a stock image while reporting success. The patched tree has to be COPYd into a new
+# layer instead -- which also makes the published image self-contained, since a judge running it
+# without our mount still gets the code that trained.
+HOSTWS="$(docker inspect -f '{{range .Mounts}}{{if eq .Destination "/workspace"}}{{.Source}}{{end}}{{end}}' "$CID")"
+[ -n "$HOSTWS" ] && [ -d "$HOSTWS" ] || { echo "FATAL: cannot find the host side of /workspace" >&2; exit 1; }
+echo "host workspace: $HOSTWS"
+
+docker exec -u 0 -i "$CID" mkdir -p /opt/v2d/brev < /dev/null || exit 1
+mkdir -p "$HOSTWS/.v2d/brev"
+cp ~/v2d_brev/* "$HOSTWS/.v2d/brev/" || exit 1
 
 # Apply the shipping patches. Every patch script is fatal on an upstream it does not recognise,
-# so a refusal here means the image is not the one we trained in and must not be published.
+# so a refusal here means the tree is not the one we trained in and must not be published.
 IFS=',' read -ra FLAG_LIST <<< "$FLAGS"
 for flag in "${FLAG_LIST[@]}"; do
   case "$flag" in
-    start_curriculum)   script=patch_start_curriculum.py ;;
-    orientation_reward) script=patch_object_orientation.py ;;
-    object_position)    script=patch_object_position.py ;;
+    start_curriculum)    script=patch_start_curriculum.py ;;
+    orientation_reward)  script=patch_object_orientation.py ;;
+    object_position)     script=patch_object_position.py ;;
     body_joint_position) script=patch_body_joint_position.py ;;
-    contact_role)       script=patch_contact_role.py ;;
-    voc_curriculum)     script=patch_voc_curriculum.py ;;
-    warm_start)         script=patch_warm_start.py ;;
+    contact_role)        script=patch_contact_role.py ;;
+    voc_curriculum)      script=patch_voc_curriculum.py ;;
+    warm_start)          script=patch_warm_start.py ;;
     *) echo "FATAL: unknown flag $flag" >&2; exit 1 ;;
   esac
-  echo "-- applying $flag ($script)"
-  docker exec -i "$CID" python /opt/v2d/brev/"$script" < /dev/null || {
-    echo "FATAL: $script refused to apply; the image is not what we trained in" >&2; exit 1; }
+  # The patch scripts take the flash_chord root, and the parameterised ones take their knob.
+  # Both are passed explicitly, exactly as arm_flags_apply does, so the image records the arm
+  # rather than a default that could change under it.
+  extra=""
+  [ "$flag" = orientation_reward ] && extra="--std 0.3"
+  echo "-- applying $flag ($script $extra)"
+  docker exec -i "$CID" python /workspace/.v2d/brev/"$script" /workspace/src/flash_chord $extra \
+    < /dev/null || {
+      echo "FATAL: $script refused to apply; the tree is not what we trained in" >&2; exit 1; }
 done
 
-docker exec -i "$CID" bash -c "cat > /opt/v2d/RECIPE.txt" < /dev/null <<RECIPE
+cat > "$HOSTWS/.v2d/RECIPE.txt" <<RECIPE
 V2D Challenge Track 2 -- Luai Abuelsamen, UC Berkeley
 code: https://github.com/luaiabuelsamen/v2d-track2 at $COMMIT
 
-This image is NVIDIA's flash_chord image built from the commit pinned by KIT_MANIFEST, with the
-patch scripts in /opt/v2d/brev and the following already applied:  $FLAGS
+NVIDIA's flash_chord image, built from the commit pinned by KIT_MANIFEST, with the flash_chord
+source tree baked in at /workspace and these patches already applied:  $FLAGS
 
-Per-entry recipes (the rest are DATA, staged per clip, not baked in):
+Per-entry recipes (the rest are DATA, staged per clip, and are not in the image):
   Tier 2  start_curriculum + orientation_reward(std 0.3) + finger targets + bridge-cleaned refs
   Tier 1  the same, plus warm_start fine-tuning on the clean multiview trajectory
   Tier 3  the same, on our own reconstruction as the reference
 
-To reproduce another arm, apply its patch from inside this image, e.g.
-  python /opt/v2d/brev/patch_object_position.py
+To reproduce another arm, apply its patch inside a running container, e.g.
+  python /workspace/.v2d/brev/patch_object_position.py
 Each script is atomic, idempotent, and fatal on an upstream it does not recognise.
 RECIPE
 
-docker commit -m "v2d submission image ($FLAGS) at $COMMIT" "$CID" "$TAG" || exit 1
+cat > "$HOSTWS/Dockerfile.v2d" <<'DOCKER'
+# syntax=docker/dockerfile:1
+FROM flash_chord:latest
+USER root
+COPY . /workspace
+COPY .v2d/brev /opt/v2d/brev
+COPY .v2d/RECIPE.txt /opt/v2d/RECIPE.txt
+USER 1001
+DOCKER
+
+echo "-- building $TAG"
+# --provenance=false: buildx otherwise attaches an attestation manifest and pushes an index,
+# which ghcr rejects with a bare "denied" AFTER every layer has uploaded -- twenty minutes to
+# learn nothing. A single-platform manifest is also what a judge wants to pull.
+docker build --provenance=false --sbom=false -f "$HOSTWS/Dockerfile.v2d" -t "$TAG" "$HOSTWS" || exit 1
+
+# Prove the patch is in the IMAGE, not only on the host tree: a fresh container, no mounts.
+echo "-- verifying the patch survived into the image"
+docker run --rm --entrypoint bash "$TAG" -lc \
+  'grep -c object_orientation /workspace/src/flash_chord/objectives/recon_body.py' || exit 1
+
 echo "$TOKEN" | docker login ghcr.io -u luaiabuelsamen --password-stdin || exit 1
 docker push "$TAG" || exit 1
 docker logout ghcr.io >/dev/null 2>&1

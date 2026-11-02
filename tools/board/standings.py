@@ -71,6 +71,19 @@ def read_board(path: Path, canonical: dict[str, str], metric: str = "auc") -> di
     """
     best: dict[str, float] = {}
     with path.open(newline="") as fh:
+        header = fh.readline()
+        # `kaggle competitions leaderboard --csv` pages at 20 rows and prepends a
+        # "Next Page Token = ..." line when there are more, so a board with 26 teams silently
+        # arrives as 20. Parsed as a header that line yields no `teamName` column, every row is
+        # skipped, and the tool reports "0 ranked teams" -- which reads like an empty board
+        # rather than a truncated one. Refuse it instead; pull with --page-size 200.
+        if not header.startswith("teamId,"):
+            raise SystemExit(
+                f"{path}: first line is {header.strip()!r}, not the CSV header. A "
+                '"Next Page Token" line means the board was paged at 20 rows; re-pull with '
+                "--page-size 200."
+            )
+        fh.seek(0)
         for row in csv.DictReader(fh):
             team, score = row.get("teamName"), row.get("score")
             if not team or not score or BASELINE.search(team):

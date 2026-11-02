@@ -18,6 +18,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 from tools_t1_shim import standings
 
 HEADER = "teamId,teamName,submissionDate,score\n"
@@ -159,3 +161,22 @@ def test_the_standings_table_shares_places_too(tmp_path: Path) -> None:
     rows = {r["team"]: r for r in standings.standings(tmp_path)["tiers"]["tier1"]["standings"]}
     assert rows["a"]["place"] == rows["b"]["place"] == 1
     assert rows["c"]["place"] == 3, "two teams tied for first, the third is third"
+
+
+def test_a_paged_board_is_refused_not_read_as_empty(tmp_path):
+    """A truncated board must raise, not quietly rank 20 of 26 teams.
+
+    `kaggle competitions leaderboard --csv` pages at 20 rows and prepends a "Next Page Token"
+    line. Read as a header, that line has no `teamName` column, so every row is skipped and the
+    tool prints "0 ranked teams" -- indistinguishable from an empty board. That happened on the
+    Tier 1 board on 2026-11-02 and nearly put a standing computed from 20 of 26 teams on record.
+    """
+    path = tmp_path / "tier1-auc.csv"
+    path.write_text(
+        "Next Page Token = CfDJ8FwkkMke\n"
+        "teamId,teamName,submissionDate,score\n"
+        "1,us,2026-11-02 00:00:00,0.5\n"
+    )
+    with pytest.raises(SystemExit) as caught:
+        standings.read_board(path, {}, "auc")
+    assert "page-size" in str(caught.value)
