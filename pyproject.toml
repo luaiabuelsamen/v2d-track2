@@ -20,8 +20,6 @@ dependencies = [
 dev = ["ruff", "pytest"]
 # Observability is opt-in: the pipeline is a no-op without these and must never require them.
 observe = ["wandb", "huggingface-hub"]
-# The submission form wants the technical report as a PDF; nothing else needs a renderer.
-report = ["fpdf2"]
 
 [project.scripts]
 v2d = "v2d.cli:main"

@@ -14,7 +14,7 @@ and an entry being void. Submitting three costs nothing but minutes.
 | field | value |
 |---|---|
 | team | Luai Abuelsamen, University of California, Berkeley |
-| report PDF | `docs/TECHNICAL_REPORT.pdf` — two pages, their four sections |
+| report PDF | `docs/TECHNICAL_REPORT.pdf` — built from `docs/report/main.tex` in NVIDIA's own extended-abstract class; main text ends on page 2, references follow |
 | GitHub | <https://github.com/luaiabuelsamen/v2d-track2> (public, Apache-2.0) |
 | container | `ghcr.io/luaiabuelsamen/v2d-track2:submission` — *filled in once the push lands* |
 
@@ -26,8 +26,7 @@ Per-tier scores, in case the form asks which submission the report is for:
 | Tier 2 | 0.46522 | 0.66666 | 0.46666 | 14.128 | 6 / 18 |
 | Tier 3 | 0.26781 | 0.20000 | 0.03333 | 47.772 | 6 / 12 |
 
-**The template.** The email attaches `V2D_Challenge_Extended_Abstract_Template.zip`, which this
-machine cannot open from Gmail. The report was written to the four sections the email names in
-its body, which is the stated requirement; if the zip imposes a different layout, download it
-into the repo and the report can be reflowed without rewriting it, because
-`tools/report/to_pdf.py` renders from the Markdown.
+**The template.** The email attaches `V2D_Challenge_Extended_Abstract_Template.zip`: a LaTeX
+class, not a Word file, so the report is written in it rather than approximated. The limit is two
+pages of *main text* — references and appendices do not count — and `docs/report/build.sh` checks
+exactly that rather than the page count.

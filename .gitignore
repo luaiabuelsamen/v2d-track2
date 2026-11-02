@@ -7,3 +7,10 @@ __pycache__/
 results/gate/
 wandb/
 ship_ckpts_wave2/
+
+# LaTeX build artefacts (docs/report/build.sh regenerates them)
+docs/report/*.aux
+docs/report/*.bbl
+docs/report/*.blg
+docs/report/*.log
+docs/report/*.out

@@ -1,0 +1,178 @@
+%% V2D Challenge Track 2 -- extended abstract.
+%% Build: TEXMFHOME=... pdflatex main && bibtex main && pdflatex main && pdflatex main
+%% or, from the repository root:  docs/report/build.sh
+\pdfoutput=1
+\documentclass[10pt]{nvidiaextabstract}
+
+\usepackage{microtype}
+\usepackage{xspace}
+
+\venue{From Human Videos to Dexterous Robot Capability (CoRL 2026)}
+
+\title{One Policy per Sequence, Selected Without Ground Truth}
+\shorttitle{One Policy per Sequence, Selected Without Ground Truth}
+
+\author[1]{Luai Abuelsamen}
+\affil[1]{University of California, Berkeley}
+\affil[ ]{\texttt{luai\_abuelsamen@berkeley.edu}}
+
+\begin{abstract}
+\textbf{Abstract:}
+We enter all three tiers of Track~2 with one FlashCHORD policy per sequence on a Unitree G1 with
+Dex3 hands. The tiers share a ground truth and differ only in the \emph{input} a submission may
+condition on, which makes the permitted input the design variable rather than the reward.
+Everything per-clip that we ship therefore reads the input alone: a registered selection rule
+reproducible without ground truth, and, on Tier~1, a warm-start fine-tune re-fitting a converged
+actor to the cleaner reference that tier permits --- the one method change that paid, at \$0.57
+per clip, where a cold swap of the same reference \emph{loses} 0.18 AUC.
+\end{abstract}
+
+\definecolor{NvidiaGreen}{RGB}{118, 185, 0}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+\label{sec:intro}
+
+Track~2 asks for physically realisable object trajectories for 30 manipulation sequences,
+produced by a policy rollout rather than by reconstruction, at three tiers differing in the
+reference a submission may condition on: a clean multi-view trajectory (Tier~1), a noisy released
+retarget (Tier~2), and whatever the entrant reconstructs from video (Tier~3).
+
+Our first result was structural and we found it by accident: our Tier~1 and Tier~2 public scores
+came back \emph{identical}. The uploaded files are byte-identical, and a Kabsch fit shows every
+shipped rollout's reference to be an exact (0.000~cm) rigid transform of the released Tier~2
+trajectory. All three tiers are scored against the same ground truth; only the permitted input
+differs.
+
+That set the strategy: the interesting constraint is not the reward but \emph{what a submission
+may read}. Relative to physics-based human--object imitation \citep{physhoi,intermimic}, which
+assumes a clean motion-capture reference, the difficulty here is that the reference is itself an
+estimate.
+
+\noindent Contributions:
+\begin{itemize}\itemsep0pt
+  \item a per-episode selection rule reading only the \emph{input} reference: legal in every tier,
+        reproducible without ground truth;
+  \item the measurement that a converged policy cannot be handed a cleaner reference --- a cold
+        swap costs 0.18 AUC --- while a 50M-step warm-start fine-tune to it gains 0.08 for \$0.57.
+\end{itemize}
+
+\section{Approach}
+\label{sec:approach}
+
+\paragraph{Pipeline.} SOMA-X parameters are retargeted to the G1 with Dex3 hands on CPU (30/30
+clips at 0.0~mm residual). FlashCHORD SAC then trains one policy per sequence for 349{,}999{,}104
+steps at \texttt{world\_count=1}, \texttt{scene.support} set per clip from the shipped primitives,
+followed by the challenge evaluator, selection and the kit's packer.
+
+\paragraph{Recipe changes.} Four ship: an object-\emph{orientation} reward term (weight 1.0, std
+0.3), the configuration having a position weight and no orientation counterpart; a
+start-curriculum patch; object-position std tightened $0.2 \rightarrow 0.08$~m; and finger targets
+on bridge-smoothed references. Each \emph{refuses to apply} to an unrecognised upstream, so a
+half-patched run cannot reach the GPU.
+
+\paragraph{Selection, registered before the run.} The provenance schema permits a different
+\texttt{checkpoint\_sha256} per episode, so we pick, per clip, the latest checkpoint whose achieved
+object never leaves a 10~cm band around the \emph{input} reference. It cost us real score: 13
+rollouts kit-score higher than the ones that ship, and we shipped the rule's picks anyway.
+
+\paragraph{Tier~3.} We run the challenge's own modules in order --- monocular geometry
+\citep{moge}, open-set detection \citep{groundingdino}, segmentation \citep{sam2} and 6D
+tracking \citep{foundationpose} --- with a prompt converter written between the last two.
+Placement in the released world is one rigid transform taken from frame~0, as the FAQ permits,
+applied unchanged thereafter: no scale fitted, no per-frame correction, 0.0000~cm frame-0 residual
+on all 30 clips.
+
+\paragraph{Warm start.} A new configuration key loads a shipped actor's parameters and batch
+statistics after learner construction, sets the step counter so the curriculum resumes in its
+final stage, and runs to the normal horizon --- 50M steps, a seventh of a full run, 35 minutes on
+an A6000. The critic starts cold, so the actor's learning rate is scaled $\times 0.1$ for 2{,}000
+updates.
+
+\paragraph{Scoring.} We never reimplemented the metrics: our scorer hash-checks the kit's metric
+files against the shipped manifest and calls them, so across nineteen uploads the largest
+local-to-public AUC disagreement was $1.1\times10^{-5}$.
+
+\section{Experiments and Results}
+\label{sec:experiments}
+
+\begin{table}[t]
+  \centering\footnotesize\setlength{\tabcolsep}{3.2pt}
+  \begin{tabular}{lcccc}
+    \toprule
+    \textit{Entry} & \textit{AUC} & \textit{SP-SR} & \textit{MP-SR} & \textit{MPPE} \\
+    \midrule
+    Tier 1 (ours)   & \textbf{0.548} & 0.700 & 0.500 & \textbf{12.06} \\
+    \;\; CHORD base. & 0.510 & --- & --- & --- \\
+    Tier 2 (ours)   & \textbf{0.465} & 0.667 & 0.467 & \textbf{14.13} \\
+    \;\; CHORD base. & 0.374 & 0.533 & 0.067 & 20.50 \\
+    Tier 3 (ours)   & 0.268 & 0.200 & 0.033 & 47.77 \\
+    \bottomrule
+  \end{tabular}
+  \caption{All 30 clips, one seed, official kit scorer; MPPE in cm, lower better.}
+  \label{tab:results}
+\end{table}
+
+\paragraph{The largest single effect was a bug.} Our first full-length baseline scored 0.043 mean
+AUC because every run script passed \texttt{scene.support=false}: without the table the object
+falls at reset and the episode ends on frame~0.
+
+\paragraph{A cleaner reference is not an upgrade; re-fitting to it is.} Tier~1 permits the clean
+multi-view trajectory, so we re-evaluated all 30 shipped actors on it directly. Mean AUC
+\emph{fell} from 0.465 to 0.289 and SP-SR from 0.667 to 0.138, with only 2 of 30 clips improving;
+frame checks were below $1.7\times10^{-5}$~cm, so this is not a conversion artefact: each actor had
+learned one trajectory, and substituting another is distribution shift. Warm-start fine-tuning on
+that same reference, under a no-regression adoption rule, instead took Tier~1 to 0.548 AUC and
+12.06~cm. The gain is re-fitting, not extra training --- a second generation on the \emph{same}
+reference adopted 0 of 3 and lost a clip outright ($0.647 \rightarrow 0.296$) --- and is predicted
+by a clip's shipped score: 11 of 19 clips above 0.35 adopted, mean gain $+0.169$; 0 of 4 below
+0.35 did. On Tier~3, where selection may read only our own reconstruction, 5 of 10 adopted,
+moving the entry from 0.232 to 0.251 and lifting both success rates off zero.
+
+\paragraph{Selection is worth less than it looks.} Across all 30 clips the registered rule is
+worth $+0.0010$ AUC over the final checkpoint, and a truth-reading oracle --- the ceiling on
+\emph{any} selection rule --- reaches only 0.420. It earns its place by being reproducible without
+ground truth, not by the points it adds. The standard deviation of AUC over a clip's last five
+checkpoints averages 0.081, a noise floor larger than most effects we measured.
+
+
+\paragraph{Where the gap is.} Measured on trajectories rather than on AUC, which mixes position
+and orientation so two defects can cancel: the noisy Tier~2 reference sits 1.94~cm from truth
+while our policies sit 13.84~cm, and \emph{19 of 30 clips end up worse than the reference they
+were given}. Yet only 9 ever leave a 10~cm band around it --- nine drop catastrophically and the
+rest track a good reference a few centimetres loosely, so precision across many clips, not
+robustness on a few, is where the deficit lives. Tier~3 is the opposite: eleven clips have
+\emph{negative} headroom, the policy already beating the reconstruction it was handed.
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+A benchmark that varies only the permitted input rewards treating that input as the design
+variable, and the two results above transfer beyond this challenge. The residual failure does
+not: it is mid-episode release of a well-tracked object, and one second before each loss nothing
+observable differs from a healthy frame. The cause appears to be that the environment computes a
+per-link contact state every step, pays a reward term carrying the largest positive weight in the
+objective from it, then discards it before building the observation --- so the actor is paid for
+contact it cannot sense, and the finger action through those frames is open-loop. That is the
+correction the contact-conditioned literature reports \citep{physhoi,intermimic}, and the first
+thing we would run next.
+
+\paragraph{At scale.} Spend was \$144 for 30 policies across three tiers --- \$3.00 per
+full-length cell, \$0.57 per warm-start cell --- so a new sequence costs little and a new
+\emph{reference} for an existing one almost nothing (\emph{economic viability}). Selection and
+adoption read only the input, so rollouts are judged with no annotation and no ground truth: the
+loop closes without a human in it (\emph{data flywheel}). One CLI, patches that refuse unknown
+upstreams and a scorer calling the kit's own metric code under a hash check keep it auditable
+(\emph{complexity reduction}); the input-only rule and warm-start reference transfer are new here
+(\emph{innovation}).
+
+\paragraph{Limitations.} One seed, and no ablation isolates the four recipe changes: the shipping
+run was chosen as such, knowingly. Object inertia is a simulator artefact we left alone.
+
+\balance
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\end{document}
