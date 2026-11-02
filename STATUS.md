@@ -83,25 +83,30 @@ publicly before the run that killed it. The rule's MPPE clause already narrows 3
 inside those nine nothing predicts the outcome. At $0.50 a clip, breadth beats cleverness
 (`results/t1xfer_final.json`).
 
-## BLOCKED — eligibility, not score (2026-11-01)
+## ELIGIBILITY — the form, and where each field stands (2026-11-02)
 
 The organisers' final email makes a **completed technical-report form per top submission a
 condition of the entry being valid at all** — report PDF + GitHub links + **container link** —
 due with the freeze, **2026-11-04 17:00 EST / 22:00 UTC**. Full audit in
-`docs/FINAL_COMPLIANCE.md`. Three items, two of them Luai's:
+`docs/FINAL_COMPLIANCE.md`. Luai cleared the three blockers on 2026-11-02.
 
-1. **Container does not exist.** The FlashCHORD image was lost in the 2026-10-28 reboot; this
-   box has only `jekyll-site` and `ursim_polyscopex`. The form asks for a link to it, so
-   **nineteen uploads are currently unbacked and no entry is valid without it.** Needs a GPU box
-   and a host. *Luai: this is what the remaining credit should buy first.*
-2. **GitHub is private and the NVIDIA invite is unaccepted.** Invitation 340814066 (re-sent
-   2026-11-01, expires Nov 8) goes *from* Luai *to* `Nvidia-V2D-Challenge`, so only they can
-   accept. A reviewer following the form's GitHub link cannot open the repo today. *Luai: either
-   confirm acceptance or make the repo public — prizes require an Apache-2.0 release anyway and
-   `LICENSE` already is one.*
-3. **The report is the wrong shape.** `docs/TECHNICAL_REPORT.md` is 2,202 words over ten
-   sections; they want two pages as Introduction / Approach / Experiments & Results / Conclusion,
-   from their template, as PDF. Free work, mine.
+| field | state |
+|---|---|
+| **report PDF** | **done** — `docs/TECHNICAL_REPORT.pdf`, two pages in their four sections, rendered by `tools/report/to_pdf.py`, which fails the build if it runs over two |
+| **GitHub links** | **done** — the repo is **public** as of 2026-11-02, and every `code_commit_url` in every uploaded entry returns 200 anonymously (8 distinct commits checked; the one all-zeros URL is in `results/tier1_package.json`, the dry run, marked `NOT-FOR-SUBMISSION`) |
+| **container link** | **in progress** — building on `v2d-container` (hyperstack_A6000, $0.60/h, 3 h watchdog). Pushing it needs a GitHub token with `write:packages`; the current one has `admin:public_key, gist, read:org, repo`, so `gh auth refresh -h github.com -s write:packages` is the one thing outstanding |
+
+The repo went public rather than waiting on `Nvidia-V2D-Challenge` to accept invitation
+340814066, which had sat unaccepted for eight days. A secret scan over every tracked file ran
+first and found nothing but a docstring and a test asserting a secret is *not* leaked. Prizes
+require an Apache-2.0 release in any case and `LICENSE` already is one.
+
+**The four rules questions were emailed to `v2d_challenge@nvidia.com`** on 2026-11-02 (thread
+`1a19e23934b631fa`): tier-appropriate references, whether a Tier 1 rollout may be driven by a
+Tier-2-derived or video-derived reference, whether the Track 3 mesh rule reaches Track 2 Tier 3,
+and whether ties share a rank. The first two bear on entries already uploaded; the fourth decides
+whether several queued purchases are worth anything. Until an answer arrives the e01/e29
+cross-tier substitution stays shelved (two rank points, no change of place).
 
 Also unblocked by that email: **submissions are now unlimited**, so the 5-per-week-versus-5-per-day
 conflict is moot and no upload needs holding back.
