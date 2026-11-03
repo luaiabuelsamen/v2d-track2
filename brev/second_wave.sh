@@ -26,6 +26,15 @@
 #       there (docs/RECOVERY_2026-10-28.md). Same recipe, same selection rule; it is a re-roll, so
 #       it will not reproduce the lost rollout bit for bit.
 #
+#   T1P Tier 1 precision, from scratch on the clean tier_1 references   7 boxes, ~$24
+#       e02 e09 e11 e13 e17 e21 e29  -- the seven Tier 1 clips sitting just outside the 3 cm
+#       MP-SR gate (3.85-5.15 cm). It is the only untried lever there: the warm start was run on
+#       six of these seven and every one came back WORSE on MPPE (e02 4.57 -> 35.05,
+#       e29 3.85 -> 8.72), because re-fitting a converged actor to a different trajectory trades
+#       position for reference tracking. Training from scratch on the clean reference instead
+#       removes the ~1.94 cm of noise these policies currently chase. Three Tier 1 rungs are one
+#       clip wide (mp-sr 1 clip, mppe 1.9 cm summed, auc +1.03 summed), and Tier 1 adoption reads
+#       the permitted input, which IS the scoring reference, so a clip ships only if it improves.
 #   CR  contact-role reward (docs/ARM_CR.md)       six of the eight clips under 0.30
 #       e04 e05 e07 e09 e19 e25                    3 boxes, 2 clips each, ~$19.18
 #
@@ -91,6 +100,7 @@ W3R|1 4 5 7 13 14 19 25 28|start_curriculum,orientation_reward,object_position,b
 T3-VALID|0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29|start_curriculum,orientation_reward,object_position|V2D_OBJECT_POSITION_STD=0.08|2|t3_recon|tier3|409600:409600|Tier 3: a valid entry on every clip at the insurance budget
 T3-FULL|3 24 18 12 27 8 22 15 20|start_curriculum,orientation_reward,object_position|V2D_OBJECT_POSITION_STD=0.08|3|t3_recon|tier3||Tier 3: full-length precision on as many clips as the credit buys
 A29|29|start_curriculum,orientation_reward,object_position|V2D_OBJECT_POSITION_STD=0.08|1|a29_refs|||re-roll e29 on arm A after the 2026-10-28 scratchpad loss
+T1P|2 9 11 13 17 21 29|start_curriculum,orientation_reward,object_position|V2D_OBJECT_POSITION_STD=0.08|7|t1_precision|tier1||Tier 1 precision, from scratch on the clean tier_1 references, on the seven clips at the MP-SR gate
 CR|4 5 7 9 19 25|start_curriculum,orientation_reward,contact_role|V2D_CONTACT_ROLES=/v2d/assets/cr_refs/contact_roles|3|cr_refs|||contact-role reward on the six clips the roles can reach
 EOF
 )
