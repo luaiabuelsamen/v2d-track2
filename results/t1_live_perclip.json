@@ -1,0 +1,268 @@
+{
+ "what": "Per-clip Tier 1 numbers behind the LIVE board entry, so T1P adoption is unambiguous",
+ "why": "t1_shipped_perclip.json predates two adopted arms. Rebuilt as shipped + 11 warm-start fine-tunes + 3 donor transfers, then checked against the public board. Two attempts failed first: applying only the transfers missed exactly the 0.06165 fine-tune gain, and the transfer record stores only auc and mppe per clip, so e28's SP-SR flip was implicit in its MPPE crossing the 10 cm gate. Derived and verified, not assumed.",
+ "chain": [
+  "shipped 0.46523",
+  "+11 fine-tunes -> 0.52688",
+  "+3 donor transfers -> 0.54809"
+ ],
+ "board_2026_11_02": {
+  "add_auc": 0.54808,
+  "spider_sr": 0.7,
+  "maniptrans_sr": 0.5,
+  "mppe_cm": 12.0602
+ },
+ "reconstructed_mean": {
+  "add_auc": 0.548089188003266,
+  "spider_sr": 0.7,
+  "maniptrans_sr": 0.5,
+  "mppe_cm": 12.060258431218822
+ },
+ "max_abs_delta_vs_board": 5.843121882165292e-05,
+ "inferred_gate_flips": {
+  "e28": "MPPE 44.07 -> 9.58 cm crosses the 10.0 cm SP-SR gate"
+ },
+ "provenance_by_clip": {
+  "e00": "warm-start fine-tune on the clean tier_1 reference",
+  "e06": "warm-start fine-tune on the clean tier_1 reference",
+  "e08": "warm-start fine-tune on the clean tier_1 reference",
+  "e12": "warm-start fine-tune on the clean tier_1 reference",
+  "e15": "warm-start fine-tune on the clean tier_1 reference",
+  "e16": "warm-start fine-tune on the clean tier_1 reference",
+  "e22": "warm-start fine-tune on the clean tier_1 reference",
+  "e23": "warm-start fine-tune on the clean tier_1 reference",
+  "e24": "warm-start fine-tune on the clean tier_1 reference",
+  "e26": "warm-start fine-tune on the clean tier_1 reference",
+  "e27": "warm-start fine-tune on the clean tier_1 reference",
+  "e05": "T1XFER donor-transfer rollout (e08's fine-tuned actor)",
+  "e28": "T1XFER donor-transfer rollout (e08's fine-tuned actor)",
+  "e19": "T1XFER donor-transfer rollout (e08's fine-tuned actor)"
+ },
+ "adoption_rule": "Per clip, a T1P rollout ships only if its kit AUC beats the value here and no other metric regresses. Legal and truth-equivalent on Tier 1: that tier's permitted input IS the configured scoring reference (organisers' answer 2).",
+ "t1p_targets": {
+  "e02": {
+   "add_auc": 0.4262755102040816,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 4.573195974978896,
+   "spider_sr": 1.0
+  },
+  "e09": {
+   "add_auc": 0.3002873563218391,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 4.890156881537679,
+   "spider_sr": 0.0
+  },
+  "e11": {
+   "add_auc": 0.4675694444444445,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 3.9712632662713077,
+   "spider_sr": 1.0
+  },
+  "e13": {
+   "add_auc": 0.1593682212581345,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 4.981314648532374,
+   "spider_sr": 0.0
+  },
+  "e17": {
+   "add_auc": 0.4470170454545454,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 5.151777426894543,
+   "spider_sr": 1.0
+  },
+  "e21": {
+   "add_auc": 0.20612094395280237,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 4.785000138516178,
+   "spider_sr": 1.0
+  },
+  "e29": {
+   "add_auc": 0.6270074946466809,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 3.8470649990410597,
+   "spider_sr": 1.0
+  }
+ },
+ "per_clip": {
+  "e00": {
+   "add_auc": 0.86544,
+   "maniptrans_sr": 1.0,
+   "mppe_cm": 1.57826,
+   "spider_sr": 1.0
+  },
+  "e01": {
+   "add_auc": 0.2001338688085676,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 43.66768869553194,
+   "spider_sr": 0.0
+  },
+  "e02": {
+   "add_auc": 0.4262755102040816,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 4.573195974978896,
+   "spider_sr": 1.0
+  },
+  "e03": {
+   "add_auc": 0.7806498079385403,
+   "maniptrans_sr": 1.0,
+   "mppe_cm": 2.656890982921891,
+   "spider_sr": 1.0
+  },
+  "e04": {
+   "add_auc": 0.14655977584059776,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 102.9561205781115,
+   "spider_sr": 0.0
+  },
+  "e05": {
+   "add_auc": 0.6509,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 10.37,
+   "spider_sr": 0.0
+  },
+  "e06": {
+   "add_auc": 0.77999,
+   "maniptrans_sr": 1.0,
+   "mppe_cm": 2.48474,
+   "spider_sr": 1.0
+  },
+  "e07": {
+   "add_auc": 0.2508370535714286,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 10.8914283730838,
+   "spider_sr": 0.0
+  },
+  "e08": {
+   "add_auc": 0.92364,
+   "maniptrans_sr": 1.0,
+   "mppe_cm": 1.42516,
+   "spider_sr": 1.0
+  },
+  "e09": {
+   "add_auc": 0.3002873563218391,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 4.890156881537679,
+   "spider_sr": 0.0
+  },
+  "e10": {
+   "add_auc": 0.4793765743073048,
+   "maniptrans_sr": 1.0,
+   "mppe_cm": 2.9722914532637477,
+   "spider_sr": 1.0
+  },
+  "e11": {
+   "add_auc": 0.4675694444444445,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 3.9712632662713077,
+   "spider_sr": 1.0
+  },
+  "e12": {
+   "add_auc": 0.88393,
+   "maniptrans_sr": 1.0,
+   "mppe_cm": 1.18175,
+   "spider_sr": 1.0
+  },
+  "e13": {
+   "add_auc": 0.1593682212581345,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 4.981314648532374,
+   "spider_sr": 0.0
+  },
+  "e14": {
+   "add_auc": 0.2055010070493454,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 6.064875812769401,
+   "spider_sr": 1.0
+  },
+  "e15": {
+   "add_auc": 0.82544,
+   "maniptrans_sr": 1.0,
+   "mppe_cm": 1.88403,
+   "spider_sr": 1.0
+  },
+  "e16": {
+   "add_auc": 0.64688,
+   "maniptrans_sr": 1.0,
+   "mppe_cm": 2.91447,
+   "spider_sr": 0.0
+  },
+  "e17": {
+   "add_auc": 0.4470170454545454,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 5.151777426894543,
+   "spider_sr": 1.0
+  },
+  "e18": {
+   "add_auc": 0.738490675990676,
+   "maniptrans_sr": 1.0,
+   "mppe_cm": 1.9614478698381295,
+   "spider_sr": 1.0
+  },
+  "e19": {
+   "add_auc": 0.1591,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 41.62,
+   "spider_sr": 0.0
+  },
+  "e20": {
+   "add_auc": 0.7148508137432188,
+   "maniptrans_sr": 1.0,
+   "mppe_cm": 2.083076505815447,
+   "spider_sr": 1.0
+  },
+  "e21": {
+   "add_auc": 0.20612094395280237,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 4.785000138516178,
+   "spider_sr": 1.0
+  },
+  "e22": {
+   "add_auc": 0.86031,
+   "maniptrans_sr": 1.0,
+   "mppe_cm": 1.57344,
+   "spider_sr": 1.0
+  },
+  "e23": {
+   "add_auc": 0.85049,
+   "maniptrans_sr": 1.0,
+   "mppe_cm": 1.93917,
+   "spider_sr": 1.0
+  },
+  "e24": {
+   "add_auc": 0.95672,
+   "maniptrans_sr": 1.0,
+   "mppe_cm": 1.01035,
+   "spider_sr": 1.0
+  },
+  "e25": {
+   "add_auc": 0.13344004656577416,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 74.77703932945676,
+   "spider_sr": 0.0
+  },
+  "e26": {
+   "add_auc": 0.60024,
+   "maniptrans_sr": 1.0,
+   "mppe_cm": 2.0746,
+   "spider_sr": 1.0
+  },
+  "e27": {
+   "add_auc": 0.85841,
+   "maniptrans_sr": 1.0,
+   "mppe_cm": 1.94115,
+   "spider_sr": 1.0
+  },
+  "e28": {
+   "add_auc": 0.2977,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 9.58,
+   "spider_sr": 1.0
+  },
+  "e29": {
+   "add_auc": 0.6270074946466809,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 3.8470649990410597,
+   "spider_sr": 1.0
+  }
+ }
+}
