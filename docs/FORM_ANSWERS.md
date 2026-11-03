@@ -16,14 +16,34 @@ and an entry being void. Submitting three costs nothing but minutes.
 | team | Luai Abuelsamen, University of California, Berkeley |
 | report PDF | `docs/TECHNICAL_REPORT.pdf` — built from `docs/report/main.tex` in NVIDIA's own extended-abstract class; main text ends on page 2, references follow |
 | GitHub | <https://github.com/luaiabuelsamen/v2d-track2> (public, Apache-2.0) |
-| container | `ghcr.io/luaiabuelsamen/v2d-track2:submission` — pushed 2026-11-02, digest `sha256:f3f3d24b…`. **Must be made public before the form is submitted** (see below) |
+| container | `ghcr.io/luaiabuelsamen/v2d-track2:submission` — pushed 2026-11-02, digest `sha256:f3f3d24bbf333a0e2e0323dda8968810ba18e68cc92e9c7da05d32ba0b7c7af1`, 23 layers, 7.51 GB. **Public and verified** (see below) |
 
-**The package is private.** GitHub has no REST endpoint for package visibility --- a `PATCH` to
-`/user/packages/container/v2d-track2` returns 404 --- so this is a UI click and nobody else can
-do it:
-<https://github.com/users/luaiabuelsamen/packages/container/v2d-track2/settings> ->
-*Danger Zone* -> *Change visibility* -> **Public**. A judge pulling a private package gets
-`denied`, which is indistinguishable from a broken link.
+**The package is public, and that is checked rather than assumed.** It was flipped in the UI on
+2026-11-02 (GitHub has no REST endpoint for package visibility --- a `PATCH` to
+`/user/packages/container/v2d-track2` returns 404 --- so it could only ever be a UI click). An
+anonymous pull now resolves:
+
+```
+TOK=$(curl -s "https://ghcr.io/token?scope=repository:luaiabuelsamen/v2d-track2:pull&service=ghcr.io" | jq -r .token)
+curl -sI -H "Authorization: Bearer $TOK" https://ghcr.io/v2/luaiabuelsamen/v2d-track2/manifests/submission
+# HTTP 200, docker-content-digest: sha256:f3f3d24bbf333a0e2e0323dda8968810ba18e68cc92e9c7da05d32ba0b7c7af1
+```
+
+That digest is the one we pushed, so a judge with no credentials gets the same image we built, and
+"private package" is ruled out as a failure mode rather than hoped against.
+
+## Which forms to file, and when
+
+Three live entries, three forms. They are **not** all in the same state:
+
+| form | when | why |
+|---|---|---|
+| **Tier 1** | **now** | Confirmed valid in writing by the organisers' answer 2 (`results/organiser_answers.json`): driving a Tier 1 rollout from a reference carrying strictly less information than Tier 1 permits is allowed, which is what 16 of its 30 clips do. Nothing in the form is score-dependent, so a later score improvement does not invalidate a filed form |
+| **Tier 2** | **now** | Confirmed valid by answer 1: a reference derived only from that tier's own released file, with no read of another tier, is permitted. That is exactly what `src/v2d/clean/support_contact.py` does |
+| **Tier 3** | **hold** | Answer 3 forbids the ground-truth mesh for training, and we use it both as FoundationPose's CAD model and as the simulator's object geometry. A follow-up naming both uses is in the same thread. **Not filing this form is how we decline the tier** if the answer is no, so it costs nothing to wait and would cost our credibility to file an entry we have been told does not adhere |
+
+The three form fields are identical across all three; only the tier and its scores differ. File
+Tier 1 and Tier 2 on the evidence we now hold, and let Tier 3 wait on one email.
 
 Per-tier scores and standings as of 2026-11-02 (`results/standings_tiers_2026_11_02.json`):
 
