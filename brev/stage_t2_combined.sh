@@ -134,6 +134,29 @@ print(','.join(str(int(e)) for e in flagged))
   LABELS+=(raw); ROOT[raw]="$S/t2_raw/tier2"
 fi
 OUT="${OUT:-$S/$MOUNT}"
+
+# --mount decides the IN-CONTAINER path written into every parquet's object_mesh_paths and
+# object_urdf_paths; --out decides where the tree lands on this machine. The launcher mounts a
+# stage at ~/v2d_assets/<basename of the stage dir>, so the two have to agree. They did not once:
+# `--out $S/t1_precision` without `--mount t1_precision` left MOUNT at its t2_combined default,
+# every parquet pointed at /v2d/assets/t2_combined, and seven boxes trained against a mesh that
+# was not there -- train_flash_sac died in seconds, produced no checkpoint, and the runner's
+# no-checkpoint path touches DONE, which the launcher reads as a clean finish. The whole wave
+# reported "finished after 0 min, 0 trajectories" and deleted itself.
+#
+# Nothing downstream can detect this: the stage verifies, the md5 gate passes, the box is healthy.
+# So it is refused here, where it is still free.
+if [ "$(basename "$OUT")" != "$MOUNT" ] && [ "${V2D_ALLOW_MOUNT_MISMATCH:-0}" != 1 ]; then
+  {
+    echo "FATAL: --mount is '$MOUNT' but the stage directory is '$(basename "$OUT")'."
+    echo "       Every parquet would point at /v2d/assets/$MOUNT while the launcher mounts the"
+    echo "       tree at ~/v2d_assets/$(basename "$OUT"), so training would find no object mesh"
+    echo "       and die without a checkpoint."
+    echo "       Pass --mount $(basename "$OUT"), or set V2D_ALLOW_MOUNT_MISMATCH=1 if the"
+    echo "       consumer really does mount it under a different name."
+  } >&2
+  exit 2
+fi
 [ "${#LABELS[@]}" -gt 0 ] || { echo "FATAL: at least one --source LABEL=ROOT" >&2; exit 2; }
 [ -f "$MAP" ] || { echo "FATAL: no episode map at $MAP" >&2; exit 2; }
 
