@@ -23,7 +23,7 @@ Dex3 hands. The tiers share a ground truth and differ only in the \emph{input} a
 condition on.
 Everything per-clip that we ship reads the input alone: a registered selection rule reproducible
 without ground truth, and, on Tier~1, training and warm-start fine-tuning against the cleaner
-reference that tier permits. The latter is our largest measured improvement, at \$0.57 per clip;
+reference that tier permits. Warm-start fine-tuning produced our largest improvement, at \$0.57 per clip;
 substituting the same reference under an already-trained policy instead reduces AUC by 0.18.
 \end{abstract}
 
@@ -73,8 +73,8 @@ the GPU.
 
 \paragraph{Selection, registered before the run.} The provenance schema permits a different
 \texttt{checkpoint\_sha256} per episode, so we pick, per clip, the latest checkpoint whose achieved
-object never leaves a 10~cm band around the \emph{input} reference. On Tier~2 this is a cost: 13
-rollouts kit-score higher than the ones that ship, and we shipped the rule's picks.
+object never leaves a 10~cm band around the \emph{input} reference. On Tier~2 the rule selected 13
+checkpoints with lower kit scores than the best available, and we shipped its picks.
 
 \paragraph{Tier~3.} We run the challenge's own modules in order: monocular geometry
 \citep{moge}, open-set detection \citep{groundingdino}, segmentation \citep{sam2} and 6D
@@ -142,27 +142,25 @@ but larger than several effects we measured.
 \paragraph{Where the gap is.} Measured on trajectories rather than on AUC, the noisy Tier~2
 reference sits 1.94~cm from truth while our policies sit 13.84~cm, and \emph{19 of 30 clips end up worse than the reference they
 were given}. Only 9 rollouts ever leave a 10~cm band around it; the rest track their reference
-within a few centimetres. The main deficit is therefore persistent trajectory error across many
-clips, alongside larger failures in a smaller subset.
+within a few centimetres.
 
 \section{Conclusion}
 \label{sec:conclusion}
 
-Both results above concern how a reference is supplied to a policy rather than how the policy is
-rewarded, and neither is specific to this benchmark. The residual failure is mid-episode release
-of a well-tracked object, and one second before each loss nothing observable
-differs from a healthy frame. Inspection of the environment implementation shows that a per-link
+These experiments show that policy performance depends strongly on how the reference is
+introduced during training. Some policies track the object successfully before releasing it
+mid-episode; one second before each loss nothing observable differs from a healthy frame. Inspection of the environment implementation shows that a per-link
 contact state is computed every step and feeds a reward term carrying the largest positive weight
 in the objective, but is not included in the actor's observation. This may limit the policy's
 ability to react to a changing contact, and it is consistent with what the contact-conditioned
 literature reports \citep{physhoi,intermimic}, but we did not test the explanation
-experimentally. A contact-conditioned ablation is the first thing we would run next.
+experimentally. Future work should evaluate contact-conditioned policies.
 
 \paragraph{Cost and reproducibility.} Spend was \$166 for 30 policies across three tiers, at
 \$3.00 per full-length training run and \$0.57 per warm-start fine-tune. Selection and adoption
 read only the permitted input, so rollouts are judged without ground-truth annotation. The
-pipeline is one CLI whose configuration patches refuse to apply to an unrecognised upstream, and
-whose scorer calls the kit's own metric code under a hash check.
+pipeline uses a single CLI, rejects incompatible upstream versions, and calls the kit's own
+metric code under a hash check.
 
 \paragraph{Limitations.} A single seed, and no ablation isolates the four recipe changes. Object
 inertia is inherited unchanged from the simulator, so every object is equally easy to rotate.
