@@ -137,7 +137,7 @@ def test_a_box_that_is_gone_stops_being_charged(tmp_path: Path) -> None:
     import time
 
     now = int(time.time())
-    ledger = {b: now - 4 * 3600 for b in BOXES}
+    ledger = dict.fromkeys(BOXES, now - 4 * 3600)
     # Only the first box is still listed; the other two were deleted an instant after being seen.
     done, deleted = run_guard(tmp_path, ledger, cap="5", boxes=(BOXES[0],))
     # One box for 4 h at $0.68 is $2.72, under a $5 cap -- so nothing should be deleted. Charging
