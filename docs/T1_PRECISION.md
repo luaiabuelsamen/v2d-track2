@@ -124,6 +124,26 @@ any log.
   *any* exit, not only on the dead-runner branch. A `scratchpad/catch_clip_logs.sh` poller is the
   stopgap.
 
+### The cap guard bills boxes that no longer exist
+
+Caught at 03:30 UTC, not from a failure. `cr_cap_guard.sh` sums `(now - first_seen)` over **every
+box in its ledger** and never asks which are still alive, so b03 (which lived 19 minutes) and b21
+(deleted after a hung build) kept accruing as though running. It read 19.87 box-hours and $13.51
+when seven live boxes accounted for 15.07 and $10.25.
+
+The direction is safe -- it over-charges, so a cap trips early rather than late -- but the timing
+is not. At nine counted boxes per hour the $30 cap would have been reached about 06:15 UTC, which
+is when e21 and e29 finish. The guard would have deleted five healthy boxes at ~95% of a 350M-step
+run: the exact loss it exists to prevent, by the exact mechanism (acting on its own arithmetic
+without doubting it) that the first version failed on.
+
+Worked around for this run by dropping the two dead rows from the ledger and restarting with
+`--keep-ledger` and a $36 cap, which moves the trip point to ~09:00 UTC against a ~07:30 finish.
+
+**Owed:** the guard should reconcile its ledger against `brev ls` each pass and stop charging a box
+that is gone, or charge it only up to the pass where it last appeared. `tests/test_cap_guard.py`
+already has the harness for it -- a fake `brev` whose listing drops a box mid-run is one more case.
+
 ### Startup looks like a hang and is not
 
 After `builder.finalize`, `train.log` stops growing for ~10 minutes with the GPU at 0% while Warp
