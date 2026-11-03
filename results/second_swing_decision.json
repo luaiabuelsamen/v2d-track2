@@ -1,0 +1,13 @@
+{
+ "what": "why the ~$10 left after CR does NOT go into an e01/e28 arm, decided 2026-11-03 21:05 UTC",
+ "the_plan_that_was_wrong": "Stated to Luai an hour earlier: once CR clears its kernel gate, put the rest of the credit into the object-position arm (V2D_OBJECT_POSITION_STD=0.08) on e01 and e28, on the grounds that those two carry 88.4 cm of our 424 cm Tier 2 MPPE and CR provably cannot reach them (43 and 12 contact-role frames of 747 and 988).",
+ "what_the_record_says": {
+  "e01": "B5 already ran on it -- the bridge-smoothed reference, designed for exactly its 'never locks on' failure -- and came back at 0.0576 kit AUC against a pre-registered bar of 0.200. It ships 0.139 today, so the purpose-built arm made it 2.4x worse.",
+  "e28": "B2 already ran on it -- VOC spring zero point 60% -> 85%, designed for 'survive first contact' -- and came back at 0.0991 against a bar of 0.089. It beat its bar on the kit score and was still NOT adopted, because adoption is decided on distance to the input reference and the incumbent won that comparison.",
+  "source": "results/second_wave_adoption.json, bars.part_b"
+ },
+ "why_that_kills_the_plan": "Neither clip is untried ground. Each has already had an arm designed from its own diagnosed failure mode and lost. The object-position arm's evidence is 17 of 18 clips shipped in group A and 6 of 7 on Tier 1 -- but neither e01 nor e28 was ever in A's clip list, because their failure modes are not position-std failures: e01 never locks on at all, and e28's squeegee is FLUNG at 0.48 m/s against a reference 0.10 m/s. Spending the last $6-10 on the third arm to attack two clips that beat the first two is the worst bet on the table, not the biggest swing.",
+ "what_the_credit_does_instead": "It stays as headroom for CR. CR's worst case is $48.96 if all three boxes run their full 24 h authority against an expected $21.42; the guard caps at $21 and the live credit is ~$27. The launcher also auto-replaces failed boxes up to 9, and a box dying mid-clip costs real money to replace. Unspent credit is the only thing standing between a box failure at hour 8 and a lost clip.",
+ "a_finding_worth_keeping": "e28 has a B2 rollout at 0.0991 kit AUC against the 0.0327 it ships, rejected by our own truth-free adoption rule because the incumbent sat closer to the input reference. That is the registered rule working as designed and costing us score, which is the same trade the report describes on Tier 2's 13 checkpoints. We keep the rule.",
+ "bar_for_reopening_this": "A clip-level lever for e01 or e28 would need a mechanism neither B5 nor B2 addressed -- for e28 an action-scale or velocity cap, which does not exist in the codebase and cannot be designed, staged, smoke-tested and trained in the 24 h left."
+}
