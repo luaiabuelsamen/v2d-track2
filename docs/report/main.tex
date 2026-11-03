@@ -20,11 +20,11 @@
 \textbf{Abstract:}
 We enter all three tiers of Track~2 with one FlashCHORD policy per sequence on a Unitree G1 with
 Dex3 hands. The tiers share a ground truth and differ only in the \emph{input} a submission may
-condition on, which makes the permitted input the design variable rather than the reward.
-Everything per-clip that we ship therefore reads the input alone: a registered selection rule
-reproducible without ground truth, and, on Tier~1, a warm-start fine-tune re-fitting a converged
-actor to the cleaner reference that tier permits --- the one method change that paid, at \$0.57
-per clip, where a cold swap of the same reference \emph{loses} 0.18 AUC.
+condition on.
+Everything per-clip that we ship reads the input alone: a registered selection rule reproducible
+without ground truth, and, on Tier~1, training and warm-start fine-tuning against the cleaner
+reference that tier permits. The latter is our largest measured improvement, at \$0.57 per clip;
+substituting the same reference under an already-trained policy instead reduces AUC by 0.18.
 \end{abstract}
 
 \definecolor{NvidiaGreen}{RGB}{118, 185, 0}
@@ -40,59 +40,54 @@ produced by a policy rollout rather than by reconstruction, at three tiers diffe
 reference a submission may condition on: a clean multi-view trajectory (Tier~1), a noisy released
 retarget (Tier~2), and whatever the entrant reconstructs from video (Tier~3).
 
-Our first result was structural and we found it by accident: our Tier~1 and Tier~2 public scores
-came back \emph{identical}. The uploaded files are byte-identical, and a Kabsch fit shows every
+We found our first result by accident: our Tier~1 and Tier~2 public scores came back
+\emph{identical}. The uploaded files are byte-identical, and a Kabsch fit shows every
 shipped rollout's reference to be an exact (0.000~cm) rigid transform of the released Tier~2
 trajectory. All three tiers are scored against the same ground truth; only the permitted input
 differs.
 
-That set the strategy: the interesting constraint is not the reward but \emph{what a submission
-may read}. Relative to physics-based human--object imitation \citep{physhoi,intermimic}, which
-assumes a clean motion-capture reference, the difficulty here is that the reference is itself an
-estimate.
+We therefore focused on methods that use only the reference each tier permits. Unlike physics-based human--object imitation \citep{physhoi,intermimic}, which assumes a clean
+motion-capture reference, here the reference is itself an estimate.
 
 \noindent Contributions:
 \begin{itemize}\itemsep0pt
   \item a per-episode selection rule reading only the \emph{input} reference: legal in every tier,
         reproducible without ground truth;
-  \item the measurement that a converged policy cannot be handed a cleaner reference --- a cold
-        swap costs 0.18 AUC --- while a 50M-step warm-start fine-tune to it gains 0.08 for \$0.57.
+  \item a measurement separating two uses of a cleaner reference: substituted under a trained
+        policy it costs 0.18 AUC, while a warm-start fine-tune to it gains 0.08.
 \end{itemize}
 
 \section{Approach}
 \label{sec:approach}
 
 \paragraph{Pipeline.} SOMA-X parameters are retargeted to the G1 with Dex3 hands on CPU (30/30
-clips at 0.0~mm residual). FlashCHORD SAC then trains one policy per sequence for 349{,}999{,}104
-steps at \texttt{world\_count=1}, \texttt{scene.support} set per clip from the shipped primitives,
-followed by the challenge evaluator, selection and the kit's packer.
+clips, 0.0~mm residual). FlashCHORD SAC trains one policy per sequence for 349{,}999{,}104 steps
+at \texttt{world\_count=1} with \texttt{scene.support} set per clip from the shipped primitives,
+then the challenge evaluator, selection and the kit's packer.
 
 \paragraph{Recipe changes.} Four ship: an object-\emph{orientation} reward term (weight 1.0, std
-0.3), the configuration having a position weight and no orientation counterpart; a
-start-curriculum patch; object-position std tightened $0.2 \rightarrow 0.08$~m; and finger targets
-on bridge-smoothed references. Each \emph{refuses to apply} to an unrecognised upstream, so a
-half-patched run cannot reach the GPU.
+0.3), which the configuration lacked despite having a position weight; a start-curriculum patch;
+object-position std tightened $0.2 \rightarrow 0.08$~m; and finger targets on bridge-smoothed
+references. Each refuses to apply to an unrecognised upstream, so a half-patched run cannot reach
+the GPU.
 
 \paragraph{Selection, registered before the run.} The provenance schema permits a different
 \texttt{checkpoint\_sha256} per episode, so we pick, per clip, the latest checkpoint whose achieved
-object never leaves a 10~cm band around the \emph{input} reference. It cost us real score: 13
-rollouts kit-score higher than the ones that ship, and we shipped the rule's picks anyway.
+object never leaves a 10~cm band around the \emph{input} reference. On Tier~2 this is a cost: 13
+rollouts kit-score higher than the ones that ship, and we shipped the rule's picks.
 
-\paragraph{Tier~3.} We run the challenge's own modules in order --- monocular geometry
+\paragraph{Tier~3.} We run the challenge's own modules in order: monocular geometry
 \citep{moge}, open-set detection \citep{groundingdino}, segmentation \citep{sam2} and 6D
-tracking \citep{foundationpose} --- with a prompt converter written between the last two.
-Placement in the released world is one rigid transform taken from frame~0, as the FAQ permits,
-applied unchanged thereafter: no scale fitted, no per-frame correction, 0.0000~cm frame-0 residual
-on all 30 clips.
+tracking \citep{foundationpose}. Placement in the released world is a single rigid transform
+taken from frame~0, as the FAQ permits, with no scale fitted and no per-frame correction.
 
 \paragraph{Warm start.} A new configuration key loads a shipped actor's parameters and batch
-statistics after learner construction, sets the step counter so the curriculum resumes in its
-final stage, and runs to the normal horizon --- 50M steps, a seventh of a full run, 35 minutes on
-an A6000. The critic starts cold, so the actor's learning rate is scaled $\times 0.1$ for 2{,}000
-updates.
+statistics after learner construction and advances the step counter so the curriculum resumes in
+its final stage, then runs to the normal horizon: 50M steps, 35 minutes on an A6000. The critic
+starts cold, so the actor's learning rate is scaled $\times 0.1$ for 2{,}000 updates.
 
-\paragraph{Scoring.} We never reimplemented the metrics: our scorer hash-checks the kit's metric
-files against the shipped manifest and calls them, so across nineteen uploads the largest
+\paragraph{Scoring.} We did not reimplement the metrics; our scorer hash-checks the kit's metric
+files against the shipped manifest and calls them. Across nineteen uploads the largest
 local-to-public AUC disagreement was $1.1\times10^{-5}$.
 
 \section{Experiments and Results}
@@ -104,7 +99,7 @@ local-to-public AUC disagreement was $1.1\times10^{-5}$.
     \toprule
     \textit{Entry} & \textit{AUC} & \textit{SP-SR} & \textit{MP-SR} & \textit{MPPE} \\
     \midrule
-    Tier 1 (ours)   & \textbf{0.548} & 0.700 & 0.500 & \textbf{12.06} \\
+    Tier 1 (ours)   & \textbf{0.605} & 0.733 & 0.633 & \textbf{11.72} \\
     \;\; CHORD base. & 0.510 & --- & --- & --- \\
     Tier 2 (ours)   & \textbf{0.465} & 0.667 & 0.467 & \textbf{14.13} \\
     \;\; CHORD base. & 0.374 & 0.533 & 0.067 & 20.50 \\
@@ -119,57 +114,58 @@ local-to-public AUC disagreement was $1.1\times10^{-5}$.
 AUC because every run script passed \texttt{scene.support=false}: without the table the object
 falls at reset and the episode ends on frame~0.
 
-\paragraph{A cleaner reference is not an upgrade; re-fitting to it is.} Tier~1 permits the clean
-multi-view trajectory, so we re-evaluated all 30 shipped actors on it directly. Mean AUC
-\emph{fell} from 0.465 to 0.289 and SP-SR from 0.667 to 0.138, with only 2 of 30 clips improving;
-frame checks were below $1.7\times10^{-5}$~cm, so this is not a conversion artefact: each actor had
-learned one trajectory, and substituting another is distribution shift. Warm-start fine-tuning on
-that same reference, under a no-regression adoption rule, instead took Tier~1 to 0.548 AUC and
-12.06~cm. The gain is re-fitting, not extra training --- a second generation on the \emph{same}
-reference adopted 0 of 3 and lost a clip outright ($0.647 \rightarrow 0.296$) --- and is predicted
-by a clip's shipped score: 11 of 19 clips above 0.35 adopted, mean gain $+0.169$; 0 of 4 below
-0.35 did. On Tier~3, where selection may read only our own reconstruction, 5 of 10 adopted,
-moving the entry from 0.232 to 0.251 and lifting both success rates off zero.
+\paragraph{Three ways to use a cleaner reference.} Tier~1 permits the clean multi-view
+trajectory, and how a policy is given it decides whether it helps. Substituted under the 30
+shipped actors at evaluation time, mean AUC \emph{fell} from 0.465 to 0.289 and SP-SR from 0.667
+to 0.138, with only 2 of 30 clips improving; frame checks were below $1.7\times10^{-5}$~cm, so
+this is distribution shift rather than a conversion artefact --- each actor had learned one
+trajectory. Warm-start fine-tuning to it, under a no-regression adoption rule, instead took
+Tier~1 to 0.548 AUC at 12.06~cm. The gain comes from re-fitting rather than extra training: a
+second generation on the \emph{same} reference adopted 0 of 3. Whether it works is predicted by a clip's shipped
+score: 11 of 19 clips above 0.35 adopted, against 0 of 4 below it. Training from scratch on the
+clean reference was tried last, on the seven clips nearest the 3~cm MP-SR threshold: 6 of 7
+adopted, gaining $+0.11$ to $+0.53$ AUC each and taking the entry to the 0.605 at 11.72~cm in
+Table~\ref{tab:results}. On Tier~3, where selection may read only our own reconstruction, 5 of 10 adopted, taking that
+entry from 0.232 to 0.251; a later batch of fine-tunes took it to the 0.268 reported in
+Table~\ref{tab:results}.
 
-\paragraph{Selection is worth less than it looks.} Across all 30 clips the registered rule is
-worth $+0.0010$ AUC over the final checkpoint, and a truth-reading oracle --- the ceiling on
-\emph{any} selection rule --- reaches only 0.420. It earns its place by being reproducible without
-ground truth, not by the points it adds. The standard deviation of AUC over a clip's last five
-checkpoints averages 0.081, a noise floor larger than most effects we measured.
+\paragraph{Effect of checkpoint selection.} The value of selection depends on the run. On the
+30-clip Tier~2 run the registered rule is worth $+0.0010$ AUC over the final checkpoint, and an
+oracle reading ground truth over that run's own checkpoints reaches 0.420. On the seven Tier~1
+clips trained from scratch it is worth $+0.057$, because those curves are not monotone: one clip
+peaks at 300M steps and falls to 0.387 AUC by 350M while two others peak at 350M. There the rule
+chose the same checkpoint as a ground-truth-reading selection on 6 of 6 adopted clips. The standard deviation of AUC over a clip's last five checkpoints
+averages 0.081 --- checkpoint-to-checkpoint variability within a run, not a between-seed estimate,
+but larger than several effects we measured.
 
 
-\paragraph{Where the gap is.} Measured on trajectories rather than on AUC, which mixes position
-and orientation so two defects can cancel: the noisy Tier~2 reference sits 1.94~cm from truth
-while our policies sit 13.84~cm, and \emph{19 of 30 clips end up worse than the reference they
-were given}. Yet only 9 ever leave a 10~cm band around it --- nine drop catastrophically and the
-rest track a good reference a few centimetres loosely, so precision across many clips, not
-robustness on a few, is where the deficit lives. Tier~3 is the opposite: eleven clips have
-\emph{negative} headroom, the policy already beating the reconstruction it was handed.
+\paragraph{Where the gap is.} Measured on trajectories rather than on AUC, the noisy Tier~2
+reference sits 1.94~cm from truth while our policies sit 13.84~cm, and \emph{19 of 30 clips end up worse than the reference they
+were given}. Only 9 rollouts ever leave a 10~cm band around it; the rest track their reference
+within a few centimetres. The main deficit is therefore persistent trajectory error across many
+clips, alongside larger failures in a smaller subset.
 
 \section{Conclusion}
 \label{sec:conclusion}
 
-A benchmark that varies only the permitted input rewards treating that input as the design
-variable, and the two results above transfer beyond this challenge. The residual failure does
-not: it is mid-episode release of a well-tracked object, and one second before each loss nothing
-observable differs from a healthy frame. The cause appears to be that the environment computes a
-per-link contact state every step, pays a reward term carrying the largest positive weight in the
-objective from it, then discards it before building the observation --- so the actor is paid for
-contact it cannot sense, and the finger action through those frames is open-loop. That is the
-correction the contact-conditioned literature reports \citep{physhoi,intermimic}, and the first
-thing we would run next.
+Both results above concern how a reference is supplied to a policy rather than how the policy is
+rewarded, and neither is specific to this benchmark. The residual failure is mid-episode release
+of a well-tracked object, and one second before each loss nothing observable
+differs from a healthy frame. Inspection of the environment implementation shows that a per-link
+contact state is computed every step and feeds a reward term carrying the largest positive weight
+in the objective, but is not included in the actor's observation. This may limit the policy's
+ability to react to a changing contact, and it is consistent with what the contact-conditioned
+literature reports \citep{physhoi,intermimic}, but we did not test the explanation
+experimentally. A contact-conditioned ablation is the first thing we would run next.
 
-\paragraph{At scale.} Spend was \$144 for 30 policies across three tiers --- \$3.00 per
-full-length cell, \$0.57 per warm-start cell --- so a new sequence costs little and a new
-\emph{reference} for an existing one almost nothing (\emph{economic viability}). Selection and
-adoption read only the input, so rollouts are judged with no annotation and no ground truth: the
-loop closes without a human in it (\emph{data flywheel}). One CLI, patches that refuse unknown
-upstreams and a scorer calling the kit's own metric code under a hash check keep it auditable
-(\emph{complexity reduction}); the input-only rule and warm-start reference transfer are new here
-(\emph{innovation}).
+\paragraph{Cost and reproducibility.} Spend was \$166 for 30 policies across three tiers, at
+\$3.00 per full-length training run and \$0.57 per warm-start fine-tune. Selection and adoption
+read only the permitted input, so rollouts are judged without ground-truth annotation. The
+pipeline is one CLI whose configuration patches refuse to apply to an unrecognised upstream, and
+whose scorer calls the kit's own metric code under a hash check.
 
-\paragraph{Limitations.} One seed, and no ablation isolates the four recipe changes: the shipping
-run was chosen as such, knowingly. Object inertia is a simulator artefact we left alone.
+\paragraph{Limitations.} A single seed, and no ablation isolates the four recipe changes. Object
+inertia is inherited unchanged from the simulator, so every object is equally easy to rotate.
 
 \balance
 \bibliographystyle{plainnat}
