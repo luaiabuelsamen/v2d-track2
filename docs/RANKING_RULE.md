@@ -53,6 +53,22 @@ The shape of the problem is clearer per tier than it ever was in aggregate: **Ti
 2. **A tie costs nothing and breaking one downward gains nothing.** We are tied with nima arki at 21 in Tier 2; moving to 20 does not change our place.
 3. **Incomplete entries are free of us and we of them.** Entering a board we would come last on cannot hurt our other ranks, and not entering one costs nothing beyond that tier.
 
-## The one thing still inferred
+## The thing that was inferred is now confirmed
+
+**Settled by the organisers, 2026-11-02.** Shalin Jain (NVIDIA), replying to our question 4:
+
+> All tied teams receive the same rank, and the next rank skips appropriately, there will not be
+> consideration of submission time.
+
+So the shared-tie rule is not merely what `leaderboard.js` does — it is what the final ranking
+does, stated in writing. Everything in this file now rests on quoted text, and the step-function
+consequence is load-bearing rather than cautious: **a metric gain pays nothing until it crosses a
+distinct score.** The gate purchases that the submission-time reading would have revived are dead
+for good.
+
+<details><summary>What this previously said, kept because four numbers above hung on it</summary>
+
 
 That the organisers will apply the FAQ's rank sum to the *same* per-metric rank the aggregator computes. Nothing in prose says so — the shared-tie rule is a code comment, not published text. **An email to v2d_challenge@nvidia.com asking whether an equal score is a shared rank for the final sum is worth sending**, because if ties are in fact ordered by submission time the old ladder returns and the gate purchases are live again. Four of the numbers above hang on it. Everything else here is quoted, not inferred.
+
+</details>

@@ -1,0 +1,74 @@
+{
+ "what": "The organisers' answers to our four rules questions, and what each one does to our entries",
+ "when": "2026-11-02 21:42 UTC",
+ "source": {
+  "from": "Shalin Jain <shalinj@nvidia.com>, cc v2d_challenge@nvidia.com and mverghese@nvidia.com",
+  "gmail_thread": "1a19e23934b631fa",
+  "latency": "21 minutes after our question"
+ },
+ "answers_verbatim": {
+  "1_tier_appropriate_references": "Using derived from the tier's own released file is fine, with no read of any other tier's data.",
+  "2_tier1_inputs": "Yes, using strictly less information than Tier 1 permits is okay!",
+  "3_ground_truth_meshes": "For Tier 3, we ask that you do not use the ground truth mesh for training as the intent is to evaluate directly from video, the hardest setting for this track. You may use the ground truth mesh for metric computations and frame alignment.",
+  "4_tie_handling": "All tied teams receive the same rank, and the next rank skips appropriately, there will not be consideration of submission time."
+ },
+ "consequences": {
+  "tier2_entry": "VALID as uploaded. The cleaner reads only the Tier 2 trajectory and the Tier 2 support primitives (src/v2d/clean/support_contact.py:294, pinned by tests/test_tier2_reads_no_tier1.py), which is the permitted reading of answer 1.",
+  "tier1_entry": "VALID as uploaded. 16 of 30 clips are driven by the bridge-cleaned Tier 2 reference, i.e. strictly less information than Tier 1 permits -- confirmed by answer 2.",
+  "e01_e29_cross_tier_substitution": "UN-SHELVED as a rules matter by answer 2. Legality was the only objection recorded in docs/FINAL_COMPLIANCE.md; it is now answered in writing.",
+  "ranking_rule": "CONFIRMED by answer 4. docs/RANKING_RULE.md no longer contains an inference, and the step-function consequence (a gain pays nothing until it crosses a distinct score) is load-bearing.",
+  "tier3_entry": "AT RISK. Answer 3 covers only one of our three uses of the released mesh."
+ },
+ "tier3_mesh_uses": [
+  {
+   "use": "AUC vertices and the one frame-0 rigid alignment transform",
+   "where": "src/v2d/score/track2.py:170; FAQ PR 207",
+   "permitted": true,
+   "why": "answer 3 permits the mesh for metric computations and frame alignment, explicitly"
+  },
+  {
+   "use": "the CAD model input to FoundationPose, which produces the per-frame object track from the exo video",
+   "where": "docs/T3_RECON.md:53",
+   "permitted": false,
+   "why": "neither a metric computation nor frame alignment; it gives the tracker exact object shape and scale, which the stated intent ('evaluate directly from video') withholds"
+  },
+  {
+   "use": "the object's visual and collision geometry in the simulator while the policy trains",
+   "where": "src/v2d/retarget/sequences.py:270 copies the released mesh to reconstructed_mesh/output_aligned.glb",
+   "permitted": false,
+   "why": "this is the ground truth mesh used for training, in the plainest sense of answer 3. Not disclosed in our first email; the directory is named reconstructed_mesh and holds the released mesh."
+  }
+ ],
+ "follow_up_sent": {
+  "when": "2026-11-02, same thread, reply-all",
+  "asks": "whether use (b) the tracker input and use (c) the simulator geometry are permitted, each named separately",
+  "states": "that if they are not, we will rebuild Tier 3 on our own reconstruction or withdraw the tier before the freeze",
+  "also_offers": "the object name from meta/episodes_metadata.jsonl, used only as the open-set detection prompt, for the same scrutiny"
+ },
+ "held_pending_that_answer": {
+  "item": "the staged 13-clip Tier 3 warm-start batch",
+  "staged_at": "$S/ws_t3n, 449 MB, 13 of 13 parquets and support USDAs manifest-verified",
+  "cost_if_launched": "about $8 on 3 boxes",
+  "why_held": "fine-tuning on a reference that may be inadmissible spends credit on an entry that may be withdrawn. The expected value of the batch was never in doubt (12 of 17 Tier 3 clips adopted, +0.089 summed AUC each); its admissibility now is."
+ },
+ "compliant_tier3_route_if_disallowed": {
+  "modules": [
+   "v2d_bundlesdf",
+   "v2d_hoi_object_reconstruction"
+  ],
+  "note": "both ship in nvidia-isaac/video_to_data, so the intended path exists. The reconstructed mesh would feed the tracker and the simulator; the released mesh would stay only in scoring and frame-0 alignment.",
+  "scale": "a rebuild of the whole Tier 3 chain -- reconstruct 30 objects, re-retarget, re-train or warm-start 30 policies -- not a patch, and not obviously affordable in the time and credit left."
+ },
+ "fresh_rung_prices": {
+  "pulled": "2026-11-02, all twelve boards at --page-size 200",
+  "standings": {
+   "tier1": "12 of 24, sum 43, tied with Team OPS",
+   "tier2": "7 of 18, sum 22",
+   "tier3": "6 of 12, sum 21"
+  },
+  "table": "board           rank  of   our score   +1 rank needs                  +2 ranks needs\ntier1-auc         14  25     0.54808   +0.03418 AUC (+1.025 summed)   +0.08192 AUC (+2.458 summed)\ntier1-sp-sr        7  24     0.70000   3 clip(s)                      4 clip(s)\ntier1-mp-sr       10  24     0.50000   1 clip(s)                      2 clip(s)\ntier1-mppe        12  24    12.06020   +0.063 cm mean (+1.9 cm summed) +2.110 cm mean (+63.3 cm summed)\ntier2-auc          7  18     0.46522   +0.00562 AUC (+0.169 summed)   +0.04857 AUC (+1.457 summed)\ntier2-sp-sr        3  18     0.66666   2 clip(s)                      4 clip(s)\ntier2-mp-sr        5  18     0.46666   2 clip(s)                      4 clip(s)\ntier2-mppe         7  18    14.12760   +0.897 cm mean (+26.9 cm summed) +2.604 cm mean (+78.1 cm summed)\ntier3-auc          5  12     0.26781   +0.01215 AUC (+0.364 summed)   +0.01392 AUC (+0.418 summed)\ntier3-sp-sr        5  12     0.20000   1 clip(s)                      4 clip(s)\ntier3-mp-sr        4  12     0.03333   1 clip(s)                      2 clip(s)\ntier3-mppe         7  12    47.77180   +5.468 cm mean (+164.0 cm summed) +8.632 cm mean (+258.9 cm summed)\n",
+  "cheapest": "tier1-mp-sr at 1 clip crossing the 3 cm / 30 deg gate, and tier1-mppe at 1.9 cm summed across 30 clips (0.063 cm of mean, against DAP at 11.99700).",
+  "why_tier1": "Three of the four cheapest rungs are Tier 1 -- the tier answer 2 just confirmed without reservation, and the only tier where selection carries no adoption risk, because the permitted input IS the scoring reference and a better rollout can simply be kept.",
+  "what_cannot_collect_them": "The warm start. results/t1_rank_sensitivity.json records 12 of 12 rejected Tier 1 clips coming back worse on MPPE (e02 4.57 -> 35.05, e21 4.79 -> 10.34, e29 3.85 -> 8.72), because that arm trades position accuracy for reference tracking. The seven clips at 3.85-5.15 cm need a policy trained on the clean Tier 1 reference at full length, which we have never run."
+ }
+}

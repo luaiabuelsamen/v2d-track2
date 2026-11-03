@@ -107,3 +107,98 @@ whether several purchases on our queue are worth anything at all (`docs/RANKING_
 
 The CoRL invitation (~10 talks, 20 posters, Nov 12) follows from the above; it is not a separate
 task.
+
+---
+
+# Addendum, 2026-11-02 21:42 UTC: the organisers answered
+
+Shalin Jain (NVIDIA), replying to the four questions above within 21 minutes, cc
+`v2d_challenge@nvidia.com` and `mverghese@nvidia.com`. Gmail thread `1a19e23934b631fa`. Quoted in
+full because three of our entries' legality rests on it:
+
+> 1. Using derived from the tier's own released file is fine, with no read of any other tier's data.
+> 2. Yes, using strictly less information than Tier 1 permits is okay!
+> 3. For Tier 3, we ask that you do not use the ground truth mesh for training as the intent is to
+>    evaluate directly from video, the hardest setting for this track. You may use the ground truth
+>    mesh for metric computations and frame alignment.
+> 4. All tied teams receive the same rank, and the next rank skips appropriately, there will not be
+>    consideration of submission time.
+
+## What this settles in our favour
+
+**(1) The Tier 2 entry stands.** Our cleaner reads only the Tier 2 object trajectory and the Tier 2
+support primitives, which is exactly the permitted reading. The audit above —
+`src/v2d/clean/support_contact.py:294`, the synthetic recovery gate, and
+`tests/test_tier2_reads_no_tier1.py` — was not wasted work; it is the evidence that we meet the
+condition as stated.
+
+**(2) The live Tier 1 entry stands, and the shelved move is legal.** 16 of 30 clips in the uploaded
+Tier 1 entry are wave-2 rollouts driven by the bridge-cleaned Tier 2 reference. That is strictly
+less information than Tier 1 permits, and it is now confirmed as valid. The same sentence legalises
+the **e01/e29 cross-tier substitution** that this document shelved, so it is un-shelved as a rules
+matter — though the fresh boards have since re-priced it (see below).
+
+**(4) Ties share a rank, in the final ranking and not just on the public page.** `docs/RANKING_RULE.md`
+no longer contains an inference.
+
+## What this breaks, and it is ours
+
+**(3) rules out our Tier 3 entry as built.** The released object mesh enters our Track 2 Tier 3
+pipeline in three places, and only the first is covered by "metric computations and frame
+alignment":
+
+| use | where | covered by the answer? |
+|---|---|---|
+| AUC vertices, and the single frame-0 rigid transform | `src/v2d/score/track2.py:170`, FAQ PR 207 | **yes**, explicitly |
+| the CAD model input to FoundationPose, which produces our per-frame object track from video | `docs/T3_RECON.md:53` | **no** — it is neither metric computation nor frame alignment |
+| the object's visual and collision geometry in the simulator **while the policy trains** | `src/v2d/retarget/sequences.py:270`, copied to `reconstructed_mesh/output_aligned.glb` | **no** — this is literally "the ground truth mesh for training" |
+
+The second row is the one we disclosed in the original email and the one Shalin's answer was written
+against. The third is worse and we had not drawn attention to it: the directory is *named*
+`reconstructed_mesh`, and what it holds is the released ground-truth mesh. Under the stated intent —
+"evaluate directly from video, the hardest setting" — an object whose exact shape and scale came
+from the dataset is not a reconstruction.
+
+**A precise follow-up was sent at 2026-11-02 21:5x UTC** (same thread), naming all three uses
+separately, asking whether (b) and (c) are permitted, and stating that if they are not we will
+either rebuild Tier 3 on our own reconstruction or withdraw the tier before the freeze. It also
+offers the object *name* (from `meta/episodes_metadata.jsonl`, used only as the detection prompt)
+for the same scrutiny.
+
+### Consequences, pending that answer
+
+- **No credit goes to Tier 3 until it lands.** The staged 13-clip Tier 3 warm-start batch
+  (`$S/ws_t3n`, 449 MB, manifest verified) is **held**, not launched. Fine-tuning a policy on a
+  reference that may not be admissible spends money on an entry that may be withdrawn.
+- **If (b) and (c) are disallowed, the compliant route exists and is NVIDIA's own:** the upstream
+  repo ships `v2d_bundlesdf` and `v2d_hoi_object_reconstruction`, which reconstruct object geometry
+  from the video itself. That mesh would then feed both the tracker and the simulator, with the
+  released mesh kept only for scoring and frame-0 alignment. It is a rebuild of the whole Tier 3
+  chain, not a patch, and it is not obviously affordable in the time and credit left.
+- **Tier 1 and Tier 2 do not depend on this question at all.** Both were confirmed by answers (1)
+  and (2), and neither reads a reconstruction.
+
+## Where the cheap rungs actually are now (fresh boards, 2026-11-02, `--page-size 200`)
+
+Standings: **Tier 1 12/24** (sum 43, tied with Team OPS), **Tier 2 7/18** (sum 22), **Tier 3 6/12**
+(sum 21). Priced per board as the distance to the next *distinct* score, in units we can produce:
+
+| board | +1 rank needs | +2 ranks needs |
+|---|---|---|
+| **tier1-mp-sr** | **1 clip** under the 3 cm / 30 deg gate | 2 clips |
+| **tier1-mppe** | **+1.9 cm summed** over 30 clips (0.063 cm of mean) | +63 cm summed |
+| tier1-auc | +1.03 summed AUC | +2.46 summed |
+| tier1-sp-sr | 3 clips | 4 clips |
+| tier2-auc | +0.169 summed AUC | +1.46 summed |
+| tier2-sp-sr / mp-sr | 2 clips each | 4 clips each |
+| tier3-sp-sr / mp-sr | 1 clip each | 4 / 2 clips |
+| tier3-auc | +0.364 summed AUC | +0.418 summed |
+
+Three of the four cheapest rungs on the whole board are **Tier 1**, the tier whose legality answer
+(2) just confirmed without reservation, and the tier where selection carries no adoption risk
+because the permitted input *is* the scoring reference — so a better rollout can simply be kept.
+Seven Tier 1 clips sit between 3.85 and 5.15 cm of the 3 cm MP-SR gate (e29 3.85, e11 3.97, e02
+4.57, e21 4.79, e09 4.89, e13 4.98, e17 5.15), and `results/t1_rank_sensitivity.json` records that
+the warm start cannot collect them: 12 of 12 rejected clips came back *worse* on MPPE, because that
+arm trades position accuracy for reference tracking. The centimetre needs a policy trained on the
+clean Tier 1 reference at full length, which we have never run.
