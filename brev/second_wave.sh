@@ -70,6 +70,12 @@ while [ $# -gt 0 ]; do
     # launched on its own gets its own, so the refusal below is checked against what was
     # authorised for THIS launch rather than against the whole wave's envelope.
     --cap) V2D_CAP="$2"; shift 2 ;;
+    # The instance type, forwarded to the launcher. It is NOT left to the launcher's default,
+    # because Brev's catalogue churns: the launcher's built-in default
+    # (massedcompute_A6000_plus) was listed but failing to create boxes on 2026-11-02, and a
+    # pinned type that silently stops creating is a wave that launches nothing. Check with
+    # `v2d brev-pick --show 6` every time and pass what it names.
+    --type) V2D_TYPE="$2"; shift 2 ;;
     --box-cap) V2D_BOX_CAP="$2"; shift 2 ;;
     *) echo "unknown argument: $1" >&2; exit 2 ;;
   esac
@@ -121,6 +127,9 @@ selected() {
 
 CAP="${V2D_CAP:-90}"
 BOX_CAP="${V2D_BOX_CAP:-11}"
+#: `v2d brev-pick` named this on 2026-11-03 at $0.60/h, the cheapest of 86 types clearing
+#: the 46 GB floor. Re-check before every launch; the catalogue churns.
+TYPE="${V2D_TYPE:-hyperstack_A6000}"
 RATE=0.68
 EST_HOURS_PER_CLIP=4.4
 #: The budget every arm so far has trained to; a group's `steps` field is priced against it.
@@ -243,7 +252,7 @@ while IFS='|' read -r group clips flags envs boxes stage tier steps why; do
           --map "$map" --stage "$S/$mount" --out "$ROOT/run_$group"
           --name-prefix "v2d-sw-$(echo "$group" | tr 'A-Z' 'a-z')-b"
           --arm-flags "$flags" --boxes "$boxes" --clips-per-box "$per_box"
-          --first "" --create-stagger "$STAGGER")
+          --first "" --create-stagger "$STAGGER" --type "$TYPE")
   [ -n "$envs" ] && launch+=(--arm-env "$envs")
   [ -n "$tier" ] && launch+=(--tier "$tier")
   [ -n "$steps" ] && launch+=(--steps "$steps")
