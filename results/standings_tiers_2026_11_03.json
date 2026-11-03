@@ -1,0 +1,978 @@
+{
+ "rule": "Per tier, sum of four standard-competition metric ranks. Ties share a rank; baselines are excluded; a team missing any of a tier's four metrics is unranked (leaderboard.js lines 66-82).",
+ "tiers": {
+  "tier1": {
+   "boards": [
+    "auc",
+    "mp-sr",
+    "mppe",
+    "sp-sr"
+   ],
+   "ranked_teams": 24,
+   "unranked_incomplete": [
+    "Vi Nguy\u1ec5n V\u0103n"
+   ],
+   "standings": [
+    {
+     "team": "MBZUAI-RCL Group",
+     "rank_sum": 4,
+     "ranks": {
+      "auc": 1,
+      "mp-sr": 1,
+      "mppe": 1,
+      "sp-sr": 1
+     },
+     "scores": {
+      "auc": 0.92508,
+      "mp-sr": 0.96666,
+      "mppe": 0.99347,
+      "sp-sr": 1.0
+     },
+     "place": 1
+    },
+    {
+     "team": "domoarigato",
+     "rank_sum": 9,
+     "ranks": {
+      "auc": 4,
+      "mp-sr": 2,
+      "mppe": 2,
+      "sp-sr": 1
+     },
+     "scores": {
+      "auc": 0.85061,
+      "mp-sr": 0.93333,
+      "mppe": 1.52555,
+      "sp-sr": 1.0
+     },
+     "place": 2
+    },
+    {
+     "team": "Rice RobotPI Lab",
+     "rank_sum": 11,
+     "ranks": {
+      "auc": 2,
+      "mp-sr": 2,
+      "mppe": 5,
+      "sp-sr": 2
+     },
+     "scores": {
+      "auc": 0.90927,
+      "mp-sr": 0.93333,
+      "mppe": 4.39963,
+      "sp-sr": 0.96666
+     },
+     "place": 3
+    },
+    {
+     "team": "Izus_systems",
+     "rank_sum": 13,
+     "ranks": {
+      "auc": 5,
+      "mp-sr": 2,
+      "mppe": 3,
+      "sp-sr": 3
+     },
+     "scores": {
+      "auc": 0.84731,
+      "mp-sr": 0.93333,
+      "mppe": 1.65082,
+      "sp-sr": 0.93333
+     },
+     "place": 4
+    },
+    {
+     "team": "nima arki",
+     "rank_sum": 16,
+     "ranks": {
+      "auc": 3,
+      "mp-sr": 3,
+      "mppe": 6,
+      "sp-sr": 4
+     },
+     "scores": {
+      "auc": 0.85372,
+      "mp-sr": 0.9,
+      "mppe": 5.28689,
+      "sp-sr": 0.9
+     },
+     "place": 5
+    },
+    {
+     "team": "Xueyi Wang (FF)",
+     "rank_sum": 21,
+     "ranks": {
+      "auc": 8,
+      "mp-sr": 4,
+      "mppe": 4,
+      "sp-sr": 5
+     },
+     "scores": {
+      "auc": 0.74038,
+      "mp-sr": 0.86666,
+      "mppe": 3.543,
+      "sp-sr": 0.86666
+     },
+     "place": 6
+    },
+    {
+     "team": "Chivatam",
+     "rank_sum": 22,
+     "ranks": {
+      "auc": 6,
+      "mp-sr": 5,
+      "mppe": 7,
+      "sp-sr": 4
+     },
+     "scores": {
+      "auc": 0.83047,
+      "mp-sr": 0.83333,
+      "mppe": 6.72221,
+      "sp-sr": 0.9
+     },
+     "place": 7
+    },
+    {
+     "team": "steven kerman",
+     "rank_sum": 24,
+     "ranks": {
+      "auc": 7,
+      "mp-sr": 5,
+      "mppe": 8,
+      "sp-sr": 4
+     },
+     "scores": {
+      "auc": 0.77795,
+      "mp-sr": 0.83333,
+      "mppe": 7.74659,
+      "sp-sr": 0.9
+     },
+     "place": 8
+    },
+    {
+     "team": "Debajyoti Dasgupta",
+     "rank_sum": 31,
+     "ranks": {
+      "auc": 10,
+      "mp-sr": 5,
+      "mppe": 10,
+      "sp-sr": 6
+     },
+     "scores": {
+      "auc": 0.65938,
+      "mp-sr": 0.83333,
+      "mppe": 9.31329,
+      "sp-sr": 0.83333
+     },
+     "place": 9
+    },
+    {
+     "team": "maniphys.ai",
+     "rank_sum": 32,
+     "ranks": {
+      "auc": 11,
+      "mp-sr": 7,
+      "mppe": 9,
+      "sp-sr": 5
+     },
+     "scores": {
+      "auc": 0.63535,
+      "mp-sr": 0.7,
+      "mppe": 8.46753,
+      "sp-sr": 0.86666
+     },
+     "place": 10
+    },
+    {
+     "team": "DAP",
+     "rank_sum": 33,
+     "ranks": {
+      "auc": 9,
+      "mp-sr": 6,
+      "mppe": 12,
+      "sp-sr": 6
+     },
+     "scores": {
+      "auc": 0.73467,
+      "mp-sr": 0.76666,
+      "mppe": 11.997,
+      "sp-sr": 0.83333
+     },
+     "place": 11
+    },
+    {
+     "team": "Luai Abuelsamen",
+     "rank_sum": 39,
+     "ranks": {
+      "auc": 13,
+      "mp-sr": 8,
+      "mppe": 11,
+      "sp-sr": 7
+     },
+     "scores": {
+      "auc": 0.60459,
+      "mp-sr": 0.63333,
+      "mppe": 11.72123,
+      "sp-sr": 0.73333
+     },
+     "place": 12
+    },
+    {
+     "team": "Team OPS",
+     "rank_sum": 45,
+     "ranks": {
+      "auc": 12,
+      "mp-sr": 9,
+      "mppe": 16,
+      "sp-sr": 8
+     },
+     "scores": {
+      "auc": 0.63,
+      "mp-sr": 0.56666,
+      "mppe": 15.59328,
+      "sp-sr": 0.7
+     },
+     "place": 13
+    },
+    {
+     "team": "wte09fl",
+     "rank_sum": 47,
+     "ranks": {
+      "auc": 15,
+      "mp-sr": 10,
+      "mppe": 14,
+      "sp-sr": 8
+     },
+     "scores": {
+      "auc": 0.54183,
+      "mp-sr": 0.53333,
+      "mppe": 14.16593,
+      "sp-sr": 0.7
+     },
+     "place": 14
+    },
+    {
+     "team": "abgstn",
+     "rank_sum": 51,
+     "ranks": {
+      "auc": 16,
+      "mp-sr": 12,
+      "mppe": 15,
+      "sp-sr": 8
+     },
+     "scores": {
+      "auc": 0.48206,
+      "mp-sr": 0.43333,
+      "mppe": 14.43272,
+      "sp-sr": 0.7
+     },
+     "place": 15
+    },
+    {
+     "team": "crisiumnih",
+     "rank_sum": 51,
+     "ranks": {
+      "auc": 14,
+      "mp-sr": 11,
+      "mppe": 17,
+      "sp-sr": 9
+     },
+     "scores": {
+      "auc": 0.58226,
+      "mp-sr": 0.46666,
+      "mppe": 20.94891,
+      "sp-sr": 0.56666
+     },
+     "place": 15
+    },
+    {
+     "team": "Rohit Pardeshi",
+     "rank_sum": 53,
+     "ranks": {
+      "auc": 17,
+      "mp-sr": 13,
+      "mppe": 13,
+      "sp-sr": 10
+     },
+     "scores": {
+      "auc": 0.43394,
+      "mp-sr": 0.3,
+      "mppe": 13.04419,
+      "sp-sr": 0.53333
+     },
+     "place": 17
+    },
+    {
+     "team": "Open4D",
+     "rank_sum": 63,
+     "ranks": {
+      "auc": 18,
+      "mp-sr": 15,
+      "mppe": 19,
+      "sp-sr": 11
+     },
+     "scores": {
+      "auc": 0.34992,
+      "mp-sr": 0.1,
+      "mppe": 40.10804,
+      "sp-sr": 0.36666
+     },
+     "place": 18
+    },
+    {
+     "team": "longbot",
+     "rank_sum": 64,
+     "ranks": {
+      "auc": 19,
+      "mp-sr": 14,
+      "mppe": 18,
+      "sp-sr": 13
+     },
+     "scores": {
+      "auc": 0.32917,
+      "mp-sr": 0.13333,
+      "mppe": 39.218,
+      "sp-sr": 0.13333
+     },
+     "place": 19
+    },
+    {
+     "team": "Null Walker",
+     "rank_sum": 66,
+     "ranks": {
+      "auc": 20,
+      "mp-sr": 14,
+      "mppe": 20,
+      "sp-sr": 12
+     },
+     "scores": {
+      "auc": 0.30445,
+      "mp-sr": 0.13333,
+      "mppe": 48.11927,
+      "sp-sr": 0.2
+     },
+     "place": 20
+    },
+    {
+     "team": "Javier Medel, MSc.",
+     "rank_sum": 72,
+     "ranks": {
+      "auc": 21,
+      "mp-sr": 16,
+      "mppe": 21,
+      "sp-sr": 14
+     },
+     "scores": {
+      "auc": 0.24466,
+      "mp-sr": 0.03333,
+      "mppe": 53.8482,
+      "sp-sr": 0.1
+     },
+     "place": 21
+    },
+    {
+     "team": "Kelly To the H",
+     "rank_sum": 76,
+     "ranks": {
+      "auc": 22,
+      "mp-sr": 17,
+      "mppe": 22,
+      "sp-sr": 15
+     },
+     "scores": {
+      "auc": 0.21199,
+      "mp-sr": 0.0,
+      "mppe": 58.07113,
+      "sp-sr": 0.0
+     },
+     "place": 22
+    },
+    {
+     "team": "Mahyar Dana",
+     "rank_sum": 78,
+     "ranks": {
+      "auc": 23,
+      "mp-sr": 17,
+      "mppe": 23,
+      "sp-sr": 15
+     },
+     "scores": {
+      "auc": 0.2031,
+      "mp-sr": 0.0,
+      "mppe": 61.42768,
+      "sp-sr": 0.0
+     },
+     "place": 23
+    },
+    {
+     "team": "TheTensorGeek",
+     "rank_sum": 80,
+     "ranks": {
+      "auc": 24,
+      "mp-sr": 17,
+      "mppe": 24,
+      "sp-sr": 15
+     },
+     "scores": {
+      "auc": 0.1962,
+      "mp-sr": 0.0,
+      "mppe": 61.97241,
+      "sp-sr": 0.0
+     },
+     "place": 24
+    }
+   ]
+  },
+  "tier2": {
+   "boards": [
+    "auc",
+    "mp-sr",
+    "mppe",
+    "sp-sr"
+   ],
+   "ranked_teams": 18,
+   "unranked_incomplete": [],
+   "standings": [
+    {
+     "team": "Izus_systems",
+     "rank_sum": 5,
+     "ranks": {
+      "auc": 1,
+      "mp-sr": 2,
+      "mppe": 1,
+      "sp-sr": 1
+     },
+     "scores": {
+      "auc": 0.64411,
+      "mp-sr": 0.73333,
+      "mppe": 6.65765,
+      "sp-sr": 0.8
+     },
+     "place": 1
+    },
+    {
+     "team": "MBZUAI-RCL Group",
+     "rank_sum": 9,
+     "ranks": {
+      "auc": 2,
+      "mp-sr": 1,
+      "mppe": 5,
+      "sp-sr": 1
+     },
+     "scores": {
+      "auc": 0.62862,
+      "mp-sr": 0.8,
+      "mppe": 11.52399,
+      "sp-sr": 0.8
+     },
+     "place": 2
+    },
+    {
+     "team": "Debajyoti Dasgupta",
+     "rank_sum": 12,
+     "ranks": {
+      "auc": 4,
+      "mp-sr": 3,
+      "mppe": 4,
+      "sp-sr": 1
+     },
+     "scores": {
+      "auc": 0.55274,
+      "mp-sr": 0.7,
+      "mppe": 11.30236,
+      "sp-sr": 0.8
+     },
+     "place": 3
+    },
+    {
+     "team": "domoarigato",
+     "rank_sum": 13,
+     "ranks": {
+      "auc": 3,
+      "mp-sr": 2,
+      "mppe": 6,
+      "sp-sr": 2
+     },
+     "scores": {
+      "auc": 0.60318,
+      "mp-sr": 0.73333,
+      "mppe": 12.52789,
+      "sp-sr": 0.76666
+     },
+     "place": 4
+    },
+    {
+     "team": "Xueyi Wang (FF)",
+     "rank_sum": 16,
+     "ranks": {
+      "auc": 5,
+      "mp-sr": 4,
+      "mppe": 2,
+      "sp-sr": 5
+     },
+     "scores": {
+      "auc": 0.52267,
+      "mp-sr": 0.6,
+      "mppe": 9.28429,
+      "sp-sr": 0.63333
+     },
+     "place": 5
+    },
+    {
+     "team": "nima arki",
+     "rank_sum": 19,
+     "ranks": {
+      "auc": 7,
+      "mp-sr": 6,
+      "mppe": 3,
+      "sp-sr": 3
+     },
+     "scores": {
+      "auc": 0.47955,
+      "mp-sr": 0.5,
+      "mppe": 10.84276,
+      "sp-sr": 0.73333
+     },
+     "place": 6
+    },
+    {
+     "team": "maniphys.ai",
+     "rank_sum": 23,
+     "ranks": {
+      "auc": 6,
+      "mp-sr": 5,
+      "mppe": 9,
+      "sp-sr": 3
+     },
+     "scores": {
+      "auc": 0.51765,
+      "mp-sr": 0.53333,
+      "mppe": 15.32195,
+      "sp-sr": 0.73333
+     },
+     "place": 7
+    },
+    {
+     "team": "Luai Abuelsamen",
+     "rank_sum": 27,
+     "ranks": {
+      "auc": 8,
+      "mp-sr": 7,
+      "mppe": 8,
+      "sp-sr": 4
+     },
+     "scores": {
+      "auc": 0.46522,
+      "mp-sr": 0.46666,
+      "mppe": 14.1276,
+      "sp-sr": 0.66666
+     },
+     "place": 8
+    },
+    {
+     "team": "Chivatam",
+     "rank_sum": 37,
+     "ranks": {
+      "auc": 10,
+      "mp-sr": 11,
+      "mppe": 10,
+      "sp-sr": 6
+     },
+     "scores": {
+      "auc": 0.43493,
+      "mp-sr": 0.13333,
+      "mppe": 16.05874,
+      "sp-sr": 0.6
+     },
+     "place": 9
+    },
+    {
+     "team": "Team OPS",
+     "rank_sum": 37,
+     "ranks": {
+      "auc": 12,
+      "mp-sr": 10,
+      "mppe": 7,
+      "sp-sr": 8
+     },
+     "scores": {
+      "auc": 0.42601,
+      "mp-sr": 0.16666,
+      "mppe": 13.22444,
+      "sp-sr": 0.53333
+     },
+     "place": 9
+    },
+    {
+     "team": "wte09fl",
+     "rank_sum": 37,
+     "ranks": {
+      "auc": 11,
+      "mp-sr": 8,
+      "mppe": 11,
+      "sp-sr": 7
+     },
+     "scores": {
+      "auc": 0.42885,
+      "mp-sr": 0.36666,
+      "mppe": 18.0853,
+      "sp-sr": 0.56666
+     },
+     "place": 9
+    },
+    {
+     "team": "DAP",
+     "rank_sum": 38,
+     "ranks": {
+      "auc": 9,
+      "mp-sr": 9,
+      "mppe": 12,
+      "sp-sr": 8
+     },
+     "scores": {
+      "auc": 0.44824,
+      "mp-sr": 0.33333,
+      "mppe": 25.69486,
+      "sp-sr": 0.53333
+     },
+     "place": 12
+    },
+    {
+     "team": "Open4D",
+     "rank_sum": 47,
+     "ranks": {
+      "auc": 13,
+      "mp-sr": 12,
+      "mppe": 13,
+      "sp-sr": 9
+     },
+     "scores": {
+      "auc": 0.2908,
+      "mp-sr": 0.03333,
+      "mppe": 43.44247,
+      "sp-sr": 0.33333
+     },
+     "place": 13
+    },
+    {
+     "team": "Rohit Pardeshi",
+     "rank_sum": 50,
+     "ranks": {
+      "auc": 14,
+      "mp-sr": 12,
+      "mppe": 14,
+      "sp-sr": 10
+     },
+     "scores": {
+      "auc": 0.25726,
+      "mp-sr": 0.03333,
+      "mppe": 49.14697,
+      "sp-sr": 0.16666
+     },
+     "place": 14
+    },
+    {
+     "team": "longbot",
+     "rank_sum": 53,
+     "ranks": {
+      "auc": 15,
+      "mp-sr": 12,
+      "mppe": 15,
+      "sp-sr": 11
+     },
+     "scores": {
+      "auc": 0.25073,
+      "mp-sr": 0.03333,
+      "mppe": 55.10178,
+      "sp-sr": 0.03333
+     },
+     "place": 15
+    },
+    {
+     "team": "Javier Medel, MSc.",
+     "rank_sum": 57,
+     "ranks": {
+      "auc": 16,
+      "mp-sr": 13,
+      "mppe": 17,
+      "sp-sr": 11
+     },
+     "scores": {
+      "auc": 0.2233,
+      "mp-sr": 0.0,
+      "mppe": 61.22802,
+      "sp-sr": 0.03333
+     },
+     "place": 16
+    },
+    {
+     "team": "Kelly To the H",
+     "rank_sum": 58,
+     "ranks": {
+      "auc": 17,
+      "mp-sr": 13,
+      "mppe": 16,
+      "sp-sr": 12
+     },
+     "scores": {
+      "auc": 0.21199,
+      "mp-sr": 0.0,
+      "mppe": 58.07113,
+      "sp-sr": 0.0
+     },
+     "place": 17
+    },
+    {
+     "team": "TheTensorGeek",
+     "rank_sum": 61,
+     "ranks": {
+      "auc": 18,
+      "mp-sr": 13,
+      "mppe": 18,
+      "sp-sr": 12
+     },
+     "scores": {
+      "auc": 0.19193,
+      "mp-sr": 0.0,
+      "mppe": 65.49672,
+      "sp-sr": 0.0
+     },
+     "place": 18
+    }
+   ]
+  },
+  "tier3": {
+   "boards": [
+    "auc",
+    "mp-sr",
+    "mppe",
+    "sp-sr"
+   ],
+   "ranked_teams": 13,
+   "unranked_incomplete": [],
+   "standings": [
+    {
+     "team": "domoarigato",
+     "rank_sum": 5,
+     "ranks": {
+      "auc": 2,
+      "mp-sr": 1,
+      "mppe": 1,
+      "sp-sr": 1
+     },
+     "scores": {
+      "auc": 0.37004,
+      "mp-sr": 0.16666,
+      "mppe": 25.19032,
+      "sp-sr": 0.46666
+     },
+     "place": 1
+    },
+    {
+     "team": "Izus_systems",
+     "rank_sum": 6,
+     "ranks": {
+      "auc": 1,
+      "mp-sr": 2,
+      "mppe": 2,
+      "sp-sr": 1
+     },
+     "scores": {
+      "auc": 0.37546,
+      "mp-sr": 0.13333,
+      "mppe": 29.38347,
+      "sp-sr": 0.46666
+     },
+     "place": 2
+    },
+    {
+     "team": "maniphys.ai",
+     "rank_sum": 13,
+     "ranks": {
+      "auc": 5,
+      "mp-sr": 3,
+      "mppe": 4,
+      "sp-sr": 1
+     },
+     "scores": {
+      "auc": 0.28173,
+      "mp-sr": 0.1,
+      "mppe": 36.60061,
+      "sp-sr": 0.46666
+     },
+     "place": 3
+    },
+    {
+     "team": "nima arki",
+     "rank_sum": 14,
+     "ranks": {
+      "auc": 3,
+      "mp-sr": 3,
+      "mppe": 6,
+      "sp-sr": 2
+     },
+     "scores": {
+      "auc": 0.32937,
+      "mp-sr": 0.1,
+      "mppe": 42.30358,
+      "sp-sr": 0.4
+     },
+     "place": 4
+    },
+    {
+     "team": "Debajyoti Dasgupta",
+     "rank_sum": 16,
+     "ranks": {
+      "auc": 4,
+      "mp-sr": 4,
+      "mppe": 5,
+      "sp-sr": 3
+     },
+     "scores": {
+      "auc": 0.2871,
+      "mp-sr": 0.06666,
+      "mppe": 38.80747,
+      "sp-sr": 0.36666
+     },
+     "place": 5
+    },
+    {
+     "team": "Luai Abuelsamen",
+     "rank_sum": 23,
+     "ranks": {
+      "auc": 6,
+      "mp-sr": 5,
+      "mppe": 7,
+      "sp-sr": 5
+     },
+     "scores": {
+      "auc": 0.26781,
+      "mp-sr": 0.03333,
+      "mppe": 47.7718,
+      "sp-sr": 0.2
+     },
+     "place": 6
+    },
+    {
+     "team": "Xueyi Wang (FF)",
+     "rank_sum": 25,
+     "ranks": {
+      "auc": 10,
+      "mp-sr": 6,
+      "mppe": 3,
+      "sp-sr": 6
+     },
+     "scores": {
+      "auc": 0.20354,
+      "mp-sr": 0.0,
+      "mppe": 35.00567,
+      "sp-sr": 0.16666
+     },
+     "place": 7
+    },
+    {
+     "team": "wte09fl",
+     "rank_sum": 27,
+     "ranks": {
+      "auc": 8,
+      "mp-sr": 3,
+      "mppe": 12,
+      "sp-sr": 4
+     },
+     "scores": {
+      "auc": 0.23635,
+      "mp-sr": 0.1,
+      "mppe": 64.05112,
+      "sp-sr": 0.23333
+     },
+     "place": 8
+    },
+    {
+     "team": "Chivatam",
+     "rank_sum": 29,
+     "ranks": {
+      "auc": 7,
+      "mp-sr": 6,
+      "mppe": 9,
+      "sp-sr": 7
+     },
+     "scores": {
+      "auc": 0.24862,
+      "mp-sr": 0.0,
+      "mppe": 50.11803,
+      "sp-sr": 0.06666
+     },
+     "place": 9
+    },
+    {
+     "team": "Team OPS",
+     "rank_sum": 32,
+     "ranks": {
+      "auc": 12,
+      "mp-sr": 6,
+      "mppe": 8,
+      "sp-sr": 6
+     },
+     "scores": {
+      "auc": 0.14149,
+      "mp-sr": 0.0,
+      "mppe": 48.46552,
+      "sp-sr": 0.16666
+     },
+     "place": 10
+    },
+    {
+     "team": "Kelly To the H",
+     "rank_sum": 34,
+     "ranks": {
+      "auc": 9,
+      "mp-sr": 6,
+      "mppe": 10,
+      "sp-sr": 9
+     },
+     "scores": {
+      "auc": 0.21199,
+      "mp-sr": 0.0,
+      "mppe": 58.07113,
+      "sp-sr": 0.0
+     },
+     "place": 11
+    },
+    {
+     "team": "longbot",
+     "rank_sum": 37,
+     "ranks": {
+      "auc": 11,
+      "mp-sr": 6,
+      "mppe": 11,
+      "sp-sr": 9
+     },
+     "scores": {
+      "auc": 0.18026,
+      "mp-sr": 0.0,
+      "mppe": 63.11191,
+      "sp-sr": 0.0
+     },
+     "place": 12
+    },
+    {
+     "team": "Open4D",
+     "rank_sum": 39,
+     "ranks": {
+      "auc": 13,
+      "mp-sr": 5,
+      "mppe": 13,
+      "sp-sr": 8
+     },
+     "scores": {
+      "auc": 0.05042,
+      "mp-sr": 0.03333,
+      "mppe": 67.10247,
+      "sp-sr": 0.03333
+     },
+     "place": 13
+    }
+   ]
+  }
+ }
+}

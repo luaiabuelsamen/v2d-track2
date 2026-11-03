@@ -44,6 +44,15 @@ if [ -s "$XFER_ADOPTION" ]; then
   XFER_ADOPTED=$("$PY" -c "import json,sys; print(' '.join(json.load(open(sys.argv[1]))['adopted']))" "$XFER_ADOPTION")
   echo "transfer-arm adoptions: ${XFER_ADOPTED:-none}"
 fi
+# T1P (Tier 1 precision, trained from scratch on the clean tier_1 references) keeps its
+# adoptions in its own result record, whose `adopted` is a MAP of tag -> checkpoint rather than a
+# list, because which checkpoint ships is part of the adoption on that arm.
+T1P_RESULT=${T1P_RESULT:-$REPO/results/t1_precision_result.json}
+T1P_ADOPTED=""
+if [ -s "$T1P_RESULT" ]; then
+  T1P_ADOPTED=$("$PY" -c "import json,sys; print(' '.join(sorted(json.load(open(sys.argv[1]))['adopted'])))" "$T1P_RESULT")
+  echo "T1P adoptions: ${T1P_ADOPTED:-none}"
+fi
 CHAIN_ADOPTED=""
 if [ -s "$CHAIN_ADOPTION" ]; then
   CHAIN_ADOPTED=$("$PY" -c "import json,sys; print(' '.join(json.load(open(sys.argv[1]))['adopted']))" "$CHAIN_ADOPTION")
@@ -54,7 +63,7 @@ echo "adopted from the generation-2 chain: ${CHAIN_ADOPTED:-none}"
 # was never substituted: the packer printed "transfer-arm adoptions: e19" and shipped the old
 # rollout anyway, leaving the entry score bit-identical. Third time this packer has silently
 # shipped the wrong rollout; each time the tell was a score that did not move.
-ALL_ADOPTED=$(printf '%s\n' $ADOPTED $XFER_ADOPTED | sort -u | tr '\n' ' ')
+ALL_ADOPTED=$(printf '%s\n' $ADOPTED $XFER_ADOPTED $T1P_ADOPTED | sort -u | tr '\n' ' ')
 for TAG in $ALL_ADOPTED; do
   EP=$((10#${TAG#e})); F=$(printf 'episode_%06d' "$EP"); SRC=""
   for d in ws_tier1 t1f_1 t1f_2c t1f_3c ws_s4a ws_s4b; do
@@ -70,6 +79,11 @@ for TAG in $ALL_ADOPTED; do
   case " $XFER_ADOPTED " in
     *" $TAG "*) [ -s "$S/xfer_results/rollouts/$F.parquet" ] && SRC=$S/xfer_results/rollouts ;;
   esac
+  # T1P is the newest arm and the only one trained from scratch on the clean references, so it
+  # wins over all of the above for its six clips. Named, for the same reason as the two above.
+  case " $T1P_ADOPTED " in
+    *" $TAG "*) [ -s "$S/t1p_results/rollouts/$F.parquet" ] && SRC=$S/t1p_results/rollouts ;;
+  esac
   [ -n "$SRC" ] || { echo "FATAL: $TAG adopted but no Tier 1 rollout found" >&2; exit 3; }
   cp "$SRC/$F.parquet" "$SRC/$F.json" "$OUT/results/"
   echo "   $TAG <- ${SRC#$S/}"
@@ -80,7 +94,7 @@ done
 # came from a Tier 1-driven arm -- the fine-tune AND the donor transfer -- and bridge_v1 for the
 # rest. Passing only $ADOPTION here is what made e19 fail at 0.0665 m / 0.4891 rad: its transfer
 # rollout was driven by the clean reference while its frame reference was still the Tier 2 one.
-"$PY" - "$ADOPTION" "$CLEAN_REFS" "$SHIPPED_REFS" "$OUT/refmap.json" "$XFER_ADOPTED" <<'PY'
+"$PY" - "$ADOPTION" "$CLEAN_REFS" "$SHIPPED_REFS" "$OUT/refmap.json" "$XFER_ADOPTED $T1P_ADOPTED" <<'PY'
 import json, sys
 adoption, clean, shipped, out = sys.argv[1:5]
 extra = set((sys.argv[5] if len(sys.argv) > 5 else "").split())

@@ -1,0 +1,34 @@
+{
+ "what": "Tier 1 v6 -- the T1P entry, uploaded to all four Tier 1 boards",
+ "uploaded_utc": "2026-11-03T20:26Z",
+ "csv": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t1_entry_v3/track2_tier1.csv",
+ "csv_bytes": 11839731,
+ "rows": 22989,
+ "episodes": 30,
+ "distinct_checkpoints": 30,
+ "code_commit_url": "https://github.com/luaiabuelsamen/v2d-track2/commit/070eab9170d19d57e0b79e50d80fd3d36b1887f2",
+ "code_commit_pushed": "yes -- pushed before packing, and the commit page returns 200. Every one of the 22,989 rows carries this URL, so a judge resolving provenance from any row reaches pushed code.",
+ "what_changed": "Six clips swap to T1P rollouts: e02 e11 e13 e17 e21 e29, each trained from scratch for 350M steps on the released clean tier_1 reference with object-position std 0.08. e09 was refused by its own pre-registered bar. The other 24 clips are unchanged from v5.",
+ "submissions": {
+  "add_auc": {"slug": "v2d-challenge-track2-tier1-auc", "ref": 57959749, "public": "0.60459", "state": "COMPLETE"},
+  "spider_sr": {"slug": "v2d-challenge-track2-tier1-sp-sr", "ref": 57959751, "public": "0.73333", "state": "COMPLETE"},
+  "maniptrans_sr": {"slug": "v2d-challenge-track2-tier1-mp-sr", "ref": 57959755, "public": "0.63333", "state": "COMPLETE"},
+  "mppe_cm": {"slug": "v2d-challenge-track2-tier1-mppe", "ref": 57959758, "public": "11.72123", "state": "COMPLETE"}
+ },
+ "local_score": {
+  "add_auc": 0.6045988987152577,
+  "spider_sr": 0.7333333333333333,
+  "maniptrans_sr": 0.6333333333333333,
+  "mppe_cm": 11.721232914655127
+ },
+ "local_vs_public": "agrees to 5 decimals on all four, which is now 23 uploads with no local-to-public disagreement above 1.1e-5",
+ "board_effect": {
+  "before": {"auc": 0.54808, "sp_sr": 0.70000, "mp_sr": 0.50000, "mppe": 12.06020, "sum": 43, "place": 12},
+  "after": {"auc": 0.60459, "sp_sr": 0.73333, "mp_sr": 0.63333, "mppe": 11.72123, "sum": 39, "place": 12},
+  "ranks_after": {"auc": 13, "sp-sr": 7, "mp-sr": 8, "mppe": 11},
+  "rank_points": 4,
+  "place": "12 of 24, now alone rather than tied with Team OPS, who are 13th at 45. DAP at 33 holds 11th, so the next place costs six more rank points.",
+  "predicted": "results/t1_precision_result.json predicted sum 39 and ranks 13/7/8/11 before the upload. The board delivered exactly that."
+ },
+ "packer_change": "brev/pack_t1_entry.sh gained a NAMED T1P source, read from results/t1_precision_result.json, whose `adopted` is a map of tag -> checkpoint rather than a list because which checkpoint ships is part of the adoption on that arm. Named rather than appended to the search list, for the reason recorded in that script: appending is how it twice shipped a rollout that had lost its own comparison, chosen by directory order."
+}

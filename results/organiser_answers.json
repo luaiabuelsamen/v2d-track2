@@ -17,7 +17,7 @@
   "tier1_entry": "VALID as uploaded. 16 of 30 clips are driven by the bridge-cleaned Tier 2 reference, i.e. strictly less information than Tier 1 permits -- confirmed by answer 2.",
   "e01_e29_cross_tier_substitution": "UN-SHELVED as a rules matter by answer 2. Legality was the only objection recorded in docs/FINAL_COMPLIANCE.md; it is now answered in writing.",
   "ranking_rule": "CONFIRMED by answer 4. docs/RANKING_RULE.md no longer contains an inference, and the step-function consequence (a gain pays nothing until it crosses a distinct score) is load-bearing.",
-  "tier3_entry": "AT RISK. Answer 3 covers only one of our three uses of the released mesh."
+  "tier3_entry": "NON-COMPLIANT, confirmed in writing 2026-11-03. Answer 3 plus the follow-up disallow both of our two remaining mesh uses. The entry stands on the public board because Kaggle submissions cannot be withdrawn, but it must not be named as a final submission on the technical-report form, and the organisers should be told plainly."
  },
  "tier3_mesh_uses": [
   {
@@ -30,13 +30,19 @@
    "use": "the CAD model input to FoundationPose, which produces the per-frame object track from the exo video",
    "where": "docs/T3_RECON.md:53",
    "permitted": false,
-   "why": "neither a metric computation nor frame alignment; it gives the tracker exact object shape and scale, which the stated intent ('evaluate directly from video') withholds"
+   "why": "neither a metric computation nor frame alignment; it gives the tracker exact object shape and scale, which the stated intent ('evaluate directly from video') withholds -- CONFIRMED disallowed by the 2026-11-03 reply."
   },
   {
    "use": "the object's visual and collision geometry in the simulator while the policy trains",
    "where": "src/v2d/retarget/sequences.py:270 copies the released mesh to reconstructed_mesh/output_aligned.glb",
    "permitted": false,
-   "why": "this is the ground truth mesh used for training, in the plainest sense of answer 3. Not disclosed in our first email; the directory is named reconstructed_mesh and holds the released mesh."
+   "why": "this is the ground truth mesh used for training, in the plainest sense of answer 3. Not disclosed in our first email; the directory is named reconstructed_mesh and holds the released mesh. -- CONFIRMED disallowed by the 2026-11-03 reply."
+  },
+  {
+   "use": "the object's identity (e.g. 'big_red_bowl') as the open-set detection text prompt",
+   "where": "meta/episodes_metadata.jsonl, read by the Tier 3 detection stage",
+   "permitted": false,
+   "why": "not asked about in the first email; the 2026-11-03 reply volunteers that AI-generated subject names are the intended alternative, so the released name is not admissible either. A third independent reason the current Tier 3 entry cannot be claimed."
   }
  ],
  "follow_up_sent": {
@@ -49,7 +55,8 @@
   "item": "the staged 13-clip Tier 3 warm-start batch",
   "staged_at": "$S/ws_t3n, 449 MB, 13 of 13 parquets and support USDAs manifest-verified",
   "cost_if_launched": "about $8 on 3 boxes",
-  "why_held": "fine-tuning on a reference that may be inadmissible spends credit on an entry that may be withdrawn. The expected value of the batch was never in doubt (12 of 17 Tier 3 clips adopted, +0.089 summed AUC each); its admissibility now is."
+  "why_held": "fine-tuning on a reference that may be inadmissible spends credit on an entry that may be withdrawn. The expected value of the batch was never in doubt (12 of 17 Tier 3 clips adopted, +0.089 summed AUC each); its admissibility now is.",
+  "resolution": "CANCELLED. The 13-clip warm-start batch would have fine-tuned policies against a reference produced by a tracker whose CAD input is inadmissible, so it could not have produced a claimable entry at any price. The ~$8 is not spent."
  },
  "compliant_tier3_route_if_disallowed": {
   "modules": [
@@ -57,7 +64,8 @@
    "v2d_hoi_object_reconstruction"
   ],
   "note": "both ship in nvidia-isaac/video_to_data, so the intended path exists. The reconstructed mesh would feed the tracker and the simulator; the released mesh would stay only in scoring and frame-0 alignment.",
-  "scale": "a rebuild of the whole Tier 3 chain -- reconstruct 30 objects, re-retarget, re-train or warm-start 30 policies -- not a patch, and not obviously affordable in the time and credit left."
+  "scale": "a rebuild of the whole Tier 3 chain -- reconstruct 30 objects, re-retarget, re-train or warm-start 30 policies -- not a patch, and not obviously affordable in the time and credit left.",
+  "verdict_2026_11_03": "Not reachable before the 2026-11-04 22:00 UTC freeze. It needs 30 object reconstructions from video, FoundationPose re-run against each reconstruction, the simulator re-staged on the reconstructed geometry, and 30 policies re-trained -- a chain we have never run end to end, on about $28 of credit and ~25 hours. Recommendation: withdraw Tier 3 and say so in the thread."
  },
  "fresh_rung_prices": {
   "pulled": "2026-11-02, all twelve boards at --page-size 200",
@@ -70,5 +78,13 @@
   "cheapest": "tier1-mp-sr at 1 clip crossing the 3 cm / 30 deg gate, and tier1-mppe at 1.9 cm summed across 30 clips (0.063 cm of mean, against DAP at 11.99700).",
   "why_tier1": "Three of the four cheapest rungs are Tier 1 -- the tier answer 2 just confirmed without reservation, and the only tier where selection carries no adoption risk, because the permitted input IS the scoring reference and a better rollout can simply be kept.",
   "what_cannot_collect_them": "The warm start. results/t1_rank_sensitivity.json records 12 of 12 rejected Tier 1 clips coming back worse on MPPE (e02 4.57 -> 35.05, e21 4.79 -> 10.34, e29 3.85 -> 8.72), because that arm trades position accuracy for reference tracking. The seven clips at 3.85-5.15 cm need a policy trained on the clean Tier 1 reference at full length, which we have never run."
+ },
+ "follow_up_answered": {
+  "when": "2026-11-03 15:52 UTC",
+  "from": "Shalin Jain <shalinj@nvidia.com>, cc v2d_challenge@nvidia.com and mverghese@nvidia.com",
+  "gmail_thread": "1a19e23934b631fa",
+  "verbatim": "Thanks for the detailed questions! Your read is correct, we ask that you please reconstruct the object mesh for your Tier 3 object tracking and simulation efforts. For the object name, you're welcome to use AI-generated subject names as an alternative.",
+  "settles": "Both disputed uses are disallowed. 'Your read is correct' answers the question as asked -- the read offered was that (b) the tracker's CAD input and (c) the simulator's object geometry are BOTH inadmissible and that the compliant route is our own reconstruction for both, keeping the released mesh only for scoring and frame-0 alignment. The second sentence also rules out meta/episodes_metadata.jsonl as the detection prompt, offering AI-generated names instead.",
+  "effect_on_tier3": "The live Tier 3 entry (0.26781 AUC, 6th of 13) DOES NOT ADHERE. It is not a borderline reading: the released mesh is the tracker's CAD model and the simulator's collision geometry in every one of its 30 clips."
  }
 }

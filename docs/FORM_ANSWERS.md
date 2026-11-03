@@ -7,21 +7,90 @@ Form: <https://docs.google.com/forms/d/e/1FAIpQLSekBx0IFs7Q_TVMu67UXNrh0S7FID6yI
 > form is required for your entry to be valid and eligible for first-place, second-place, or
 > Industry Innovation Awards."
 
-"Per top submission" is why this is a table of three rather than one: we have a live entry on
-Tier 1, Tier 2 and Tier 3, and an unfilled form is the difference between an entry being judged
-and an entry being void. Submitting three costs nothing but minutes.
+## It is one form, not three
 
-| field | value |
-|---|---|
-| team | Luai Abuelsamen, University of California, Berkeley |
-| report PDF | `docs/TECHNICAL_REPORT.pdf` — built from `docs/report/main.tex` in NVIDIA's own extended-abstract class; main text ends on page 2, references follow |
-| GitHub | <https://github.com/luaiabuelsamen/v2d-track2> (public, Apache-2.0) |
-| container | `ghcr.io/luaiabuelsamen/v2d-track2:submission` — pushed 2026-11-02, digest `sha256:f3f3d24bbf333a0e2e0323dda8968810ba18e68cc92e9c7da05d32ba0b7c7af1`, 23 layers, 7.51 GB. **Public and verified** (see below) |
+This page previously planned three filings, one per tier, reading "per top submission" as per
+tier. **The live form says otherwise and is the authority.** Field 4 is a single-choice dropdown
+whose options are whole tracks --- "Track 1 — Reconstruction", "Track 2 — Robotic Grounding",
+"Track 3 — Egocentric" --- and field 8 says, in the organisers' own words, *"For Track 2, state
+'All tiers' or list a commit for each tier."* A form that asks for one track and all of its tiers
+in one answer is one form. Filing three would have produced three conflicting records of the same
+entry.
 
-**The package is public, and that is checked rather than assumed.** It was flipped in the UI on
-2026-11-02 (GitHub has no REST endpoint for package visibility --- a `PATCH` to
-`/user/packages/container/v2d-track2` returns 404 --- so it could only ever be a UI click). An
-anonymous pull now resolves:
+Two other things the form wants that the plan had wrong:
+
+* Field 6 asks for a **URL to the report**, not a file upload. The PDF has to be hosted somewhere a
+  judge can open, which is why the repository had to be pushed before this could be filled in.
+* Field 8 wants the **exact commit**, per tier if they differ. Ours differ, because each tier's CSV
+  embeds the commit it was packed at in all 22,989 of its rows.
+
+## The nine fields
+
+| # | field | answer |
+|---|---|---|
+| 1 | Registered team name *(must match leaderboard and registration)* | `Luai Abuelsamen` |
+| 2 | Contact email | `luai_abuelsamen@berkeley.edu` |
+| 3 | Leaderboard team ID *(optional)* | `17198357` (Tier 1 AUC). Each metric board is its own Kaggle competition and issues its own team ID; the full list is below |
+| 4 | Challenge track | **Track 2 — Robotic Grounding** |
+| 5 | Final leaderboard submission IDs or URLs | the eight below — Tier 1 and Tier 2 only |
+| 6 | Technical report URL | <https://github.com/luaiabuelsamen/v2d-track2/blob/070eab9170d19d57e0b79e50d80fd3d36b1887f2/docs/TECHNICAL_REPORT.pdf> |
+| 7 | GitHub repository URL | <https://github.com/luaiabuelsamen/v2d-track2> (public, Apache-2.0) |
+| 8 | Code version used for this submission | `Tier 1: 070eab9170d19d57e0b79e50d80fd3d36b1887f2 · Tier 2: 0260cd8ce5c81c9e4280e2ec5b34bba59609f98b` — each tier's CSV carries its own commit in every row |
+| 9 | Container for verification | `ghcr.io/luaiabuelsamen/v2d-track2:submission`, digest `sha256:f3f3d24bbf333a0e2e0323dda8968810ba18e68cc92e9c7da05d32ba0b7c7af1` (public, anonymous pull verified below) |
+
+### Field 5, in full
+
+Eight submissions across two tiers. Tier 3 is **deliberately absent**; see below.
+
+| board | Kaggle competition | submission | score |
+|---|---|---|---|
+| Tier 1 AUC | `v2d-challenge-track2-tier1-auc` | 57959749 | 0.60459 |
+| Tier 1 SP-SR | `v2d-challenge-track2-tier1-sp-sr` | 57959751 | 0.73333 |
+| Tier 1 MP-SR | `v2d-challenge-track2-tier1-mp-sr` | 57959755 | 0.63333 |
+| Tier 1 MPPE | `v2d-challenge-track2-tier1-mppe` | 57959758 | 11.72123 |
+| Tier 2 AUC | `v2d-challenge-track2-tier2-auc` | 57742766 | 0.46522 |
+| Tier 2 SP-SR | `v2d-challenge-track2-tier2-sp-sr` | 57742768 | 0.66666 |
+| Tier 2 MP-SR | `v2d-challenge-track2-tier2-mp-sr` | 57742770 | 0.46666 |
+| Tier 2 MPPE | `v2d-challenge-track2-tier2-mppe` | 57742773 | 14.12760 |
+
+Each is the board's own current best and its latest, checked against the leaderboard rather than
+assumed (`results/standings_tiers_2026_11_03.json`).
+
+### Field 3, in full
+
+| tier | auc | sp-sr | mp-sr | mppe |
+|---|---|---|---|---|
+| Tier 1 | 17198357 | 17198361 | 17198362 | 17198363 |
+| Tier 2 | 17197340 | 17198366 | 17198367 | 17198369 |
+
+## Tier 3 is withdrawn, and that is the honest answer
+
+**Do not list the Tier 3 submissions.** On 2026-11-03 the organisers answered our follow-up:
+
+> "Your read is correct, we ask that you please reconstruct the object mesh for your Tier 3 object
+> tracking and simulation efforts. For the object name, you're welcome to use AI-generated subject
+> names as an alternative."
+
+The read they confirmed was ours: that using the released mesh as FoundationPose's CAD input **and**
+as the simulator's object geometry are both inadmissible. Our Tier 3 entry does both, in all 30
+clips, and additionally takes the object's name from `meta/episodes_metadata.jsonl` --- which the
+second sentence also rules out. Three independent reasons, none of them borderline.
+
+Rebuilding it compliantly means 30 object reconstructions from video, FoundationPose re-run on each,
+the simulator re-staged on reconstructed geometry and 30 policies re-trained: a chain we have never
+run end to end, against ~$28 of credit and ~25 hours. So the tier is withdrawn rather than fixed.
+
+The submissions cannot be deleted from Kaggle, so 0.26781 stays visible on the Tier 3 board. Not
+naming it on the form is how the tier is declined --- and the organisers are told so directly in the
+same thread, rather than left to infer it from an absence. We asked the question that disqualified
+our own entry; the cost of that is one tier, and the alternative was claiming an award on an entry
+we had been told does not adhere.
+
+## The container is public, and that is checked rather than assumed
+
+It was flipped in the UI on 2026-11-02 (GitHub has no REST endpoint for package visibility --- a
+`PATCH` to `/user/packages/container/v2d-track2` returns 404 --- so it could only ever be a UI
+click). An anonymous pull now resolves:
 
 ```
 TOK=$(curl -s "https://ghcr.io/token?scope=repository:luaiabuelsamen/v2d-track2:pull&service=ghcr.io" | jq -r .token)
@@ -32,32 +101,25 @@ curl -sI -H "Authorization: Bearer $TOK" https://ghcr.io/v2/luaiabuelsamen/v2d-t
 That digest is the one we pushed, so a judge with no credentials gets the same image we built, and
 "private package" is ruled out as a failure mode rather than hoped against.
 
-## Which forms to file, and when
+Field 7 adds a condition the earlier plan missed: *"Repository shared with the Nvidia-V2D-Challenge
+account."* The repository is public, so no invitation is needed for a judge to read it; if they
+want the account listed as a collaborator explicitly, that is one click in Settings → Collaborators.
 
-Three live entries, three forms. They are **not** all in the same state:
+## Standings at filing time
 
-| form | when | why |
-|---|---|---|
-| **Tier 1** | **now** | Confirmed valid in writing by the organisers' answer 2 (`results/organiser_answers.json`): driving a Tier 1 rollout from a reference carrying strictly less information than Tier 1 permits is allowed, which is what 16 of its 30 clips do. Nothing in the form is score-dependent, so a later score improvement does not invalidate a filed form |
-| **Tier 2** | **now** | Confirmed valid by answer 1: a reference derived only from that tier's own released file, with no read of another tier, is permitted. That is exactly what `src/v2d/clean/support_contact.py` does |
-| **Tier 3** | **hold** | Answer 3 forbids the ground-truth mesh for training, and we use it both as FoundationPose's CAD model and as the simulator's object geometry. A follow-up naming both uses is in the same thread. **Not filing this form is how we decline the tier** if the answer is no, so it costs nothing to wait and would cost our credibility to file an entry we have been told does not adhere |
+`results/standings_tiers_2026_11_03.json`, all twelve boards pulled at `--page-size 200`:
 
-The three form fields are identical across all three; only the tier and its scores differ. File
-Tier 1 and Tier 2 on the evidence we now hold, and let Tier 3 wait on one email.
+| tier | AUC | SP-SR | MP-SR | MPPE cm | rank sum | place |
+|---|---|---|---|---|---|---|
+| Tier 1 | 0.60459 | 0.73333 | 0.63333 | 11.721 | 39 | 12 / 24 |
+| Tier 2 | 0.46522 | 0.66666 | 0.46666 | 14.128 | 27 | 8 / 18 |
+| ~~Tier 3~~ | ~~0.26781~~ | ~~0.20000~~ | ~~0.03333~~ | ~~47.772~~ | ~~23~~ | withdrawn |
 
-Per-tier scores and standings as of 2026-11-02 (`results/standings_tiers_2026_11_02.json`):
+Tier 1 improved by 4 rank points today and is now alone in 12th rather than tied with Team OPS.
+Tier 2 lost a place without changing a number, as the field kept moving.
 
-| tier | AUC | SP-SR | MP-SR | MPPE cm | rank |
-|---|---|---|---|---|---|
-| Tier 1 | 0.54808 | 0.70000 | 0.50000 | 12.060 | 12 / 24 |
-| Tier 2 | 0.46522 | 0.66666 | 0.46666 | 14.128 | 7 / 18 |
-| Tier 3 | 0.26781 | 0.20000 | 0.03333 | 47.772 | 6 / 12 |
-
-We have slipped a place on Tier 1 and on Tier 2 since 2026-11-01 without changing a number:
-two new teams entered Tier 1 (one of them, Rice RobotPI Lab, straight to first on AUC at
-0.90927) and the field is still moving a day and a half from the freeze.
-
-**The template.** The email attaches `V2D_Challenge_Extended_Abstract_Template.zip`: a LaTeX
-class, not a Word file, so the report is written in it rather than approximated. The limit is two
-pages of *main text* — references and appendices do not count — and `docs/report/build.sh` checks
-exactly that rather than the page count.
+**The template.** The email attaches `V2D_Challenge_Extended_Abstract_Template.zip`: a LaTeX class,
+not a Word file, so the report is written in it rather than approximated. The limit is two pages of
+*main text* --- `nvidiaextabstract.cls:9`, "The two-page limit excludes references, acknowledgments
+and appendices" --- and the class ships its own checker, which is silent on our PDF. The body ends
+on page 2; page 3 holds nothing but reference entries.

@@ -80,6 +80,8 @@ checkpoints with lower kit scores than the best available, and we shipped its pi
 \citep{moge}, open-set detection \citep{groundingdino}, segmentation \citep{sam2} and 6D
 tracking \citep{foundationpose}. Placement in the released world is a single rigid transform
 taken from frame~0, as the FAQ permits, with no scale fitted and no per-frame correction.
+We asked whether the released mesh may feed the tracker and the simulator, were told it may
+feed neither, and withdrew the tier: its scores below are reported, not claimed.
 
 \paragraph{Warm start.} A new configuration key loads a shipped actor's parameters and batch
 statistics after learner construction and advances the step counter so the curriculum resumes in
