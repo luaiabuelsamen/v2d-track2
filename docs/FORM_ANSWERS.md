@@ -33,7 +33,7 @@ Two other things the form wants that the plan had wrong:
 | 3 | Leaderboard team ID *(optional)* | `17198357` (Tier 1 AUC). Each metric board is its own Kaggle competition and issues its own team ID; the full list is below |
 | 4 | Challenge track | **Track 2 — Robotic Grounding** |
 | 5 | Final leaderboard submission IDs or URLs | the eight below — Tier 1 and Tier 2 only |
-| 6 | Technical report URL | <https://github.com/luaiabuelsamen/v2d-track2/blob/070eab9170d19d57e0b79e50d80fd3d36b1887f2/docs/TECHNICAL_REPORT.pdf> |
+| 6 | Technical report URL | <https://github.com/luaiabuelsamen/v2d-track2/blob/663e5a4f0d454d1a593e015e5cc67916c1d126dd/docs/TECHNICAL_REPORT.pdf> |
 | 7 | GitHub repository URL | <https://github.com/luaiabuelsamen/v2d-track2> (public, Apache-2.0) |
 | 8 | Code version used for this submission | `Tier 1: 070eab9170d19d57e0b79e50d80fd3d36b1887f2 · Tier 2: 0260cd8ce5c81c9e4280e2ec5b34bba59609f98b` — each tier's CSV carries its own commit in every row |
 | 9 | Container for verification | `ghcr.io/luaiabuelsamen/v2d-track2:submission`, digest `sha256:f3f3d24bbf333a0e2e0323dda8968810ba18e68cc92e9c7da05d32ba0b7c7af1` (public, anonymous pull verified below) |
