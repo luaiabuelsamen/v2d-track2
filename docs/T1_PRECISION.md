@@ -75,3 +75,58 @@ Tier 3 chain uses it both as FoundationPose's CAD model and as the simulator's o
 (`src/v2d/retarget/sequences.py:270`). A follow-up naming both uses is in the same email thread.
 Until it is answered, Tier 3 compute buys an entry that may be withdrawn — including the staged
 13-clip warm-start batch, which stays staged.
+
+---
+
+## Addendum, 2026-11-03: the first wave trained against a mesh that was not there
+
+Launched 01:03 UTC, dead by 01:06, cost about $1.50. Worth writing down because **every check in
+the chain passed** and the run still reported success.
+
+I staged the tree with `--out $S/t1_precision` but without `--mount t1_precision`, so
+`stage_t2_combined.sh` kept `MOUNT` at its `t2_combined` default. `--mount` is what gets written
+into every parquet's `object_mesh_paths` and `object_urdf_paths` as the *in-container* path, while
+`--out` only decides where the tree lands locally. The launcher mounts a stage at
+`~/v2d_assets/<basename of the stage dir>`. So all 30 parquets pointed at
+`/v2d/assets/t2_combined/...` and the tree arrived at `/v2d/assets/t1_precision/...`.
+
+### Why nothing caught it
+
+| check | what it said |
+|---|---|
+| the stage's own verification | `checked 30 parquets, 0 problems; 14/30 resolve to a supported scene` |
+| the md5 gate on the box | `references verified by md5 on attempt 1` |
+| the box | RUNNING, image built, container up, `flash_chord ok [CudaDevice(id=0)]` |
+| the cell | `e02 finished after 0 min, 0 trajectories` |
+
+The manifest was internally consistent — it just described a tree that named the wrong mount. And
+the final line is the trap: **`run_tier2_full.sh` touches `$CLIP/DONE` on its "produced no
+checkpoint" path** (line 119), and `run_clip`'s poller breaks out of its wait the moment that file
+exists. So a crash three seconds into training is indistinguishable from a clean four-hour finish,
+and the box deleted itself three minutes later, taking the only copy of the traceback with it —
+the runner's log lives at `~/t2/clip_eXX.log` on the box and is only pulled on a clean finish.
+
+It was found by diffing the staged parquet against `cr_refs`, where the mount matches, not from
+any log.
+
+### Fixed, and what is still owed
+
+- `stage_t2_combined.sh` now **refuses** a `--mount` that disagrees with the stage directory,
+  names the fix in the message, and carries `V2D_ALLOW_MOUNT_MISMATCH` for a consumer that really
+  does mount elsewhere. Four tests in `tests/test_stage_mount.py`, including the exact invocation
+  I got wrong.
+- The six live boxes were **re-driven rather than deleted**: the 14 GB image and every mesh and
+  USDA were already uploaded, so only the 30 rewritten parquets re-synced.
+- **Still owed** (not done here, because `launch_t2_combined.sh` and `run_tier2_full.sh` were in
+  use by running boxes and a running bash script must not be edited): the no-checkpoint path
+  should write a distinguishable marker — `FAILED` rather than `DONE` — so the poller can tell a
+  crash from a finish, and `run_clip` should pull `clip_$TAG.log` before the box is deleted on
+  *any* exit, not only on the dead-runner branch. A `scratchpad/catch_clip_logs.sh` poller is the
+  stopgap.
+
+### Startup looks like a hang and is not
+
+After `builder.finalize`, `train.log` stops growing for ~10 minutes with the GPU at 0% while Warp
+compiles kernels. The tell is CPU, not GPU: `ps -eo pid,pcpu` shows python at ~170%. The
+launcher's stall detector allows 900 s of no log growth, which covers it, but a human watching
+`nvidia-smi` will conclude the run is dead.
