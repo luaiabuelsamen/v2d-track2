@@ -51,7 +51,10 @@ while [ $# -gt 0 ]; do
   esac
 done
 
-BREV=~/.local/bin/brev
+# Overridable so the guard can be exercised against a fake `brev` with no cloud account: a
+# process allowed to delete running work has to be testable, and the incident this file
+# exists for was never caught because nothing could run it offline.
+BREV="${V2D_BREV:-$HOME/.local/bin/brev}"
 [ "$KEEP" = 1 ] || : > "$LEDGER"
 WARNED=0
 
