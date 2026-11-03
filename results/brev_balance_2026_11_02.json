@@ -1,0 +1,18 @@
+{
+ "what": "The Brev balance, and why CR waits for T1P instead of running beside it",
+ "source": "Brev low-credit email to luai_abuelsamen@berkeley.edu, 2026-11-02T21:54:43Z. The CLI has no billing command and the Console needs a browser, so this email is how the number was finally obtained.",
+ "balance_at_2154_utc": 49.5,
+ "quoted_run_rate": "$0.72/hr, ~68.8 hours",
+ "spend_since": {
+  "dead_first_wave_mount_bug": 1.5,
+  "t1p_so_far_estimate": 6.2,
+  "note": "7 boxes brought up between 00:57 and 02:25 UTC, plus b21 which burned ~75 min on a hung apt-get with no clip and was deleted."
+ },
+ "estimated_now": 41.8,
+ "t1p_remaining_estimate": 16.0,
+ "free_when_t1p_completes": 25.8,
+ "decision": "CR ($19.18, 6 clips) runs AFTER T1P completes, not in parallel.",
+ "why_not_parallel": "The low-credit email states that on exhaustion 'your running environments and deployments, along with data, may be stopped or deleted to prevent overages'. Running both leaves about $7 of slack on a night that has already produced seven failed creates and one box (b21) that billed 75 minutes without claiming a clip. Losing T1P near completion costs far more than the wall clock saved, and there is no deadline pressure: T1P finishes ~05:00-06:30 UTC, CR would then finish by ~15:00 UTC, about 31 h before the 2026-11-04 22:00 UTC freeze.",
+ "trigger_to_launch_cr": "T1P cells all pulled and scored, then re-read the balance from a fresh Brev email or the Console before creating anything.",
+ "cr_is_ready": "staged at $S/cr_refs (6 clips, 44 files, manifest 44 lines, roles for all six); one command: brev/second_wave.sh --groups CR --go --cap 20"
+}
