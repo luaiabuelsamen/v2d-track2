@@ -22,6 +22,7 @@ ROOT="$S/second_wave"
 MAP="$ROOT/map_CR.txt"
 MOUNT=cr_refs
 ROLES="$REPO/results/contact_roles"
+SOURCES=()
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -29,6 +30,12 @@ while [ $# -gt 0 ]; do
     --mount) MOUNT="$2"; shift 2 ;;
     --roles) ROLES="$2"; shift 2 ;;
     --root) ROOT="$2"; MAP="$ROOT/map_CR.txt"; shift 2 ;;
+    # Name the reference tree directly instead of reading the briefs. The briefs' clean_refs_path
+    # names a DATASET root, which stage_t2_combined has to retarget first (~70 min); interp's
+    # finger tree is already the retarget of that same bridge_v1 plus its finger solve, which is
+    # exactly what every second-wave arm trained on, so passing it keeps the reward the only
+    # variable without paying for the retarget again.
+    --source) SOURCES+=("$2"); shift 2 ;;
     *) echo "unknown argument: $1" >&2; exit 2 ;;
   esac
 done
@@ -38,8 +45,15 @@ OUT="$S/$MOUNT"
 [ -d "$ROLES" ] || { echo "FATAL: no contact roles at $ROLES -- run 'v2d contact-roles' first" >&2; exit 2; }
 
 echo "== staging the bridge_v1 references for $(grep -c '[^[:space:]]' "$MAP") clips into $OUT"
-"$REPO/brev/stage_t2_combined.sh" --from-briefs --map "$MAP" --mount "$MOUNT" || {
-  echo "FATAL: staging the references failed" >&2; exit 3; }
+if [ "${#SOURCES[@]}" -gt 0 ]; then
+  ARGS=()
+  for src in "${SOURCES[@]}"; do ARGS+=(--source "$src"); done
+  "$REPO/brev/stage_t2_combined.sh" "${ARGS[@]}" --map "$MAP" --mount "$MOUNT" || {
+    echo "FATAL: staging the references failed" >&2; exit 3; }
+else
+  "$REPO/brev/stage_t2_combined.sh" --from-briefs --map "$MAP" --mount "$MOUNT" || {
+    echo "FATAL: staging the references failed" >&2; exit 3; }
+fi
 
 # The roles, one file per clip in the map, and a refusal if any clip is missing one: a clip whose
 # roles file is absent would train with the stub derived from the raw contact flag, under this
