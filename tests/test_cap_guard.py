@@ -123,17 +123,15 @@ def test_a_normal_run_is_left_alone(tmp_path: Path, hours: float) -> None:
     assert done.returncode == 0
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="Owed repair, recorded in docs/T1_PRECISION.md. The guard sums (now - first_seen) over "
-    "every ledger row and never reconciles against `brev ls`, so a box that is gone keeps "
-    "accruing. On the T1P run that read 19.87 box-hours for 7 live boxes and would have hit a "
-    "$30 cap at ~06:15 UTC -- deleting five healthy boxes at ~95% of a 350M-step run. Worked "
-    "around by hand there by dropping the dead rows. When the fix lands, strict xfail turns this "
-    "into a failure for passing, which is the prompt to delete the marker.",
-)
 def test_a_box_that_is_gone_stops_being_charged(tmp_path: Path) -> None:
-    """Two dead boxes plus one live one must be billed as one, not three."""
+    """Two dead boxes plus one live one must be billed as one, not three.
+
+    This was a strict xfail until 2026-11-03: the guard summed (now - first_seen) over every
+    ledger row and never reconciled against `brev ls`, so a deleted box accrued forever. On
+    the T1P run it read 19.87 box-hours for 7 live boxes and would have hit a $30 cap at
+    ~06:15 UTC, deleting five healthy boxes at ~95% of a 350M-step run. The ledger now
+    carries `box first_seen last_seen` and advances last_seen only for boxes still listed.
+    """
     import time
 
     now = int(time.time())

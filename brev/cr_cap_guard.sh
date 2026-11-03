@@ -68,11 +68,33 @@ while true; do
       exit 0
     fi
   fi
-  for box in $LIVE; do
-    grep -q "^$box " "$LEDGER" 2>/dev/null || printf '%s %s\n' "$box" "$NOW" >> "$LEDGER"
-  done
+  # The ledger is `box first_seen last_seen`, and last_seen is advanced only for boxes `brev ls`
+  # STILL lists. A box stops being charged the moment it stops being observed, which is the whole
+  # of the fix: the previous version summed (now - first_seen) over every row ever written, so a
+  # deleted box accrued forever. On the T1P run that read 19.87 box-hours for 7 live boxes and
+  # would have deleted five healthy boxes at ~95% of a 350M-step run.
+  printf '%s\n' $LIVE | awk -v now="$NOW" -v led="$LEDGER" '
+    NR==FNR { if ($1 != "") live[$1]=1; next }
+    {
+      if ($1 == "") next
+      first=$2
+      # A two-field row comes from a ledger an older version wrote, which recorded no last_seen.
+      # Charge it first_seen..first_seen rather than first_seen..now: under-billing a box whose
+      # death we cannot date is the safe direction for a process that deletes running work.
+      last = (NF >= 3) ? $3 : $2
+      if ($1 in live) last = now
+      if (NF < 3) legacy++
+      print $1, first, last
+      seen[$1]=1
+    }
+    END {
+      for (b in live) if (!(b in seen)) print b, now, now
+      if (legacy) print "LEGACY-ROWS", legacy > "/dev/stderr"
+    }
+  ' - "$LEDGER" > "$LEDGER.next" 2>/dev/null
+  mv "$LEDGER.next" "$LEDGER"
 
-  TOTAL=$(awk -v now="$NOW" '{h+=(now-$2)/3600} END{printf "%.3f", h+0}' "$LEDGER")
+  TOTAL=$(awk '$1!="LEGACY-ROWS"{h+=($3-$2)/3600} END{printf "%.3f", h+0}' "$LEDGER")
   SPEND=$(awk -v h="$TOTAL" -v r="$RATE" 'BEGIN{printf "%.2f", h*r}')
 
   # The check the first version did not have.
@@ -86,7 +108,7 @@ while true; do
   if awk -v s="$SPEND" -v c="$CAP" 'BEGIN{exit !(s >= c)}'; then
     echo "CAP: $PREFIX has billed ~\$$SPEND of \$$CAP over $TOTAL box-hours"
     for box in $LIVE; do
-      AGE=$(awk -v b="$box" -v now="$NOW" '$1==b{printf "%.3f", (now-$2)/3600}' "$LEDGER")
+      AGE=$(awk -v b="$box" '$1==b{printf "%.3f", ($3-$2)/3600}' "$LEDGER")
       if awk -v a="${AGE:-0}" -v m="$MIN_AGE_HOURS" 'BEGIN{exit !(a < m)}'; then
         echo "  keeping $box: only ${AGE}h old, which is under the ${MIN_AGE_HOURS}h floor"
         continue
