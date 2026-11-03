@@ -67,8 +67,12 @@ def stage(root: Path, *extra: str) -> subprocess.CompletedProcess:
             str(episode_map(root)),
             "--mount",
             "t2_test",
+            # The stage dir basename must equal --mount: stage_t2_combined refuses the pair when
+            # they disagree, because the in-container object_mesh_paths it writes are built from
+            # --mount while the launcher mounts the tree under the directory's own name. These
+            # tests are about the briefs, not about mounting, so they keep the two in step.
             "--out",
-            str(root / "out"),
+            str(root / "t2_test"),
             *extra,
         ],
         capture_output=True,
@@ -95,7 +99,7 @@ def test_a_dataset_root_without_its_retarget_names_the_command_to_run(tmp_path: 
     assert done.returncode == 2
     assert "names a dataset root, whose retarget is not on disk yet" in done.stderr
     assert "v2d retarget --dataset-root" in done.stderr
-    assert not (tmp_path / "out").exists()
+    assert not (tmp_path / "t2_test").exists()
 
 
 def test_a_retarget_still_running_is_refused_rather_than_filled_with_raw(tmp_path: Path):
@@ -204,7 +208,7 @@ def test_a_finger_tree_inherits_its_reference_per_clip(tmp_path: Path):
     assert "matching the fing tree's object trajectories" in done.stdout
     assert "2 clips carry the clean object trajectory" in done.stdout
     assert "1 clips carry the raw object trajectory" in done.stdout
-    provenance = json.loads((tmp_path / "out/provenance.json").read_text())
+    provenance = json.loads((tmp_path / "t2_test/provenance.json").read_text())
     assert provenance["ref_dataset_by_clip"] == {"e00": str(tree), "e02": str(tree)}
     assert provenance["object_trajectory_matched_by"] == {"fing": {"clean": 2, "raw": 1}}
     # e01 is absent on purpose: absent means the released root, which is the scorer's default.
@@ -226,4 +230,4 @@ def test_a_finger_tree_solved_on_an_unknown_trajectory_stops_the_stage(tmp_path:
     done = stage(tmp_path)
     assert done.returncode == 2
     assert "matches none of the sources: [0]" in done.stderr
-    assert not (tmp_path / "out").exists()
+    assert not (tmp_path / "t2_test").exists()
