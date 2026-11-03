@@ -1,0 +1,100 @@
+{
+ "what": "T1P result: Tier 1 precision, trained from scratch on the clean tier_1 references",
+ "registered_in": "docs/T1_PRECISION.md, before launch",
+ "when": "launched 2026-11-03 01:03 UTC, all seven cells complete by ~06:30 UTC",
+ "arm": "START + orientation std 0.3 + object_position std 0.08, seed 42, 349,999,104 steps, world_count 1, scene.support per clip (all seven resolved true)",
+ "clips": "e02 e09 e11 e13 e17 e21 e29 -- the seven Tier 1 clips sitting 3.85-5.15 cm outside the 3 cm MP-SR gate",
+ "cost_usd": 21.0,
+ "cost_note": "finished cells billed $2.64-$2.92 each; plus ~$1.50 lost to the mount-bug wave and a hung build (b21). Boxes ran ~4 h, not the 5.4 h budgeted.",
+ "adopted": {
+  "e02": {
+   "checkpoint_steps": 299999232,
+   "add_auc": 0.5964923469387755,
+   "spider_sr": 1.0,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 3.4462220650674684
+  },
+  "e11": {
+   "checkpoint_steps": 299999232,
+   "add_auc": 0.6336111111111111,
+   "spider_sr": 1.0,
+   "maniptrans_sr": 1.0,
+   "mppe_cm": 3.1946252780476065
+  },
+  "e13": {
+   "checkpoint_steps": 349999104,
+   "add_auc": 0.6567922993492408,
+   "spider_sr": 1.0,
+   "maniptrans_sr": 1.0,
+   "mppe_cm": 2.19635058450983
+  },
+  "e17": {
+   "checkpoint_steps": 299999232,
+   "add_auc": 0.5545454545454546,
+   "spider_sr": 1.0,
+   "maniptrans_sr": 0.0,
+   "mppe_cm": 3.8757337299055052
+  },
+  "e21": {
+   "checkpoint_steps": 349999104,
+   "add_auc": 0.7369100294985251,
+   "spider_sr": 1.0,
+   "maniptrans_sr": 1.0,
+   "mppe_cm": 2.5602016640754486
+  },
+  "e29": {
+   "checkpoint_steps": 299999232,
+   "add_auc": 0.8503747323340471,
+   "spider_sr": 1.0,
+   "maniptrans_sr": 1.0,
+   "mppe_cm": 1.8671948246265102
+  }
+ },
+ "refused": [
+  "e09"
+ ],
+ "refused_why": {
+  "e09": "no checkpoint beat the bar; its orientation error never fell below 45 deg at any of the seven, and e09 was already identified as failing SP-SR on the 0.5 rad orientation criterion rather than on position. A position-tightening recipe could not reach it."
+ },
+ "entry_before": {
+  "add_auc": 0.548089188003266,
+  "spider_sr": 0.7,
+  "maniptrans_sr": 0.5,
+  "mppe_cm": 12.060258431218822
+ },
+ "entry_after": {
+  "add_auc": 0.6046014317971482,
+  "spider_sr": 0.7333333333333333,
+  "maniptrans_sr": 0.6333333333333333,
+  "mppe_cm": 11.721282154285422
+ },
+ "board_effect": {
+  "ranks_before": {
+   "auc": 14,
+   "sp-sr": 7,
+   "mp-sr": 10,
+   "mppe": 12,
+   "sum": 43,
+   "place": 12
+  },
+  "ranks_after": {
+   "auc": 13,
+   "sp-sr": 7,
+   "mp-sr": 8,
+   "mppe": 11,
+   "sum": 39,
+   "place": 12
+  },
+  "rank_points": 4,
+  "place_unchanged": "We were tied with Team OPS at 43; 39 breaks that tie and leaves us alone in 12th with Team OPS 13th. maniphys.ai at 30 is still ahead, so 11th needs nine more rank points, which Tier 1 can no longer supply cheaply.",
+  "chord_tier1_baseline_auc": 0.51038
+ },
+ "findings": {
+  "selection_is_not_worthless_after_all": "On Tier 2 the registered z-drop rule was worth +0.0010 AUC over the final checkpoint and we recorded that as settled. Here it is worth +0.0565 on the entry mean, because the per-clip curves are violent: e02 peaks at 300M and collapses to 0.387/65 cm by 350M, while e13 and e21 climb to their best at 350M. Six different clips, two different optimal budgets.",
+  "the_truth_free_rule_matched_the_oracle": "z-drop picked the same checkpoint as the kit-best choice on 6 of 6 adoptions, reading only the input reference (ground_truth_read: false). On e02 it identified the single drop-free checkpoint out of seven.",
+  "nothing_before_250M_was_ever_useful": "Across all seven clips every checkpoint at 50M-200M was far below its bar, often catastrophically (e11 at 200M scored 0.036 AUC). The recipe's entire value is in the last 30% of training.",
+  "six_of_seven_checkpoints_drop_the_object": "On e02, six of seven drop it, at frames 192-807; only 300M holds all 980 frames. The policy passes through competence rather than converging to it, which is direct support for the grasp-instability diagnosis.",
+  "the_step_function_bites": "e29 gained +0.223 AUC and e21 +0.531, but both land inside rungs already crossed, so they add no rank points. Four MP-SR flips give 0.6333 where the next rank needs three more clips."
+ },
+ "tier1_is_now_exhausted": "After T1P the next Tier 1 rungs cost -55.5 cm of summed MPPE, +1.04 of summed AUC, or three more MP-SR clips -- 10 to 30 times what this arm delivered. The cheap Tier 1 gains are harvested."
+}
