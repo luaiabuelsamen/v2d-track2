@@ -1,0 +1,90 @@
+{
+  "what": "the contact-role arm (CR): what it cost, what it won, and why only one clip ships",
+  "arm": "CR -- contact_role_palm and contact_consistency reward terms, weights 2.0 and 1.0",
+  "ran": {
+    "clips": 6,
+    "boxes": 5,
+    "boxes_that_failed_bring_up": 2,
+    "box_hours": 28.37,
+    "spend_usd_at_guard_rate": 19.29,
+    "cap_usd": 24,
+    "finished_utc": "2026-11-04T07:58Z",
+    "per_clip_minutes": {
+      "e04": 240,
+      "e05": 266,
+      "e07": 397,
+      "e09": 245,
+      "e19": 238,
+      "e25": 208
+    }
+  },
+  "pre_registered_expansion_bar": {
+    "source": "docs/ARM_CR.md, 'The bar, pre-registered'",
+    "rule": "worth its 30-clip run only if >=4 of the 6 actionable clips win on kit AUC AND the mean rises",
+    "clips_winning_on_kit_auc": [
+      "e04",
+      "e05",
+      "e19"
+    ],
+    "count": 3,
+    "needed": 4,
+    "six_clip_mean_kit_auc": 0.233035,
+    "six_clip_mean_incumbent": 0.193103,
+    "mean_rose": true,
+    "met": false,
+    "consequence": "NOT expanded to 30 clips. The arm stops here."
+  },
+  "per_clip_adoption": {
+    "rule": "the registered input-only rule; see results/cr_adoption.json",
+    "adopted": [
+      "e19"
+    ],
+    "note": "e05 gained +0.132 kit AUC but drifted from the input (14.95 -> 19.51 cm), so the rule keeps the incumbent. The rule costs us that gain and is applied anyway."
+  },
+  "the_one_clip": {
+    "clip": "e19",
+    "sequence": "2026-05-19_10-19-48_cane_swing_05",
+    "selected_environment_steps": 249999360,
+    "input_distance_cm": {
+      "shipped": 57.16,
+      "cr": 4.67
+    },
+    "kit": {
+      "add_auc": [
+        0.11625,
+        0.25169
+      ],
+      "mppe_cm": [
+        58.1,
+        5.89
+      ],
+      "spider_sr": [
+        0.0,
+        1.0
+      ]
+    },
+    "why_it_matters": "the input-only rule, reading no truth, selected the clip that is also the right choice on truth: -52.21 cm MPPE and +0.135 AUC. The arm's one win is simultaneously evidence for the paper's claim that selection does not need ground truth."
+  },
+  "packed_entry_not_uploaded": {
+    "csv": "/tmp/claude-1000/-home-jetson3-projects-v2d-challenge/111f0508-5f0a-4a3f-b52f-1fff9621b161/scratchpad/t2_entry_cr/track2_tier2.csv",
+    "kit_packer": "pass",
+    "kit_preflight": "Ready to submit",
+    "rows": 22989,
+    "local_score": {
+      "add_auc": 0.4712575097614211,
+      "spider_sr": 0.7,
+      "maniptrans_sr": 0.4666666666666667,
+      "mppe_cm": 12.365561391316719
+    },
+    "packed_at_commit": "9a55332 (short) -- a real entry must be packed at the pushed 40-char sha",
+    "board_effect": {
+      "auc": "8 -> 8",
+      "mppe": "8 -> 6",
+      "sp-sr": "4 -> 4",
+      "mp-sr": "7 -> 7",
+      "rank_sum": "27 -> 25",
+      "place": "8th of 18 -> 8th of 18"
+    },
+    "authorisation": "NOT UPLOADED. Standing order: no submissions or pushes without a per-item go."
+  }
+}

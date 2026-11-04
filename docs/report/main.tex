@@ -18,7 +18,7 @@
 
 \begin{abstract}
 \textbf{Abstract:}
-We enter all three tiers of Track~2 with one FlashCHORD policy per sequence on a Unitree G1 with
+We enter Track~2 with one FlashCHORD policy per sequence on a Unitree G1 with
 Dex3 hands. The tiers share a ground truth and differ only in the \emph{input} a submission may
 condition on.
 Everything per-clip that we ship reads the input alone: a registered selection rule reproducible
@@ -68,8 +68,7 @@ then the challenge evaluator, selection and the kit's packer.
 \paragraph{Recipe changes.} Four ship: an object-\emph{orientation} reward term (weight 1.0, std
 0.3), which the configuration lacked despite having a position weight; a start-curriculum patch;
 object-position std tightened $0.2 \rightarrow 0.08$~m; and finger targets on bridge-smoothed
-references. Each refuses to apply to an unrecognised upstream, so a half-patched run cannot reach
-the GPU.
+references.
 
 \paragraph{Selection, registered before the run.} The provenance schema permits a different
 \texttt{checkpoint\_sha256} per episode, so we pick, per clip, the latest checkpoint whose achieved
@@ -78,18 +77,15 @@ checkpoints with lower kit scores than the best available, and we shipped its pi
 
 \paragraph{Tier~3.} We run the challenge's own modules in order: monocular geometry
 \citep{moge}, open-set detection \citep{groundingdino}, segmentation \citep{sam2} and 6D
-tracking \citep{foundationpose}. Placement in the released world is a single rigid transform
-taken from frame~0, as the FAQ permits, with no scale fitted and no per-frame correction.
-We asked whether the released mesh may feed the tracker and the simulator, were told it may
+tracking \citep{foundationpose}. We asked whether the released mesh may feed the tracker and the simulator, were told it may
 feed neither, and withdrew the tier: its scores below are reported, not claimed.
 
 \paragraph{Warm start.} A new configuration key loads a shipped actor's parameters and batch
-statistics after learner construction and advances the step counter so the curriculum resumes in
-its final stage, then runs to the normal horizon: 50M steps, 35 minutes on an A6000. The critic
+statistics and advances the step counter so the curriculum resumes in its final stage: 50M steps,
+35 minutes on an A6000. The critic
 starts cold, so the actor's learning rate is scaled $\times 0.1$ for 2{,}000 updates.
 
-\paragraph{Scoring.} We did not reimplement the metrics; our scorer hash-checks the kit's metric
-files against the shipped manifest and calls them. Across nineteen uploads the largest
+\paragraph{Scoring.} Our scorer hash-checks the kit's metric files against the shipped manifest and calls them. Across nineteen uploads the largest
 local-to-public AUC disagreement was $1.1\times10^{-5}$.
 
 \section{Experiments and Results}
@@ -103,7 +99,7 @@ local-to-public AUC disagreement was $1.1\times10^{-5}$.
     \midrule
     Tier 1 (ours)   & \textbf{0.605} & 0.733 & 0.633 & \textbf{11.72} \\
     \;\; CHORD base. & 0.510 & --- & --- & --- \\
-    Tier 2 (ours)   & \textbf{0.465} & 0.667 & 0.467 & \textbf{14.13} \\
+    Tier 2 (ours)   & \textbf{0.471} & 0.700 & 0.467 & \textbf{12.37} \\
     \;\; CHORD base. & 0.374 & 0.533 & 0.067 & 20.50 \\
     Tier 3 (ours)   & 0.268 & 0.200 & 0.033 & 47.77 \\
     \bottomrule
@@ -118,8 +114,8 @@ falls at reset and the episode ends on frame~0.
 
 \paragraph{Three ways to use a cleaner reference.} Tier~1 permits the clean multi-view
 trajectory, and how a policy is given it decides whether it helps. Substituted under the 30
-shipped actors at evaluation time, mean AUC \emph{fell} from 0.465 to 0.289 and SP-SR from 0.667
-to 0.138, with only 2 of 30 clips improving; frame checks were below $1.7\times10^{-5}$~cm, so
+shipped actors at evaluation time, mean AUC \emph{fell} from the 0.465 those actors then scored
+to 0.289, and SP-SR from 0.667 to 0.138, with only 2 of 30 clips improving; frame checks were below $1.7\times10^{-5}$~cm, so
 this is distribution shift rather than a conversion artefact --- each actor had learned one
 trajectory. Warm-start fine-tuning to it, under a no-regression adoption rule, instead took
 Tier~1 to 0.548 AUC at 12.06~cm. The gain comes from re-fitting rather than extra training: a
@@ -127,8 +123,6 @@ second generation on the \emph{same} reference adopted 0 of 3. Whether it works 
 score: 11 of 19 clips above 0.35 adopted, against 0 of 4 below it. Training from scratch on the
 clean reference was tried last, on the seven clips nearest the 3~cm MP-SR threshold: 6 of 7
 adopted, gaining $+0.11$ to $+0.53$ AUC each and taking the entry to the 0.605 at 11.72~cm in
-Table~\ref{tab:results}. On Tier~3, where selection may read only our own reconstruction, 5 of 10 adopted, taking that
-entry from 0.232 to 0.251; a later batch of fine-tunes took it to the 0.268 reported in
 Table~\ref{tab:results}.
 
 \paragraph{Effect of checkpoint selection.} The value of selection depends on the run. On the
@@ -141,26 +135,31 @@ averages 0.081 --- checkpoint-to-checkpoint variability within a run, not a betw
 but larger than several effects we measured.
 
 
+\paragraph{Contact terms in the objective.} Two contact reward terms were trained on the six
+Tier~2 clips whose failures they could act on; three improved on kit AUC against a bar of four
+fixed beforehand, so the arm was not extended. The registered rule adopted one clip, which moved
+from 57.2 to 4.7~cm from its input and, scored against truth afterwards, from 58.1 to 5.9~cm. The
+rule read no ground truth and took the only clip a ground-truth reading would also have taken,
+rejecting one that gained 0.13 kit AUC while drifting from its input.
+
 \paragraph{Where the gap is.} Measured on trajectories rather than on AUC, the noisy Tier~2
-reference sits 1.94~cm from truth while our policies sit 13.84~cm, and \emph{19 of 30 clips end up worse than the reference they
-were given}. Only 9 rollouts ever leave a 10~cm band around it; the rest track their reference
-within a few centimetres.
+reference sits 1.94~cm from truth while our policies sit 12.10~cm, and \emph{19 of 30 clips end up worse than the reference they
+were given}. Only 8 rollouts ever leave a 10~cm band around it.
 
 \section{Conclusion}
 \label{sec:conclusion}
 
 These experiments show that policy performance depends strongly on how the reference is
 introduced during training. Some policies track the object successfully before releasing it
-mid-episode; one second before each loss nothing observable differs from a healthy frame. Inspection of the environment implementation shows that a per-link
-contact state is computed every step and feeds a reward term carrying the largest positive weight
-in the objective, but is not included in the actor's observation. This may limit the policy's
+mid-episode; one second before each loss nothing observable differs from a healthy frame. Inspection of the environment implementation shows a
+per-link contact state computed every step, feeding the largest positive reward weight in the
+objective but absent from the actor's observation. This may limit the policy's
 ability to react to a changing contact, and it is consistent with what the contact-conditioned
 literature reports \citep{physhoi,intermimic}, but we did not test the explanation
-experimentally. Future work should evaluate contact-conditioned policies.
+experimentally: the contact terms above were added to the objective, not to the observation. Future work should evaluate contact-conditioned policies.
 
 \paragraph{Cost and reproducibility.} Spend was \$166 for 30 policies across three tiers, at
-\$3.00 per full-length training run and \$0.57 per warm-start fine-tune. Selection and adoption
-read only the permitted input, so rollouts are judged without ground-truth annotation. The
+\$3.00 per full-length training run and \$0.57 per warm-start fine-tune. The
 pipeline uses a single CLI, rejects incompatible upstream versions, and calls the kit's own
 metric code under a hash check.
 

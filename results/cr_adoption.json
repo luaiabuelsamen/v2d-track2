@@ -1,0 +1,135 @@
+{
+  "what": "CR's per-clip adoption decision under the registered input-only rule",
+  "rule": {
+    "source": "docs/ARM_CR.md, 'The bar, pre-registered'",
+    "decided_on": "mean distance from the z-drop-selected checkpoint to the INPUT reference",
+    "tie_break": "a tie keeps the incumbent",
+    "ground_truth_read": false,
+    "incumbent": "the rollouts packed into the live Tier 2 entry (t2_entry_wave2/rollouts)"
+  },
+  "adopted": [
+    "e19"
+  ],
+  "clips": {
+    "e04": {
+      "reference_used": "each rollout's own input reference, checked to be the same one",
+      "reference_from_old": false,
+      "references_agree": true,
+      "reference_max_gap_cm": 0.0,
+      "frames_new": 803,
+      "frames_old": 803,
+      "new_mean_distance_to_input_cm": 135.3584,
+      "old_mean_distance_to_input_cm": 102.2471,
+      "verdict": "keep",
+      "verdict_reads_ground_truth": false,
+      "selected_environment_steps": 349999104,
+      "drop_free_checkpoints": 0,
+      "kit_score_for_the_record": {
+        "kit_add_auc": 0.14827210460772106,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0,
+        "kit_mppe_cm": 135.9024427519002
+      }
+    },
+    "e05": {
+      "reference_used": "each rollout's own input reference, checked to be the same one",
+      "reference_from_old": false,
+      "references_agree": true,
+      "reference_max_gap_cm": 0.0,
+      "frames_new": 1003,
+      "frames_old": 1003,
+      "new_mean_distance_to_input_cm": 19.5144,
+      "old_mean_distance_to_input_cm": 14.9458,
+      "verdict": "keep",
+      "verdict_reads_ground_truth": false,
+      "selected_environment_steps": 299999232,
+      "drop_free_checkpoints": 7,
+      "kit_score_for_the_record": {
+        "kit_add_auc": 0.39761964107676967,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0,
+        "kit_mppe_cm": 19.264631796504858
+      }
+    },
+    "e07": {
+      "reference_used": "each rollout's own input reference, checked to be the same one",
+      "reference_from_old": false,
+      "references_agree": true,
+      "reference_max_gap_cm": 0.0,
+      "frames_new": 896,
+      "frames_old": 896,
+      "new_mean_distance_to_input_cm": 13.996,
+      "old_mean_distance_to_input_cm": 9.3717,
+      "verdict": "keep",
+      "verdict_reads_ground_truth": false,
+      "selected_environment_steps": 299999232,
+      "drop_free_checkpoints": 7,
+      "kit_score_for_the_record": {
+        "kit_add_auc": 0.22698102678571427,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0,
+        "kit_mppe_cm": 13.365953281994091
+      }
+    },
+    "e09": {
+      "reference_used": "each rollout's own input reference, checked to be the same one",
+      "reference_from_old": false,
+      "references_agree": true,
+      "reference_max_gap_cm": 0.0,
+      "frames_new": 870,
+      "frames_old": 870,
+      "new_mean_distance_to_input_cm": 13.4613,
+      "old_mean_distance_to_input_cm": 4.4744,
+      "verdict": "keep",
+      "verdict_reads_ground_truth": false,
+      "selected_environment_steps": 349999104,
+      "drop_free_checkpoints": 1,
+      "kit_score_for_the_record": {
+        "kit_add_auc": 0.24209770114942528,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0,
+        "kit_mppe_cm": 15.386738898324772
+      }
+    },
+    "e19": {
+      "reference_used": "each rollout's own input reference, checked to be the same one",
+      "reference_from_old": false,
+      "references_agree": true,
+      "reference_max_gap_cm": 0.0,
+      "frames_new": 886,
+      "frames_old": 886,
+      "new_mean_distance_to_input_cm": 4.6703,
+      "old_mean_distance_to_input_cm": 57.1565,
+      "verdict": "adopt",
+      "verdict_reads_ground_truth": false,
+      "selected_environment_steps": 249999360,
+      "drop_free_checkpoints": 5,
+      "kit_score_for_the_record": {
+        "kit_add_auc": 0.2516930022573363,
+        "kit_spider_sr": 1.0,
+        "kit_maniptrans_sr": 0.0,
+        "kit_mppe_cm": 5.886092875533932
+      }
+    },
+    "e25": {
+      "reference_used": "each rollout's own input reference, checked to be the same one",
+      "reference_from_old": false,
+      "references_agree": true,
+      "reference_max_gap_cm": 0.0,
+      "frames_new": 859,
+      "frames_old": 859,
+      "new_mean_distance_to_input_cm": 93.362,
+      "old_mean_distance_to_input_cm": 74.1064,
+      "verdict": "keep",
+      "verdict_reads_ground_truth": false,
+      "selected_environment_steps": 49999872,
+      "drop_free_checkpoints": 0,
+      "kit_score_for_the_record": {
+        "kit_add_auc": 0.13154831199068684,
+        "kit_spider_sr": 0.0,
+        "kit_maniptrans_sr": 0.0,
+        "kit_mppe_cm": 93.6738520504906
+      }
+    }
+  }
+}
