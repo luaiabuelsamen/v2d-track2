@@ -33,9 +33,9 @@ Two other things the form wants that the plan had wrong:
 | 3 | Leaderboard team ID *(optional)* | `17198357` (Tier 1 AUC). Each metric board is its own Kaggle competition and issues its own team ID; the full list is below |
 | 4 | Challenge track | **Track 2 — Robotic Grounding** |
 | 5 | Final leaderboard submission IDs or URLs | the eight below — Tier 1 and Tier 2 only |
-| 6 | Technical report URL | <https://github.com/luaiabuelsamen/v2d-track2/blob/663e5a4f0d454d1a593e015e5cc67916c1d126dd/docs/TECHNICAL_REPORT.pdf> |
+| 6 | Technical report URL | <https://github.com/luaiabuelsamen/v2d-track2/blob/f4e4e9c44fa8e9eda7fc8096e84a6b6bfd430192/docs/TECHNICAL_REPORT.pdf> |
 | 7 | GitHub repository URL | <https://github.com/luaiabuelsamen/v2d-track2> (public, Apache-2.0) |
-| 8 | Code version used for this submission | `Tier 1: 070eab9170d19d57e0b79e50d80fd3d36b1887f2 · Tier 2: 0260cd8ce5c81c9e4280e2ec5b34bba59609f98b` — each tier's CSV carries its own commit in every row |
+| 8 | Code version used for this submission | `Tier 1: 070eab9170d19d57e0b79e50d80fd3d36b1887f2 · Tier 2: f4e4e9c44fa8e9eda7fc8096e84a6b6bfd430192` — each tier's CSV carries its own commit in every row |
 | 9 | Container for verification | `ghcr.io/luaiabuelsamen/v2d-track2:submission`, digest `sha256:f3f3d24bbf333a0e2e0323dda8968810ba18e68cc92e9c7da05d32ba0b7c7af1` (public, anonymous pull verified below) |
 
 ### Field 5, in full
@@ -48,13 +48,15 @@ Eight submissions across two tiers. Tier 3 is **deliberately absent**; see below
 | Tier 1 SP-SR | `v2d-challenge-track2-tier1-sp-sr` | 57959751 | 0.73333 |
 | Tier 1 MP-SR | `v2d-challenge-track2-tier1-mp-sr` | 57959755 | 0.63333 |
 | Tier 1 MPPE | `v2d-challenge-track2-tier1-mppe` | 57959758 | 11.72123 |
-| Tier 2 AUC | `v2d-challenge-track2-tier2-auc` | 57742766 | 0.46522 |
-| Tier 2 SP-SR | `v2d-challenge-track2-tier2-sp-sr` | 57742768 | 0.66666 |
-| Tier 2 MP-SR | `v2d-challenge-track2-tier2-mp-sr` | 57742770 | 0.46666 |
-| Tier 2 MPPE | `v2d-challenge-track2-tier2-mppe` | 57742773 | 14.12760 |
+| Tier 2 AUC | `v2d-challenge-track2-tier2-auc` | 57996327 | 0.47125 |
+| Tier 2 SP-SR | `v2d-challenge-track2-tier2-sp-sr` | 57996328 | 0.70000 |
+| Tier 2 MP-SR | `v2d-challenge-track2-tier2-mp-sr` | 57996329 | 0.46666 |
+| Tier 2 MPPE | `v2d-challenge-track2-tier2-mppe` | 57996331 | 12.36556 |
 
 Each is the board's own current best and its latest, checked against the leaderboard rather than
-assumed (`results/standings_tiers_2026_11_03.json`).
+assumed. The four Tier 2 IDs were **re-filed on 2026-11-04**: the contact arm's one adopted clip
+(e19) took Tier 2 to 0.47125 AUC at 12.36556 cm, which superseded 57742766/68/70/73. See
+`results/t2_submission_cr.json` and `results/cr_adoption.json`.
 
 ### Field 3, in full
 
@@ -112,11 +114,14 @@ want the account listed as a collaborator explicitly, that is one click in Setti
 | tier | AUC | SP-SR | MP-SR | MPPE cm | rank sum | place |
 |---|---|---|---|---|---|---|
 | Tier 1 | 0.60459 | 0.73333 | 0.63333 | 11.721 | 39 | 12 / 24 |
-| Tier 2 | 0.46522 | 0.66666 | 0.46666 | 14.128 | 27 | 8 / 18 |
+| Tier 2 | 0.47125 | 0.70000 | 0.46666 | 12.366 | 30 | 10 / 25 |
 | ~~Tier 3~~ | ~~0.26781~~ | ~~0.20000~~ | ~~0.03333~~ | ~~47.772~~ | ~~23~~ | withdrawn |
 
-Tier 1 improved by 4 rank points today and is now alone in 12th rather than tied with Team OPS.
-Tier 2 lost a place without changing a number, as the field kept moving.
+Tier 2's place is worse than yesterday's 8th of 18 while every one of its numbers is better,
+because the tier grew from 18 ranked teams to 24 overnight and three of the new ones are above us.
+Measured against the same 2026-11-04 board, the e19 upload is worth +2 ranks on MPPE and -2 on the
+rank sum (32 -> 30); without it we would be 10th with a rank sum of 32. The field moved, we did
+not slip.
 
 **The template.** The email attaches `V2D_Challenge_Extended_Abstract_Template.zip`: a LaTeX class,
 not a Word file, so the report is written in it rather than approximated. The limit is two pages of

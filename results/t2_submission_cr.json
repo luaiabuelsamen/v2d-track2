@@ -1,0 +1,46 @@
+{
+  "what": "the Tier 2 upload that adopts CR's e19, and what it moved",
+  "uploaded_utc": "2026-11-04T08:4x UTC",
+  "commit": "f4e4e9c44fa8e9eda7fc8096e84a6b6bfd430192",
+  "csv": {
+    "rows": 22989,
+    "bytes": 11842250,
+    "receipt": "t2_entry_cr_final/track2_tier2.csv.03467b9f5cc6.kaggle-receipt.json"
+  },
+  "kit_preflight": "Ready to submit",
+  "submissions": {
+    "auc": 57996327,
+    "sp-sr": 57996328,
+    "mp-sr": 57996329,
+    "mppe": 57996331
+  },
+  "local_vs_public": {
+    "auc": {
+      "local": 0.4712575097614211,
+      "public": 0.47125
+    },
+    "sp-sr": {
+      "local": 0.7,
+      "public": 0.7
+    },
+    "mp-sr": {
+      "local": 0.4666666666666667,
+      "public": 0.46666
+    },
+    "mppe": {
+      "local": 12.365561391316719,
+      "public": 12.36556
+    },
+    "largest_disagreement": 7.5e-06
+  },
+  "the_only_change": "e19 ships CR's checkpoint at 249,999,360 steps instead of the wave-2 rollout. Adopted by the registered input-only rule (57.16 -> 4.67 cm to the input); see results/cr_adoption.json. All 29 other episodes are byte-identical to the previous entry.",
+  "board_effect_measured_on_the_live_2026_11_04_board": {
+    "auc": "10 -> 10",
+    "sp-sr": "5 -> 5",
+    "mp-sr": "7 -> 7",
+    "mppe": "10 -> 8",
+    "rank_sum": "32 -> 30",
+    "place": "10th of 25 -> 10th of 25",
+    "note": "Both absolute ranks fell against 2026-11-03 because Tier 2 grew from 18 ranked teams to 24 overnight, three of them above us. The upload's own effect is +2 ranks on MPPE and -2 on the rank sum, which is what was projected before it was sent."
+  }
+}
