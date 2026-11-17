@@ -7,6 +7,31 @@ in the input; we target **Tier 2** (synthetic corruption) with **Tier 1** as ins
 
 Freeze: **2026-11-04 17:00 EST.**
 
+<p align="center">
+  <img src="docs/report/assets/system.svg" alt="System diagram" width="100%">
+</p>
+
+**Figure 1. The system.** A human demonstration yields a reference $r$ at one of three tiers: the
+clean multi-view trajectory, the released retarget (object 1.9 cm and 21.4° off truth), or our own
+reconstruction. It is retargeted to a Unitree G1 with Dex3 hands and tracked by one FlashCHORD SAC
+policy per sequence, with the support primitive staged per clip and an object-orientation term added
+to the reward. Each of the seven checkpoints is rolled out once; the shipped checkpoint is the latest
+whose object stays within 10 cm of $r$, a rule registered before the run. Nothing above the red line
+reads the ground truth $r^*$. The teal loop warm-starts a shipped actor on a cleaner reference $r'$
+and adopts it only if no leaderboard metric falls.
+
+<p align="center">
+  <img src="docs/report/assets/method.svg" alt="Method figure" width="100%">
+</p>
+
+**Figure 2. The two rules, drawn on what they read.** (a) The three tiers against one $r^*$.
+(b) Checkpoint selection on the distance curves $d_k(t)$ between each rollout's object and the input
+reference: five checkpoints leave the band, $k=5$ is the latest that stays and ships. (c) How $r'$ is
+introduced decides whether it helps: substituted under the trained actor at evaluation it costs
+0.18 AUC; a 50M-step warm start on it, with the curriculum counter set to 300M, gains 0.08. A second
+generation on the same $r'$ adopts nothing. Curves in (b) and (c) are schematic; every number is from
+`results/`. Sources: `docs/report/assets/system.svg` (hand-laid) and `docs/report/assets/fig.py`.
+
 ## The idea
 
 Tier 2 hands you a corrupted reconstruction and scores you against the clean one, so a policy

@@ -1,0 +1,248 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="780" height="244" viewBox="0 -8 780 244" font-family="Times New Roman, Times, serif" font-size="6.6" fill="#111">
+<defs>
+  <marker id="a" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0.6 L7.4 4 L0 7.4 z" fill="#111"/></marker>
+  <style>
+    .pt{font-family:Helvetica,Arial,sans-serif;font-size:7px;font-weight:700;fill:#111}
+    .panel{fill:#fbfbfb;stroke:#8a8a8a;stroke-width:0.6;rx:4}
+    .data{fill:#fff;stroke:#111;stroke-width:0.6}
+    .fix{fill:#ececec;stroke:#6f6f6f;stroke-width:0.7}
+    .learn{fill:#d6e4f5;stroke:#4a6fa5;stroke-width:0.7}
+    .dec{fill:#dcebd3;stroke:#5f8f52;stroke-width:0.7}
+    .w{stroke:#111;stroke-width:0.65;fill:none;marker-end:url(#a)}
+    .wd{stroke:#111;stroke-width:0.65;fill:none;marker-end:url(#a);stroke-dasharray:1.8 1.4}
+    .ln{stroke:#111;stroke-width:0.65;fill:none}
+    .ic{stroke:#111;stroke-width:0.6;fill:none;stroke-linecap:round;stroke-linejoin:round}
+    .i{font-style:italic}
+    .sm{font-size:5.6px;fill:#333}
+    .sub{font-size:4.4px}
+    .lab{font-size:6.2px;fill:#111}
+  </style>
+</defs>
+<rect x="0" y="-8" width="780" height="244" fill="#fff"/>
+
+<!-- ===================== A) Reference ===================== -->
+<rect x="6" y="10" width="178" height="140" class="panel"/>
+<text x="12" y="19" class="pt">A) Reference <tspan class="i" font-family="Times New Roman,serif" font-weight="400">r</tspan></text>
+
+<!-- demonstration frame -->
+<g transform="translate(14,30)">
+  <rect x="0" y="0" width="40" height="30" class="data"/>
+  <g class="ic"><circle cx="15" cy="7.5" r="2.4"/><path d="M15 10 L15 19 M15 12 L10 16.5 M15 12 L21 14.5 M15 19 L11.5 27 M15 19 L18.5 27"/><path d="M20 21 L34 21 M22 21 L22 27 M32 21 L32 27"/></g>
+  <rect x="20.5" y="12.5" width="4" height="3.2" fill="#555"/>
+  <text x="20" y="38" text-anchor="middle" class="sm">video, SOMA-X</text>
+</g>
+<path class="w" d="M54 45 L66 45"/>
+
+<!-- three tiers as data strips -->
+<g transform="translate(68,30)">
+  <!-- tier 1 -->
+  <rect x="0" y="0" width="106" height="24" class="data"/>
+  <text x="4" y="9" class="lab">Tier 1 · multi-view</text>
+  <text x="4" y="19" class="lab"><tspan class="i">r</tspan> = <tspan class="i">r</tspan>*</text>
+  <g fill="#555"><rect x="60" y="14" width="4" height="4"/><rect x="65" y="14" width="4" height="4"/><rect x="70" y="14" width="4" height="4"/><rect x="75" y="14" width="4" height="4"/><rect x="80" y="14" width="4" height="4"/><rect x="85" y="14" width="4" height="4"/><rect x="90" y="14" width="4" height="4"/><rect x="95" y="14" width="4" height="4"/></g>
+  <path d="M60 10 C 68 4, 78 11, 100 4" class="ln"/>
+  <!-- tier 2 -->
+  <rect x="0" y="30" width="106" height="24" class="data"/>
+  <text x="4" y="39" class="lab">Tier 2 · retarget</text>
+  <text x="4" y="49" class="lab"><tspan class="i">r</tspan> = <tspan class="i">r</tspan>* + <tspan class="i">ε</tspan></text>
+  <g fill="#555"><rect x="60" y="44" width="4" height="4"/><rect x="65" y="44" width="4" height="4"/><rect x="70" y="44" width="4" height="4"/><rect x="75" y="44" width="4" height="4"/><rect x="80" y="44" width="4" height="4"/><rect x="85" y="44" width="4" height="4"/><rect x="90" y="44" width="4" height="4"/><rect x="95" y="44" width="4" height="4"/></g>
+  <path d="M60 40 C 68 34, 78 41, 100 34" stroke="#bbb" stroke-width="0.6" fill="none"/>
+  <path d="M60 41.5 C 66 38, 72 43, 80 39 C 88 36, 94 40, 101 36" class="ln"/>
+  <!-- tier 3 -->
+  <rect x="0" y="60" width="106" height="24" class="data" stroke-dasharray="1.6 1.2"/>
+  <text x="4" y="69" class="lab" fill="#444">Tier 3 · own recon.</text>
+  <text x="4" y="79" class="lab" fill="#444"><tspan class="i">r</tspan> = <tspan class="i">f</tspan>(video)</text>
+  <g fill="#999"><rect x="60" y="74" width="4" height="4"/><rect x="65" y="74" width="4" height="4"/><rect x="70" y="74" width="4" height="4"/><rect x="75" y="74" width="4" height="4"/><rect x="80" y="74" width="4" height="4"/><rect x="85" y="74" width="4" height="4"/><rect x="90" y="74" width="4" height="4"/><rect x="95" y="74" width="4" height="4"/></g>
+  <path d="M60 70 C 68 64, 78 71, 100 64" stroke="#bbb" stroke-width="0.6" fill="none"/>
+  <path d="M60 70 C 66 66, 71 69, 76 72 L 101 80" stroke="#444" stroke-width="0.6" fill="none" stroke-dasharray="1.2 1"/>
+</g>
+<text x="68" y="128" class="sm">object pose <tspan class="i">p</tspan><tspan class="sub" baseline-shift="sub">r</tspan>(<tspan class="i">t</tspan>), <tspan class="i">R</tspan><tspan class="sub" baseline-shift="sub">r</tspan>(<tspan class="i">t</tspan>) and SOMA-X body</text>
+<text x="68" y="138" class="sm">all tiers are scored against <tspan class="i">r</tspan>*; only <tspan class="i">r</tspan> differs</text>
+
+<!-- r out of panel A -->
+<path class="w" d="M184 72 L198 72"/>
+<text x="191" y="81" text-anchor="middle" class="lab"><tspan class="i">r</tspan></text>
+
+<!-- ===================== B) Per-sequence policy ===================== -->
+<rect x="200" y="10" width="300" height="140" class="panel"/>
+<text x="206" y="19" class="pt">B) One policy per sequence</text>
+
+<!-- retarget pill -->
+<g transform="translate(208,54)">
+  <path d="M0 0 H34 a18 18 0 0 1 0 36 H0 Z" class="fix"/>
+  <text x="18" y="15" text-anchor="middle" class="lab">Retarget</text>
+  <text x="18" y="25" text-anchor="middle" class="sm">IK → G1</text>
+  <text x="22" y="48" text-anchor="middle" class="sm"><tspan class="i">q</tspan><tspan class="sub" baseline-shift="sub">ref</tspan>, <tspan class="i">p</tspan><tspan class="sub" baseline-shift="sub">ref</tspan></text>
+</g>
+<path class="w" d="M260 72 L272 72"/>
+
+<!-- environment -->
+<g transform="translate(274,40)">
+  <rect x="0" y="0" width="78" height="64" class="data"/>
+  <text x="39" y="9" text-anchor="middle" class="lab">Env: G1 + Dex3</text>
+  <g class="ic" transform="translate(8,14)">
+    <path d="M14 30 L58 30 M18 30 L18 38 M54 30 L54 38"/>
+    <rect x="31" y="23.5" width="8" height="6.5" fill="#fff"/>
+    <path d="M31 23.5 L37 20 L45 20 L39 23.5" fill="#fff"/><path d="M39 23.5 L45 20 L45 26.5 L39 30" fill="#fff"/>
+    <path d="M26 20 L28 25 L26 29 M24 22 L24 27 M50 21 L48 25 L50 29 M52 22 L52 27"/>
+    <g transform="rotate(-21 35 26)"><rect x="33" y="21" width="8" height="6.5" stroke="#111" stroke-dasharray="1 0.9" fill="none" stroke-width="0.5"/></g>
+  </g>
+  <text x="39" y="60" text-anchor="middle" class="sm">support primitive · dashed: <tspan class="i">r</tspan></text>
+</g>
+
+<!-- actor / critic pills -->
+<g transform="translate(378,40)">
+  <path d="M0 0 H30 a14 14 0 0 1 0 28 H0 Z" class="learn"/>
+  <text x="18" y="17" text-anchor="middle" class="lab" font-weight="700"><tspan class="i">π</tspan><tspan class="sub" baseline-shift="sub">θ</tspan></text>
+  <path d="M0 36 H30 a14 14 0 0 1 0 28 H0 Z" class="learn"/>
+  <text x="18" y="53" text-anchor="middle" class="lab" font-weight="700"><tspan class="i">Q</tspan><tspan class="sub" baseline-shift="sub">φ</tspan></text>
+</g>
+<!-- obs strip into actor -->
+<g fill="#555" transform="translate(357,50)"><rect x="0" y="0" width="3" height="3"/><rect x="0" y="3.6" width="3" height="3"/><rect x="0" y="7.2" width="3" height="3"/><rect x="0" y="10.8" width="3" height="3"/></g>
+<path class="w" d="M352 56 L376 56"/><text x="364" y="48" text-anchor="middle" class="sm"><tspan class="i">s</tspan><tspan class="sub" baseline-shift="sub">t</tspan></text>
+<path class="w" d="M376 86 L352 86"/><text x="364" y="95" text-anchor="middle" class="sm"><tspan class="i">a</tspan><tspan class="sub" baseline-shift="sub">t</tspan></text>
+<path class="wd" d="M352 72 L376 72"/><text x="364" y="69" text-anchor="middle" class="sm"><tspan class="i">R</tspan><tspan class="sub" baseline-shift="sub">t</tspan></text>
+<path class="ln" d="M396 68 L396 76" />
+<text x="412" y="38" text-anchor="middle" class="sm">SAC</text>
+
+<!-- reward -->
+<g transform="translate(274,112)">
+  <rect x="0" y="0" width="140" height="30" class="data" stroke="#777"/>
+  <text x="5" y="10" class="lab"><tspan class="i">R</tspan><tspan class="sub" baseline-shift="sub">t</tspan> = <tspan class="i">r</tspan><tspan class="sub" baseline-shift="sub">body</tspan> + <tspan class="i">r</tspan><tspan class="sub" baseline-shift="sub">pos</tspan> + <tspan class="i">r</tspan><tspan class="sub" baseline-shift="sub">ori</tspan> + <tspan class="i">r</tspan><tspan class="sub" baseline-shift="sub">contact</tspan></text>
+  <text x="5" y="20" class="sm"><tspan class="i">r</tspan><tspan class="sub" baseline-shift="sub">ori</tspan> = exp(−‖log(<tspan class="i">R</tspan><tspan class="sub" baseline-shift="sub">obj</tspan><tspan class="sup" baseline-shift="super" font-size="4.4">⊤</tspan><tspan class="i">R</tspan><tspan class="sub" baseline-shift="sub">r</tspan>)‖² / <tspan class="i">σ</tspan>²)   (added)</text>
+  <text x="5" y="27" class="sm">one SAC run per clip · support primitive staged per clip</text>
+</g>
+
+<!-- checkpoint timeline (EXPO-style circles) -->
+<g transform="translate(432,44)">
+  <text x="30" y="0" text-anchor="middle" class="sm">checkpoints</text>
+  <g>
+    <circle cx="6" cy="12" r="4" class="data"/><text x="6" y="14" text-anchor="middle" font-size="4.6"><tspan class="i">θ</tspan><tspan class="sub" baseline-shift="sub">1</tspan></text>
+    <circle cx="6" cy="24" r="4" class="data"/><text x="6" y="26" text-anchor="middle" font-size="4.6"><tspan class="i">θ</tspan><tspan class="sub" baseline-shift="sub">2</tspan></text>
+    <circle cx="6" cy="36" r="4" class="data"/><text x="6" y="38" text-anchor="middle" font-size="4.6"><tspan class="i">θ</tspan><tspan class="sub" baseline-shift="sub">3</tspan></text>
+    <text x="6" y="48" text-anchor="middle" font-size="5">⋮</text>
+    <circle cx="6" cy="58" r="4" class="data"/><text x="6" y="60" text-anchor="middle" font-size="4.6"><tspan class="i">θ</tspan><tspan class="sub" baseline-shift="sub">7</tspan></text>
+  </g>
+  <path class="ln" d="M6 16 L6 20 M6 28 L6 32 M6 40 L6 42 M6 52 L6 54"/>
+  <!-- rollouts tau_k as little curves -->
+  <g class="ln">
+    <path d="M14 12 L20 12"/><path d="M22 14 C 26 10, 30 14, 36 9" />
+    <path d="M14 24 L20 24"/><path d="M22 26 C 26 22, 30 26, 36 21" />
+    <path d="M14 36 L20 36"/><path d="M22 38 C 26 34, 30 36, 34 30 L 36 26" />
+    <path d="M14 58 L20 58"/><path d="M22 60 C 26 56, 30 60, 36 55" />
+  </g>
+  <text x="48" y="14" class="sm"><tspan class="i">τ</tspan><tspan class="sub" baseline-shift="sub">1</tspan></text>
+  <text x="48" y="26" class="sm"><tspan class="i">τ</tspan><tspan class="sub" baseline-shift="sub">2</tspan></text>
+  <text x="48" y="38" class="sm"><tspan class="i">τ</tspan><tspan class="sub" baseline-shift="sub">3</tspan></text>
+  <text x="48" y="60" class="sm"><tspan class="i">τ</tspan><tspan class="sub" baseline-shift="sub">7</tspan></text>
+  <text x="30" y="72" text-anchor="middle" class="sm">one rollout each</text>
+</g>
+<path class="w" d="M414 56 L434 56" />
+<text x="424" y="52" text-anchor="middle" class="sm"><tspan class="i">θ</tspan></text>
+
+<!-- ===================== C) Input-only selection ===================== -->
+<rect x="508" y="10" width="150" height="140" class="panel"/>
+<text x="514" y="19" class="pt">C) Selection</text>
+<path class="w" d="M500 80 L516 80"/>
+<text x="508" y="76" text-anchor="middle" class="sm">{<tspan class="i">τ</tspan><tspan class="sub" baseline-shift="sub">k</tspan>}</text>
+
+<!-- distance plot -->
+<g transform="translate(518,30)">
+  <rect x="0" y="0" width="64" height="48" class="data"/>
+  <g transform="translate(7,6)">
+    <rect x="0" y="22" width="48" height="12" fill="#ececec"/>
+    <path d="M0 34 L0 2 M0 34 L48 34" class="ln"/>
+    <path d="M0 30 C 8 28, 12 31, 18 29 C 22 27, 26 30, 30 18 C 34 8, 40 6, 48 5" stroke="#999" stroke-width="0.6" fill="none"/>
+    <path d="M0 31 C 10 29, 16 31, 24 29 C 30 27, 38 30, 48 28" class="ln" stroke-width="0.9"/>
+    <line x1="0" y1="22" x2="48" y2="22" stroke="#111" stroke-width="0.4" stroke-dasharray="1 0.8"/>
+    <text x="-2" y="24" text-anchor="end" font-size="4.6">10 cm</text>
+    <text x="50" y="7" font-size="4.6"><tspan class="i">k</tspan>=3</text>
+    <text x="50" y="30" font-size="4.6"><tspan class="i">k</tspan>=5</text>
+    <text x="24" y="40" text-anchor="middle" class="sm"><tspan class="i">d</tspan><tspan class="sub" baseline-shift="sub">k</tspan>(<tspan class="i">t</tspan>) = ‖<tspan class="i">p</tspan><tspan class="sub" baseline-shift="sub">τk</tspan>(<tspan class="i">t</tspan>) − <tspan class="i">p</tspan><tspan class="sub" baseline-shift="sub">r</tspan>(<tspan class="i">t</tspan>)‖</text>
+  </g>
+</g>
+<!-- r into the plot (dashed, from the r bus) -->
+<path class="wd" d="M191 70 L191 4.5 L575 4.5 L575 28"/>
+<text x="380" y="2" text-anchor="middle" font-size="5" fill="#333"><tspan class="i">p</tspan><tspan class="sub" baseline-shift="sub">r</tspan>(<tspan class="i">t</tspan>) from <tspan class="i">r</tspan></text>
+
+<!-- selector pill -->
+<g transform="translate(590,36)">
+  <path d="M0 0 H44 a18 18 0 0 1 0 36 H0 Z" class="dec"/>
+  <text x="24" y="14" text-anchor="middle" class="lab" font-weight="700">Select</text>
+  <text x="24" y="24" text-anchor="middle" class="sm">max <tspan class="i">k</tspan> : max<tspan class="sub" baseline-shift="sub">t</tspan> <tspan class="i">d</tspan><tspan class="sub" baseline-shift="sub">k</tspan> &lt; 10 cm</text>
+</g>
+<path class="w" d="M582 54 L588 54"/>
+<text x="612" y="84" text-anchor="middle" class="sm">registered before training</text>
+<text x="612" y="92" text-anchor="middle" class="sm">reads <tspan class="i">r</tspan> only</text>
+
+<!-- packer -->
+<g transform="translate(518,104)">
+  <rect x="0" y="0" width="126" height="34" class="fix"/>
+  <text x="63" y="12" text-anchor="middle" class="lab">Kit packer</text>
+  <text x="63" y="22" text-anchor="middle" class="sm"><tspan class="i">τ</tspan><tspan class="sub" baseline-shift="sub">k*</tspan>, sha256(<tspan class="i">θ</tspan><tspan class="sub" baseline-shift="sub">k*</tspan>), commit · per episode</text>
+  <text x="63" y="30" text-anchor="middle" class="sm">22,989 rows</text>
+</g>
+<path class="w" d="M612 72 L612 102"/>
+<text x="616" y="99" class="sm"><tspan class="i">τ</tspan><tspan class="sub" baseline-shift="sub">k*</tspan></text>
+
+<!-- ===================== E) Scoring (separate, r* only here) ===================== -->
+<rect x="666" y="10" width="108" height="140" class="panel"/>
+<text x="672" y="19" class="pt">D) Scoring</text>
+<g transform="translate(676,30)">
+  <rect x="0" y="0" width="88" height="22" class="data"/>
+  <text x="4" y="9" class="lab"><tspan class="i">r</tspan>* multi-view ground truth</text>
+  <g fill="#111"><rect x="30" y="13" width="4" height="4"/><rect x="35" y="13" width="4" height="4"/><rect x="40" y="13" width="4" height="4"/><rect x="45" y="13" width="4" height="4"/><rect x="50" y="13" width="4" height="4"/><rect x="55" y="13" width="4" height="4"/><rect x="60" y="13" width="4" height="4"/><rect x="65" y="13" width="4" height="4"/></g>
+</g>
+<g transform="translate(676,72)">
+  <rect x="0" y="0" width="88" height="66" class="fix"/>
+  <text x="44" y="12" text-anchor="middle" class="lab">Kit metric code</text>
+  <text x="44" y="22" text-anchor="middle" class="sm">sha256-checked against manifest</text>
+  <text x="44" y="36" text-anchor="middle" class="lab">AUC · SP-SR · MP-SR · MPPE</text>
+  <text x="44" y="48" text-anchor="middle" class="sm">rank = Σ per-metric rank</text>
+  <text x="44" y="58" text-anchor="middle" class="sm">local = public (1e-5)</text>
+</g>
+<path class="w" d="M720 52 L720 70"/>
+<path class="w" d="M644 121 L674 121"/>
+<text x="720" y="158" text-anchor="middle" class="sm"><tspan class="i">r</tspan>* enters here only</text>
+
+<!-- ===================== E) Warm-start re-fit ===================== -->
+<rect x="200" y="166" width="458" height="64" class="panel"/>
+<text x="206" y="177" class="pt">E) Warm-start re-fit to a cleaner reference <tspan class="i" font-family="Times New Roman,serif" font-weight="400">r′</tspan></text>
+
+<!-- timeline bar -->
+<g transform="translate(214,196)">
+  <rect x="0" y="0" width="180" height="8" fill="#fff" stroke="#111" stroke-width="0.6"/>
+  <rect x="154" y="0" width="26" height="8" fill="#ececec" stroke="#111" stroke-width="0.6"/>
+  <rect x="180" y="0" width="30" height="8" fill="#d6e4f5" stroke="#4a6fa5" stroke-width="0.6"/>
+  <text x="0" y="16" font-size="5">0</text>
+  <text x="154" y="16" text-anchor="middle" font-size="5">300M</text>
+  <text x="180" y="16" text-anchor="middle" font-size="5">350M</text>
+  <text x="210" y="16" text-anchor="middle" font-size="5">+50M</text>
+  <text x="77" y="-4" text-anchor="middle" class="sm">curriculum stages, trained on <tspan class="i">r</tspan></text>
+  <text x="167" y="-4" text-anchor="middle" class="sm">final</text>
+  <text x="195" y="-4" text-anchor="middle" class="sm">on <tspan class="i">r′</tspan></text>
+  <text x="105" y="26" text-anchor="middle" class="sm">environment steps</text>
+  <!-- theta_shipped enters at 300M -->
+  <path class="wd" d="M154 -14 L154 -1"/>
+  <!-- the reset: counter set back to 300M -->
+</g>
+<text x="374" y="180" class="sm"><tspan class="i">θ</tspan><tspan class="sub" baseline-shift="sub">shipped</tspan> loaded, step counter ← 300M</text>
+<!-- r' in -->
+<path class="wd" d="M68 50 L60 50 L60 212 L212 212"/>
+<text x="140" y="209" text-anchor="middle" class="sm"><tspan class="i">r′</tspan> = Tier 1 trajectory</text>
+
+<!-- adopt gate -->
+<g transform="translate(452,186)">
+  <path d="M0 0 H40 a14 14 0 0 1 0 28 H0 Z" class="dec"/>
+  <text x="22" y="12" text-anchor="middle" class="lab" font-weight="700">Adopt</text>
+  <text x="22" y="22" text-anchor="middle" class="sm">iff no metric falls</text>
+</g>
+<path class="w" d="M424 200 L450 200"/>
+<text x="437" y="196" text-anchor="middle" class="sm"><tspan class="i">θ′</tspan></text>
+<!-- adopted theta back up to the policy -->
+<path class="wd" d="M506 200 L524 200 L524 158 L424 158 L424 64"/>
+<text x="560" y="203" class="sm">adopted <tspan class="i">θ′</tspan> replaces <tspan class="i">θ</tspan></text>
+<text x="428" y="150" class="sm"><tspan class="i">θ′</tspan></text>
+<text x="560" y="213" class="sm">cold swap of <tspan class="i">r′</tspan> under <tspan class="i">θ</tspan>: not adopted</text>
+<text x="560" y="223" class="sm">second generation on <tspan class="i">r′</tspan>: not adopted</text>
+</svg>
